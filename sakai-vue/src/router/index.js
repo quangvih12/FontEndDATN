@@ -44,6 +44,11 @@ const router = createRouter({
                     component: () => import('@/views/uikit/Table.vue')
                 },
                 {
+                    path: '/uikit/quan-ly-hoa-don',
+                    name: 'quan-ly-hoa-don',
+                    component: () => import('@/views/uikit/QuanLyHoaDon.vue')
+                },
+                {
                     path: '/uikit/list',
                     name: 'list',
                     component: () => import('@/views/uikit/List.vue')
