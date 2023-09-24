@@ -80,6 +80,11 @@ const model = ref([
                 to: '/pages/crud'
             },
             {
+                label: 'prodct',
+                icon: 'pi pi-fw pi-pencil',
+                to: '/pages/product'
+            },
+            {
                 label: 'Timeline',
                 icon: 'pi pi-fw pi-calendar',
                 to: '/pages/timeline'

@@ -137,6 +137,11 @@ const router = createRouter({
                     component: () => import('@/views/pages/Crud.vue')
                 },
                 {
+                    path: '/pages/product',
+                    name: 'product',
+                    component: () => import('@/views/pages/Product/ChiTietSanPham.vue')
+                },
+                {
                     path: '/documentation',
                     name: 'documentation',
                     component: () => import('@/views/utilities/Documentation.vue')
