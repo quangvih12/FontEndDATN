@@ -99,6 +99,18 @@ const model = ref([
                 icon: 'pi pi-fw pi-circle-off',
                 to: '/pages/empty'
             }
+            ,
+             {
+                label: 'Khuyến Mãi',
+                icon: 'pi pi-fw pi-circle-off',
+                to: '/pages/khuyenmai'
+            }
+            ,
+            {
+                label: 'Voucher',
+                icon: 'pi pi-fw pi-circle-off',
+                to: '/pages/voucher'
+            }
         ]
     },
     {
