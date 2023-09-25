@@ -2,8 +2,19 @@
 import { onMounted, reactive, ref, watch } from 'vue';
 import ProductService from '@/service/ProductService';
 import { useLayout } from '@/layout/composables/layout';
+import ThongKeHoaDon from '../components/ThongKe/ThongKeHoaDon.vue';
+import ThongKeSanPham from '../components/ThongKe/ThongKeSanPham.vue';
+import ThongKeTheoNgay from '../components/ThongKe/ThongKeDoanhThu.vue';
 
 const { isDarkTheme } = useLayout();
+
+const selectedCities = ref([]);
+const cities = ref([
+    { name: 'Tất cả', code: 'NY' },
+    { name: 'Đã hoàn thành', code: 'NY' },
+    { name: 'Đang giao', code: 'RM' },
+    { name: 'Đã huỷ', code: 'LDN' }
+]);
 
 const products = ref(null);
 const lineData = reactive({
@@ -116,7 +127,18 @@ watch(
 
 <template>
     <div class="grid">
-        <div class="col-12 lg:col-6 xl:col-3">
+        <TabView>
+            <TabPanel header="Thống kê hoá đơn">
+                <ThongKeHoaDon></ThongKeHoaDon>
+            </TabPanel>
+            <TabPanel header="Thống kê sản phẩm">
+                <ThongKeSanPham></ThongKeSanPham>
+            </TabPanel>
+            <TabPanel header="Thống kê doanh thu">
+                <ThongKeTheoNgay></ThongKeTheoNgay>
+            </TabPanel>
+        </TabView>
+        <!-- <div class="col-12 lg:col-6 xl:col-3">
             <div class="card mb-0">
                 <div class="flex justify-content-between mb-3">
                     <div>
@@ -352,6 +374,6 @@ watch(
                     <a href="https://www.primefaces.org/primeblocks-vue" class="p-button font-bold px-5 py-3 p-button-warning p-button-rounded p-button-raised"> Get Started </a>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 </template>
