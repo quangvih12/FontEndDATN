@@ -161,7 +161,7 @@ const router = createRouter({
                 {
                     path: '/pages/product',
                     name: 'product',
-                    component: () => import('@/views/pages/Product/ChiTietSanPham.vue')
+                    component: () => import('@/components/Admin/Product/ChiTietSanPham.vue')
                 },
                 {
                     path: '/documentation',
