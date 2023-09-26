@@ -3,7 +3,7 @@ import { FilterMatchMode } from 'primevue/api';
 import { ref, onMounted, onBeforeMount, computed, reactive } from 'vue';
 import ProductService from '@/service/ProductService';
 
-import AddProduct  from './addProduct.vue';
+import AddProduct from './addProduct.vue';
 
 
 
@@ -23,74 +23,16 @@ const filters = ref({});
 const submitted = ref(false);
 // const selectedColors = ref([]);
 const selectedIndices = ref([]);
-const imagesProduct = ref([]);
-const imagesMauSac = ref([]);
 
 
 
 
-function onFileInputImageProduct(event) {
-    // mauSac.value = event.target.files[0];
-    const files = event.target.files;
-    for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const objectURL = URL.createObjectURL(file);
-        imagesProduct.value.push(objectURL);
-    }
-}
 
-function onFileInputImageMauSac(event) {
-    const files = event.target.files;
-    for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const objectURL = URL.createObjectURL(file);
-        console.log(objectURL);
-        imagesMauSac.value.push(objectURL);
-    }
-}
-
-const statuses = ref([
-    { label: 'INSTOCK', value: 'instock' },
-    { label: 'LOWSTOCK', value: 'lowstock' },
-    { label: 'OUTOFSTOCK', value: 'outofstock' }
-]);
-
-const cities = ref([
-    { name: 'New York', code: 'NY', isChecked: false },
-    { name: 'Rome', code: 'RM', isChecked: false },
-    { name: 'London', code: 'LDN', isChecked: false },
-    { name: 'Istanbul', code: 'IST', isChecked: false },
-    { name: 'Paris', code: 'PRS', isChecked: false }
-]);
-
-const sizes = ref([
-    { isChecked: false, inputValue: "", value: 'M', label: 'M' },
-    { isChecked: false, inputValue: "", value: 'L', label: 'L' },
-    { isChecked: false, inputValue: "", value: 'XL', label: 'XL' },
-    // Thêm các item khác tùy ý
-]);
-
-const colors = ref([
-    { isChecked: false, value: 'M', label: 'M' },
-    { isChecked: false, value: 'L', label: 'L' },
-    { isChecked: false, value: 'XL', label: 'XL' },
-    // Thêm các item khác tùy ý
-]);
-
-const toggleInput = (index) => {
-    sizes.value[index].inputValue = '';
-};
-
-const selectedItems = computed(() => {
-    return sizes.value.filter(item => item.isChecked);
-
-});
 
 
 const myDiv = ref(null);
 const div = ref(null);
-const size = ref([]);
-const value1 = ref(null);
+
 
 const productService = new ProductService();
 
