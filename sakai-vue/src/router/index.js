@@ -117,6 +117,11 @@ const router = createRouter({
                     component: () => import('@/views/uikit/Misc.vue')
                 },
                 {
+                    path: '/uikit/user',
+                    name: 'user',
+                    component: () => import('@/views/uikit/ViewUser.vue')
+                },
+                {
                     path: '/blocks',
                     name: 'blocks',
                     component: () => import('@/views/utilities/Blocks.vue')
@@ -152,6 +157,7 @@ const router = createRouter({
                     name: 'crud',
                     component: () => import('@/views/pages/Crud.vue')
                 },
+
                 {
                     path: '/pages/product',
                     name: 'product',
