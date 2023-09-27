@@ -5,28 +5,56 @@ import { reactive, ref, computed } from 'vue';
 import TableLoai from './DataTableLoai.vue';
 import TableThuongHieu from './DataTableThuongHieu.vue';
 import TableMauSac from './DataTableMauSac.vue';
-import TableVatLieu from './DataTableVatLieu.vue';
+import TablevatLieu from './DataTableVatLieu.vue';
 import TableKhuyenMai from './DataTableKhuyenMai.vue';
 import TableTrongLuong from './DataTableTrongLuong.vue';
 
 const schema = yup.object().shape({
-    TenSanPham: yup.string().required('Tên sản phẩm không được để trống').min(4, 'Tên sản phẩm phải có ít nhất 4 ký tự'),
-    SoLuongTon: yup.number().required('số lượng không được để trống').typeError('Số lượng tồn phải là một số').min(1, 'Số lượng phải lớn hơn hoặc bằng 1').nullable(),
-    GiaBan: yup.number().required('Giá bán không được để trống').min(50000,'giá phải lớn hơn hoặc bằng 50 nghìn').max(10000000, 'Giá bán không lớn hơn 10 triệu'),
-    GiaNhap: yup.number().required('Giá nhập không được để trống').min(50000,'giá phải lớn hơn hoặc bằng 50 nghìn').max(10000000, 'Giá bán không lớn hơn 10 triệu'),
-    QuaiDeo: yup.string().required('Bạn cần chọn quai đeo cho sản phẩm'),
-    Loai: yup.number().required('loại sản phẩm không được để trống'),
-    ThuongHieu: yup.number().required('vui lòng chọn Thương hiệu sản phẩm '),
-    MauSac: yup.string().required('vui lòng chọn màu sắc sản phẩm '),
-    VatLieu: yup.number().required(' vui lòng chọn Vật liệu sản phẩm '),
-    DemLot: yup.string().required(' vui lòng chọn đệm lót sản phẩm '),
-    Size: yup.string().required('Bạn cần chọn ít nhất một kích thước sản phẩm'),
-    SoLuongSize: yup.string().required('bạn cần nhập số lượng size').min(1, 'Số lượng phải lớn hơn hoặc bằng 1').nullable(),
-    TrongLuong: yup.string().required('vui lòng chọn trọng lượng sản phẩm'),
-    ImgMauSac: yup.string().required('vui lòng chọn ảnh màu sắc sản phẩm'),
-    TrangThai: yup.string().required('vui lòng chọn trạng thái của sản phẩm'),
-    MoTa: yup.string().required('Vui lòng điền mô tả sản phẩm').min(10, 'Mô tả sản phẩm phải có ít nhất 10 ký tự'),
-    imagesProduct: yup.string().required('Vui lòng chọn ảnh cho sản phẩm'),
+    ten: yup.string()
+        .required('Tên sản phẩm không được để trống')
+        .min(4, 'Tên sản phẩm phải có ít nhất 4 ký tự'),
+    soLuongTon: yup.number()
+        .required('số lượng không được để trống')
+        .typeError('Số lượng tồn phải là một số')
+        .min(1, 'Số lượng phải lớn hơn hoặc bằng 1')
+        .max(1000, 'số lượng quá lớn')
+        .nullable(),
+    giaBan: yup.number()
+        .required('Giá bán không được để trống')
+        .min(50000, 'giá phải lớn hơn hoặc bằng 50 nghìn')
+        .max(10000000, 'Giá bán không lớn hơn 10 triệu'),
+    giaNhap: yup.number()
+        .required('Giá nhập không được để trống')
+        .min(50000, 'giá phải lớn hơn hoặc bằng 50 nghìn')
+        .max(10000000, 'Giá bán không lớn hơn 10 triệu'),
+    quaiDeo: yup.string()
+        .required('Bạn cần chọn quai đeo cho sản phẩm'),
+    loai: yup.number()
+        .required('loại sản phẩm không được để trống'),
+    thuongHieu: yup.number()
+        .required('vui lòng chọn Thương hiệu sản phẩm '),
+    idMauSac: yup.array()
+        .required('vui lòng chọn màu sắc sản phẩm '),
+    vatLieu: yup.number()
+        .required(' vui lòng chọn Vật liệu sản phẩm '),
+    demLot: yup.string()
+        .required(' vui lòng chọn đệm lót sản phẩm '),
+    idSize: yup.array()
+        .required('Bạn cần chọn ít nhất một kích thước sản phẩm'),
+    soLuongSize: yup.array()
+        .required('bạn cần nhập số lượng size')
+        .min(1, 'Số lượng phải lớn hơn hoặc bằng 1').nullable(),
+    trongLuong: yup.string()
+        .required('vui lòng chọn trọng lượng sản phẩm'),
+    imgMauSac: yup.array()
+        .required('vui lòng chọn ảnh màu sắc sản phẩm'),
+    trangThai: yup.number()
+        .required('vui lòng chọn trạng thái của sản phẩm'),
+    moTa: yup.string()
+        .required('Vui lòng điền mô tả sản phẩm')
+        .min(10, 'Mô tả sản phẩm phải có ít nhất 10 ký tự'),
+    imagesProduct: yup.array()
+        .required('Vui lòng chọn ảnh cho sản phẩm'),
 });
 
 const { handleSubmit, resetForm } = useForm({
@@ -34,7 +62,7 @@ const { handleSubmit, resetForm } = useForm({
 });
 
 const newProducts = reactive({
-    TenSanPham: '',
+    ten: '',
     SoLuongTon: 0,
     GiaNhap: null,
     GiaBan: null,
@@ -46,7 +74,7 @@ const newProducts = reactive({
     ImgMauSac: [],
     Loai: null,
     ThuongHieu: null,
-    VatLieu: '',
+    vatLieu: '',
     TrongLuong: '',
     TrangThai: '',
     MoTa: '',
@@ -54,23 +82,23 @@ const newProducts = reactive({
     ImagesProduct: [],
 });
 
-const { value: name, errorMessage: nameError } = useField('TenSanPham');
-const { value: soluong, errorMessage: soLuongError } = useField('SoLuongTon');
-const { value: GiaBan, errorMessage: giaBanError } = useField('GiaBan');
-const { value: GiaNhap, errorMessage: giaNhapError } = useField('GiaNhap');
-const { value: QuaiDeo, errorMessage: quaiDeoError } = useField('QuaiDeo');
-const { value: Loai, errorMessage: loaiError } = useField('Loai');
-const { value: ThuongHieu, errorMessage: thuongHieuError } = useField('ThuongHieu');
-const { value: VatLieu, errorMessage: vatLieuError } = useField('VatLieu');
-const { value: MauSac, errorMessage: mauSacError } = useField('MauSac');
-const { value: DemLot, errorMessage: demLotError } = useField('DemLot');
-const { value: Size, errorMessage: SizeError } = useField('Size');
-const { value: SoLuongSize, errorMessage: soLuongSizeError } = useField('SoLuongSize');
-const { value: KhuyenMai, errorMessage: khuyenMaiError } = useField('KhuyenMai');
-const { value: TrongLuong, errorMessage: trongLuongError } = useField('TrongLuong');
-const { value: ImgMauSac, errorMessage: ImgMauSacError } = useField('ImgMauSac');
-const { value: TrangThai, errorMessage: TrangThaiSacError } = useField('TrangThai');
-const { value: MoTa, errorMessage: MoTaSacError } = useField('MoTa');
+const { value: name, errorMessage: nameError } = useField('ten');
+const { value: soluong, errorMessage: soLuongError } = useField('soLuongTon');
+const { value: GiaBan, errorMessage: giaBanError } = useField('giaBan');
+const { value: GiaNhap, errorMessage: giaNhapError } = useField('giaNhap');
+const { value: QuaiDeo, errorMessage: quaiDeoError } = useField('quaiDeo');
+const { value: Loai, errorMessage: loaiError } = useField('loai');
+const { value: ThuongHieu, errorMessage: thuongHieuError } = useField('thuongHieu');
+const { value: vatLieu, errorMessage: vatLieuError } = useField('vatLieu');
+const { value: idMauSac, errorMessage: mauSacError } = useField('idMauSac');
+const { value: DemLot, errorMessage: demLotError } = useField('demLot');
+const { value: Size, errorMessage: SizeError } = useField('idSize');
+const { value: SoLuongSize, errorMessage: soLuongSizeError } = useField('soLuongSize');
+const { value: KhuyenMai, errorMessage: khuyenMaiError } = useField('khuyenMai');
+const { value: TrongLuong, errorMessage: trongLuongError } = useField('trongLuong');
+const { value: imgMauSac, errorMessage: ImgMauSacError } = useField('imgMauSac');
+const { value: TrangThai, errorMessage: TrangThaiSacError } = useField('trangThai');
+const { value: MoTa, errorMessage: MoTaSacError } = useField('moTa');
 const { value: imagesProduct, errorMessage: imagesProductError } = useField('imagesProduct');
 const onSubmit = handleSubmit(async (values) => {
     try {
@@ -116,7 +144,7 @@ const colors = ref([
 const selectedCity = ref(null);
 const selectedLoai = ref(null);
 const selectedMauSac = ref(null);
-const selectedVatLieu = ref(null);
+const selectedvatLieu = ref(null);
 const selectedTrongLuong = ref(null);
 const selectedKhuyenMai = ref(null);
 const selectedSizes = ref(null);
@@ -128,17 +156,17 @@ const reset = () => {
     resetForm();
     array.value = null;
     selectedSizes.value = null;
-    selectedMauSac.value = null;
+    // selectedMauSac.value = null;
     selectedLoai.value = null;
     selectedCity.value = null;
-    selectedVatLieu.value = null;
+    selectedvatLieu.value = null;
     imagesProduct.value = null;
 };
 
 const handleInputChange = (sizeId) => {
     if (array.value.length > 0) {
 
-        SoLuongSize.value = array.value.join(',').replace(/^,/, '');
+        SoLuongSize.value = array.value.join(',').replace(/^,/, '').split(',').map(Number);
         console.log(SoLuongSize.value)
 
     } else {
@@ -180,27 +208,28 @@ const onloaiChange = () => {
 
 const onMauSacChange = () => {
     if (selectedMauSac.value.length > 0) {
-        const selectedIds = selectedMauSac.value.map(item => item.id).join(',');
-        MauSac.value = selectedIds;
+        const selectedIds = selectedMauSac.value.map(item => item.id);
+        idMauSac.value = selectedIds.join(',').split(',').map(Number);
+        console.log(idMauSac.value);
     } else {
-        MauSac.value = null;
+        idMauSac.value = null;
     }
 };
 
 const onSizeChange = () => {
     if (selectedSizes.value.length > 0) {
-        const selectedIds = selectedSizes.value.map(item => item.id).join(',');
-        Size.value = selectedIds;
+        const selectedIds = selectedSizes.value.map(item => item.id);
+        Size.value = selectedIds.join(',').split(',').map(Number);
     } else {
         Size.value = null;
     }
 };
 
-const onVatLieuChange = () => {
-    if (selectedVatLieu.value) {
-        VatLieu.value = selectedVatLieu.value.id;
+const onvatLieuChange = () => {
+    if (selectedvatLieu.value) {
+        vatLieu.value = selectedvatLieu.value.id;
     } else {
-        VatLieu.value = null;
+        vatLieu.value = null;
     }
 };
 
@@ -212,15 +241,15 @@ sizes.value.forEach(item => {
     item.showInput = false; // Initialize the showInput property for each item
 });
 
-const imagesMauSac = ref([]);
+const arrayImgMauSac = ref([]);
 function onFileInputImageMauSac(event) {
     const files = event.target.files;
     for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const objectURL = URL.createObjectURL(file);
-        imagesMauSac.value.push(objectURL);
+        arrayImgMauSac.value.push(objectURL);
 
-        ImgMauSac.value = imagesMauSac.value.join(",").replace(/^,/, '');
+        imgMauSac.value = arrayImgMauSac.value.join(",").replace(/^,/, '').split(',');
     }
 }
 
@@ -231,7 +260,7 @@ function onFileInputImageProduct(event) {
         const file = files[i];
         const objectURL = URL.createObjectURL(file);
         ImagesProduct.value.push(objectURL);
-        imagesProduct.value = ImagesProduct.value.join(",").replace(/^,/, '');
+        imagesProduct.value = ImagesProduct.value.join(",").replace(/^,/, '').split(',');
     }
 
 }
@@ -249,7 +278,7 @@ function onFileInputImageProduct(event) {
                     <div class="p-fluid formgrid grid">
                         <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
                             <span class="p-float-label">
-                                <InputText id="name" name="TenSanPham" type="text" v-model="name"
+                                <InputText id="name" name="name" type="text" v-model="name"
                                     :class="{ 'p-invalid': nameError }" />
                                 <label for="username">Tên sản phẩm</label>
                             </span>
@@ -379,13 +408,13 @@ function onFileInputImageProduct(event) {
                         <div class="Field col-12 md:col-3" style="margin-bottom: 30px">
                             <div style="display: flex">
                                 <span class="p-float-label" style="width: 239px">
-                                    <Dropdown id="dropdown" :options="cities" v-model="selectedVatLieu"
-                                        :class="{ 'p-invalid': vatLieuError }" optionLabel="name" @change="onVatLieuChange">
+                                    <Dropdown id="dropdown" :options="cities" v-model="selectedvatLieu"
+                                        :class="{ 'p-invalid': vatLieuError }" optionLabel="name" @change="onvatLieuChange">
                                     </Dropdown>
                                     <label for="dropdown">Vật liệu</label>
                                 </span>
-                                <TableVatLieu :tableId="'TableVatLieu'" :rightGhId="'right_ghVatLieu'"
-                                    :tableClass="'TableVatLieu'" :rightGhClass="'right_ghVatLieu'" />
+                                <TablevatLieu :tableId="'TablevatLieu'" :rightGhId="'right_ghvatLieu'"
+                                    :tableClass="'TablevatLieu'" :rightGhClass="'right_ghvatLieu'" />
                             </div>
                             <small class="p-error">{{ vatLieuError }}</small>
                         </div>
@@ -393,12 +422,12 @@ function onFileInputImageProduct(event) {
                             <label for="address">Trạng thái</label>
                             <div class="flex flex-wrap gap-3">
                                 <div class="flex align-items-center">
-                                    <RadioButton v-model="TrangThai" inputId="ingredient1" name="pizza" value="Cheese"
+                                    <RadioButton v-model="TrangThai" inputId="ingredient1" name="pizza" value="1"
                                         :class="{ 'p-invalid': TrangThaiSacError }" />
                                     <label for="ingredient1" class="ml-2">chuẩn bị ra mắt</label>
                                 </div>
                                 <div class="flex align-items-center">
-                                    <RadioButton v-model="TrangThai" inputId="ingredient2" name="pizza" value="Mushroom"
+                                    <RadioButton v-model="TrangThai" inputId="ingredient2" name="pizza" value="2"
                                         :class="{ 'p-invalid': TrangThaiSacError }" />
                                     <label for="ingredient2" class="ml-2">còn hàng</label>
                                 </div>
