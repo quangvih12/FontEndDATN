@@ -117,9 +117,19 @@ const router = createRouter({
                     component: () => import('@/views/uikit/Misc.vue')
                 },
                 {
-                    path: '/uikit/user',
+                    path: '/pages/user',
                     name: 'user',
-                    component: () => import('@/views/uikit/ViewUser.vue')
+                    component: () => import('@/components/Admin/QuanLyUser/ViewUser.vue')
+                },
+                {
+                    path: '/pages/size',
+                    name: 'size',
+                    component: () => import('@/components/Admin/QuanLySize/ViewSize.vue')
+                },
+                {
+                    path: '/pages/thuong-hieu',
+                    name: 'thuong-hieu',
+                    component: () => import('@/components/Admin/QuanLyThuongHieu/ViewThuongHieu.vue')
                 },
                 {
                     path: '/blocks',
@@ -145,8 +155,7 @@ const router = createRouter({
                     path: '/pages/khuyenmai',
                     name: 'khuyenmai',
                     component: () => import('@/views/pages/KhuyenMai.vue')
-                }
-                ,
+                },
                 {
                     path: '/pages/voucher',
                     name: 'voucher',

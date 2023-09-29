@@ -3,9 +3,9 @@ import { FilterMatchMode } from 'primevue/api';
 import { ref, onMounted, onBeforeMount } from 'vue';
 import ProductService from '@/service/ProductService';
 import { useToast } from 'primevue/usetoast';
-import ThemUser from '../../components/QuanLyUser/ThemUser.vue';
-import UpdateUser from '../../components/QuanLyUser/UpdateUser.vue';
-import DetailUser from '../../components/QuanLyUser/DetailUser.vue';
+import ThemUser from './ThemUser.vue';
+import UpdateUser from './UpdateUser.vue';
+import DetailUser from './DetailUser.vue';
 
 const toast = useToast();
 
