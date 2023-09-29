@@ -18,17 +18,12 @@ const router = createRouter({
                     name: 'quan-ly-hoa-don',
                     component: () => import('@/components/Admin/HoaDon/index.vue')
                 },
-                {
-                    path: '/pages/user',
-                    name: 'user',
-                    component: () => import('@/components/Admin/User/index.vue')
-                },
+               
                 {
                     path: '/pages/khuyenmai',
                     name: 'khuyenmai',
                     component: () => import('@/components/Admin/KhuyenMai/KhuyenMai.vue')
-                }
-                ,
+                } ,
                 {
                     path: '/pages/voucher',
                     name: 'voucher',
@@ -39,7 +34,21 @@ const router = createRouter({
                     name: 'product',
                     component: () => import('@/components/Admin/Product/ChiTietSanPham.vue')
                 },
-                
+                {
+                    path: '/pages/user',
+                    name: 'user',
+                    component: () => import('@/components/Admin/QuanLyUser/ViewUser.vue')
+                },
+                {
+                    path: '/pages/size',
+                    name: 'size',
+                    component: () => import('@/components/Admin/QuanLySize/ViewSize.vue')
+                },
+                {
+                    path: '/pages/thuong-hieu',
+                    name: 'thuong-hieu',
+                    component: () => import('@/components/Admin/QuanLyThuongHieu/ViewThuongHieu.vue')
+                },
                 // {
                 //     path: '/uikit/menu',
                 //     component: () => import('@/views/uikit/Menu.vue'),
