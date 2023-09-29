@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, onBeforeMount } from 'vue';
-import ViewChucVu from '../QuanLyChucVu/ViewChucVu.vue';
+import ViewChucVu from '../ChucVu/ViewChucVu.vue';
 
 const product = ref({});
 const submitted = ref(false);
