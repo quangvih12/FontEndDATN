@@ -1,18 +1,16 @@
 <script setup>
 import { FilterMatchMode } from 'primevue/api';
 import { ref, onMounted, onBeforeMount, computed, reactive } from 'vue';
-import ProductService from '@/service/ProductService';
-
+import { ProductStore } from '../../../service/Admin/product/product.api';
 import AddProduct from './addProduct.vue';
-
-
-
 import { useToast } from 'primevue/usetoast';
+import UpdateProduct from './updateProduct.vue';
+// import { BIconVolumeUp } from 'bootstrap-vue';
 
-
+const productStore = ProductStore();
 const toast = useToast();
 
-const products = ref(null);
+
 const productDialog = ref(false);
 const deleteProductDialog = ref(false);
 const deleteProductsDialog = ref(false);
@@ -26,30 +24,61 @@ const selectedIndices = ref([]);
 
 
 
-
-
-
-
 const myDiv = ref(null);
 const div = ref(null);
 
 
-const productService = new ProductService();
 
 onBeforeMount(() => {
     initFilters();
 });
 
+const products = ref([]);
+
+const loadProducts = async () => {
+    await productStore.fetchAll(); // Gọi hàm fetchAll từ Stor
+    products.value  = productStore.products;
+    console.log(products.value);
+    // const productList = productStore.products; // Lấy dữ liệu từ Store và gán vào biến products
+    // productList.forEach(async (product, key) =>  {
+    //     productList[key]['img'] = null
+    //    const img_d = await loadImage(product.id);
+    //    productList[key]['img'] = img_d;
+    // });
+    // products.value = productList
+
+
+};
+
+const img = ref([]);
+
+const loadImage = async (idProduct) => {
+   // console.log('id: ',idProduct);
+    await productStore.fetchAllImage(idProduct); // Gọi hàm fetchAll từ Store
+    img.value = productStore.images;
+ //   const t = img.value;
+   return img.value;
+
+};
+
+
+
+const url = ref([]);
+
 onMounted(() => {
     myDiv.value = document.getElementById('right_gh');
     div.value = document.getElementById('table');
+    loadProducts();
+   console.log('hhh: ',products);
+   // fetchData();
 
-    productService.getProducts().then((data) => (products.value = data));
 
+   
 });
-const formatCurrency = (value) => {
-    return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-};
+
+// const formatCurrency = (value) => {
+//     return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+// };
 
 const hideDialog = () => {
     productDialog.value = false;
@@ -87,6 +116,49 @@ const vePhanTu = (id) => {
 const isSelectedIndex = (index) => {
     return selectedIndices.value.includes(index);
 };
+
+const columns = ref([
+    { field: 'moTa', header: 'Mô Tả' },
+    { field: 'thuongHieu', header: 'Thương Hiệu' },
+    { field: 'quaiDeo', header: 'Quai đeo' },
+    { field: 'demLot', header: 'Đệm lót' },
+    { field: 'soLuongTon', header: 'Số lượng' },
+    { field: 'trongLuong', header: 'Trọng Lượng' },
+    { field: 'vatLieu', header: 'Vật liệu' },
+    { field: 'Loại', header: 'Loại' },
+]);
+
+// hàm để tắt/mở cột
+const selectedColumns = ref(columns.value);
+
+const onToggle = (val) => {
+    selectedColumns.value = columns.value.filter(col => val.includes(col));
+};
+
+const statuses = ref([
+    { label: 'Còn hạn', value: 0 },
+    { label: 'Hết hạn', value: 1 },
+    { label: 'Hết khuyến mại', value: 2 }
+]);
+
+const getStatusLabel = (trangThai) => {
+    switch (trangThai) {
+        case 1:
+            return { text: 'Còn Hàng', severity: 'success' };
+
+        case 2:
+            return { text: 'InActive', severity: 'danger' };
+
+        case 3:
+            return 'danger';
+
+        default:
+            return null;
+    }
+};
+
+
+
 </script>
 
 <template>
@@ -121,7 +193,14 @@ const isSelectedIndex = (index) => {
                         responsiveLayout="scroll">
                         <template #header>
                             <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-                                <h5 class="m-0">Manage Products</h5>
+                                <MultiSelect icon="pi pi-plus" :modelValue="selectedColumns" :options="columns"
+                                    optionLabel="header" @update:modelValue="onToggle" display="tag"
+                                    placeholder="Select Columns" />
+
+                              
+                            </div>
+                            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                                <h5 class="m-0"> Products</h5>
                                 <span class="block mt-2 md:mt-0 p-input-icon-left">
                                     <i class="pi pi-search" />
                                     <InputText v-model="filters['global'].value" placeholder="Search..." />
@@ -130,57 +209,50 @@ const isSelectedIndex = (index) => {
                         </template>
 
                         <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-                        <Column field="code" header="Code" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+                        <Column field="code" header="STT" :sortable="true" headerStyle="width:14%; min-width:10rem;">
                             <template #body="slotProps">
-                                <span class="p-column-title">Code</span>
-                                {{ slotProps.data.code }}
-                            </template>
-                        </Column>
-                        <Column field="name" header="Name" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-                            <template #body="slotProps">
-                                <span class="p-column-title">Name</span>
-                                {{ slotProps.data.name }}
+                                <span class="p-column-title">STT</span>
+                                {{ slotProps.data.stt }}
                             </template>
                         </Column>
                         <Column header="Image" headerStyle="width:14%; min-width:10rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">Image</span>
-                                <img :src="'demo/images/product/' + slotProps.data.image" :alt="slotProps.data.image"
-                                    class="shadow-2" width="100" />
+                               
+                                    <!-- <div v-for="(i, index) in img"  > -->
+                                    <img :src="slotProps.data.anh" :alt="i" class="shadow-2" width="100" />
+                                    <!-- </div> -->
+                               
+                                
                             </template>
                         </Column>
-                        <Column field="price" header="Price" :sortable="true" headerStyle="width:14%; min-width:8rem;">
+                        <Column field="ma" header="Mã" :sortable="true" headerStyle="width:14%; min-width:10rem;">
                             <template #body="slotProps">
-                                <span class="p-column-title">Price</span>
-                                {{ formatCurrency(slotProps.data.price) }}
+                                <span class="p-column-title">Mã</span>
+                                {{ slotProps.data.ma }}
                             </template>
                         </Column>
-                        <Column field="category" header="Category" :sortable="true"
-                            headerStyle="width:14%; min-width:10rem;">
+                        <Column field="ten" header="Tên" :sortable="true" headerStyle="width:14%; min-width:10rem;">
                             <template #body="slotProps">
-                                <span class="p-column-title">Category</span>
-                                {{ slotProps.data.category }}
+                                <span class="p-column-title">Tên</span>
+                                {{ slotProps.data.ten }}
                             </template>
                         </Column>
-                        <Column field="rating" header="Reviews" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+                        <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header"
+                            :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+                        </Column>
+                        <Column field="trangThai" header="Trạng Thái" sortable style="min-width:12rem">
                             <template #body="slotProps">
-                                <span class="p-column-title">Rating</span>
-                                <Rating :modelValue="slotProps.data.rating" :readonly="true" :cancel="false" />
+                                <Tag :value="getStatusLabel(slotProps.data.trangThai).text"
+                                    :severity="getStatusLabel(slotProps.data.trangThai).severity" />
                             </template>
                         </Column>
-                        <Column field="inventoryStatus" header="Status" :sortable="true"
-                            headerStyle="width:14%; min-width:10rem;">
-                            <template #body="slotProps">
-                                <span class="p-column-title">Status</span>
-                                <span
-                                    :class="'product-badge status-' + (slotProps.data.inventoryStatus ? slotProps.data.inventoryStatus.toLowerCase() : '')">{{
-                                        slotProps.data.inventoryStatus }}</span>
-                            </template>
-                        </Column>
+
+
                         <Column headerStyle="min-width:10rem;">
                             <template #body="slotProps">
-                                <Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" />
-                                <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2" />
+                                <!-- <Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" /> -->
+                                <UpdateProduct :my-prop="slotProps.data"></UpdateProduct>
                             </template>
                         </Column>
                     </DataTable>
@@ -191,104 +263,9 @@ const isSelectedIndex = (index) => {
                     <!-- <Test/> -->
                 </section>
 
-                <Dialog v-model:visible="productDialog" :style="{ width: '450px' }" header="Product Details" :modal="true"
-                    class="p-fluid">
-                    <img :src="'demo/images/product/' + product.image" :alt="product.image" v-if="product.image" width="150"
-                        class="mt-0 mx-auto mb-5 block shadow-2" />
-                    <div class="field">
-                        <label for="name">Name</label>
-                        <InputText id="name" v-model.trim="product.name" required="true" autofocus
-                            :class="{ 'p-invalid': submitted && !product.name }" />
-                        <small class="p-invalid" v-if="submitted && !product.name">Name is required.</small>
-                    </div>
-                    <div class="field">
-                        <label for="description">Description</label>
-                        <Textarea id="description" v-model="product.description" required="true" rows="3" cols="20" />
-                    </div>
 
-                    <div class="field">
-                        <label for="inventoryStatus" class="mb-3">Inventory Status</label>
-                        <Dropdown id="inventoryStatus" v-model="product.inventoryStatus" :options="statuses"
-                            optionLabel="label" placeholder="Select a Status">
-                            <template #value="slotProps">
-                                <div v-if="slotProps.value && slotProps.value.value">
-                                    <span :class="'product-badge status-' + slotProps.value.value">{{ slotProps.value.label
-                                    }}</span>
-                                </div>
-                                <div v-else-if="slotProps.value && !slotProps.value.value">
-                                    <span :class="'product-badge status-' + slotProps.value.toLowerCase()">{{
-                                        slotProps.value }}</span>
-                                </div>
-                                <span v-else>
-                                    {{ slotProps.placeholder }}
-                                </span>
-                            </template>
-                        </Dropdown>
-                    </div>
 
-                    <div class="field">
-                        <label class="mb-3">Category</label>
-                        <div class="formgrid grid">
-                            <div class="field-radiobutton col-6">
-                                <RadioButton id="category1" name="category" value="Accessories"
-                                    v-model="product.category" />
-                                <label for="category1">Accessories</label>
-                            </div>
-                            <div class="field-radiobutton col-6">
-                                <RadioButton id="category2" name="category" value="Clothing" v-model="product.category" />
-                                <label for="category2">Clothing</label>
-                            </div>
-                            <div class="field-radiobutton col-6">
-                                <RadioButton id="category3" name="category" value="Electronics"
-                                    v-model="product.category" />
-                                <label for="category3">Electronics</label>
-                            </div>
-                            <div class="field-radiobutton col-6">
-                                <RadioButton id="category4" name="category" value="Fitness" v-model="product.category" />
-                                <label for="category4">Fitness</label>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="formgrid grid">
-                        <div class="field col">
-                            <label for="price">Price</label>
-                            <InputNumber id="price" v-model="product.price" mode="currency" currency="USD" locale="en-US"
-                                :class="{ 'p-invalid': submitted && !product.price }" :required="true" />
-                            <small class="p-invalid" v-if="submitted && !product.price">Price is required.</small>
-                        </div>
-                        <div class="field col">
-                            <label for="quantity">Quantity</label>
-                            <InputNumber id="quantity" v-model="product.quantity" integeronly />
-                        </div>
-                    </div>
-                    <template #footer>
-                        <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="hideDialog" />
-                        <Button label="Save" icon="pi pi-check" class="p-button-text" />
-                    </template>
-                </Dialog>
-
-                <Dialog v-model:visible="deleteProductDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
-                    <div class="flex align-items-center justify-content-center">
-                        <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-                        <span v-if="product">Are you sure you want to delete <b>{{ product.name }}</b>?</span>
-                    </div>
-                    <template #footer>
-                        <Button label="No" icon="pi pi-times" class="p-button-text" @click="deleteProductDialog = false" />
-                        <Button label="Yes" icon="pi pi-check" class="p-button-text" />
-                    </template>
-                </Dialog>
-
-                <Dialog v-model:visible="deleteProductsDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
-                    <div class="flex align-items-center justify-content-center">
-                        <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-                        <span v-if="product">Are you sure you want to delete the selected products?</span>
-                    </div>
-                    <template #footer>
-                        <Button label="No" icon="pi pi-times" class="p-button-text" @click="deleteProductsDialog = false" />
-                        <Button label="Yes" icon="pi pi-check" class="p-button-text" />
-                    </template>
-                </Dialog>
             </div>
         </div>
     </div>

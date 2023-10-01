@@ -2,9 +2,9 @@
 import { onMounted, reactive, ref, watch } from 'vue';
 import ProductService from '@/service/ProductService';
 import { useLayout } from '@/layout/composables/layout';
-import ThongKeHoaDon from '../components/ThongKe/ThongKeHoaDon.vue';
-import ThongKeSanPham from '../components/ThongKe/ThongKeSanPham.vue';
-import ThongKeTheoNgay from '../components/ThongKe/ThongKeDoanhThu.vue';
+import ThongKeHoaDon from './ThongKeHoaDon.vue';
+import ThongKeSanPham from './ThongKeSanPham.vue';
+import ThongKeTheoNgay from './ThongKeDoanhThu.vue';
 
 const { isDarkTheme } = useLayout();
 

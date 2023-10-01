@@ -4,7 +4,7 @@ import { FilterMatchMode, FilterOperator } from 'primevue/api';
 import CustomerService from '@/service/CustomerService';
 import ProductService from '@/service/ProductService';
 import { ref, onBeforeMount } from 'vue';
-import DetailHoaDon from '../../components/HoaDon/DetailHoaDon.vue';
+import DetailHoaDon from './DetailHoaDon.vue';
 
 const customer1 = ref(null);
 const customer2 = ref(null);

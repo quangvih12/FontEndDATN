@@ -75,7 +75,7 @@ const cities = ref([
 ]);
 </script>
 <template>
-    <div class="col-12 flex" style="padding-left: 0;">
+    <div class="col-12 flex" style="padding-left: 0">
         <!-- <div>
             <span class="p-input-icon-left" style="margin-right: 20px">
                 <InputNumber v-model="value3" inputId="minmaxfraction" :minFractionDigits="2" :maxFractionDigits="5" placeholder="Giá nhỏ nhất" />
@@ -219,12 +219,12 @@ const cities = ref([
                     <span :class="'product-badge status-' + (slotProps.data.inventoryStatus ? slotProps.data.inventoryStatus.toLowerCase() : '')">{{ slotProps.data.inventoryStatus }}</span>
                 </template>
             </Column>
-            <Column header="Hành động" headerStyle="width:14%; min-width:10rem;">
+            <!-- <Column header="Hành động" headerStyle="width:14%; min-width:10rem;">
                 <template #body="slotProps">
                     <span class="p-column-title">Status</span>
                     <span :class="'product-badge status-' + (slotProps.data.inventoryStatus ? slotProps.data.inventoryStatus.toLowerCase() : '')">{{ slotProps.data.inventoryStatus }}</span>
                 </template>
-            </Column>
+            </Column> -->
         </DataTable>
     </div>
 </template>
