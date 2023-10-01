@@ -142,6 +142,16 @@ const router = createRouter({
                     component: () => import('@/views/pages/Empty.vue')
                 },
                 {
+                    path: '/pages/mau-sac',
+                    name: 'mausac',
+                    component: () => import('@/components/Admin/MauSac/index.vue')
+                },
+                {
+                    path: '/pages/loai',
+                    name: 'loai',
+                    component: () => import('@/components/Admin/Loai/index.vue')
+                },
+                {
                     path: '/pages/khuyenmai',
                     name: 'khuyenmai',
                     component: () => import('@/views/pages/KhuyenMai.vue')
