@@ -3,9 +3,9 @@ import * as yup from 'yup';
 import { useForm, useField } from 'vee-validate';
 import { ref, onMounted, onBeforeMount } from 'vue';
 import { useToast } from 'primevue/usetoast';
-import { useCounterStore } from '../../../service/Admin/Size/SizeService';
+import { SizeStore } from '../../../service/Admin/Size/SizeService';
 
-const useSizeService = useCounterStore();
+const useSizeService = SizeStore();
 const toast = useToast();
 const product = ref({});
 const submitted = ref(false);

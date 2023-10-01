@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const apiSize = 'http://localhost:8080/api/size';
 
-export const useCounterStore = defineStore('size', {
+export const SizeStore = defineStore('size', {
     state: () => ({
         data: [],
         //nếu đang ở load tất cả thì là 0

@@ -1,7 +1,7 @@
 <script setup>
 import { useForm, useField, defineRule } from 'vee-validate';
 import * as yup from 'yup';
-import { reactive, ref, computed } from 'vue';
+import { reactive, ref, computed ,onMounted} from 'vue';
 import TableLoai from './DataTableLoai.vue';
 import TableThuongHieu from './DataTableThuongHieu.vue';
 import TableMauSac from './DataTableMauSac.vue';
@@ -9,9 +9,16 @@ import TablevatLieu from './DataTableVatLieu.vue';
 import TableTrongLuong from './DataTableTrongLuong.vue';
 import { ProductStore } from '../../../service/Admin/product/product.api';
 import { useToast } from 'primevue/usetoast';
-
+import { useCounterStore } from '../../../service/Admin/ThuongHieu/ThuongHieuService.js';
+import { SizeStore } from '../../../service/Admin/Size/SizeService';
 const toast = useToast();
 const productStore = ProductStore();
+const thuongHieuService = useCounterStore();
+const sizeStore = SizeStore();
+const props = defineProps({
+    myProp: {}
+});
+
 
 const schema = yup.object().shape({
     ten: yup.string()
@@ -63,29 +70,9 @@ const schema = yup.object().shape({
 });
 
 
+
 const { handleSubmit, resetForm } = useForm({
     validationSchema: schema,
-});
-
-const newProducts = reactive({
-    ten: '',
-    SoLuongTon: 0,
-    GiaNhap: null,
-    GiaBan: null,
-    QuaiDeo: '',
-    DemLot: '',
-    Size: [],
-    SoLuongSize: [],
-    MauSac: [],
-    ImgMauSac: [],
-    Loai: null,
-    ThuongHieu: null,
-    vatLieu: '',
-    TrongLuong: '',
-    TrangThai: '',
-    MoTa: '',
-    KhuyenMai: '',
-    ImagesProduct: [],
 });
 
 const { value: name, errorMessage: nameError } = useField('ten');
@@ -108,6 +95,18 @@ const { value: imagesProduct, errorMessage: imagesProductError } = useField('ima
 
 const isOpen = ref(true);
 
+const productDialog = ref(false);
+const product = ref({});
+// mở form
+
+
+//đóng form
+const hideDialog = () => {
+    ten.value = props.myProp.ten;
+    productDialog.value = false;
+    // submitted.value = false;
+};
+
 const onSubmit = handleSubmit(async (values) => {
     try {
         // Kiểm tra trùng lặp trước khi thêm sản phẩm
@@ -117,7 +116,7 @@ const onSubmit = handleSubmit(async (values) => {
             toast.add({ severity: 'error', summary: 'Error ', detail: 'Tên sản phẩm đã tồn tại', life: 3000 });
         } else {
             // Nếu không trùng lặp, thêm sản phẩm vào store
-            await productStore.add(values);
+            await productStore.edit(values);
             toast.add({ severity: 'success', summary: 'Success Message', detail: 'Thêm thành công', life: 3000 });
             reset();
         }
@@ -140,14 +139,6 @@ const sizes = ref([
     // Thêm các Size khác tùy ý
 ]);
 
-const cities = ref([
-    { name: 'New York', id: 1, isChecked: false },
-    { name: 'Rome', id: 2, isChecked: false },
-    { name: 'London', id: 3, isChecked: false },
-    { name: 'Istanbul', id: 4, isChecked: false },
-    { name: 'Paris', id: 5, isChecked: false }
-]);
-
 
 const colors = ref([
     { value: 'M', label: 'M', id: 1 },
@@ -166,13 +157,13 @@ const selectedSizes = ref(null);
 const array = ref([]);
 
 const check = async () => {
-  try {
-    const isDuplicate = await productStore.checkDuplicateName(name.value);
+    try {
+        const isDuplicate = await productStore.checkDuplicateName(name.value);
 
-  } catch (error) {
-    console.error('Lỗi khi kiểm tra trùng lặp tên sản phẩm:', error);
-    // Xử lý lỗi nếu cần thiết
-  }
+    } catch (error) {
+        console.error('Lỗi khi kiểm tra trùng lặp tên sản phẩm:', error);
+        // Xử lý lỗi nếu cần thiết
+    }
 };
 
 
@@ -199,6 +190,7 @@ const handleInputChange = (sizeId) => {
 
 const onCityChange = () => {
     if (selectedCity.value) {
+        console.log(selectedCity.value)
         ThuongHieu.value = selectedCity.value.id;
     } else {
         ThuongHieu.value = null;
@@ -216,6 +208,7 @@ const onTrongLuongChange = () => {
 
 const onloaiChange = () => {
     if (selectedLoai.value) {
+        console.log(selectedLoai.value)
         Loai.value = selectedLoai.value.id;
     } else {
         Loai.value = null;
@@ -279,18 +272,54 @@ function onFileInputImageProduct(event) {
         imagesProduct.value = ImagesProduct.value.join(",").replace(/^,/, '').split(',');
     }
 
-}
+};
+
+const dataThuongHieu = ref([]);
+//load data thương hiệu tất cả
+const loadDataThuongHieu = async () => {
+    await thuongHieuService.fetchData();
+    dataThuongHieu.value = thuongHieuService.data;
+    // ThuongHieu.value =  dataThuongHieu.value.ten;
+};
+
+const dataSize = ref([]);
+
+//load data size tất cả
+const loadDataSize = async () => {
+    await sizeStore.fetchData();
+    dataSize.value = sizeStore.data;
+};
+
+
+onMounted(() => {
+    loadDataThuongHieu();
+    loadDataSize();
+});
+
+const editProduct = () => {
+    name.value = props.myProp.ten;
+    soluong.value = props.myProp.soLuongTon;
+    GiaBan.value = props.myProp.giaBan;
+    QuaiDeo.value = props.myProp.quaiDeo;
+    selectedLoai.value = props.myProp.loai;
+    
+    const selectedThuongHieu = dataThuongHieu.value.find(item => item.ten === props.myProp.thuongHieu);
+    selectedCity.value = selectedThuongHieu;
+
+    const selectedSize = dataSize.value.find(item => item.ten === props.myProp.size);
+
+    product.value = { ...editProduct };
+    productDialog.value = true;
+};
 
 </script>
 
+
 <template>
-    <div>
-        <div class="col-12">
-            <div class="card" style=" align-items: center;justify-content: center; height: 90px;">
-                <h1 style="margin-bottom: 30px; font-size: 50px ; margin-top: 20px;">Sản phẩm</h1>
-            </div>
-            <div class="card">
-                <form @submit="onSubmit">
+    <Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" @click="editProduct()" />
+    <Dialog v-model:visible="productDialog" :style="{ width: '1050px' }" header="Product Details" :modal="true"
+        class="p-fluid">
+        <form @submit="onSubmit" style="margin-top: 30px;">
                     <div class="p-fluid formgrid grid">
                         <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
                             <span class="p-float-label">
@@ -365,7 +394,7 @@ function onFileInputImageProduct(event) {
                         <div class="Field col-12 md:col-3" style="margin-bottom: 30px">
                             <div style="display: flex">
                                 <span class="p-float-label" style="width: 239px">
-                                    <Dropdown id="dropdown" :options="cities" v-model="selectedCity" optionLabel="name"
+                                    <Dropdown id="dropdown" :options="dataThuongHieu" v-model="selectedCity" optionLabel="ten"
                                         @change="onCityChange" :class="{ 'p-invalid': thuongHieuError }"></Dropdown>
                                     <label for="dropdown">Thương Hiệu</label>
                                 </span>
@@ -458,7 +487,7 @@ function onFileInputImageProduct(event) {
                         <div class="Field col-12 md:col-3" style="margin-bottom: 30px">
                             <div style="display: flex">
                                 <span class="p-float-label" style="width: 150px">
-                                    <MultiSelect v-model="selectedSizes" :options="sizes" optionLabel="label"
+                                    <MultiSelect v-model="selectedSizes" :options="dataSize" optionLabel="ten"
                                         :filter="false" :maxSelectedLabels="3" :class="{ 'p-invalid': SizeError }"
                                         @change="onSizeChange">
                                     </MultiSelect>
@@ -477,7 +506,7 @@ function onFileInputImageProduct(event) {
                             <div style="display: flex; flex-wrap: wrap;">
                                 <div v-for="(size, index) in selectedSizes" :key="index" style="margin-top: 10px;">
                                     <label :for="`input-${size.id}`" style="margin-right: 10px; margin-left: 10px;  ">{{
-                                        size.label }}</label>
+                                        size.ten }}</label>
                                     <input type="number" :id="`input-${size.id}`" v-model="array[index]"
                                         @change="handleInputChange(size.id)" :class="{ 'p-invalid': soLuongSizeError }"
                                         style="height: 20px; width: 60px; " />
@@ -520,13 +549,5 @@ function onFileInputImageProduct(event) {
 
                     </div>
                 </form>
-
-            </div>
-
-        </div>
-    
-
-    </div>
+    </Dialog>
 </template>
-
-<style scoped></style>

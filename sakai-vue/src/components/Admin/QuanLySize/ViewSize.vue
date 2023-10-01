@@ -7,9 +7,9 @@ import ThemSize from './ThemSize.vue';
 import DetailSize from './DetailSize.vue';
 import UpdateSize from './UpdateSize.vue';
 import axios from 'axios';
-import { useCounterStore } from '../../../service/Admin/Size/SizeService.js';
+import { SizeStore } from '../../../service/Admin/Size/SizeService.js';
 
-const useSizeService = useCounterStore();
+const useSizeService = SizeStore();
 const toast = useToast();
 const deleteProductDialog = ref(false);
 const product = ref({});
