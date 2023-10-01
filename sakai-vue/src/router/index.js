@@ -44,6 +44,11 @@ const router = createRouter({
                     component: () => import('@/views/uikit/Table.vue')
                 },
                 {
+                    path: '/uikit/quan-ly-hoa-don',
+                    name: 'quan-ly-hoa-don',
+                    component: () => import('@/views/uikit/QuanLyHoaDon.vue')
+                },
+                {
                     path: '/uikit/list',
                     name: 'list',
                     component: () => import('@/views/uikit/List.vue')
@@ -112,6 +117,11 @@ const router = createRouter({
                     component: () => import('@/views/uikit/Misc.vue')
                 },
                 {
+                    path: '/uikit/user',
+                    name: 'user',
+                    component: () => import('@/views/uikit/ViewUser.vue')
+                },
+                {
                     path: '/blocks',
                     name: 'blocks',
                     component: () => import('@/views/utilities/Blocks.vue')
@@ -132,9 +142,36 @@ const router = createRouter({
                     component: () => import('@/views/pages/Empty.vue')
                 },
                 {
+                    path: '/pages/mau-sac',
+                    name: 'mausac',
+                    component: () => import('@/components/Admin/MauSac/index.vue')
+                },
+                {
+                    path: '/pages/loai',
+                    name: 'loai',
+                    component: () => import('@/components/Admin/Loai/index.vue')
+                },
+                {
+                    path: '/pages/khuyenmai',
+                    name: 'khuyenmai',
+                    component: () => import('@/views/pages/KhuyenMai.vue')
+                }
+                ,
+                {
+                    path: '/pages/voucher',
+                    name: 'voucher',
+                    component: () => import('@/views/pages/Voucher.vue')
+                },
+                {
                     path: '/pages/crud',
                     name: 'crud',
                     component: () => import('@/views/pages/Crud.vue')
+                },
+
+                {
+                    path: '/pages/product',
+                    name: 'product',
+                    component: () => import('@/components/Admin/Product/ChiTietSanPham.vue')
                 },
                 {
                     path: '/documentation',

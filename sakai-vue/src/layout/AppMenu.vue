@@ -80,6 +80,11 @@ const model = ref([
                 to: '/pages/crud'
             },
             {
+                label: 'prodct',
+                icon: 'pi pi-fw pi-pencil',
+                to: '/pages/product'
+            },
+            {
                 label: 'Timeline',
                 icon: 'pi pi-fw pi-calendar',
                 to: '/pages/timeline'
@@ -93,6 +98,18 @@ const model = ref([
                 label: 'Empty',
                 icon: 'pi pi-fw pi-circle-off',
                 to: '/pages/empty'
+            }
+            ,
+             {
+                label: 'Khuyến Mãi',
+                icon: 'pi pi-fw pi-circle-off',
+                to: '/pages/khuyenmai'
+            }
+            ,
+            {
+                label: 'Voucher',
+                icon: 'pi pi-fw pi-circle-off',
+                to: '/pages/voucher'
             }
         ]
     },
