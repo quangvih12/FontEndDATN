@@ -1,9 +1,20 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 import AppLayout from '@/layout/AppLayout.vue';
+import AppLayoutKH from '@/layout/KhachHang/AppLayoutKH.vue';
 
 const router = createRouter({
     history: createWebHashHistory(),
     routes: [
+        {
+            component: AppLayoutKH,
+            children: [
+                {
+                    path: '/trang-chu',
+                    name: 'trang-chu',
+                    component: () => import('@/components/KhachHang/TrangChu.vue')
+                }
+            ]
+        },
         {
             path: '/',
             component: AppLayout,
@@ -18,7 +29,7 @@ const router = createRouter({
                     name: 'quan-ly-hoa-don',
                     component: () => import('@/components/Admin/HoaDon/index.vue')
                 },
-               
+
                 {
                     path: '/pages/mau-sac',
                     name: 'mausac',
@@ -33,7 +44,7 @@ const router = createRouter({
                     path: '/pages/khuyenmai',
                     name: 'khuyenmai',
                     component: () => import('@/components/Admin/KhuyenMai/KhuyenMai.vue')
-                } ,
+                },
                 {
                     path: '/pages/voucher',
                     name: 'voucher',
@@ -58,7 +69,7 @@ const router = createRouter({
                     path: '/pages/thuong-hieu',
                     name: 'thuong-hieu',
                     component: () => import('@/components/Admin/QuanLyThuongHieu/ViewThuongHieu.vue')
-                },
+                }
                 // {
                 //     path: '/uikit/menu',
                 //     component: () => import('@/views/uikit/Menu.vue'),
@@ -81,8 +92,6 @@ const router = createRouter({
                 //         }
                 //     ]
                 // },
-                
-               
             ]
         }
         // {
