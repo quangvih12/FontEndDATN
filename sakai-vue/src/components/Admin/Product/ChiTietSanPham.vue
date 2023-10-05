@@ -36,32 +36,53 @@ onBeforeMount(() => {
 const products = ref([]);
 
 const loadProducts = async () => {
-    await productStore.fetchAll(); // Gọi hàm fetchAll từ Stor
-    products.value  = productStore.products;
-    console.log(products.value);
-    // const productList = productStore.products; // Lấy dữ liệu từ Store và gán vào biến products
-    // productList.forEach(async (product, key) =>  {
-    //     productList[key]['img'] = null
-    //    const img_d = await loadImage(product.id);
-    //    productList[key]['img'] = img_d;
-    // });
-    // products.value = productList
+    await productStore.fetchAll(); // Gọi hàm fetchAll từ Store
+    products.value = productStore.products;
+    const productList = productStore.products; // Lấy dữ liệu từ Store và gán vào biến products
 
+    for (const [key, product] of productList.entries()) {
+        // productList[key]['img'] = null;
+        productList[key]['size'] = null;
+        productList[key]['mauSac'] = null;
+        productList[key]['img'] = null;
+        const mau = await loadmau(product.id);
+        productList[key]['mauSac'] = mau;
+        const img_d = await loadSizeo(product.id);
+        productList[key]['size'] = img_d;
+        const img = await loadImg(product.id);
+        productList[key]['img'] = img;
+    }
 
+    products.value = productList;
+ //   console.log('sss: ', products.value);
 };
 
-const img = ref([]);
 
-const loadImage = async (idProduct) => {
-   // console.log('id: ',idProduct);
+const loadSize = ref([]);
+
+const loadSizeo = async (idProduct) => {
+    await productStore.fetchAllSize(idProduct); // Gọi hàm fetchAll từ Store
+    loadSize.value = productStore.sizes;
+    // console.log('size: ', loadSize.value);
+    return loadSize.value;
+};
+
+const loadMau = ref([]);
+
+const loadmau = async (idProduct) => {
+    await productStore.fetchAllMauSac(idProduct); // Gọi hàm fetchAll từ Store
+    loadMau.value = productStore.mauSacs;
+    // console.log('mau: ',  loadMau.value );
+    return loadMau.value;
+};
+
+const loadImage = ref([]);
+
+const loadImg = async (idProduct) => {
     await productStore.fetchAllImage(idProduct); // Gọi hàm fetchAll từ Store
-    img.value = productStore.images;
- //   const t = img.value;
-   return img.value;
-
+    loadImage.value = productStore.images;
+    return loadImage.value;
 };
-
-
 
 const url = ref([]);
 
@@ -69,11 +90,6 @@ onMounted(() => {
     myDiv.value = document.getElementById('right_gh');
     div.value = document.getElementById('table');
     loadProducts();
-   console.log('hhh: ',products);
-   // fetchData();
-
-
-   
 });
 
 // const formatCurrency = (value) => {
@@ -118,18 +134,20 @@ const isSelectedIndex = (index) => {
 };
 
 const columns = ref([
-    { field: 'moTa', header: 'Mô Tả' },
+    { field: 'ma', header: 'Mã' },
     { field: 'thuongHieu', header: 'Thương Hiệu' },
     { field: 'quaiDeo', header: 'Quai đeo' },
     { field: 'demLot', header: 'Đệm lót' },
     { field: 'soLuongTon', header: 'Số lượng' },
     { field: 'trongLuong', header: 'Trọng Lượng' },
     { field: 'vatLieu', header: 'Vật liệu' },
-    { field: 'Loại', header: 'Loại' },
+    { field: 'loai', header: 'Loại' },
+    { field: 'moTa', header: 'Mô Tả' },
+
 ]);
 
 // hàm để tắt/mở cột
-const selectedColumns = ref(columns.value);
+const selectedColumns = ref(columns.value.soLuongTon);
 
 const onToggle = (val) => {
     selectedColumns.value = columns.value.filter(col => val.includes(col));
@@ -138,7 +156,7 @@ const onToggle = (val) => {
 const statuses = ref([
     { label: 'Còn hạn', value: 0 },
     { label: 'Hết hạn', value: 1 },
-    { label: 'Hết khuyến mại', value: 2 }
+
 ]);
 
 const getStatusLabel = (trangThai) => {
@@ -147,10 +165,10 @@ const getStatusLabel = (trangThai) => {
             return { text: 'Còn Hàng', severity: 'success' };
 
         case 2:
-            return { text: 'InActive', severity: 'danger' };
+            return { text: 'hết Hàng', severity: 'danger' };
 
         case 3:
-            return 'danger';
+            return { text: 'tồn kho', severity: 'danger' };;
 
         default:
             return null;
@@ -170,11 +188,10 @@ const getStatusLabel = (trangThai) => {
                     <Toolbar class="mb-4">
                         <template v-slot:start>
                             <div class="my-2">
-                                <Button label="New" icon="pi pi-plus" class="p-button-success mr-2"
-                                    @click="chuyenPhanTu('right_gh')" />
-                                <Button label="Delete" icon="pi pi-trash" class="p-button-danger"
+                                <AddProduct />
+                                <!-- <Button label="Delete" icon="pi pi-trash" class="p-button-danger"
                                     @click="confirmDeleteSelected"
-                                    :disabled="!selectedProducts || !selectedProducts.length" />
+                                    :disabled="!selectedProducts || !selectedProducts.length" /> -->
                             </div>
                         </template>
 
@@ -186,7 +203,7 @@ const getStatusLabel = (trangThai) => {
                     </Toolbar>
 
                     <DataTable ref="dt" :value="products" v-model:selection="selectedProducts" dataKey="id"
-                        :paginator="true" :rows="10" :filters="filters"
+                        :paginator="true" :rows="5" :filters="filters"
                         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                         :rowsPerPageOptions="[5, 10, 25]"
                         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
@@ -194,10 +211,10 @@ const getStatusLabel = (trangThai) => {
                         <template #header>
                             <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                                 <MultiSelect icon="pi pi-plus" :modelValue="selectedColumns" :options="columns"
-                                    optionLabel="header" @update:modelValue="onToggle" display="tag"
+                                    optionLabel="header" @update:modelValue="onToggle" display="chip"
                                     placeholder="Select Columns" />
 
-                              
+
                             </div>
                             <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                                 <h5 class="m-0"> Products</h5>
@@ -208,8 +225,8 @@ const getStatusLabel = (trangThai) => {
                             </div>
                         </template>
 
-                        <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-                        <Column field="code" header="STT" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+                        <Column selectionMode="multiple" headerStyle="width: 1px"></Column>
+                        <Column field="code" header="STT" :sortable="true" style="width: 1px; padding: 5px;">
                             <template #body="slotProps">
                                 <span class="p-column-title">STT</span>
                                 {{ slotProps.data.stt }}
@@ -218,18 +235,8 @@ const getStatusLabel = (trangThai) => {
                         <Column header="Image" headerStyle="width:14%; min-width:10rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">Image</span>
-                               
-                                    <!-- <div v-for="(i, index) in img"  > -->
-                                    <img :src="slotProps.data.anh" :alt="i" class="shadow-2" width="100" />
-                                    <!-- </div> -->
-                               
-                                
-                            </template>
-                        </Column>
-                        <Column field="ma" header="Mã" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-                            <template #body="slotProps">
-                                <span class="p-column-title">Mã</span>
-                                {{ slotProps.data.ma }}
+                                <!-- <div v-for="(i, index) in img"  > -->
+                                <img :src="slotProps.data.anh" :alt="i" class="shadow-2" width="100" />
                             </template>
                         </Column>
                         <Column field="ten" header="Tên" :sortable="true" headerStyle="width:14%; min-width:10rem;">
@@ -240,6 +247,42 @@ const getStatusLabel = (trangThai) => {
                         </Column>
                         <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header"
                             :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+                        </Column>
+                        <Column header="size - số lượng " headerStyle="width:14%; min-width:10rem;">
+                            <template #body="slotProps">
+                                <span class="p-column-title">size</span>
+                                <div v-for="i in slotProps.data.size ">
+                                    <div class="col-6" style="width: 100px; display: flex;">
+                                        <p style="margin: auto;"> {{ i.size.ten }} </p>
+                                        <p style="margin: auto;">-</p>
+                                        <p style="margin: auto;"> {{ i.soLuong }}</p>
+                                    </div>
+                                </div>
+                            </template>
+                        </Column>
+                        <Column header="Màu Sắc " headerStyle="width:14%; min-width:10rem;">
+                            <template #body="slotProps">
+                                <span class="p-column-title">size</span>
+                                <div v-for="i in slotProps.data.mauSac">
+                                    <div class="col-6"
+                                        style="width: 110px;background-color: aliceblue; height: 60px; display: flex;margin-bottom: 5px; border: 1px solid aliceblue; border-radius: 10px;">
+                                        <p style="margin: auto;">{{ i.mauSac.ten }}</p>
+                                        <img :src="i.anh" class="shadow-2" width="100"
+                                            style="margin-bottom: 30px; height: 40px; width: 40px; margin-left: 10px;" />
+                                    </div>
+                                </div>
+
+                            </template>
+                        </Column>
+                        <Column header="Image" headerStyle="width: 14%; min-width: 10rem;">
+                            <template #body="slotProps">
+                                <span class="p-column-title">size</span>
+                                <div class="image-container">
+                                    <div v-for="i in slotProps.data.img" class="image-item">
+                                        <img :src="i.anh" class="shadow-2" width="50" height="50" />
+                                    </div>
+                                </div>
+                            </template>
                         </Column>
                         <Column field="trangThai" header="Trạng Thái" sortable style="min-width:12rem">
                             <template #body="slotProps">
@@ -258,8 +301,8 @@ const getStatusLabel = (trangThai) => {
                     </DataTable>
                 </section>
                 <section class="right_gh" id="right_gh" style="display: none">
-                    <Button icon="pi pi-angle-double-left" class="p-button-success mr-2" @click="vePhanTu(table)" />
-                    <AddProduct />
+
+
                     <!-- <Test/> -->
                 </section>
 
@@ -289,4 +332,16 @@ const getStatusLabel = (trangThai) => {
     margin-left: 5px;
     margin-bottom: 1px;
 }
+
+.image-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.image-item {
+    margin-bottom: 30px;
+    margin-left: 10px;display: flex;
+}
 </style>
+
+

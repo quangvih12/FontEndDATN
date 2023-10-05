@@ -212,6 +212,7 @@ const banner9 =
     justify-content: center;
     align-items: center;
     width: 100vw;
+
     background: rgb(239, 243, 248);
     margin-bottom: 40px;
 }

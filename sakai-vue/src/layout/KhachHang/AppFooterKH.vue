@@ -10,6 +10,7 @@ const logoUrl = computed(() => {
 </script>
 
 <template>
+
     <!-- Remove the container if you want to extend the Footer to full width. -->
     <!-- Footer -->
     <footer class="text-lg-start text-white" style="background-color: #3e4551">
@@ -146,3 +147,4 @@ const logoUrl = computed(() => {
 </template>
 <style lang="scss" scoped>
 </style>
+

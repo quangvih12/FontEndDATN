@@ -102,6 +102,7 @@ const isOutsideClicked = (event) => {
                     <span>Profile</span>
                 </button>
             </router-link>
+
             <!-- <button @click="onSettingsClick()" class="p-link layout-topbar-button">
                 <i class="pi pi-cog"></i>
                 <span>Settings</span>
