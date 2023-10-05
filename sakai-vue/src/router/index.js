@@ -14,6 +14,31 @@ const router = createRouter({
                     component: () => import('@/components/KhachHang/TrangChu.vue')
                 },
                 {
+
+                    path: '/gioi-thieu',
+                    name: 'gioi-thieu',
+                    component: () => import('@/components/KhachHang/GioiThieu.vue')
+                },
+                {
+                    path: '/thong-tin-khach-hang',
+                    name: 'thong-tin-khach-hang',
+                    component: () => import('@/components/KhachHang/ThongTinKhachHang.vue')
+                },
+                {
+                    path: '/san-pham',
+                    name: 'san-pham',
+                    component: () => import('@/components/KhachHang/SanPham.vue')
+                },
+                {
+                    path: '/thanh-toan',
+                    name: 'thanh-toan',
+                    component: () => import('@/components/KhachHang/ThanhToan.vue')
+                },
+                {
+                    path: '/detail',
+                    name: 'detail',
+                    component: () => import('@/components/KhachHang/DetailSanPham.vue')
+
                     path: '/gio-hang',
                     name: 'gio-hang',
                     component: () => import('@/components/KhachHang/GioHang/GioHang.vue')
@@ -22,6 +47,7 @@ const router = createRouter({
                     path: '/lich-su-sp',
                     name: 'lich-su-sp',
                     component: () => import('@/components/KhachHang/LichSuSP/LichSuSP.vue')
+
                 }
             ]
         },
@@ -40,6 +66,16 @@ const router = createRouter({
                     component: () => import('@/components/Admin/HoaDon/index.vue')
                 },
 
+                {
+                    path: '/pages/mau-sac',
+                    name: 'mausac',
+                    component: () => import('@/components/Admin/MauSac/index.vue')
+                },
+                {
+                    path: '/pages/loai',
+                    name: 'loai',
+                    component: () => import('@/components/Admin/Loai/index.vue')
+                },
                 {
                     path: '/pages/khuyenmai',
                     name: 'khuyenmai',

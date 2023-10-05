@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
-const apiSize = 'http://localhost:8080/api/size';
+const apiMauSac = 'http://localhost:8080/api/mau-sac';
 
-export const SizeStore = defineStore('size', {
+export const useMauSacService = defineStore('mau-sac', {
     state: () => ({
         data: [],
         //nếu đang ở load tất cả thì là 0
@@ -14,7 +14,7 @@ export const SizeStore = defineStore('size', {
         async fetchData() {
             this.check = 0;
             try {
-                const response = await axios.get(apiSize);
+                const response = await axios.get(apiMauSac);
                 this.data = response.data.data;
             } catch (error) {
                 console.error('Error fetching users:', error);
@@ -24,14 +24,14 @@ export const SizeStore = defineStore('size', {
         async fetchDataByStatus(status) {
             this.check = 1;
             try {
-                const response = await axios.get(apiSize + '/trang-thai?trangThai=' + status);
+                const response = await axios.get(apiMauSac + '/trang-thai?trangThai=' + status);
                 this.data = response.data.data;
             } catch (error) {
                 console.error('Error fetching users:', error);
             }
         },
-        createSize(form) {
-            axios.post(apiSize + '/add', form).then((response) => {
+        createMauSac(form) {
+            axios.post(apiMauSac + '/add', form).then((response) => {
                 if (this.check == 0) {
                     this.data.unshift(response.data.data);
                 } else {
@@ -39,8 +39,8 @@ export const SizeStore = defineStore('size', {
                 }
             });
         },
-        updateSize(id, form) {
-            axios.put(apiSize + '/update/' + id, form).then((response) => {
+        updateMauSac(id, form) {
+            axios.put(apiMauSac + '/update/' + id, form).then((response) => {
                 for (let i = 0; i < this.data.length; i++) {
                     if (id == this.data[i].id) {
                         this.data[i].ten = form.ten;
@@ -49,8 +49,8 @@ export const SizeStore = defineStore('size', {
                 }
             });
         },
-        deleteSize(id) {
-            axios.put(apiSize + '/delete/' + id).then((response) => {
+        deleteMauSac(id) {
+            axios.put(apiMauSac + '/delete/' + id).then((response) => {
                 if (this.check == 0) {
                     for (let i = 0; i < this.data.length; i++) {
                         if (id == this.data[i].id) {

@@ -37,6 +37,21 @@ const model = ref([
                 icon: 'pi pi-fw pi-circle-off',
                 to: '/pages/user'
             },
+            {
+                label: 'Thương Hiệu',
+                icon: 'pi pi-fw pi-circle-off',
+                to: '/pages/thuong-hieu'
+            },
+            {
+                label: 'Màu sắc',
+                icon: 'pi pi-fw pi-circle-off',
+                to: '/pages/mau-sac'
+            },
+            {
+                label: 'Loại',
+                icon: 'pi pi-fw pi-circle-off',
+                to: '/pages/loai'
+            },
         ]
     }
 
