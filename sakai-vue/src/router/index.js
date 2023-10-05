@@ -6,10 +6,11 @@ const router = createRouter({
     history: createWebHashHistory(),
     routes: [
         {
+            path: '/',
             component: AppLayoutKH,
             children: [
                 {
-                    path: '/trang-chu',
+                    path: '/',
                     name: 'trang-chu',
                     component: () => import('@/components/KhachHang/TrangChu.vue')
                 },
@@ -38,7 +39,7 @@ const router = createRouter({
                     path: '/detail',
                     name: 'detail',
                     component: () => import('@/components/KhachHang/DetailSanPham.vue')
-
+                },{
                     path: '/gio-hang',
                     name: 'gio-hang',
                     component: () => import('@/components/KhachHang/GioHang/GioHang.vue')
@@ -52,11 +53,11 @@ const router = createRouter({
             ]
         },
         {
-            path: '/',
+            path: '/thong-ke',
             component: AppLayout,
             children: [
                 {
-                    path: '/',
+                    path: '/thong-ke',
                     name: 'Thống kê',
                     component: () => import('@/components/Admin/ThongKe/index.vue')
                 },
