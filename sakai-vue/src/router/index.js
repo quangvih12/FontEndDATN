@@ -29,6 +29,11 @@ const router = createRouter({
                     component: () => import('@/components/KhachHang/SanPham.vue')
                 },
                 {
+                    path: '/thanh-toan',
+                    name: 'thanh-toan',
+                    component: () => import('@/components/KhachHang/ThanhToan.vue')
+                },
+                {
                     path: '/detail',
                     name: 'detail',
                     component: () => import('@/components/KhachHang/DetailSanPham.vue')
