@@ -12,6 +12,16 @@ const router = createRouter({
                     path: '/trang-chu',
                     name: 'trang-chu',
                     component: () => import('@/components/KhachHang/TrangChu.vue')
+                },
+                {
+                    path: '/gio-hang',
+                    name: 'gio-hang',
+                    component: () => import('@/components/KhachHang/GioHang/GioHang.vue')
+                },
+                {
+                    path: '/lich-su-sp',
+                    name: 'lich-su-sp',
+                    component: () => import('@/components/KhachHang/LichSuSP/LichSuSP.vue')
                 }
             ]
         },
