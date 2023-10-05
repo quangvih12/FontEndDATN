@@ -164,28 +164,29 @@ const dataTrangThai = ref([
                             <label for="">Mã SP: <span>MŨ BẢO HIỂM 3/4 ROYAL M20C</span></label>
                             <label for="" style="margin-left: 20px">Loại: <span style="color: red">MŨ BẢO HIỂM 3/4 ROYAL M20C</span></label>
                             <h2 style="color: red">550,000₫</h2>
-                            <br />
                             <label for="">- Vỏ bằng nhựa ABS nguyên sinh</label>
                             <br />
                             <label for="">- Trọng lượng: 850g ± 50g</label>
                             <br />
                             <label for="">- size L: 55 - 57cm - size XL: 57 - 59cm</label>
                             <br />
+                            <br>
                             <label class="ms">Màu sắc</label>
                             <br />
                             <div class="rounded-content-list">
                                 <div v-for="(color, index) in colors" :key="index" class="rounded-content" @click="handleContentClick(index)">
-                                    <img :class="{ clicked: selected === index }" class="rounded-image" :src="color.imgSrc" alt="Hình ảnh" />
+                                    <a href=""><img :class="{ clicked: selected === index }" class="rounded-image" :src="color.imgSrc" alt="Hình ảnh" /></a>
                                     <a class="rounded-text" href="">{{ color.text }}</a>
                                 </div>
                             </div>
+                            <br>
                             <label class="ms" style="margin-left: 5px">Kích cỡ</label>
                             <label style="margin-left: 25px">
-                                <input type="radio" value="L" v-model="selectedSize" />
+                                <input type="radio" value="L" name="size" v-model="selectedSize" />
                                 L
                             </label>
                             <label style="margin-left: 25px">
-                                <input type="radio" value="XL" v-model="selectedSize" />
+                                <input type="radio" value="XL" name="size" v-model="selectedSize" />
                                 XL
                             </label>
                             <br />
@@ -194,8 +195,8 @@ const dataTrangThai = ref([
                                 <label for="quantity">Số lượng</label>
                                 <br />
                                 <div class="quantity buttons_added form-flat">
-                                    <input type="button" value="" class="minus button is-form" />
-                                    <input type="number" class="input-text qty text" step="1" min="1" max="" name="quantity" value="1" title="SL" size="4" placeholder="" inputmode="numeric" />
+                                    <input type="button" value="-" class="minus button is-form" />
+                                    <input type="text" class="input-text qty text" step="1" min="1" max="" name="quantity" value="1" title="SL" size="4" placeholder="" inputmode="numeric" />
                                     <input type="button" value="+" class="plus button is-form" />
                                 </div>
                                 <Button label="Thêm vào giỏ hàng" icon="pi pi-shopping-cart" class="p-button-rounded p-button-warning mr-2 mb-2" style="background: #e8bd72" />
@@ -368,7 +369,9 @@ const dataTrangThai = ref([
                                                     <img :src="slotProps.data.imgSrc" alt="Hình ảnh" style="width: 50%" />
                                                 </a>
                                                 <div>
-                                                    <a href=""><h4 class="mb-1">{{ slotProps.data.text }}</h4></a>
+                                                    <a href=""
+                                                        ><h4 class="mb-1">{{ slotProps.data.text }}</h4></a
+                                                    >
                                                     <h6 class="mt-0 mb-3">${{ slotProps.data.price }}</h6>
                                                     <Tag :value="slotProps.data.inventoryStatus" :severity="getSeverity(slotProps.data.inventoryStatus)" />
                                                     <div class="mt-5">

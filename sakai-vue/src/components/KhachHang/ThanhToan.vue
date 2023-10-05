@@ -17,7 +17,6 @@ const cities = ref([
                 <!-- Cột trái -->
                 <div class="p-col-6">
                     <div class="trai">
-                        <Divider />
                         <h5>THÔNG TIN THANH TOÁN</h5>
                         <InputText style="width: 100%" placeholder="Họ tên của bạn" />
                         <div class="flex">
@@ -50,7 +49,7 @@ const cities = ref([
                 <!-- cột phải -->
                 <div class="p-col-6">
                     <div class="phai">
-                        <div class="card" style="margin-top: 15px">
+                        <div class="card">
                             <h5>ĐƠN HÀNG CỦA BẠN</h5>
                             <h5 style="margin-top: 1px">your oder</h5>
                             <div class="flex">
