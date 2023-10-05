@@ -76,26 +76,33 @@ const isOutsideClicked = (event) => {
 
         <div class="layout-topbar-menu">
             <router-link to="/trang-chu" class="layout-topbar-logo" style="width: 13%; margin-left: 10px">
-                <p>Home</p>
+                <p style="font-size: 19px">Home</p>
             </router-link>
             <router-link to="/trang-chu" class="layout-topbar-logo" style="width: 22%; margin-left: 10px">
-                <p>Sản phẩm</p>
+                <p style="font-size: 19px">Sản phẩm</p>
             </router-link>
             <router-link to="/trang-chu" class="layout-topbar-logo" style="width: 28%; margin-left: 10px">
-                <p>Về chúng tôi</p>
+                <p style="font-size: 19px">Về chúng tôi</p>
             </router-link>
             <router-link to="/pages/size" class="layout-topbar-logo" style="width: 16%; margin-left: 10px">
-                <p>Liên hệ</p>
+                <p style="font-size: 19px">Liên hệ</p>
             </router-link>
             <InputText type="text" v-model="value" style="height: 40px; margin-left: 10px" />
             <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
                 <i class="pi pi-search"></i>
                 <span>Calendar</span>
             </button>
-            <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
+            <!-- <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
                 <i class="pi pi-shopping-cart"></i>
                 <span>Profile</span>
-            </button>
+            </button> -->
+            <router-link to="/gio-hang" class="layout-topbar-logo" style="width: 16%; margin-left: 10px">
+                <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
+                    <i class="pi pi-shopping-cart"></i>
+                    <span>Profile</span>
+                </button>
+            </router-link>
+
             <!-- <button @click="onSettingsClick()" class="p-link layout-topbar-button">
                 <i class="pi pi-cog"></i>
                 <span>Settings</span>

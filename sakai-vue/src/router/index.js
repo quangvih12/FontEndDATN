@@ -12,6 +12,42 @@ const router = createRouter({
                     path: '/trang-chu',
                     name: 'trang-chu',
                     component: () => import('@/components/KhachHang/TrangChu.vue')
+                },
+                {
+
+                    path: '/gioi-thieu',
+                    name: 'gioi-thieu',
+                    component: () => import('@/components/KhachHang/GioiThieu.vue')
+                },
+                {
+                    path: '/thong-tin-khach-hang',
+                    name: 'thong-tin-khach-hang',
+                    component: () => import('@/components/KhachHang/ThongTinKhachHang.vue')
+                },
+                {
+                    path: '/san-pham',
+                    name: 'san-pham',
+                    component: () => import('@/components/KhachHang/SanPham.vue')
+                },
+                {
+                    path: '/thanh-toan',
+                    name: 'thanh-toan',
+                    component: () => import('@/components/KhachHang/ThanhToan.vue')
+                },
+                {
+                    path: '/detail',
+                    name: 'detail',
+                    component: () => import('@/components/KhachHang/DetailSanPham.vue')
+
+                    path: '/gio-hang',
+                    name: 'gio-hang',
+                    component: () => import('@/components/KhachHang/GioHang/GioHang.vue')
+                },
+                {
+                    path: '/lich-su-sp',
+                    name: 'lich-su-sp',
+                    component: () => import('@/components/KhachHang/LichSuSP/LichSuSP.vue')
+
                 }
             ]
         },
