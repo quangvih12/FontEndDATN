@@ -5,7 +5,7 @@ import { ProductStore } from '../../../service/Admin/product/product.api';
 import AddProduct from './addProduct.vue';
 import { useToast } from 'primevue/usetoast';
 import UpdateProduct from './updateProduct.vue';
-// import { BIconVolumeUp } from 'bootstrap-vue';
+import Detail from './DetailProduct.vue';
 
 const productStore = ProductStore();
 const toast = useToast();
@@ -54,7 +54,7 @@ const loadProducts = async () => {
     }
 
     products.value = productList;
- //   console.log('sss: ', products.value);
+    //    console.log('sss: ', products.value);
 };
 
 
@@ -135,6 +135,8 @@ const isSelectedIndex = (index) => {
 
 const columns = ref([
     { field: 'ma', header: 'Mã' },
+    { field: 'giaBan', header: 'Giá bán' },
+    { field: 'giaNhap', header: 'Giá Nhập' },
     { field: 'thuongHieu', header: 'Thương Hiệu' },
     { field: 'quaiDeo', header: 'Quai đeo' },
     { field: 'demLot', header: 'Đệm lót' },
@@ -175,7 +177,18 @@ const getStatusLabel = (trangThai) => {
     }
 };
 
+const idDelete = ref();
+const confirmDeleteProduct = (id) => {
+    idDelete.value = id;
+    deleteProductDialog.value = true;
+};
 
+const deleteProduct = (id) => {
+    productStore.delete(idDelete.value);
+    products.value = productStore.products;
+    toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Xoá thành công', life: 3000 });
+    deleteProductDialog.value = false;
+};
 
 </script>
 
@@ -225,7 +238,7 @@ const getStatusLabel = (trangThai) => {
                             </div>
                         </template>
 
-                        <Column selectionMode="multiple" headerStyle="width: 1px"></Column>
+
                         <Column field="code" header="STT" :sortable="true" style="width: 1px; padding: 5px;">
                             <template #body="slotProps">
                                 <span class="p-column-title">STT</span>
@@ -284,7 +297,7 @@ const getStatusLabel = (trangThai) => {
                                 </div>
                             </template>
                         </Column>
-                        <Column field="trangThai" header="Trạng Thái" sortable style="min-width:12rem">
+                        <Column field="trangThai" header="Trạng Thái" sortable style="min-width:9rem">
                             <template #body="slotProps">
                                 <Tag :value="getStatusLabel(slotProps.data.trangThai).text"
                                     :severity="getStatusLabel(slotProps.data.trangThai).severity" />
@@ -292,13 +305,28 @@ const getStatusLabel = (trangThai) => {
                         </Column>
 
 
-                        <Column headerStyle="min-width:10rem;">
+                        <Column header="Action" headerStyle="min-width:10rem;">
                             <template #body="slotProps">
-                                <!-- <Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" /> -->
+                                <Detail :my-prop="slotProps.data"></Detail>
                                 <UpdateProduct :my-prop="slotProps.data"></UpdateProduct>
+                                <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2"
+                                    @click="confirmDeleteProduct(slotProps.data.id)" />
                             </template>
                         </Column>
                     </DataTable>
+                    <Dialog v-model:visible="deleteProductDialog" :style="{ width: '450px' }" header="Xóa Sản phẩm"
+                        :modal="true">
+                        <div class="flex align-items-center justify-content-center">
+                            <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+                            <span v-if="product">Bạn có chắc chắn muốn xoá size <b>{{ product.ten }}</b> không ?</span>
+                        </div>
+                        <template #footer>
+                            <Button label="Không" icon="pi pi-times" class="p-button-text"
+                                @click="deleteProductDialog = false" />
+                            <Button label="Có" icon="pi pi-check" class="p-button-text"
+                                @click="deleteProduct(product.id)" />
+                        </template>
+                    </Dialog>
                 </section>
                 <section class="right_gh" id="right_gh" style="display: none">
 
@@ -340,7 +368,8 @@ const getStatusLabel = (trangThai) => {
 
 .image-item {
     margin-bottom: 30px;
-    margin-left: 10px;display: flex;
+    margin-left: 10px;
+    display: flex;
 }
 </style>
 

@@ -12,9 +12,9 @@ export const ProductStore = defineStore('product', {
     async fetchAll() {
       try {
         const response = await axios.get('/api/products/lisst'); // Thay đổi URL dựa trên API của bạn
-       this.products = response.data;
-      //  console.table(this.products.size);
-  
+        this.products = response.data;
+        //  console.table(this.products.size);
+
       } catch (error) {
         console.error('Lỗi khi lấy danh sách sản phẩm:', error);
       }
@@ -25,7 +25,7 @@ export const ProductStore = defineStore('product', {
 
         const response = await axios.get(`/api/products/${idProduct}/images`); // Thay đổi URL dựa trên API của bạn
         this.images = response.data;
-
+        return this.images;
       } catch (error) {
         console.error('Lỗi khi lấy danh sách sản phẩm:', error);
       }
@@ -73,12 +73,15 @@ export const ProductStore = defineStore('product', {
         const newProductData = response.data;
 
         newProductData['size'] = null;
+        newProductData['img'] = null;
         newProductData['mauSac'] = null;
         const mau = await this.fetchAllMauSac(newProductData.id);
         newProductData['mauSac'] = mau;
         const img_d = await this.fetchAllSize(newProductData.id);
         newProductData['size'] = img_d;
-
+        const img = await this.fetchAllImage(newProductData.id);
+        newProductData['img'] = img;
+        //    console.log(newProductData);
         this.products.unshift(newProductData); // Thêm sản phẩm mới vào danh sách
       } catch (error) {
         console.error('Lỗi khi thêm sản phẩm:', error);
@@ -89,7 +92,19 @@ export const ProductStore = defineStore('product', {
         const response = await axios.put(`/api/products/${updatedProduct.id}`, updatedProduct); // Thay đổi URL và dữ liệu updatedProduct tùy theo API của bạn
         const index = this.products.findIndex(product => product.id === updatedProduct.id);
         if (index !== -1) {
-          this.products[index] = response.data; // Cập nhật thông tin sản phẩm trong danh sách
+          let newProductData = this.products[index];
+
+          newProductData['size'] = null;
+          newProductData['img'] = null;
+          newProductData['mauSac'] = null;
+          const mau = await this.fetchAllMauSac(newProductData.id);
+          newProductData['mauSac'] = mau;
+          const img_d = await this.fetchAllSize(newProductData.id);
+          newProductData['size'] = img_d;
+          const img = await this.fetchAllImage(newProductData.id);
+          newProductData['img'] = img;
+
+          newProductData = response.data; // Cập nhật thông tin sản phẩm trong danh sách
         }
       } catch (error) {
         console.error('Lỗi khi sửa sản phẩm:', error);
@@ -97,14 +112,14 @@ export const ProductStore = defineStore('product', {
     },
     async delete(productId) {
       try {
-        await axios.delete(`/api/products/${productId}`); // Thay đổi URL tùy theo API của bạn
+        await axios.put(`/api/products/${productId}/delete`); // Thay đổi URL tùy theo API của bạn
         this.products = this.products.filter(product => product.id !== productId); // Xóa sản phẩm khỏi danh sách
       } catch (error) {
         console.error('Lỗi khi xóa sản phẩm:', error);
       }
     },
 
-    async deleteSize(productId,SizeId) {
+    async deleteSize(productId, SizeId) {
       try {
         await axios.delete(`/api/products/deleteSize?idSP=${productId}&idSize=${SizeId}`); // Thay đổi URL tùy theo API của bạn
       } catch (error) {
@@ -112,7 +127,15 @@ export const ProductStore = defineStore('product', {
       }
     },
 
-    async deleteMauSac(productId,MauId) {
+    async deleteImg(productId, img) {
+      try {
+        await axios.delete(`/api/products/deleteImg?idSP=${productId}&img=${img}`); // Thay đổi URL tùy theo API của bạn
+      } catch (error) {
+        console.error('Lỗi khi xóa sản phẩm:', error);
+      }
+    },
+
+    async deleteMauSac(productId, MauId) {
       try {
         await axios.delete(`/api/products/deleteMauSac?idSP=${productId}&idMau=${MauId}`); // Thay đổi URL tùy theo API của bạn
       } catch (error) {
