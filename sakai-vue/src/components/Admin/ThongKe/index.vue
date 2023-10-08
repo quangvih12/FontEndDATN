@@ -127,17 +127,21 @@ watch(
 
 <template>
     <div class="grid">
-        <TabView>
-            <TabPanel header="Thống kê hoá đơn">
-                <ThongKeHoaDon></ThongKeHoaDon>
-            </TabPanel>
-            <TabPanel header="Thống kê sản phẩm">
-                <ThongKeSanPham></ThongKeSanPham>
-            </TabPanel>
-            <TabPanel header="Thống kê doanh thu">
-                <ThongKeTheoNgay></ThongKeTheoNgay>
-            </TabPanel>
-        </TabView>
+        <div class="card">
+            <div class="card">
+                <TabView>
+                    <TabPanel header="Thống kê hoá đơn">
+                        <ThongKeHoaDon></ThongKeHoaDon>
+                    </TabPanel>
+                    <TabPanel header="Thống kê sản phẩm">
+                        <ThongKeSanPham></ThongKeSanPham>
+                    </TabPanel>
+                    <TabPanel header="Thống kê doanh thu">
+                        <ThongKeTheoNgay></ThongKeTheoNgay>
+                    </TabPanel>
+                </TabView>
+            </div>
+        </div>
         <!-- <div class="col-12 lg:col-6 xl:col-3">
             <div class="card mb-0">
                 <div class="flex justify-content-between mb-3">
@@ -377,3 +381,9 @@ watch(
         </div> -->
     </div>
 </template>
+
+<style scoped>
+.grid {
+    margin-top: 1px;
+}
+</style>
