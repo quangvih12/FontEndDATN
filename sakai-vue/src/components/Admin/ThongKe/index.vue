@@ -126,6 +126,7 @@ watch(
 </script>
 
 <template>
+
     <div class="card">
         <div class="card">
             <TabView>
@@ -139,6 +140,7 @@ watch(
                     <ThongKeTheoNgay></ThongKeTheoNgay>
                 </TabPanel>
             </TabView>
+
         </div>
         <!-- <div class="col-12 lg:col-6 xl:col-3">
             <div class="card mb-0">

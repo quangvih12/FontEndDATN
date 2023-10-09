@@ -1,11 +1,13 @@
 <script setup>
 import { ref } from 'vue';
+
 const products = ref([
     { code: 'SP001', name: 'Sản phẩm 1', category: 'Đồ điện tử', quantity: 5 },
     { code: 'SP001', name: 'Sản phẩm 1', category: 'Đồ điện tử', quantity: 5 },
     { code: 'SP002', name: 'Sản phẩm 2', category: 'Thời trang', quantity: 10 }
     // Thêm các sản phẩm khác tùy theo nhu cầu của bạn
 ]);
+
 const product = ref([
     {
         code: 'SP001',
@@ -63,6 +65,7 @@ const product = ref([
         quantity: 10
     }
 ]);
+
 const theoGia = ref([{ label: 'Lọc theo giá' }, { label: 'Dưới 50k' }, { label: '50k - 100k' }, { label: '100k - 200k' }, { label: '200k - 500k' }, { label: '500k - 1k' }]);
 const sapXep = ref([{ label: 'Sắp xếp' }, { label: 'Giá cao - > thấp' }, { label: 'Giá thấp - > cao' }, { label: 'Mới nhất' }]);
 const mauSac = ref([{ label: 'Màu sắc' }, { label: 'xanh' }, { label: 'Đỏ' }, { label: 'Vàng' }]);
@@ -243,6 +246,7 @@ const brand = ref([{ label: 'Brand' }, { label: 'Durex' }, { label: 'Flex' }]);
     margin-top: 20px;
     padding: 1rem;
 }
+
 .col-4,
 .card {
     margin-top: 20px;

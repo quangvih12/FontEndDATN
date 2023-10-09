@@ -2,6 +2,7 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useLayout } from '@/layout/composables/layout';
 import { useRouter } from 'vue-router';
+
 const { layoutConfig, onMenuToggle } = useLayout();
 const outsideClickListener = ref(null);
 const topbarMenuActive = ref(false);
@@ -15,6 +16,8 @@ onBeforeUnmount(() => {
 const logoUrl = computed(() => {
     return `https://nontrum.vn/wp-content/uploads/2021/12/NonTrum-logo-2022png.png`;
 });
+
+
 const onTopBarMenuButton = () => {
     topbarMenuActive.value = !topbarMenuActive.value;
 };
@@ -27,6 +30,7 @@ const topbarMenuClasses = computed(() => {
         'layout-topbar-menu-mobile-active': topbarMenuActive.value
     };
 });
+
 const bindOutsideClickListener = () => {
     if (!outsideClickListener.value) {
         outsideClickListener.value = (event) => {
@@ -69,3 +73,4 @@ const isOutsideClicked = (event) => {
 </template>
 
 <style lang="scss" scoped></style>
+

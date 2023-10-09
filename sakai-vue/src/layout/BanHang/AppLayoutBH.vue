@@ -3,8 +3,13 @@ import { computed, watch, ref } from 'vue';
 import AppTopbar from '../BanHang/AppTopbarBH.vue';
 import AppFooter from '../BanHang/AppFooterBH.vue';
 import { useLayout } from '@/layout/composables/layout';
+
+
 const { layoutConfig, layoutState, isSidebarActive } = useLayout();
+
 const outsideClickListener = ref(null);
+
+
 watch(isSidebarActive, (newVal) => {
     if (newVal) {
         bindOutsideClickListener();
@@ -12,6 +17,7 @@ watch(isSidebarActive, (newVal) => {
         unbindOutsideClickListener();
     }
 });
+
 const containerClass = computed(() => {
     return {
         'layout-theme-light': layoutConfig.darkTheme.value === 'light',
@@ -46,6 +52,7 @@ const unbindOutsideClickListener = () => {
 const isOutsideClicked = (event) => {
     const sidebarEl = document.querySelector('.layout-sidebar');
     const topbarEl = document.querySelector('.layout-menu-button');
+
     return !(sidebarEl.isSameNode(event.target) || sidebarEl.contains(event.target) || topbarEl.isSameNode(event.target) || topbarEl.contains(event.target));
 };
 </script>
@@ -78,12 +85,16 @@ const isOutsideClicked = (event) => {
     flex-direction: column;
     min-height: 100vh;
 }
+
 .layout-main {
     flex: 1;
 }
+
 .layout-footer {
     background-color: #f8f9fa;
     text-align: center;
     padding: 10px;
 }
+
 </style>
+

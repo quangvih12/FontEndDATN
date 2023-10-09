@@ -40,8 +40,8 @@ const schema = yup.object().shape({
     giaBan: yup.number()
         .required('Giá bán không được để trống')
         .min(50000, 'giá phải lớn hơn hoặc bằng 50 nghìn')
-        .max(10000000, 'Giá bán không lớn hơn 10 triệu') 
-         .when(['giaNhap'], (giaBan, schema) => {
+        .max(10000000, 'Giá bán không lớn hơn 10 triệu')
+        .when(['giaNhap'], (giaBan, schema) => {
             return schema.test({
                 test: function (value) {
                     const giaNhap = this.resolve(yup.ref('giaNhap'));
@@ -123,13 +123,13 @@ const onSubmit = handleSubmit(async (values) => {
     try {
         // Kiểm tra trùng lặp trước khi thêm sản phẩm
         const isDuplicate = await productStore.checkDuplicateName(name.value);
-        console.log(values.soLuongSize)
+        //  console.log(values)
         if (isDuplicate) {
             // Hiển thị thông báo lỗi hoặc xử lý theo nhu cầu của bạn
             toast.add({ severity: 'error', summary: 'Error ', detail: 'Tên sản phẩm đã tồn tại', life: 3000 });
         } else {
             // Nếu không trùng lặp, thêm sản phẩm vào store
-         
+
             await productStore.add(values);
             toast.add({ severity: 'success', summary: 'Success Message', detail: 'Thêm thành công', life: 3000 });
             productDialog.value = false;
@@ -186,7 +186,7 @@ const dataLoai = ref([]);
 const loadDataLoai = async () => {
     await loaiStore.fetchDataByStatus(1);
     dataLoai.value = loaiStore.data;
-    console.log( loaiStore.data)
+    //  console.log( loaiStore.data)
 };
 
 const dataTrongLuong = ref([]);
@@ -310,7 +310,7 @@ function onFileInputImage(event) {
         const objectURL = URL.createObjectURL(file);
         // Gán giá trị cho phần tử có id là 'imagesChinh' (thay đổi id nếu cần)
         imagesChinh.value = objectURL;
-        console.log(objectURL)
+        //   console.log(objectURL)
 
     }
 }
@@ -571,7 +571,7 @@ const openNew = () => {
                                     </div>
                                 </div>
                                 <small class="p-error">{{ soLuongSizeError }}</small>
-                             
+
                             </div>
 
                             <div class="field col-12 md:col-6">
@@ -579,7 +579,7 @@ const openNew = () => {
                                     style="display: inline-block;margin-left: 30px; margin-bottom: 15px; height:90x ; width: 150px;">
                                     <div>
                                         Màu :
-                                        <span class="product-name">{{ color.label }}</span>
+                                        <span class="product-name">{{ color.ten }}</span>
                                     </div>
                                     <FileUpload mode="basic" name="demo[]" accept="image/*" :maxFileSize="1000000"
                                         @input="onFileInputImageMauSac" />

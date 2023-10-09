@@ -40,7 +40,8 @@ const router = createRouter({
                     path: '/detail',
                     name: 'detail',
                     component: () => import('@/components/KhachHang/DetailSanPham.vue')
-                },{
+                },
+                {
                     path: '/gio-hang',
                     name: 'gio-hang',
                     component: () => import('@/components/KhachHang/GioHang/GioHang.vue')
