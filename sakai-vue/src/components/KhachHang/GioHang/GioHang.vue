@@ -122,7 +122,7 @@ const decrement = () => {
                         </Column>
                     </DataTable> -->
                     <DataTable ref="dt" :value="dataSP" v-model:selection="selectedProducts" dataKey="id" :filters="filters" paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown">
-                        <!-- <Column selectionMode="multiple" headerStyle="width: 3rem"></Column> -->
+                        <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
                         <Column field="code" header="Sản phẩm" headerStyle="width:20%; min-width:16rem;">
                             <template #body="slotProps">
                                 <div class="product-container">
@@ -226,7 +226,7 @@ const decrement = () => {
 }
 .trai {
     padding: 20px 20px 30px 20px;
-    width: 730px;
+    width: 780px;
     /* height: 300px; */
     background: white;
     margin-right: 20px;
@@ -268,7 +268,7 @@ const decrement = () => {
 }
 .phai {
     padding: 20px 20px 30px 20px;
-    width: 350px;
+    width: 300px;
     background: white;
     /* height: 400px; */
     border-radius: 10px;

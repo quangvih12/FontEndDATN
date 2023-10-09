@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 import AppLayout from '@/layout/AppLayout.vue';
 import AppLayoutKH from '@/layout/KhachHang/AppLayoutKH.vue';
+import AppLayoutBH from '@/layout/BanHang/AppLayoutBH.vue';
 
 const router = createRouter({
     history: createWebHashHistory(),
@@ -39,7 +40,8 @@ const router = createRouter({
                     path: '/detail',
                     name: 'detail',
                     component: () => import('@/components/KhachHang/DetailSanPham.vue')
-                },{
+                },
+                {
                     path: '/gio-hang',
                     name: 'gio-hang',
                     component: () => import('@/components/KhachHang/GioHang/GioHang.vue')
@@ -49,6 +51,16 @@ const router = createRouter({
                     name: 'lich-su-sp',
                     component: () => import('@/components/KhachHang/LichSuSP/LichSuSP.vue')
 
+                }
+            ]
+        },
+        {
+            component: AppLayoutBH,
+            children: [
+                {
+                    path: '/ban-hang-tai-quay',
+                    name: 'ban-hang-tai-quay',
+                    component: () => import('@/components/Admin/BanHang/BanHangTaiQuay.vue')
                 }
             ]
         },
