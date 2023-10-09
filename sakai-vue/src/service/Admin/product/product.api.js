@@ -7,6 +7,7 @@ export const ProductStore = defineStore('product', {
     images: [],
     sizes: [],
     mauSacs: [],
+    excels: [],
   }),
   actions: {
     async fetchAll() {
@@ -64,6 +65,18 @@ export const ProductStore = defineStore('product', {
       } catch (error) {
         console.error('Lỗi khi kiểm tra trùng lặp tên sản phẩm:', error);
         throw error; // Nếu có lỗi, ném ngoại lệ để xử lý ở một nơi khác
+      }
+    },
+    
+
+    async uploadFile(formData){
+      try {
+        const response = await axios.post("/api/products/view-data", formData);
+        const newProductData = response.data;
+      //  console.log(response.data);
+        this.excels.unshift(newProductData);
+      } catch (error) {
+        console.error("Lỗi khi gọi API:", error);
       }
     },
 
