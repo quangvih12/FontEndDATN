@@ -4,22 +4,19 @@ import { useLayout } from '@/layout/composables/layout';
 import { useRouter } from 'vue-router';
 
 const { layoutConfig, onMenuToggle } = useLayout();
-
 const outsideClickListener = ref(null);
 const topbarMenuActive = ref(false);
 const router = useRouter();
-
 onMounted(() => {
     bindOutsideClickListener();
 });
-
 onBeforeUnmount(() => {
     unbindOutsideClickListener();
 });
-
 const logoUrl = computed(() => {
     return `https://nontrum.vn/wp-content/uploads/2021/12/NonTrum-logo-2022png.png`;
 });
+
 
 const onTopBarMenuButton = () => {
     topbarMenuActive.value = !topbarMenuActive.value;
@@ -52,10 +49,8 @@ const unbindOutsideClickListener = () => {
 };
 const isOutsideClicked = (event) => {
     if (!topbarMenuActive.value) return;
-
     const sidebarEl = document.querySelector('.layout-topbar-menu');
     const topbarEl = document.querySelector('.layout-topbar-menu-button');
-
     return !(sidebarEl.isSameNode(event.target) || sidebarEl.contains(event.target) || topbarEl.isSameNode(event.target) || topbarEl.contains(event.target));
 };
 </script>
@@ -78,3 +73,4 @@ const isOutsideClicked = (event) => {
 </template>
 
 <style lang="scss" scoped></style>
+

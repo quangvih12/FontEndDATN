@@ -4,9 +4,11 @@ import AppTopbar from '../BanHang/AppTopbarBH.vue';
 import AppFooter from '../BanHang/AppFooterBH.vue';
 import { useLayout } from '@/layout/composables/layout';
 
+
 const { layoutConfig, layoutState, isSidebarActive } = useLayout();
 
 const outsideClickListener = ref(null);
+
 
 watch(isSidebarActive, (newVal) => {
     if (newVal) {
@@ -93,5 +95,6 @@ const isOutsideClicked = (event) => {
     text-align: center;
     padding: 10px;
 }
+
 </style>
 

@@ -126,21 +126,21 @@ watch(
 </script>
 
 <template>
-    <div class="grid">
+
+    <div class="card">
         <div class="card">
-            <div class="card">
-                <TabView>
-                    <TabPanel header="Thống kê hoá đơn">
-                        <ThongKeHoaDon></ThongKeHoaDon>
-                    </TabPanel>
-                    <TabPanel header="Thống kê sản phẩm">
-                        <ThongKeSanPham></ThongKeSanPham>
-                    </TabPanel>
-                    <TabPanel header="Thống kê doanh thu">
-                        <ThongKeTheoNgay></ThongKeTheoNgay>
-                    </TabPanel>
-                </TabView>
-            </div>
+            <TabView>
+                <TabPanel header="Thống kê hoá đơn">
+                    <ThongKeHoaDon></ThongKeHoaDon>
+                </TabPanel>
+                <TabPanel header="Thống kê sản phẩm">
+                    <ThongKeSanPham></ThongKeSanPham>
+                </TabPanel>
+                <TabPanel header="Thống kê doanh thu">
+                    <ThongKeTheoNgay></ThongKeTheoNgay>
+                </TabPanel>
+            </TabView>
+
         </div>
         <!-- <div class="col-12 lg:col-6 xl:col-3">
             <div class="card mb-0">
