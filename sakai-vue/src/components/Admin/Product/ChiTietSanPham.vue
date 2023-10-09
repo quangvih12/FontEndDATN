@@ -6,6 +6,7 @@ import AddProduct from './addProduct.vue';
 import { useToast } from 'primevue/usetoast';
 import UpdateProduct from './updateProduct.vue';
 import Detail from './DetailProduct.vue';
+import ProgressSpinner from 'primevue/progressspinner';
 
 const productStore = ProductStore();
 const toast = useToast();
@@ -173,7 +174,7 @@ const getStatusLabel = (trangThai) => {
             return { text: 'tồn kho', severity: 'danger' };;
 
         default:
-            return null;
+            return { text: 'Trạng thái không xác định', severity: 'info' };
     }
 };
 
@@ -188,6 +189,92 @@ const deleteProduct = (id) => {
     products.value = productStore.products;
     toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Xoá thành công', life: 3000 });
     deleteProductDialog.value = false;
+};
+const position = ref('center');
+const visible = ref(false);
+const showProgressSpinner = ref(false);
+const dis = ref(true);
+
+const openPosition = (pos) => {
+    position.value = pos;
+    visible.value = true;
+
+}
+
+const closePosition = () => {
+    visible.value = false;
+    loadProducts();
+};
+
+const setNameFile = ref('');
+const handRemovefile = () => {
+    setNameFile.value = '';
+};
+
+
+const excel = ref({});
+const handImportExcel = async (event) => {
+    showProgressSpinner.value = true;
+    dis.value = false;
+    const selectedFile = event.target.files[0];
+    setNameFile.value = event.target.files[0].name;
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+    await productStore.uploadFile(formData);
+    excel.value = productStore.excels;
+    for (const o of excel.value) {
+        if (o.totalError === 0) {
+            console.log(o)
+            toast.add({ severity: 'success', summary: 'Success Message', detail: 'Import excel thành công', life: 3000 });
+        }
+        else {
+            for (const data of o.responseList) {
+                if (data.giaBan === null) {
+                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageGiaBan, life: 30000 });
+                }
+                if (data.demLot === null) {
+                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageDemLot, life: 30000 });
+                }
+                if (data.giaNhap === null) {
+                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageGiaNhap, life: 30000 });
+                }
+                if (data.tenSanPham === null) {
+                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSanPham, life: 30000 });
+                }
+                if (data.valueTrongLuong === null) {
+                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageTrongLuong, life: 30000 });
+                }
+                if (data.tenVatLieu === null) {
+                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageVatLieu, life: 30000 });
+                }
+                if (data.tenThuongHieu === null) {
+                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageThuongHieu, life: 30000 });
+                }
+                if (data.tenSize === null) {
+                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSize, life: 30000 });
+                }
+                if (data.tenMau === null) {
+                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageMauSac, life: 30000 });
+                }
+                if (data.tenLoai === null) {
+                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageLoai, life: 30000 });
+                }
+                if (data.soLuong === null) {
+                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSoLuong, life: 30000 });
+                }
+                if (data.quaiDeo === null) {
+                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageQuaiDeo, life: 30000 });
+                }
+                if (data.soLuongSize === null) {
+                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSoLuongSize, life: 30000 });
+                }
+
+            }
+        }
+    }
+    showProgressSpinner.value = false;
+    dis.value = true;
+ //   loadProducts();
 };
 
 </script>
@@ -209,9 +296,9 @@ const deleteProduct = (id) => {
                         </template>
 
                         <template v-slot:end>
-                            <FileUpload mode="basic" accept="image/*" :maxFileSize="1000000" label="Import"
-                                chooseLabel="Import" class="mr-2 inline-block" />
-                            <Button label="Export" icon="pi pi-upload" class="p-button-help" @click="exportCSV($event)" />
+
+                            <Button label="Import excel" icon="pi pi-download" @click="openPosition('top')"
+                                style="min-width: 10rem" severity="secondary" rounded />
                         </template>
                     </Toolbar>
 
@@ -327,9 +414,38 @@ const deleteProduct = (id) => {
                                 @click="deleteProduct(product.id)" />
                         </template>
                     </Dialog>
+
+                    <Dialog v-model:visible="visible" header="Import excel" :style="{ width: '400px' }" :position="position"
+                        :modal="true" :draggable="false">
+                        <div class="flex align-items-center justify-content-center">
+                            <div v-if="dis">
+                                <div class="custom-file-upload">
+                                    <label class="upload-button">{{ setNameFile == "" ? "Tải lên tệp Excel" : setNameFile
+                                    }}<input type="file" name="excelFile" accept=".xls, .xlsx"
+                                            @change="handImportExcel($event)"></label>
+
+                                </div>
+                                <Button icon="pi pi-trash" class="p-button-warning mr-2" @click="handRemovefile()"
+                                    style="width: 35px; height: 35px; margin: 0px 10px 10px 10px" />
+                            </div>
+
+
+                            <ProgressSpinner v-if="showProgressSpinner" />
+                        </div>
+
+                        <template #footer>
+                            <Button label="Export" icon="pi pi-upload" class="p-button" @click="exportCSV($event)" rounded
+                                style="height: 40px; margin-right: 150px;" severity="secondary" />
+                            <Button label="Đóng" icon="pi pi-check" class="p-button" @click="closePosition()"
+                                severity="secondary" rounded style="height: 40px;" />
+                        </template>
+                    </Dialog>
+
+
+
+
                 </section>
                 <section class="right_gh" id="right_gh" style="display: none">
-
 
                     <!-- <Test/> -->
                 </section>
@@ -370,6 +486,42 @@ const deleteProduct = (id) => {
     margin-bottom: 30px;
     margin-left: 10px;
     display: flex;
+}
+
+/* Tạo kiểu cho vùng chọn tệp và nút tải lên */
+.custom-file-upload {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    border: 2px solid rgb(57, 68, 224);
+    border-radius: 10px;
+    width: 150px;
+    height: 50px;
+    text-align: center;
+}
+
+/* Tạo kiểu cho nút tải lên */
+.upload-button {
+    background-color: white;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    color: black;
+    font-weight: 600;
+    margin-top: 5px;
+}
+
+/* Tạo kiểu cho thẻ input */
+.upload-button input[type="file"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    cursor: pointer;
+    opacity: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
 }
 </style>
 
