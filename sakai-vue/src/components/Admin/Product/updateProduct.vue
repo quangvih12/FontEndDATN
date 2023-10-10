@@ -131,9 +131,9 @@ const hideDialog = () => {
 
 const onSubmit = handleSubmit(async (values) => {
     try {
-        //   console.log(values)
+        //    console.log(values)
         await productStore.edit(values);
-        toast.add({ severity: 'success', summary: 'Success Message', detail: 'Thêm thành công', life: 3000 });
+        toast.add({ severity: 'success', summary: 'Success Message', detail: 'update thành công', life: 3000 });
         productDialog.value = false;
         //   reset();
         //   }
@@ -269,16 +269,27 @@ sizes.value.forEach(item => {
 });
 
 const arrayImgMauSac = ref([]);
-function onFileInputImageMauSac(event) {
+function onFileInputImageMauSac( id) {
+    const index = selectedMauSac.value.findIndex(s => s.id === id);
     const files = event.target.files;
+   // const arrayImgMauSacCopy = [...arrayImgMauSac.value]; // Tạo bản sao của mảng arrayImgMauSac
+
     for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const objectURL = URL.createObjectURL(file);
-        arrayImgMauSac.value.push(objectURL);
-
-        imgMauSac.value = arrayImgMauSac.value.join(",").replace(/^,/, '').split(',');
+       for(let j = 0; j < arrayImgMauSac.value.length; j++) {
+        if (j === index) {
+            // Thay thế ảnh tại chỉ mục đã chọn (nếu tồn tại)
+            arrayImgMauSac.value[index] = objectURL;
+        }
+       }
+        
     }
+    // Cập nhật giá trị imgMauSac.value sau khi đã duyệt qua tất cả các tệp
+    imgMauSac.value = arrayImgMauSac.value.join(",").replace(/^,/, '').split(',');
 }
+
+
 
 const ImagesProduct = ref([]);
 function onFileInputImageProduct(event) {
@@ -464,7 +475,7 @@ const editProduct = () => {
         imagesProduct.value = ImagesProduct.value.join(",").replace(/^,/, '').split(',');
         //  console.log(imagesProduct.value)
     }
-    console.log(props.myProp.img)
+    // console.log(props.myProp.img)
     product.value = { ...editProduct };
     productDialog.value = true;
 };
@@ -847,7 +858,7 @@ const deleteImg = async (img) => {
                                 </div>
 
                                 <FileUpload mode="basic" name="demo[]" accept="image/*" :maxFileSize="1000000"
-                                    @input="onFileInputImageMauSac" style="width: 100px; height: 40px;" />
+                                    @input="onFileInputImageMauSac(color.id)" style="width: 100px; height: 40px;" />
                             </div>
 
                             <br />

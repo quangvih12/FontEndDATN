@@ -35,8 +35,11 @@ onBeforeMount(() => {
 });
 
 const products = ref([]);
-
+const showSpinner = ref(false);
+const visibledatatable = ref(false);
 const loadProducts = async () => {
+    showSpinner.value = true;
+    visibledatatable.value = false;
     await productStore.fetchAll(); // Gọi hàm fetchAll từ Store
     products.value = productStore.products;
     const productList = productStore.products; // Lấy dữ liệu từ Store và gán vào biến products
@@ -56,6 +59,8 @@ const loadProducts = async () => {
 
     products.value = productList;
     //    console.log('sss: ', products.value);
+    showSpinner.value = false;
+    visibledatatable.value = true;
 };
 
 
@@ -93,9 +98,9 @@ onMounted(() => {
     loadProducts();
 });
 
-// const formatCurrency = (value) => {
-//     return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-// };
+const formatCurrency = (value) => {
+    return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+};
 
 const hideDialog = () => {
     productDialog.value = false;
@@ -136,8 +141,6 @@ const isSelectedIndex = (index) => {
 
 const columns = ref([
     { field: 'ma', header: 'Mã' },
-    { field: 'giaBan', header: 'Giá bán' },
-    { field: 'giaNhap', header: 'Giá Nhập' },
     { field: 'thuongHieu', header: 'Thương Hiệu' },
     { field: 'quaiDeo', header: 'Quai đeo' },
     { field: 'demLot', header: 'Đệm lót' },
@@ -189,6 +192,7 @@ const deleteProduct = (id) => {
     products.value = productStore.products;
     toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Xoá thành công', life: 3000 });
     deleteProductDialog.value = false;
+   
 };
 const position = ref('center');
 const visible = ref(false);
@@ -224,57 +228,72 @@ const handImportExcel = async (event) => {
     excel.value = productStore.excels;
     for (const o of excel.value) {
         if (o.totalError === 0) {
-            console.log(o)
+           // console.log(o)
             toast.add({ severity: 'success', summary: 'Success Message', detail: 'Import excel thành công', life: 3000 });
+            break;
         }
         else {
             for (const data of o.responseList) {
                 if (data.giaBan === null) {
                     toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageGiaBan, life: 30000 });
+                   
                 }
                 if (data.demLot === null) {
                     toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageDemLot, life: 30000 });
+                   
                 }
                 if (data.giaNhap === null) {
                     toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageGiaNhap, life: 30000 });
+                   
                 }
                 if (data.tenSanPham === null) {
                     toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSanPham, life: 30000 });
+                    
                 }
                 if (data.valueTrongLuong === null) {
                     toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageTrongLuong, life: 30000 });
+                   
                 }
                 if (data.tenVatLieu === null) {
                     toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageVatLieu, life: 30000 });
+                 
                 }
                 if (data.tenThuongHieu === null) {
                     toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageThuongHieu, life: 30000 });
+                  
                 }
                 if (data.tenSize === null) {
                     toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSize, life: 30000 });
+                  
                 }
                 if (data.tenMau === null) {
                     toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageMauSac, life: 30000 });
+                   
                 }
                 if (data.tenLoai === null) {
                     toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageLoai, life: 30000 });
+                  
                 }
                 if (data.soLuong === null) {
                     toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSoLuong, life: 30000 });
+                  
                 }
                 if (data.quaiDeo === null) {
                     toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageQuaiDeo, life: 30000 });
+                   
                 }
                 if (data.soLuongSize === null) {
                     toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSoLuongSize, life: 30000 });
+                 
                 }
 
             }
+            break;
         }
     }
     showProgressSpinner.value = false;
     dis.value = true;
- //   loadProducts();
+   loadProducts();
 };
 
 </script>
@@ -300,9 +319,12 @@ const handImportExcel = async (event) => {
                             <Button label="Import excel" icon="pi pi-download" @click="openPosition('top')"
                                 style="min-width: 10rem" severity="secondary" rounded />
                         </template>
+                       
                     </Toolbar>
-
-                    <DataTable ref="dt" :value="products" v-model:selection="selectedProducts" dataKey="id"
+                    <div style="margin-left: 500px;">
+                        <ProgressSpinner v-if="showSpinner" />
+                    </div>
+                    <DataTable ref="dt" :value="products" v-model:selection="selectedProducts" dataKey="id" v-if="visibledatatable"
                         :paginator="true" :rows="5" :filters="filters"
                         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                         :rowsPerPageOptions="[5, 10, 25]"
@@ -343,6 +365,18 @@ const handImportExcel = async (event) => {
                             <template #body="slotProps">
                                 <span class="p-column-title">Tên</span>
                                 {{ slotProps.data.ten }}
+                            </template>
+                        </Column>
+                        <Column field="giaBan" header="Giá Bán" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+                            <template #body="slotProps">
+                                <span class="p-column-title">Tên</span>
+                                {{ formatCurrency(slotProps.data.giaBan) }}
+                            </template>
+                        </Column>
+                        <Column field="giaNhap" header="Giá nhập" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+                            <template #body="slotProps">
+                                <span class="p-column-title">Tên</span>
+                                {{ formatCurrency(slotProps.data.giaNhap) }}
                             </template>
                         </Column>
                         <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header"
@@ -400,7 +434,10 @@ const handImportExcel = async (event) => {
                                     @click="confirmDeleteProduct(slotProps.data.id)" />
                             </template>
                         </Column>
+                       
                     </DataTable>
+                   
+                  
                     <Dialog v-model:visible="deleteProductDialog" :style="{ width: '450px' }" header="Xóa Sản phẩm"
                         :modal="true">
                         <div class="flex align-items-center justify-content-center">

@@ -395,8 +395,10 @@ const openNew = () => {
                                 <div style="display: block;">
                                     <div class="t"
                                         style="border: 1px solid black; border-radius: 10px; width: 300px; height:240px; margin-top: -60px;">
-                                        <img :src="imagesChinh" alt=""
-                                            style="width: 275px; height: 230px; top: 50%; left: 50%;  transform: translate(4%, 2%);">
+                                        <img :src="imagesChinh === '' ? '' : imagesChinh"
+                                            alt=""
+                                            style="width: 275px; height: 230px; top: 50%; left: 50%; transform: translate(4%, 2%);">
+
                                     </div>
                                     <div class="buton" style="margin-top: 10px;">
                                         <FileUpload mode="basic" name="demo[]" accept="image/*" :maxFileSize="1000000"
