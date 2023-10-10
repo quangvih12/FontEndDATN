@@ -6,6 +6,7 @@ const apiSize = 'http://localhost:8080/api/size';
 export const SizeStore = defineStore('size', {
     state: () => ({
         data: [],
+        dataByStatus1: [],
         //nếu đang ở load tất cả thì là 0
         check: 0
     }),
@@ -25,6 +26,9 @@ export const SizeStore = defineStore('size', {
             this.check = 1;
             try {
                 const response = await axios.get(apiSize + '/trang-thai?trangThai=' + status);
+                if (status === 1) {
+                    this.dataByStatus1 = response.data.data;
+                }
                 this.data = response.data.data;
             } catch (error) {
                 console.error('Error fetching users:', error);
@@ -34,8 +38,10 @@ export const SizeStore = defineStore('size', {
             axios.post(apiSize + '/add', form).then((response) => {
                 if (this.check == 0) {
                     this.data.unshift(response.data.data);
+                    if (response.data.data.trangThai == 1) this.dataByStatus1.unshift(response.data.data);
                 } else {
                     if (this.data[0].trangThai == response.data.data.trangThai) this.data.unshift(response.data.data);
+                    if (response.data.data.trangThai == 1) this.dataByStatus1.unshift(response.data.data);
                 }
             });
         },
@@ -45,6 +51,12 @@ export const SizeStore = defineStore('size', {
                     if (id == this.data[i].id) {
                         this.data[i].ten = form.ten;
                         this.data[i].moTa = form.moTa;
+                    }
+                }
+                for (let i = 0; i < this.dataByStatus1.length; i++) {
+                    if (id == this.dataByStatus1[i].id) {
+                        this.dataByStatus1[i].ten = form.ten;
+                        this.dataByStatus1[i].moTa = form.moTa;
                     }
                 }
             });
@@ -57,6 +69,13 @@ export const SizeStore = defineStore('size', {
                             this.data[i].trangThai = 0;
                         }
                     }
+                    let index = -1;
+                    for (let i = 0; i < this.dataByStatus1.length; i++) {
+                        if (id == this.dataByStatus1[i].id) {
+                            index = i;
+                        }
+                    }
+                    this.dataByStatus1.splice(index, 1);
                 } else {
                     if (this.data[0].trangThai != response.data.data.trangThai) {
                         let index = -1;
@@ -66,7 +85,13 @@ export const SizeStore = defineStore('size', {
                             }
                         }
                         this.data.splice(index, 1);
-                        console.log(this.data);
+                        let index2 = -1;
+                        for (let i = 0; i < this.dataByStatus1.length; i++) {
+                            if (id == this.dataByStatus1[i].id) {
+                                index2 = i;
+                            }
+                        }
+                        this.dataByStatus1.splice(index2, 1);
                     }
                 }
             });

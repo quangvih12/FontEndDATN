@@ -20,8 +20,7 @@ const model = ref([
                 label: 'Khuyến Mãi',
                 icon: 'pi pi-fw pi-circle-off',
                 to: '/pages/khuyenmai'
-            }
-            ,
+            },
             {
                 label: 'Voucher',
                 icon: 'pi pi-fw pi-circle-off',
@@ -48,9 +47,15 @@ const model = ref([
                 to: '/pages/mau-sac'
             },
             {
+                label: 'Size',
+                icon: 'pi pi-fw pi-circle-off',
+                to: '/pages/size'
+            },
+            {
                 label: 'Loại',
                 icon: 'pi pi-fw pi-circle-off',
                 to: '/pages/loai'
+
             },
             {
                 label: 'Vật liệu',
@@ -62,12 +67,9 @@ const model = ref([
                 icon: 'pi pi-fw pi-circle-off',
                 to: '/pages/trong-luong'
             },
+
         ]
     }
-
-    
-    
-    
 ]);
 </script>
 
@@ -78,9 +80,7 @@ const model = ref([
             <li v-if="item.separator" class="menu-separator"></li>
         </template>
         <li>
-            <a href="https://www.primefaces.org/primeblocks-vue/#/" target="_blank">
-               
-            </a>
+            <a href="https://www.primefaces.org/primeblocks-vue/#/" target="_blank"> </a>
         </li>
     </ul>
 </template>

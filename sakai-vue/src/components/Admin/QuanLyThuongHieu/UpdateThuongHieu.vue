@@ -77,7 +77,7 @@ const updateProduct = () => {
     } else if (isTenTooLong(form.ten)) {
         toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Sửa thất bại', life: 3000 });
     } else {
-        const respone = useThuongHieuService.createSize(form);
+        const respone = useThuongHieuService.updateSize(props.myProp.id, form);
         productDialog.value = false;
         toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Sửa thành công', life: 3000 });
     }
