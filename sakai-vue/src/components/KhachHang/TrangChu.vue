@@ -1,4 +1,39 @@
 <script setup>
+import { TrangChuStore } from '../../service/KhachHang/TrangChuService';
+import { ref, onMounted, onBeforeMount, watch } from 'vue';
+
+const useTrangChuService = TrangChuStore();
+const dataHangMoi = ref([]);
+const dataFullrace = ref([]);
+const dataTreEm = ref([]);
+
+//load data 3/4
+const loadData = async () => {
+    await useTrangChuService.fetchDataByTenLoai('Fullrace');
+    dataFullrace.value = useTrangChuService.data3Phan4;
+    // console.log(dataFullrace.value);
+};
+
+//load data hang moi
+const loadDataHangMoi = async () => {
+    await useTrangChuService.fetchDataByNgayTao();
+    dataHangMoi.value = useTrangChuService.dataHangMoi;
+    // console.log(dataHangMoi.value);
+};
+
+//load data hang moi
+const loadDataTreEm = async () => {
+    await useTrangChuService.fetchDataByTreEm('Trẻ em');
+    dataTreEm.value = useTrangChuService.dataTreEm;
+    console.log(dataTreEm.value);
+};
+
+onMounted(() => {
+    loadData();
+    loadDataHangMoi();
+    loadDataTreEm();
+});
+
 const banner1 = 'https://nontrum.vn/wp-content/uploads/2023/05/18.5-BANNER-NONTRUM.jpg';
 const thumbnails = [
     {
@@ -6,21 +41,22 @@ const thumbnails = [
         name: 'NÓN 3/4'
     },
     {
-        imageUrl: 'https://nontrum.vn/wp-content/uploads/2019/10/non-balder-vang-1-e1583121638578.jpg',
+        imageUrl: 'https://nontrum.vn/wp-content/uploads/2020/11/rona-luxury-den-bong.jpg',
         name: 'NÓN NỬA ĐẦU'
     },
     {
-        imageUrl: 'https://nontrum.vn/wp-content/uploads/2019/10/non-balder-vang-1-e1583121638578.jpg',
-        name: 'ROC R43 Frozen Xanh',
+        imageUrl: 'https://nontrum.vn/wp-content/uploads/2021/11/XH02-den-4-1-e1637381735829-1.jpg',
+        name: 'NÓN FULLFACE',
         price: '320,000 ₫'
     },
     {
-        imageUrl: 'https://nontrum.vn/wp-content/uploads/2019/10/non-balder-vang-1-e1583121638578.jpg',
+        imageUrl: 'https://nontrum.vn/wp-content/uploads/2020/12/mu-xe-dap-Balder-superkid-khung-long-do-2.jpg',
         name: 'NÓN TRẺ EM',
         price: '320,000 ₫'
     }
     // Thêm các đối tượng khác nếu cần
 ];
+
 const thumbnailsSP = [
     {
         imageUrl: 'https://nontrum.vn/wp-content/uploads/2019/10/non-balder-vang-1-e1583121638578.jpg',
@@ -120,17 +156,18 @@ const banner9 =
                     </div>
                 </div>
             </div>
+
             <!-- SP mới -->
             <div class="sp">
                 <div><img :src="banner4" alt="Thumbnail" class="banner2" /></div>
                 <div><img :src="banner5" alt="Thumbnail" class="banner3" /></div>
                 <div>
                     <div class="thumbnail-list-sp">
-                        <div class="thumbnail-sp" v-for="(thumbnail, index) in thumbnailsSP" :key="index">
+                        <div class="thumbnail-sp" v-for="(spct, index) in dataHangMoi" :key="index">
                             <a href="http://localhost:5173/#/trang-chu">
-                                <img :src="thumbnail.imageUrl" alt="Thumbnail" />
-                                <p class="ten-sp">{{ thumbnail.name }}</p>
-                                <p class="gia-sp">{{ thumbnail.price }}</p>
+                                <img :src="spct.sanPham.anh" alt="Thumbnail" />
+                                <p class="ten-sp">{{ spct.sanPham.ten }}</p>
+                                <p class="gia-sp">{{ spct.giaBan }}đ</p>
                             </a>
                         </div>
                     </div>
@@ -143,11 +180,11 @@ const banner9 =
                 <div><img :src="banner7" alt="Thumbnail" class="banner3" /></div>
                 <div>
                     <div class="thumbnail-list-sp">
-                        <div class="thumbnail-sp" v-for="(thumbnail, index) in thumbnailsSP" :key="index">
+                        <div class="thumbnail-sp" v-for="(ctsp, index) in dataFullrace" :key="index">
                             <a href="http://localhost:5173/#/trang-chu">
-                                <img :src="thumbnail.imageUrl" alt="Thumbnail" />
-                                <p class="ten-sp">{{ thumbnail.name }}</p>
-                                <p class="gia-sp">{{ thumbnail.price }}</p>
+                                <img :src="ctsp.sanPham.anh" alt="Thumbnail" />
+                                <p class="ten-sp">{{ ctsp.sanPham.ten }}</p>
+                                <p class="gia-sp">{{ ctsp.giaBan }}đ</p>
                             </a>
                         </div>
                     </div>
@@ -160,11 +197,11 @@ const banner9 =
                 <div><img :src="banner9" alt="Thumbnail" class="banner3" /></div>
                 <div>
                     <div class="thumbnail-list-sp">
-                        <div class="thumbnail-sp" v-for="(thumbnail, index) in thumbnailsSP" :key="index">
+                        <div class="thumbnail-sp" v-for="(ctsp, index) in dataTreEm" :key="index">
                             <a href="http://localhost:5173/#/trang-chu">
-                                <img :src="thumbnail.imageUrl" alt="Thumbnail" />
-                                <p class="ten-sp">{{ thumbnail.name }}</p>
-                                <p class="gia-sp">{{ thumbnail.price }}</p>
+                                <img :src="ctsp.sanPham.anh" alt="Thumbnail" />
+                                <p class="ten-sp">{{ ctsp.sanPham.ten }}</p>
+                                <p class="gia-sp">{{ ctsp.giaBan }}đ</p>
                             </a>
                         </div>
                     </div>

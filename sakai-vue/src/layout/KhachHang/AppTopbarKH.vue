@@ -62,7 +62,7 @@ const isOutsideClicked = (event) => {
 
 <template>
     <div class="layout-topbar">
-        <router-link to="/trang-chu" class="layout-topbar-logo">
+        <router-link to="/" class="layout-topbar-logo">
             <img :src="logoUrl" alt="logo" />
         </router-link>
 
@@ -75,13 +75,13 @@ const isOutsideClicked = (event) => {
         </button>
 
         <div class="layout-topbar-menu">
-            <router-link to="/trang-chu" class="layout-topbar-logo" style="width: 13%; margin-left: 10px">
+            <router-link to="/" class="layout-topbar-logo" style="width: 13%; margin-left: 10px">
                 <p style="font-size: 19px">Home</p>
             </router-link>
-            <router-link to="/trang-chu" class="layout-topbar-logo" style="width: 22%; margin-left: 10px">
+            <router-link to="/" class="layout-topbar-logo" style="width: 22%; margin-left: 10px">
                 <p style="font-size: 19px">Sản phẩm</p>
             </router-link>
-            <router-link to="/trang-chu" class="layout-topbar-logo" style="width: 28%; margin-left: 10px">
+            <router-link to="/" class="layout-topbar-logo" style="width: 28%; margin-left: 10px">
                 <p style="font-size: 19px">Về chúng tôi</p>
             </router-link>
             <router-link to="/pages/size" class="layout-topbar-logo" style="width: 16%; margin-left: 10px">
