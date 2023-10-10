@@ -106,7 +106,7 @@ export const ProductStore = defineStore('product', {
         const index = this.products.findIndex(product => product.id === updatedProduct.id);
         if (index !== -1) {
           let newProductData = this.products[index];
-
+          newProductData =  response.data;
           newProductData['size'] = null;
           newProductData['img'] = null;
           newProductData['mauSac'] = null;
@@ -116,8 +116,10 @@ export const ProductStore = defineStore('product', {
           newProductData['size'] = img_d;
           const img = await this.fetchAllImage(newProductData.id);
           newProductData['img'] = img;
-
-          newProductData = response.data; // Cập nhật thông tin sản phẩm trong danh sách
+         
+          this.products[index] = newProductData;
+        //   console.log('pro: ',this.products[index]);
+        //  console.log('new: ',newProductData);
         }
       } catch (error) {
         console.error('Lỗi khi sửa sản phẩm:', error);
@@ -125,8 +127,8 @@ export const ProductStore = defineStore('product', {
     },
     async delete(productId) {
       try {
-        await axios.put(`/api/products/${productId}/delete`); // Thay đổi URL tùy theo API của bạn
         this.products = this.products.filter(product => product.id !== productId); // Xóa sản phẩm khỏi danh sách
+        await axios.put(`/api/products/${productId}/delete`);
       } catch (error) {
         console.error('Lỗi khi xóa sản phẩm:', error);
       }
