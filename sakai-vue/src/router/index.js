@@ -46,7 +46,7 @@ const router = createRouter({
                 {
                     path: '/uikit/quan-ly-hoa-don',
                     name: 'quan-ly-hoa-don',
-                    component: () => import('@/views/uikit/QuanLyHoaDon.vue')
+                    component: () => import('@/components/Admin/HoaDon/QuanLyHoaDon.vue')
                 },
                 {
                     path: '/uikit/list',
@@ -139,13 +139,13 @@ const router = createRouter({
                 {
                     path: '/pages/khuyenmai',
                     name: 'khuyenmai',
-                    component: () => import('@/views/pages/KhuyenMai.vue')
+                    component: () => import('@/components/Admin/KhuyenMai/KhuyenMai.vue')
                 }
                 ,
                 {
                     path: '/pages/voucher',
                     name: 'voucher',
-                    component: () => import('@/views/pages/Voucher.vue')
+                    component: () => import('@/components/Admin/Voucher/Voucher.vue')
                 },
                 {
                     path: '/pages/crud',
@@ -155,7 +155,7 @@ const router = createRouter({
                 {
                     path: '/pages/product',
                     name: 'product',
-                    component: () => import('@/views/pages/Product/ChiTietSanPham.vue')
+                    component: () => import('@/components/Admin/Product/ChiTietSanPham.vue')
                 },
                 {
                     path: '/documentation',

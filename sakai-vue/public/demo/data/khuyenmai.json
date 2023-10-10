@@ -1,0 +1,49 @@
+{
+    "data":[
+
+        {   "id":1,
+            "ma":"KM1",
+            "ten":"Back to school",
+            "thoiGianBatDau":"2023-11-15",
+            "thoiGianKetThuc":"2023-11-23",
+            "giamToiDa":10,
+            "moTa":"giảm 5% giá tiền",
+            "ngayTao":"2023-11-15",
+            "ngaySua":"2023-11-23",
+            "soLuong":5,
+            "giaTri":100,
+            "dieuKien":"",
+            "trangThai":1
+        },
+        {   
+            "id":2,
+            "ma":"KM2",
+            "ten":"Sale 10/10",
+            "thoiGianBatDau":"2023-11-15",
+            "thoiGianKetThuc":"2023-11-23",
+            "giamToiDa":8,
+            "moTa":"giảm 7% giá tiền",
+            "ngayTao":"2023-11-15",
+            "ngaySua":"2023-11-23",
+            "soLuong":7,
+            "giaTri":100,
+            "dieuKien":"",
+            "trangThai":0
+        }
+        , { 
+            "id":3,
+            "ma":"KM3",
+            "ten":"Siêu sale hè",
+            "thoiGianBatDau":"2023-11-15",
+            "thoiGianKetThuc":"2023-11-23",
+            "giamToiDa":6,
+            "moTa":"giảm 6% giá tiền",
+            "soLuong":6,
+            "ngayTao":"2023-11-15",
+            "ngaySua":"2023-11-23",
+            "giaTri":100,
+            "dieuKien":"",
+            "trangThai":2
+        }
+    ]
+}

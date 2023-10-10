@@ -1,5 +1,5 @@
 <script setup>
-import ProductService from '@/service/ProductService';
+import ProductService from '@/service/TestService/ProductService.js';
 import { ref, defineProps, onMounted } from 'vue';
 
 const props = defineProps({
