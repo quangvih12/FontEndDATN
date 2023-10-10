@@ -115,7 +115,7 @@ const updateProduct = () => {
                     <div class="Field col-12" style="margin-bottom: 30px">
                         <span class="p-float-label">
                             <InputText id="ten" name="ten" type="text" v-model="ten" :class="{ 'p-invalid': tenError }" v-model.trim="product.ten" required="true" autofocus />
-                            <label for="username">Tên loại</label>
+                            <label for="username">Tên màu sắc</label>
                         </span>
                         <small class="p-error">{{ tenError }}</small>
                     </div>

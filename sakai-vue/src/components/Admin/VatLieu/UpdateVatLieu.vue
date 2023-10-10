@@ -2,10 +2,10 @@
 import { ref } from 'vue';
 import { useForm, useField } from 'vee-validate';
 import * as yup from 'yup';
-import { useVatLieuService } from '../../../service/Admin/VatLieu/VatLieuService';
+import { VatLieuStore } from '../../../service/Admin/VatLieu/VatLieu.api';
 import { useToast } from 'primevue/usetoast';
 
-const vatLieuService = useVatLieuService();
+const vatLieuService = VatLieuStore();
 const toast = useToast();
 const product = ref({});
 const submitted = ref(false);
