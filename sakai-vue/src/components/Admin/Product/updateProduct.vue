@@ -108,9 +108,9 @@ const hideDialog = () => {
 
 const onSubmit = handleSubmit(async (values) => {
     try {
-        //   console.log(values)
+        //    console.log(values)
         await productStore.edit(values);
-        toast.add({ severity: 'success', summary: 'Success Message', detail: 'Thêm thành công', life: 3000 });
+        toast.add({ severity: 'success', summary: 'Success Message', detail: 'update thành công', life: 3000 });
         productDialog.value = false;
         //   reset();
         //   }
@@ -238,16 +238,28 @@ sizes.value.forEach((item) => {
 });
 
 const arrayImgMauSac = ref([]);
-function onFileInputImageMauSac(event) {
+function onFileInputImageMauSac( id) {
+    const index = selectedMauSac.value.findIndex(s => s.id === id);
     const files = event.target.files;
+   // const arrayImgMauSacCopy = [...arrayImgMauSac.value]; // Tạo bản sao của mảng arrayImgMauSac
+
     for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const objectURL = URL.createObjectURL(file);
-        arrayImgMauSac.value.push(objectURL);
+       for(let j = 0; j < arrayImgMauSac.value.length; j++) {
+        if (j === index) {
+            // Thay thế ảnh tại chỉ mục đã chọn (nếu tồn tại)
+            arrayImgMauSac.value[index] = objectURL;
+        }
+       }
+        
 
-        imgMauSac.value = arrayImgMauSac.value.join(',').replace(/^,/, '').split(',');
     }
+    // Cập nhật giá trị imgMauSac.value sau khi đã duyệt qua tất cả các tệp
+    imgMauSac.value = arrayImgMauSac.value.join(",").replace(/^,/, '').split(',');
 }
+
+
 
 const ImagesProduct = ref([]);
 function onFileInputImageProduct(event) {
@@ -428,7 +440,9 @@ const editProduct = () => {
         imagesProduct.value = ImagesProduct.value.join(',').replace(/^,/, '').split(',');
         //  console.log(imagesProduct.value)
     }
-    console.log(props.myProp.img);
+
+    // console.log(props.myProp.img)
+
     product.value = { ...editProduct };
     productDialog.value = true;
 };
@@ -739,7 +753,9 @@ const deleteImg = async (img) => {
                                     <Button icon="pi pi-trash" class="p-button-warning mr-2" @click="deleteMauSac(color.id)" style="width: 25px; height: 25px; margin-left: 17px; margin-bottom: 25px" />
                                 </div>
 
-                                <FileUpload mode="basic" name="demo[]" accept="image/*" :maxFileSize="1000000" @input="onFileInputImageMauSac" style="width: 100px; height: 40px" />
+
+                                <FileUpload mode="basic" name="demo[]" accept="image/*" :maxFileSize="1000000"
+                                    @input="onFileInputImageMauSac(color.id)" style="width: 100px; height: 40px;" />
                             </div>
 
                             <br />
