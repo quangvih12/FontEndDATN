@@ -108,7 +108,7 @@ const hideDialog = () => {
 
 const onSubmit = handleSubmit(async (values) => {
     try {
-        //    console.log(values)
+            console.log(values)
         await productStore.edit(values);
         toast.add({ severity: 'success', summary: 'Success Message', detail: 'update thành công', life: 3000 });
         productDialog.value = false;
@@ -238,25 +238,27 @@ sizes.value.forEach((item) => {
 });
 
 const arrayImgMauSac = ref([]);
-function onFileInputImageMauSac( id) {
+function onFileInputImageMauSac(id) {
+    console.log('tc', imgMauSac.value);
     const index = selectedMauSac.value.findIndex(s => s.id === id);
     const files = event.target.files;
-   // const arrayImgMauSacCopy = [...arrayImgMauSac.value]; // Tạo bản sao của mảng arrayImgMauSac
 
     for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const objectURL = URL.createObjectURL(file);
-       for(let j = 0; j < arrayImgMauSac.value.length; j++) {
-        if (j === index) {
-            // Thay thế ảnh tại chỉ mục đã chọn (nếu tồn tại)
-            arrayImgMauSac.value[index] = objectURL;
-        }
-       }
-        
 
+        // Kiểm tra nếu index hợp lệ, sau đó cập nhật giá trị tại index đó
+        if (index >= 0 && index < arrayImgMauSac.value.length) {
+            arrayImgMauSac.value[index] = objectURL;
+        } else {
+            // Nếu index không hợp lệ, hãy thêm objectURL vào cuối mảng
+            arrayImgMauSac.value.push(objectURL);
+        }
     }
+
     // Cập nhật giá trị imgMauSac.value sau khi đã duyệt qua tất cả các tệp
     imgMauSac.value = arrayImgMauSac.value.join(",").replace(/^,/, '').split(',');
+    console.log('sau', imgMauSac.value);
 }
 
 
@@ -363,7 +365,7 @@ const editProduct = () => {
     } else {
         vatLieu.value = null;
     }
-
+ //   console.log(dataTrongLuong.value)
     const selectedTrongLuongs = dataTrongLuong.value.find((item) => item.value === parseInt(props.myProp.trongLuong, 10));
     selectedTrongLuong.value = selectedTrongLuongs;
     if (selectedTrongLuong.value) {
