@@ -52,6 +52,16 @@ const model = ref([
                 icon: 'pi pi-fw pi-circle-off',
                 to: '/pages/loai'
             },
+            {
+                label: 'Vật liệu',
+                icon: 'pi pi-fw pi-circle-off',
+                to: '/pages/vat-lieu'
+            },
+            {
+                label: 'Trọng lượng',
+                icon: 'pi pi-fw pi-circle-off',
+                to: '/pages/trong-luong'
+            },
         ]
     }
 
