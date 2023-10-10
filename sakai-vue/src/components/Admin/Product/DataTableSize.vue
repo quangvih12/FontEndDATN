@@ -2,7 +2,7 @@
 import ProductService from '@/service/ProductService';
 import { ref, defineProps, onMounted } from 'vue';
 import { useToast } from 'primevue/usetoast';
-import View from '../QuanLyThuongHieu/ViewThuongHieu.vue';
+import View from '../QuanLySize/ViewSize.vue';
 import ThemThuongHieu from '../QuanLyThuongHieu/ThemThuongHieu.vue';
 import DetailThuongHieu from '../QuanLyThuongHieu/DetailThuongHieu.vue';
 import UpdateThuongHieu from '../QuanLyThuongHieu/UpdateThuongHieu.vue';
@@ -49,8 +49,6 @@ onMounted(() => {
     loadDataThuongHieu();
 });
 
-
-
 const open = () => {
     display.value = true;
 };
@@ -65,15 +63,11 @@ const products = ref(null);
 
 <template>
     <div>
-        <Dialog header="Thương hiệu" v-model:visible="display" :breakpoints="{ '960px': '75vw' }" :style="{ width: '800px',height:'800px' }"
-            :modal="true">
-             <View></View>
+        <Dialog header="Size" v-model:visible="display" :breakpoints="{ '960px': '75vw' }" :style="{ width: '800px', height: '800px' }" :modal="true">
+            <View></View>
 
-            <template #footer>
-
-            </template>
+            <template #footer> </template>
         </Dialog>
-        <Button type="button" icon="pi pi-pencil" @click="open" class="p-button-success"
-            style="width: 50px; height: 40px; margin-left: 20px" />
+        <Button type="button" icon="pi pi-pencil" @click="open" class="p-button-success" style="width: 50px; height: 40px; margin-left: 20px" />
     </div>
 </template>
