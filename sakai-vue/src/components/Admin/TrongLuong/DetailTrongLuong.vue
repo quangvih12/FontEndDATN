@@ -27,11 +27,6 @@ const editProduct = () => {
             </div>
             <div class="col-12">
                 <label
-                    >Value: <span>{{ myProp.value }}</span></label
-                >
-            </div>
-            <div class="col-12">
-                <label
                     >Đơn vị: <span>{{ myProp.donVi }}</span></label
                 >
             </div>
