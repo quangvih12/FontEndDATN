@@ -3,7 +3,8 @@ import axios from '../../axios/axiosPort';
 
 export const TrongLuongStore = defineStore('trongLuong', {
     state: () => ({
-        data: []
+        data: [],
+        check: 0
     }),
     actions: {
         async fetchAll() {
@@ -32,6 +33,7 @@ export const TrongLuongStore = defineStore('trongLuong', {
                 } else {
                     if (this.data[0].trangThai == response.data.data.trangThai) this.data.unshift(response.data.data);
                 }
+                console.log(response.data.data);
             });
         },
         updateTrongLuong(id, form) {
@@ -39,7 +41,7 @@ export const TrongLuongStore = defineStore('trongLuong', {
                 for (let i = 0; i < this.data.length; i++) {
                     if (id == this.data[i].id) {
                         this.data[i].donVi = form.donVi;
-                        this.data[i].moTa = form.moTa;
+                        this.data[i].value = form.value;
                     }
                 }
             });
