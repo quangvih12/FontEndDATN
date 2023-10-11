@@ -3,14 +3,16 @@ import axios from '../../axios/axiosPort';
 
 export const TrongLuongStore = defineStore('trongLuong', {
     state: () => ({
-        data: []
+        data: [],
+        check: 0
     }),
     actions: {
         async fetchAll() {
+            this.check = 0;
             try {
                 const response = await axios.get('/api/trong-luong'); // Thay đổi URL dựa trên API của bạn
                 this.data = response.data.data;
-                // console.table(this.products);
+                // console.table(this.data);
             } catch (error) {
                 console.error('Lỗi khi lấy danh sách sản phẩm:', error);
             }
@@ -31,6 +33,7 @@ export const TrongLuongStore = defineStore('trongLuong', {
                 } else {
                     if (this.data[0].trangThai == response.data.data.trangThai) this.data.unshift(response.data.data);
                 }
+                console.log(response.data.data);
             });
         },
         updateTrongLuong(id, form) {
@@ -38,7 +41,7 @@ export const TrongLuongStore = defineStore('trongLuong', {
                 for (let i = 0; i < this.data.length; i++) {
                     if (id == this.data[i].id) {
                         this.data[i].donVi = form.donVi;
-                        this.data[i].moTa = form.moTa;
+                        this.data[i].value = form.value;
                     }
                 }
             });
