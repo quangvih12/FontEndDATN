@@ -7,10 +7,11 @@ export const TrongLuongStore = defineStore('trongLuong', {
     }),
     actions: {
         async fetchAll() {
+            this.check = 0;
             try {
                 const response = await axios.get('/api/trong-luong'); // Thay đổi URL dựa trên API của bạn
                 this.data = response.data.data;
-                // console.table(this.products);
+                // console.table(this.data);
             } catch (error) {
                 console.error('Lỗi khi lấy danh sách sản phẩm:', error);
             }
