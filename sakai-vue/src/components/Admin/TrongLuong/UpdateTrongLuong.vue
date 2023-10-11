@@ -2,11 +2,11 @@
 import { ref } from 'vue';
 import { useForm, useField } from 'vee-validate';
 import * as yup from 'yup';
-import { useTrongLuongService } from '../../../service/Admin/TrongLuong/TrongLuongService';
+import { TrongLuongStore } from '../../../service/Admin/TrongLuong/TrongLuong.api';
 import { useToast } from 'primevue/usetoast';
 
 const toast = useToast();
-const TrongLuongService = useTrongLuongService();
+const TrongLuongService = TrongLuongStore();
 const product = ref({});
 const submitted = ref(false);
 const productDialog = ref(false);

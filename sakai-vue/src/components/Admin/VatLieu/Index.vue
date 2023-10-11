@@ -4,10 +4,10 @@ import { ref, onMounted, onBeforeMount, watch } from 'vue';
 import Them from './ThemVatLieu.vue';
 import Detail from './DetailVatLieu.vue';
 import Update from './UpdateVatLieu.vue';
-import { useVatLieuService } from '../../../service/Admin/VatLieu/VatLieuService';
+import { VatLieuStore } from '../../../service/Admin/VatLieu/VatLieu.api';
 import { useToast } from 'primevue/usetoast';
 
-const vatLieuService = useVatLieuService();
+const vatLieuService = VatLieuStore();
 const toast = useToast();
 const deleteProductDialog = ref(false);
 const product = ref({});
@@ -32,7 +32,7 @@ const dataVatLieu = ref([]);
 
 //load data màu sắc theo trạng thái
 const loadDataVatLieu = async () => {
-    await vatLieuService.fetchData();
+    await vatLieuService.fetchAll();
     dataVatLieu.value = vatLieuService.data;
 };
 

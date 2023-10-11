@@ -4,10 +4,10 @@ import { ref, onMounted, onBeforeMount, watch } from 'vue';
 import Them from '../../../components/Admin/TrongLuong/ThemTrongLuong.vue';
 import Detail from '../../../components/Admin/TrongLuong/DetailTrongLuong.vue';
 import Update from '../../../components/Admin/TrongLuong/UpdateTrongLuong.vue';
-import { useTrongLuongService } from '../../../service/Admin/TrongLuong/TrongLuongService';
+import { TrongLuongStore } from '../../../service/Admin/TrongLuong/TrongLuong.api';
 import { useToast } from 'primevue/usetoast';
 
-const TrongLuongService = useTrongLuongService();
+const TrongLuongService = TrongLuongStore();
 const toast = useToast();
 const deleteProductDialog = ref(false);
 const product = ref({});
@@ -17,7 +17,7 @@ const filters = ref({});
 const dataTrangThai = ref([
     { label: 'Tất cả', value: 'Tất cả' },
     { label: 'Đang sử dụng', value: '1' },
-    { label: 'Ngừng hoạt động', value: '0' }
+    { label: 'Ngưng sử dụng', value: '0' }
 ]);
 const trangThai = ref();
 const idDelete = ref();
@@ -25,7 +25,7 @@ const dataTrongLuong = ref([]);
 
 //load data màu sắc tất cả
 const loadDataTrongLuong = async () => {
-    await TrongLuongService.fetchData();
+    await TrongLuongService.fetchAll();
     dataTrongLuong.value = TrongLuongService.data;
 };
 
@@ -123,7 +123,7 @@ const initFilters = () => {
                     <Column field="category" header="Trạng thái" :sortable="false" headerStyle="width:14%; min-width:10rem;">
                         <template #body="slotProps">
                             <span class="p-column-title">Category</span>
-                            {{ slotProps.data.trangThai == 1 ? 'Đang sử dụng' : 'Ngừng hoạt động' }}
+                            {{ slotProps.data.trangThai == 1 ? 'Đang sử dụng' : 'Ngưng sử dụng' }}
                         </template>
                     </Column>
 

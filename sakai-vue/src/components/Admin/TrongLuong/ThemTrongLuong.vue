@@ -3,9 +3,9 @@ import { useToast } from 'primevue/usetoast';
 import { useForm, useField } from 'vee-validate';
 import { ref } from 'vue';
 import * as yup from 'yup';
-import { useTrongLuongService } from '../../../service/Admin/TrongLuong/TrongLuongService';
+import { TrongLuongStore } from '../../../service/Admin/TrongLuong/TrongLuong.api';
 
-const TrongLuongService = useTrongLuongService();
+const TrongLuongService = TrongLuongStore();
 const product = ref({});
 const toast = useToast();
 const submitted = ref(false);
