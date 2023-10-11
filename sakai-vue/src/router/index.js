@@ -1,15 +1,75 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 import AppLayout from '@/layout/AppLayout.vue';
+import AppLayoutKH from '@/layout/KhachHang/AppLayoutKH.vue';
+import AppLayoutBH from '@/layout/BanHang/AppLayoutBH.vue';
 
 const router = createRouter({
     history: createWebHashHistory(),
     routes: [
         {
             path: '/',
-            component: AppLayout,
+            component: AppLayoutKH,
             children: [
                 {
                     path: '/',
+                    name: 'trang-chu',
+                    component: () => import('@/components/KhachHang/TrangChu.vue')
+                },
+                {
+
+                    path: '/gioi-thieu',
+                    name: 'gioi-thieu',
+                    component: () => import('@/components/KhachHang/GioiThieu.vue')
+                },
+                {
+                    path: '/thong-tin-khach-hang',
+                    name: 'thong-tin-khach-hang',
+                    component: () => import('@/components/KhachHang/ThongTinKhachHang.vue')
+                },
+                {
+                    path: '/san-pham',
+                    name: 'san-pham',
+                    component: () => import('@/components/KhachHang/SanPham.vue')
+                },
+                {
+                    path: '/thanh-toan',
+                    name: 'thanh-toan',
+                    component: () => import('@/components/KhachHang/ThanhToan.vue')
+                },
+                {
+                    path: '/detail',
+                    name: 'detail',
+                    component: () => import('@/components/KhachHang/DetailSanPham.vue')
+                },
+                {
+                    path: '/gio-hang',
+                    name: 'gio-hang',
+                    component: () => import('@/components/KhachHang/GioHang/GioHang.vue')
+                },
+                {
+                    path: '/lich-su-sp',
+                    name: 'lich-su-sp',
+                    component: () => import('@/components/KhachHang/LichSuSP/LichSuSP.vue')
+
+                }
+            ]
+        },
+        {
+            component: AppLayoutBH,
+            children: [
+                {
+                    path: '/ban-hang-tai-quay',
+                    name: 'ban-hang-tai-quay',
+                    component: () => import('@/components/Admin/BanHang/BanHangTaiQuay.vue')
+                }
+            ]
+        },
+        {
+            path: '/thong-ke',
+            component: AppLayout,
+            children: [
+                {
+                    path: '/thong-ke',
                     name: 'Thống kê',
                     component: () => import('@/components/Admin/ThongKe/index.vue')
                 },
@@ -18,7 +78,7 @@ const router = createRouter({
                     name: 'quan-ly-hoa-don',
                     component: () => import('@/components/Admin/HoaDon/index.vue')
                 },
-               
+
                 {
                     path: '/pages/mau-sac',
                     name: 'mausac',
@@ -29,16 +89,18 @@ const router = createRouter({
                     name: 'loai',
                     component: () => import('@/components/Admin/Loai/index.vue')
                 },
+               
                 {
-                    path: '/pages/khuyenmai',
-                    name: 'khuyenmai',
-                    component: () => import('@/components/Admin/KhuyenMai/KhuyenMai.vue')
-                } ,
-                {
-                    path: '/pages/voucher',
-                    name: 'voucher',
-                    component: () => import('@/components/Admin/Voucher/Voucher.vue')
+                    path: '/pages/trong-luong',
+                    name: 'trongluong',
+                    component: () => import('@/components/Admin/TrongLuong/Index.vue')
                 },
+                {
+                    path: '/pages/vat-lieu',
+                    name: 'vatlieu',
+                    component: () => import('@/components/Admin/VatLieu/Index.vue')
+                },
+              
                 {
                     path: '/pages/product',
                     name: 'product',
@@ -58,7 +120,7 @@ const router = createRouter({
                     path: '/pages/thuong-hieu',
                     name: 'thuong-hieu',
                     component: () => import('@/components/Admin/QuanLyThuongHieu/ViewThuongHieu.vue')
-                },
+                }
                 // {
                 //     path: '/uikit/menu',
                 //     component: () => import('@/views/uikit/Menu.vue'),
@@ -81,8 +143,6 @@ const router = createRouter({
                 //         }
                 //     ]
                 // },
-                
-               
             ]
         }
         // {

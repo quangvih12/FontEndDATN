@@ -17,7 +17,7 @@ const filters = ref({});
 const dataTrangThai = ref([
     { label: 'Tất cả', value: 'Tất cả' },
     { label: 'Đang sử dụng', value: '1' },
-    { label: 'Đã xóa', value: '0' }
+    { label: 'Ngưng sử dụng', value: '0' }
 ]);
 const trangThai = ref();
 const idDelete = ref();
@@ -97,10 +97,10 @@ const initFilters = () => {
                         </div>
                     </template>
 
-                    <template v-slot:end>
+                    <!-- <template v-slot:end>
                         <FileUpload mode="basic" accept="image/*" :maxFileSize="1000000" label="Import" chooseLabel="Import" class="mr-2 inline-block" />
                         <Button label="Export" icon="pi pi-upload" class="p-button-help" @click="exportCSV($event)" />
-                    </template>
+                    </template> -->
                 </Toolbar>
                 <DataTable
                     ref="dt"
@@ -146,7 +146,7 @@ const initFilters = () => {
                     <Column field="category" header="Trạng thái" :sortable="true" headerStyle="width:14%; min-width:10rem;">
                         <template #body="slotProps">
                             <span class="p-column-title">Category</span>
-                            {{ slotProps.data.trangThai == 1 ? 'Đang sử dụng' : 'Đã xóa' }}
+                            {{ slotProps.data.trangThai == 1 ? 'Đang sử dụng' : 'Ngưng sử dụng' }}
                         </template>
                     </Column>
 
