@@ -108,7 +108,7 @@ const hideDialog = () => {
 
 const onSubmit = handleSubmit(async (values) => {
     try {
-            console.log(values)
+        console.log(values);
         await productStore.edit(values);
         toast.add({ severity: 'success', summary: 'Success Message', detail: 'update thành công', life: 3000 });
         productDialog.value = false;
@@ -240,7 +240,7 @@ sizes.value.forEach((item) => {
 const arrayImgMauSac = ref([]);
 function onFileInputImageMauSac(id) {
     console.log('tc', imgMauSac.value);
-    const index = selectedMauSac.value.findIndex(s => s.id === id);
+    const index = selectedMauSac.value.findIndex((s) => s.id === id);
     const files = event.target.files;
 
     for (let i = 0; i < files.length; i++) {
@@ -257,11 +257,9 @@ function onFileInputImageMauSac(id) {
     }
 
     // Cập nhật giá trị imgMauSac.value sau khi đã duyệt qua tất cả các tệp
-    imgMauSac.value = arrayImgMauSac.value.join(",").replace(/^,/, '').split(',');
+    imgMauSac.value = arrayImgMauSac.value.join(',').replace(/^,/, '').split(',');
     console.log('sau', imgMauSac.value);
 }
-
-
 
 const ImagesProduct = ref([]);
 function onFileInputImageProduct(event) {
@@ -311,7 +309,7 @@ const loadDataTrongLuong = async () => {
 const dataVatLieu = ref([]);
 const loadDataVatLieu = async () => {
     await vatLieuStore.fetchAll();
-    dataVatLieu.value = vatLieuStore.data;
+    dataVatLieu.value = vatLieuStore.dataByStatus1;
 };
 
 onMounted(() => {
@@ -365,7 +363,7 @@ const editProduct = () => {
     } else {
         vatLieu.value = null;
     }
- //   console.log(dataTrongLuong.value)
+    //   console.log(dataTrongLuong.value)
     const selectedTrongLuongs = dataTrongLuong.value.find((item) => item.value === parseInt(props.myProp.trongLuong, 10));
     selectedTrongLuong.value = selectedTrongLuongs;
     if (selectedTrongLuong.value) {
@@ -755,9 +753,7 @@ const deleteImg = async (img) => {
                                     <Button icon="pi pi-trash" class="p-button-warning mr-2" @click="deleteMauSac(color.id)" style="width: 25px; height: 25px; margin-left: 17px; margin-bottom: 25px" />
                                 </div>
 
-
-                                <FileUpload mode="basic" name="demo[]" accept="image/*" :maxFileSize="1000000"
-                                    @input="onFileInputImageMauSac(color.id)" style="width: 100px; height: 40px;" />
+                                <FileUpload mode="basic" name="demo[]" accept="image/*" :maxFileSize="1000000" @input="onFileInputImageMauSac(color.id)" style="width: 100px; height: 40px" />
                             </div>
 
                             <br />

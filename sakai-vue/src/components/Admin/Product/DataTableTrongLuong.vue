@@ -1,6 +1,7 @@
 <script setup>
 import ProductService from '@/service/ProductService';
 import { ref, defineProps, onMounted } from 'vue';
+import View from '../TrongLuong/Index.vue';
 
 const props = defineProps({
     tableId: String,
@@ -58,7 +59,7 @@ const products = ref(null);
 <template>
     <div>
         <Dialog header="Trọng lượng" v-model:visible="display" :breakpoints="{ '960px': '75vw' }" :style="{ width: '1000px' }" :modal="true">
-            <section :class="tableClass" :id="tableId">
+            <!-- <section :class="tableClass" :id="tableId">
                 <div :class="{ hidden: !isRightGhLoaiVisible }">
                     <Button label="New" icon="pi pi-plus" class="p-button-success mr-2" @click="chuyenPhanTus(rightGhId)" style="margin-bottom: 10px" />
                     <DataTable :value="products" v-model:selection="selectedProduct" selectionMode="single" :paginator="true" :rows="5" @row-select="onProductSelect" responsiveLayout="scroll">
@@ -113,8 +114,8 @@ const products = ref(null);
                     </div>
                     <Button label="Lưu" @click="close" icon="pi pi-check" class="p-button-outlined" style="margin-left: 400px" />
                 </div>
-            </section>
-
+            </section> -->
+            <View></View>
             <template #footer> </template>
         </Dialog>
         <Button type="button" icon="pi pi-pencil" @click="open" class="p-button-success" style="width: 50px; height: 40px; margin-left: 20px" />

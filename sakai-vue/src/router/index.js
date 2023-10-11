@@ -16,7 +16,6 @@ const router = createRouter({
                     component: () => import('@/components/KhachHang/TrangChu.vue')
                 },
                 {
-
                     path: '/gioi-thieu',
                     name: 'gioi-thieu',
                     component: () => import('@/components/KhachHang/GioiThieu.vue')
@@ -50,11 +49,11 @@ const router = createRouter({
                     path: '/lich-su-sp',
                     name: 'lich-su-sp',
                     component: () => import('@/components/KhachHang/LichSuSP/LichSuSP.vue')
-
                 }
             ]
         },
         {
+            path: '/nhan-vien',
             component: AppLayoutBH,
             children: [
                 {
