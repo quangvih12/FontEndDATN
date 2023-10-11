@@ -100,7 +100,7 @@ const initFilters = () => {
                 >
                     <template #header>
                         <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-                            <h5 class="m-0">Quản lý loại</h5>
+                            <h5 class="m-0">Quản lý trọng lượng</h5>
                             <span class="block mt-2 md:mt-0 p-input-icon-left">
                                 <i class="pi pi-search" />
                                 <InputText v-model="filters['global'].value" placeholder="Search..." />
@@ -112,6 +112,12 @@ const initFilters = () => {
                         <template #body="slotProps">
                             <span class="p-column-title">ma</span>
                             {{ slotProps.data.ma }}
+                        </template>
+                    </Column>
+                    <Column field="donVi" header="Value" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+                        <template #body="slotProps">
+                            <span class="p-column-title">value</span>
+                            {{ slotProps.data.value }}
                         </template>
                     </Column>
                     <Column field="donVi" header="Đơn vị" :sortable="true" headerStyle="width:14%; min-width:10rem;">
@@ -140,7 +146,7 @@ const initFilters = () => {
                     <div class="flex align-items-center justify-content-center">
                         <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
                         <span v-if="product"
-                            >Bạn có chắc chắn muốn xoá loại <b>{{ product.ten }}</b> không ?</span
+                            >Bạn có chắc chắn muốn xoá trọng lượng <b>{{ product.donVi }}</b> không ?</span
                         >
                     </div>
                     <template #footer>

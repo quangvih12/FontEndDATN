@@ -5,7 +5,6 @@ import { PhotoService } from '@/service/KhachHang/PhotoService';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
 import Carousel from 'primevue/carousel';
-import Editor from 'primevue/editor';
 onMounted(() => {
     PhotoService.getImages().then((data) => (images.value = data));
 });
@@ -207,7 +206,7 @@ const dataTrangThai = ref([
                         <TabView>
                             <TabPanel header="Mô tả sản phẩm">
                                 <iframe
-                                    style="margin-left: 330px"
+                                    style="margin-left: 220px"
                                     width="560"
                                     height="315"
                                     src="https://www.youtube.com/embed/LavsX-c8m74"
@@ -332,21 +331,13 @@ const dataTrangThai = ref([
                                 <br />
                                 <div class="flex">
                                     <h6 style="margin-right: 10px"><span>1 </span> bình luận</h6>
-                                    <label style="margin-left: 800px" for="">Sắp xếp theo</label>
+                                    <label style="margin-left: 600px" for="">Sắp xếp theo</label>
                                     <Dropdown :options="dataTrangThai" optionLabel="label" placeholder="Tất cả bình luận" class="w-full md:w-14rem" style="margin-left: 20px" />
                                 </div>
                                 <div class="">
                                     <Avatar icon="pi pi-user" class="" size="xlarge" />
-                                    <Editor editorStyle="height: 100px">
-                                        <template v-slot:toolbar>
-                                            <span class="ql-formats">
-                                                <button v-tooltip.bottom="'Bold'" class="ql-bold"></button>
-                                                <button v-tooltip.bottom="'Italic'" class="ql-italic"></button>
-                                                <button v-tooltip.bottom="'Underline'" class="ql-underline"></button>
-                                            </span>
-                                        </template>
-                                    </Editor>
-                                    <div class="flex flex-wrap justify-content-between align-items-center gap-3 mt-3" style="margin-left: 1130px">
+                                    <InputText></InputText>
+                                    <div class="flex flex-wrap justify-content-between align-items-center gap-3 mt-3" style="margin-left: 900px">
                                         <Button type="submit" label="Đăng" />
                                     </div>
                                 </div>
