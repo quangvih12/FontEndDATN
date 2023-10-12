@@ -88,11 +88,7 @@ const router = createRouter({
                     name: 'loai',
                     component: () => import('@/components/Admin/Loai/index.vue')
                 },
-                {
-                    path: '/pages/khuyenmai',
-                    name: 'khuyenmai',
-                    component: () => import('@/components/Admin/KhuyenMai/KhuyenMai.vue')
-                },
+               
                 {
                     path: '/pages/trong-luong',
                     name: 'trongluong',
@@ -103,11 +99,7 @@ const router = createRouter({
                     name: 'vatlieu',
                     component: () => import('@/components/Admin/VatLieu/Index.vue')
                 },
-                {
-                    path: '/pages/voucher',
-                    name: 'voucher',
-                    component: () => import('@/components/Admin/Voucher/Voucher.vue')
-                },
+              
                 {
                     path: '/pages/product',
                     name: 'product',

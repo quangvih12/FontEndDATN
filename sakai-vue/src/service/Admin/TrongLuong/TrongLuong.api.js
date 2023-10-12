@@ -4,7 +4,9 @@ import axios from '../../axios/axiosPort';
 export const TrongLuongStore = defineStore('trongLuong', {
     state: () => ({
         data: [],
+
         dataByStatus1: [],
+
         check: 0
     }),
     actions: {
@@ -39,6 +41,7 @@ export const TrongLuongStore = defineStore('trongLuong', {
                     if (this.data[0].trangThai == response.data.data.trangThai) this.data.unshift(response.data.data);
                     if (response.data.data.trangThai == 1) this.dataByStatus1.unshift(response.data.data);
                 }
+                console.log(response.data.data);
             });
         },
         updateTrongLuong(id, form) {
@@ -47,12 +50,14 @@ export const TrongLuongStore = defineStore('trongLuong', {
                     if (id == this.data[i].id) {
                         this.data[i].donVi = form.donVi;
                         this.data[i].value = form.value;
+
                     }
                 }
                 for (let i = 0; i < this.dataByStatus1.length; i++) {
                     if (id == this.dataByStatus1[i].id) {
                         this.dataByStatus1[i].ten = form.ten;
                         this.dataByStatus1[i].value = form.value;
+
                     }
                 }
             });

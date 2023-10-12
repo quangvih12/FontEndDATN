@@ -7,6 +7,62 @@ import { useToast } from 'primevue/usetoast';
 import UpdateProduct from './updateProduct.vue';
 import Detail from './DetailProduct.vue';
 import ProgressSpinner from 'primevue/progressspinner';
+import ExcelJS from 'exceljs';
+
+const column = [
+    'STT',
+    'Sản phẩm',
+    'Vật liệu',
+    'Trọng lượng',
+    'Giá bán',
+    'Giá nhập',
+    'Số lượng',
+    'Id màu sắc',
+    'Id size',
+    'Tên màu sắc',
+    'Số lượng size',
+    'Ảnh màu sắc 01',
+    'Ảnh màu sắc 02',
+    'Ảnh màu sắc 03',
+    'Ảnh chính',
+    'Ảnh 01',
+    'Ảnh 02',
+    'Ảnh 03',
+    'Quai đeo',
+    'Đệm lót',
+    'Mô tả sản phẩm',
+    'Loại sản phẩm',
+    'Thương hiệu'
+];
+
+const generateExcel = () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Sheet 1');
+
+    // Đặt hàng đầu tiên (header) với màu nền và chữ in đậm
+    const headerRow = worksheet.addRow(column);
+    headerRow.eachCell((cell) => {
+        cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFFF00' } // Màu nền của header
+        };
+        cell.font = {
+            bold: true // Chữ in đậm
+        };
+    });
+
+    // Tạo và tải file Excel
+    workbook.xlsx.writeBuffer().then((buffer) => {
+        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'sanPham.xlsx'; // Tên file Excel khi tải về
+        a.click();
+        window.URL.revokeObjectURL(url);
+    });
+};
 
 const productStore = ProductStore();
 const toast = useToast();
@@ -471,7 +527,7 @@ const handImportExcel = async (event) => {
                         </div>
 
                         <template #footer>
-                            <Button label="Export" icon="pi pi-upload" class="p-button" @click="exportCSV($event)" rounded
+                            <Button label="Export" icon="pi pi-upload" class="p-button" @click="generateExcel($event)" rounded
                                 style="height: 40px; margin-right: 150px;" severity="secondary" />
                             <Button label="Đóng" icon="pi pi-check" class="p-button" @click="closePosition()"
                                 severity="secondary" rounded style="height: 40px;" />
