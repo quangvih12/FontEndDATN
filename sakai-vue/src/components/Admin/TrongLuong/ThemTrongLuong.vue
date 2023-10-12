@@ -20,7 +20,6 @@ const schema = yup.object().shape({
         .max(30, 'Đơn vị giới hạn 30 ký tự')
         .matches(/^[a-zA-Z0-9đĐáÁàÀảẢãÃạẠăĂắẮằẰẳẲẵẴặẶâÂấẤầẦẩẨẫẪậẬêÊếẾềỀểỂễỄệỆôÔốỐồỒổỔỗỖộỘỏỎóÓòÒõÕọỌẻẺéÉèÈẽẼẹẸỉỈíÍìÌĩĨịỊơƠớỚờỜởỞỡỠợỢùÙúÚụỤủỦũŨưỨỨửỬữỮựỰýÝỳỲỷỶỹỸỵỴ\s]*$/, 'Tên không được chứa kí tự đặc biệt!'),
     giaTri: yup.number('Giá trị phải là số').required('Vui lòng nhập giá trị.').min(100, 'Giá trị phải lớn hơn hoặc bằng 100.').max(5000, 'Giá trị phải nhỏ hơn hoặc bằng 5000.')
-
 });
 const { handleSubmit, resetForm } = useForm({
     validationSchema: schema
@@ -68,12 +67,10 @@ const addProduct = () => {
         toast.add({ severity: 'error', summary: 'Thông báo', detail: 'Thêm thất bại', life: 3000 });
     } else if (isDonViTooLong(form.donVi)) {
         toast.add({ severity: 'error', summary: 'Thông báo', detail: 'Thêm thất bại', life: 3000 });
-
     } else if (isGiaTriTooLong(form.value)) {
         toast.add({ severity: 'error', summary: 'Thông báo', detail: 'Thêm thất bại', life: 3000 });
     } else if (form.value == 0 || form.value < 100 || form.value > 5000) {
         toast.add({ severity: 'error', summary: 'Thông báo', detail: 'Thêm thất bại', life: 3000 });
-
     } else {
         giaTri.value = 0;
         const add = TrongLuongService.createTrongLuong(form);
@@ -87,7 +84,6 @@ const clearForm = () => {
     donVi.value = '';
 
     giaTri.value = 0;
-
 };
 const array = ref([]);
 const reset = () => {
@@ -119,13 +115,6 @@ const saveProduct = () => {
         <div class="card">
             <form @submit="onSubmit">
                 <div class="p-fluid formgrid grid">
-                    <div class="Field col-12" style="margin-bottom: 30px">
-                        <span class="p-float-label">
-                            <InputText id="value" name="value" type="number" v-model.trim="value" :class="{ 'p-invalid': valueError }" required="true" autofocus />
-                            <label for="username">Value</label>
-                        </span>
-                        <small class="p-error">{{ valueError }}</small>
-                    </div>
                     <div class="Field col-12" style="margin-bottom: 30px">
                         <span class="p-float-label">
                             <InputText id="donVi" name="donVi" type="text" v-model.trim="donVi" :class="{ 'p-invalid': donViError }" required="true" autofocus />
