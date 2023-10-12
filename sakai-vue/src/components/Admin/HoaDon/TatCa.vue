@@ -73,15 +73,15 @@ const formatDate = (value) => {
     <div class="col-12 flex" style="margin-right: 10px; padding-left: 0">
         <span class="p-input-icon-left">
             <i class="pi pi-search" />
-            <InputText v-model="filters1['global'].value" placeholder="Keyword Search" style="min-width: 13rem; height: 40px;" />
+            <InputText v-model="filters1['global'].value" placeholder="Keyword Search" style="min-width: 13rem; height: 40px" />
         </span>
         <div class="p-inputgroup flex-1" style="margin-left: 20px">
-            <span class="p-inputgroup-addon" style="height: 40px;">Ngày bắt đầu</span>
-            <input type="datetime-local" style="min-width: 13rem; height: 40px;" />
+            <span class="p-inputgroup-addon" style="height: 40px">Ngày bắt đầu</span>
+            <input type="datetime-local" style="min-width: 13rem; height: 40px" />
         </div>
         <div class="p-inputgroup flex-1">
-            <span class="p-inputgroup-addon" style="height: 40px;">Ngày kết thúc</span>
-            <input type="datetime-local" style="min-width: 13rem; height: 40px;" />
+            <span class="p-inputgroup-addon" style="height: 40px">Ngày kết thúc</span>
+            <input type="datetime-local" style="min-width: 13rem; height: 40px" />
         </div>
         <div style="margin-left: 5px">
             <Button label="Seach" icon="pi pi-search" class="p-button-rounded p-button-primary mr-2 mb-2" />
