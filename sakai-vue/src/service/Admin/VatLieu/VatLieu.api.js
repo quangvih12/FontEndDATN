@@ -14,7 +14,6 @@ export const VatLieuStore = defineStore('vatLieu', {
             try {
                 const response = await axios.get('/api/admin/vat-lieu'); // Thay đổi URL dựa trên API của bạn
                 this.data = response.data;
-                console.table(this.data);
             } catch (error) {
                 console.error('Lỗi khi lấy danh sách:', error);
             }
