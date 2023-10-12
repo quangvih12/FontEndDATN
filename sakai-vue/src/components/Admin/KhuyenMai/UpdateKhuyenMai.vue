@@ -32,9 +32,9 @@
             </div>
             <div class="formgrid grid">
                 <div class="field col">
-                    <label for="name2">Số Lượng</label>
-                    <InputNumber id="soLuong" v-model="soLuong" :class="{ 'p-invalid': soLuongError }" />
-                    <small class="p-error">{{ soLuongError }}</small>
+                    <label for="name2">Mô Tả</label>
+                    <Textarea v-model.trim="moTa" :autoResize="true" rows="3" cols="30" :class="{ 'p-invalid': moTaError }" />
+                    <small class="p-error">{{ moTaError }}</small>
                 </div>
                 <div class="field col">
                     <label for="email2">Giá Trị Giảm</label>
@@ -42,13 +42,13 @@
                     <small class="p-error">{{ giaTriGiamError }}</small>
                 </div>
             </div>
-            <div class="formgrid grid">
+            <!-- <div class="formgrid grid">
                 <div class="field col">
                     <label for="name2">Mô Tả</label>
                     <Textarea v-model.trim="moTa" :autoResize="true" rows="3" cols="30" :class="{ 'p-invalid': moTaError }" />
                     <small class="p-error">{{ moTaError }}</small>
                 </div>
-            </div>
+            </div> -->
         </div>
 
         <template #footer>
@@ -74,9 +74,7 @@ const props = defineProps({
 
 const schema = Yup.object().shape({
     ten: Yup.string().required('Tên sản phẩm không được để trống').min(4, 'Tên sản phẩm phải có ít nhất 4 ký tự'),
-
     moTa: Yup.string().required('Vui lòng điền mô tả voucher').min(10, 'Mô tả voucher phải có ít nhất 10 ký tự'),
-    soLuong: Yup.number().required('Bạn cần nhập số lượng voucher').typeError('Số lượng voucher phải là một số').min(1, 'Số lượng phải lớn hơn hoặc bằng 1').nullable(),
     thoiGianBatDau: Yup.date().nullable().required('Thời gian bắt đầu là bắt buộc').typeError('Vui lòng chọn ngày hợp lệ'),
     thoiGianKetThuc: Yup.date().nullable().min(Yup.ref('thoiGianBatDau'), 'Ngày kết thúc phải sau ngày bắt đầu').required('Thời gian kết thúc là bắt buộc').typeError('Vui lòng chọn ngày hợp lệ'),
     giaTriGiam: Yup.number().required('Bạn cần nhập giá trị khuyến mại').typeError('Giá trị phải là một số').min(1, 'Giá trị phải lớn hơn hoặc bằng 1').nullable()
@@ -89,7 +87,6 @@ const { handleSubmit, resetForm } = useForm({
 const { value: ma } = useField('ma');
 const { value: ten, errorMessage: tenError } = useField('ten');
 const { value: moTa, errorMessage: moTaError } = useField('moTa');
-const { value: soLuong, errorMessage: soLuongError } = useField('soLuong');
 const { value: thoiGianBatDau, errorMessage: thoiGianBatDauError } = useField('thoiGianBatDau');
 const { value: thoiGianKetThuc, errorMessage: thoiGianKetThucError } = useField('thoiGianKetThuc');
 const { value: giaTriGiam, errorMessage: giaTriGiamError } = useField('giaTriGiam');
@@ -100,7 +97,6 @@ const editKhuyenMai = () => {
     thoiGianBatDau.value = props.myProp.thoiGianBatDau;
     thoiGianKetThuc.value = props.myProp.thoiGianKetThuc;
     moTa.value = props.myProp.moTa;
-    soLuong.value = props.myProp.soLuong;
     giaTriGiam.value = props.myProp.giaTriGiam;
     updateKhuyenMaiDialog.value = true;
 };
@@ -116,7 +112,6 @@ const update = handleSubmit(async () => {
         thoiGianBatDau: thoiGianBatDau.value,
         thoiGianKetThuc: thoiGianKetThuc.value,
         moTa: moTa.value,
-        soLuong: soLuong.value,
         giaTriGiam: giaTriGiam.value
     };
 

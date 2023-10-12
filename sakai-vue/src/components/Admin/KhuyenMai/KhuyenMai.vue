@@ -47,7 +47,6 @@ const columns = ref([
     { field: 'thoiGianBatDau', header: 'Ngày Bắt Đầu' },
     { field: 'thoiGianKetThuc', header: 'Ngày Kết Thúc' },
     { field: 'moTa', header: 'Mô Tả' },
-    { field: 'soLuong', header: 'Số Lượng' },
     { field: 'giaTriGiam', header: 'Giá Trị (%)' },
     { field: 'ngaySua', header: 'Ngày Sửa' },
     { field: 'ngayTao', header: 'Ngày Tạo' }
@@ -100,11 +99,6 @@ const getStatusLabel = (trangThai) => {
     }
 };
 
-// dùng để cập nhật lại số lượng khuyến mại
-const updateKhuyenMai = (idkm, sl) => {
-    khuyenmaiService.updateSLKhuyenMai(idkm, sl);
-    loadDataKhuyenmai();
-};
 </script>
 <template>
     <div class="grid">
@@ -169,7 +163,7 @@ const updateKhuyenMai = (idkm, sl) => {
                         <template #body="slotProps">
                             <UpdateKhuyenMai :my-prop="slotProps.data" />
                             <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2" @click="confirmDeleteKhuyenMai(slotProps.data)" />
-                            <ApplyKM :my-prop="slotProps.data" @update="updateKhuyenMai" />
+                            <ApplyKM :my-prop="slotProps.data" />
                         </template>
                     </Column>
                 </DataTable>
