@@ -4,6 +4,9 @@ import axios from '../../axios/axiosPort';
 export const TrongLuongStore = defineStore('trongLuong', {
     state: () => ({
         data: [],
+
+        dataByStatus1: [],
+
         check: 0
     }),
     actions: {
@@ -21,6 +24,9 @@ export const TrongLuongStore = defineStore('trongLuong', {
             this.check = 1;
             try {
                 const response = await axios.get('/api/trong-luong' + '/trang-thai?trangThai=' + status);
+                if (status === 1) {
+                    this.dataByStatus1 = response.data.data;
+                }
                 this.data = response.data.data;
             } catch (error) {
                 console.error('Error fetching users:', error);
@@ -30,8 +36,10 @@ export const TrongLuongStore = defineStore('trongLuong', {
             axios.post('/api/trong-luong' + '/add', form).then((response) => {
                 if (this.check == 0) {
                     this.data.unshift(response.data.data);
+                    if (response.data.data.trangThai == 1) this.dataByStatus1.unshift(response.data.data);
                 } else {
                     if (this.data[0].trangThai == response.data.data.trangThai) this.data.unshift(response.data.data);
+                    if (response.data.data.trangThai == 1) this.dataByStatus1.unshift(response.data.data);
                 }
                 console.log(response.data.data);
             });
@@ -42,6 +50,14 @@ export const TrongLuongStore = defineStore('trongLuong', {
                     if (id == this.data[i].id) {
                         this.data[i].donVi = form.donVi;
                         this.data[i].value = form.value;
+
+                    }
+                }
+                for (let i = 0; i < this.dataByStatus1.length; i++) {
+                    if (id == this.dataByStatus1[i].id) {
+                        this.dataByStatus1[i].ten = form.ten;
+                        this.dataByStatus1[i].value = form.value;
+
                     }
                 }
             });
@@ -54,6 +70,13 @@ export const TrongLuongStore = defineStore('trongLuong', {
                             this.data[i].trangThai = 0;
                         }
                     }
+                    let index = -1;
+                    for (let i = 0; i < this.dataByStatus1.length; i++) {
+                        if (id == this.dataByStatus1[i].id) {
+                            index = i;
+                        }
+                    }
+                    this.dataByStatus1.splice(index, 1);
                 } else {
                     if (this.data[0].trangThai != response.data.data.trangThai) {
                         let index = -1;
@@ -63,7 +86,13 @@ export const TrongLuongStore = defineStore('trongLuong', {
                             }
                         }
                         this.data.splice(index, 1);
-                        console.log(this.data);
+                        let index2 = -1;
+                        for (let i = 0; i < this.dataByStatus1.length; i++) {
+                            if (id == this.dataByStatus1[i].id) {
+                                index2 = i;
+                            }
+                        }
+                        this.dataByStatus1.splice(index2, 1);
                     }
                 }
             });
