@@ -270,15 +270,17 @@ function onFileInputImageMauSac(event) {
     }
 }
 
+const anh = ref(null);
 function onFileInputImage(event) {
     const files = event.target.files;
     // Lặp qua từng tệp trong mảng files
     for (const file of files) {
-        // const objectURL = URL.createObjectURL(file);
+        const objectURL = URL.createObjectURL(file);
         // Gán giá trị cho phần tử có id là 'imagesChinh' (thay đổi id nếu cần)
         const basePath = "D:\\imgDATN\\"; // Đường dẫn cố định
         const fileName = basePath + file.name;
         imagesChinh.value = fileName;
+        anh.value = objectURL;
         // console.log('anh chinh: ', imagesChinh.value)
     }
 }
@@ -364,7 +366,7 @@ const openNew = () => {
                                 <div style="display: block">
                                     <div class="t"
                                         style="border: 1px solid black; border-radius: 10px; width: 300px; height: 240px; margin-top: -60px">
-                                        <img :src="imagesChinh === '' ? '' : imagesChinh" alt=""
+                                        <img :src="anh" alt=""
                                             style="width: 275px; height: 230px; top: 50%; left: 50%; transform: translate(4%, 2%)" />
                                     </div>
                                     <div class="buton" style="margin-top: 10px">

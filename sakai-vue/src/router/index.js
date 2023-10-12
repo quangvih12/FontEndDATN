@@ -84,6 +84,16 @@ const router = createRouter({
                     component: () => import('@/components/Admin/MauSac/index.vue')
                 },
                 {
+                    path: '/pages/khuyenmai',
+                    name: 'khuyenmai',
+                    component: () => import('@/components/Admin/khuyenMai/KhuyenMai.vue')
+                },
+                {
+                    path: '/pages/voucher',
+                    name: 'Voucher',
+                    component: () => import('@/components/Admin/Voucher/Voucher.vue')
+                },
+                {
                     path: '/pages/loai',
                     name: 'loai',
                     component: () => import('@/components/Admin/Loai/index.vue')
