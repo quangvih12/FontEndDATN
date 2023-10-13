@@ -21,6 +21,17 @@ export const ProductStore = defineStore('product', {
       }
     },
 
+   async fetchDataByStatus(status){
+    try {
+      const response = await axios.get('/api/products/loc?comboBoxValue='+status); // Thay đổi URL dựa trên API của bạn
+      this.products = response.data;
+      //  console.table(this.products.size);
+
+    } catch (error) {
+      console.error('Lỗi khi lấy danh sách sản phẩm:', error);
+    }
+   },
+
     async fetchAllImage(idProduct) {
       try {
 
@@ -31,7 +42,6 @@ export const ProductStore = defineStore('product', {
         console.error('Lỗi khi lấy danh sách sản phẩm:', error);
       }
     },
-
 
     async fetchAllSize(idProduct) {
       try {
