@@ -4,9 +4,11 @@ import { FilterMatchMode, FilterOperator } from 'primevue/api';
 import CustomerService from '@/service/CustomerService';
 import ProductService from '@/service/ProductService';
 import { ref, onBeforeMount, onMounted } from 'vue';
+import { useToast } from 'primevue/usetoast';
 import DetailHoaDon from './DetailHoaDon.vue';
 import { HDStore } from '../../../service/Admin/HoaDon/HoaDonService';
 
+const toast = useToast();
 const useHD = HDStore();
 const customer1 = ref(null);
 const customer2 = ref(null);
@@ -19,7 +21,7 @@ const data = ref([]);
 
 const loadData = async () => {
     await useHD.fetchDataByStatus(2);
-    data.value = useHD.dataAll;
+    data.value = useHD.dataChoXacNhan;
 };
 //chạy cái hiện data luôn
 onMounted(() => {
@@ -44,6 +46,12 @@ const hienThiTrangThai = (trangThai) => {
     } else {
         return 'Xác nhận đổi trả';
     }
+};
+
+const btnXacNhan = (idHD) => {
+    // console.log(idHD);
+    useHD.choXacNhan(idHD);
+    toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Xác nhận thành công', life: 3000 });
 };
 
 const customerService = new CustomerService();
@@ -90,6 +98,7 @@ const formatDate = (value) => {
 };
 </script>
 <template>
+    <Toast />
     <div class="col-12 flex" style="margin-right: 10px; padding-left: 0">
         <span class="p-input-icon-left">
             <i class="pi pi-search" />
@@ -113,7 +122,7 @@ const formatDate = (value) => {
         v-model:selection="selectedProducts"
         dataKey="id"
         :paginator="true"
-        :rows="10"
+        :rows="5"
         :filters="filters"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
         :rowsPerPageOptions="[5, 10, 25]"
@@ -217,10 +226,10 @@ const formatDate = (value) => {
             </template>
         </Column>
         <Column header="Hành động" headerStyle="min-width:10rem;">
-            <template #body="">
+            <template #body="slotProps">
                 <div class="row flex">
                     <DetailHoaDon></DetailHoaDon>
-                    <Button label="Nhận" class="p-button-outlined p-button-info mr-2 mb-2" />
+                    <Button label="Nhận" class="p-button-outlined p-button-info mr-2 mb-2" @click="btnXacNhan(slotProps.data.idHD)" />
                     <Button label="Hủy" class="p-button-outlined p-button-info mr-2 mb-2" />
                 </div>
             </template>

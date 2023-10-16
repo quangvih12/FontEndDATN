@@ -4,9 +4,11 @@ import { FilterMatchMode, FilterOperator } from 'primevue/api';
 import CustomerService from '@/service/CustomerService';
 import ProductService from '@/service/ProductService';
 import { ref, onBeforeMount, onMounted } from 'vue';
+import { useToast } from 'primevue/usetoast';
 import DetailHoaDon from './DetailHoaDon.vue';
 import { HDStore } from '../../../service/Admin/HoaDon/HoaDonService';
 
+const toast = useToast();
 const useHD = HDStore();
 const customer1 = ref(null);
 const customer2 = ref(null);
@@ -16,10 +18,11 @@ const loading1 = ref(null);
 const loading2 = ref(null);
 const products = ref(null);
 const data = ref([]);
+const dataHDCT = ref([]);
 
 const loadData = async () => {
     await useHD.fetchDataByStatus(4);
-    data.value = useHD.dataAll;
+    data.value = useHD.dataDangChuanBi;
 };
 //chạy cái hiện data luôn
 onMounted(() => {
@@ -44,6 +47,18 @@ const hienThiTrangThai = (trangThai) => {
     } else {
         return 'Xác nhận đổi trả';
     }
+};
+
+const giaoHangNhanh = async (idHD, hoaDon) => {
+    const responeGHN = await useHD.findHdctByIdHd(1);
+    useHD.giaoHangNhanh(responeGHN, hoaDon);
+};
+
+const btnXacNhan = (idHD) => {
+    const responeDCB = useHD.dangChuanBi(idHD);
+    // console.log(responeDCB);
+    giaoHangNhanh(idHD, responeDCB);
+    toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Xác nhận thành công', life: 3000 });
 };
 
 const customerService = new CustomerService();
@@ -90,6 +105,7 @@ const formatDate = (value) => {
 };
 </script>
 <template>
+    <Toast />
     <div class="col-12 flex" style="margin-right: 10px; padding-left: 0">
         <span class="p-input-icon-left">
             <i class="pi pi-search" />
@@ -220,7 +236,7 @@ const formatDate = (value) => {
             <template #body="slotProps">
                 <div class="row flex">
                     <DetailHoaDon></DetailHoaDon>
-                    <Button label="Nhận" class="p-button-outlined p-button-info mr-2 mb-2" />
+                    <Button label="Nhận" class="p-button-outlined p-button-info mr-2 mb-2" @click="btnXacNhan(slotProps.data.idHD)" />
                     <Button label="Hủy" class="p-button-outlined p-button-info mr-2 mb-2" />
                 </div>
             </template>

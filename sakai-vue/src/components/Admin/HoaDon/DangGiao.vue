@@ -19,7 +19,7 @@ const data = ref([]);
 
 const loadData = async () => {
     await useHD.fetchDataByStatus(5);
-    data.value = useHD.dataAll;
+    data.value = useHD.dataDangGiao;
 };
 //chạy cái hiện data luôn
 onMounted(() => {
