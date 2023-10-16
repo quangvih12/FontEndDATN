@@ -36,9 +36,10 @@ const router = createRouter({
                     component: () => import('@/components/KhachHang/ThanhToan.vue')
                 },
                 {
-                    path: '/detail',
-                    name: 'detail',
-                    component: () => import('@/components/KhachHang/DetailSanPham.vue')
+                    path: '/detail/:id', // Giả sử `id` là mã định danh duy nhất của sản phẩm
+                    name: 'ProductDetail',
+                    component: () => import('@/components/KhachHang/DetailSanPham.vue'),
+                    props: true // Cho phép các tham số route được truyền vào component như props
                 },
                 {
                     path: '/gio-hang',
