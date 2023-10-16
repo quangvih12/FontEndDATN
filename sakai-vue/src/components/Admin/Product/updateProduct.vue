@@ -108,7 +108,7 @@ const hideDialog = () => {
 
 const onSubmit = handleSubmit(async (values) => {
     try {
-        //  console.log(values);
+   //      console.log(values);
         await productStore.edit(values);
         toast.add({ severity: 'success', summary: 'Success Message', detail: 'update thành công', life: 3000 });
         productDialog.value = false;
@@ -262,6 +262,7 @@ function onFileInputImageMauSac(id) {
     //   console.log('sau', imgMauSac.value);
 }
 
+const anh = ref(null);
 const ImagesProduct = ref([]);
 const imageUrls = ref([]);
 function onFileInputImageProduct(event) {
@@ -273,6 +274,7 @@ function onFileInputImageProduct(event) {
         const basePath = "D:\\imgDATN\\"; // Đường dẫn cố định
         const fileName = basePath + file.name;
         imageUrls.value.push(fileName);
+       
     }
     ImagesProduct.value = imageUrls.value;
     // console.log(ImagesProduct.value)
@@ -459,7 +461,8 @@ function onFileInputImage(event) {
     const files = event.target.files;
     // Lặp qua từng tệp trong mảng files
     for (const file of files) {
-        // const objectURL = URL.createObjectURL(file);
+        const objectURL = URL.createObjectURL(file);
+        anh.value = objectURL;
         // Gán giá trị cho phần tử có id là 'imagesChinh' (thay đổi id nếu cần)
         const basePath = "D:\\imgDATN\\"; // Đường dẫn cố định
         const fileName = basePath + file.name;
@@ -778,7 +781,7 @@ const deleteImg = async (img) => {
                             <div style="display: block; margin-left: 200px">
                                 <div class="t"
                                     style="border: 1px solid black; border-radius: 10px; width: 300px; height: 240px; margin-top: -60px">
-                                    <img :src="imagesChinh" alt=""
+                                    <img :src="anh==null? imagesChinh : anh" alt=""
                                         style="width: 275px; height: 230px; top: 50%; left: 50%; transform: translate(4%, 2%)" />
                                 </div>
                                 <div class="buton" style="margin-top: 10px">

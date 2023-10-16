@@ -270,7 +270,7 @@ function onFileInputImageMauSac(event) {
     }
 }
 
-const anh = ref(null);
+const anh = ref('https://cdn-icons-png.flaticon.com/512/2956/2956744.png');
 function onFileInputImage(event) {
     const files = event.target.files;
     // Lặp qua từng tệp trong mảng files

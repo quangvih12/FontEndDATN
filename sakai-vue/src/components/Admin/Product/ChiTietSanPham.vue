@@ -112,8 +112,12 @@ const loadProducts = async () => {
         const img = await loadImg(product.id);
         productList[key]['img'] = img;
     }
-
+     
     products.value = productList;
+    for(let i = 0; i < 1; i++){
+       soLuongSP.value =  products.value[i].soLuongSanPham;
+      console.log(soLuongSP.value);
+    }
     //    console.log('sss: ', products.value);
     showSpinner.value = false;
     visibledatatable.value = true;
@@ -147,7 +151,7 @@ const loadImg = async (idProduct) => {
 };
 
 const url = ref([]);
-
+let soLuongSP = ref(null);
 onMounted(() => {
     myDiv.value = document.getElementById('right_gh');
     div.value = document.getElementById('table');
@@ -267,7 +271,7 @@ const openPosition = (pos) => {
 
 const closePosition = () => {
     visible.value = false;
-   // loadProducts();
+    // loadProducts();
 };
 
 const setNameFile = ref('');
@@ -294,55 +298,55 @@ const handImportExcel = async (event) => {
         }
         else {
             for (const data of o.responseList) {
-                if (data.giaBan === null) {
+                if (data.importMessageGiaBan !== null && data.importMessageGiaBan !== "SUCCESS") {
                     toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageGiaBan, life: 30000 });
 
                 }
-                if (data.demLot === null) {
+                else if (data.importMessageDemLot !== null && data.importMessageDemLot !== "SUCCESS") {
                     toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageDemLot, life: 30000 });
 
                 }
-                if (data.giaNhap === null) {
+                else if (data.importMessageGiaNhap !== null && data.importMessageGiaNhap !== "SUCCESS") {
                     toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageGiaNhap, life: 30000 });
 
                 }
-                if (data.tenSanPham === null) {
+                else if (data.importMessageSanPham !== null && data.importMessageSanPham !== "SUCCESS") {
                     toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSanPham, life: 30000 });
 
                 }
-                if (data.valueTrongLuong === null) {
+                else if (data.importMessageTrongLuong !== null && data.importMessageTrongLuong !== "SUCCESS") {
                     toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageTrongLuong, life: 30000 });
 
                 }
-                if (data.tenVatLieu === null) {
+                else if (data.importMessageVatLieu !== null && data.importMessageVatLieu !== "SUCCESS") {
                     toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageVatLieu, life: 30000 });
 
                 }
-                if (data.tenThuongHieu === null) {
+                else if (data.importMessageThuongHieu !== null && data.importMessageThuongHieu !== "SUCCESS") {
                     toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageThuongHieu, life: 30000 });
 
                 }
-                if (data.tenSize === null) {
+                else if (data.importMessageSize !== null && data.importMessageSize !== "SUCCESS") {
                     toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSize, life: 30000 });
 
                 }
-                if (data.tenMau === null) {
+                else if (data.importMessageMauSac !== null && data.importMessageMauSac !== "SUCCESS") {
                     toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageMauSac, life: 30000 });
 
                 }
-                if (data.tenLoai === null) {
+                else if (data.importMessageLoai !== null && data.importMessageLoai !== "SUCCESS") {
                     toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageLoai, life: 30000 });
 
                 }
-                if (data.soLuong === null) {
+                else if (data.importMessageSoLuong !== null && data.importMessageSoLuong !== "SUCCESS") {
                     toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSoLuong, life: 30000 });
 
                 }
-                if (data.quaiDeo === null) {
+                else if (data.importMessageQuaiDeo !== null && data.importMessageQuaiDeo !== "SUCCESS") {
                     toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageQuaiDeo, life: 30000 });
 
                 }
-                if (data.soLuongSize === null) {
+                else if (data.importMessageSoLuongSize !== null && data.importMessageSoLuongSize !== "SUCCESS") {
                     toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSoLuongSize, life: 30000 });
 
                 }
@@ -385,6 +389,15 @@ const loadDataByTrangThai = async () => {
     }
 
     products.value = productList;
+ //   console.log(products.value);
+    if( products.value.length === 0){
+        soLuongSP.value = 0;
+   }else{
+    for(let i = 0; i < 1; i++){
+       soLuongSP.value =  products.value[i].soLuongSanPham;
+    //   console.log(soLuongSP.value);
+    }
+   }
     showSpinner.value = false;
     visibledatatable.value = true;
 };
@@ -431,15 +444,19 @@ watch(trangThai, (newVal) => {
                         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
                         responsiveLayout="scroll">
                         <template #header>
-                           
+
                             <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-                              
+
                                 <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-                                <MultiSelect icon="pi pi-plus" :modelValue="selectedColumns" :options="columns"
-                                    optionLabel="header" @update:modelValue="onToggle" display="chip"
-                                    placeholder="Select Columns" />
-                            </div>
-                            <h5 class="m-0"> Products</h5>
+                                    <MultiSelect icon="pi pi-plus" :modelValue="selectedColumns" :options="columns"
+                                        optionLabel="header" @update:modelValue="onToggle" display="chip"
+                                        placeholder="Select Columns" />
+                                </div>
+                                <div style="display: flex;">
+                                    <h5 class="m-0" style="margin-right: 20px;"> Products </h5>
+                                <div style="margin-bottom:10px ;margin-left: 10px;border-radius: 50%; width: 30px ;height: 30px; background: rgb(76, 71, 83); color: white; text-align: center;font-size: 20px;"> {{ soLuongSP }}</div>
+                                </div>
+                               
                                 <span class="block mt-2 md:mt-0 p-input-icon-left">
                                     <i class="pi pi-search" />
                                     <InputText v-model="filters['global'].value" placeholder="Search..." />
@@ -561,7 +578,7 @@ watch(trangThai, (newVal) => {
                             <div v-if="dis">
                                 <div class="custom-file-upload">
                                     <label class="upload-button">{{ setNameFile == "" ? "Tải lên tệp Excel" : setNameFile
-                                    }}<input type="file" name="excelFile" accept=".xls, .xlsx"
+                                        }}<input type="file" name="excelFile" accept=".xls, .xlsx"
                                             @change="handImportExcel($event)"></label>
 
                                 </div>
