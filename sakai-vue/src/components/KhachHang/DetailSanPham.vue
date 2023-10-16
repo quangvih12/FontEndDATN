@@ -1,16 +1,72 @@
 <script setup>
 import Breadcrumb from 'primevue/breadcrumb';
 import { ref, onMounted } from 'vue';
-import { PhotoService } from '@/service/KhachHang/PhotoService';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
-import Carousel from 'primevue/carousel';
-import Editor from 'primevue/editor';
+import { useDetailProductStore } from '../../service/KhachHang/DetailService'; // Đường dẫn đến store của bạn
+import { useRoute } from 'vue-router';
+
+const productStore = useDetailProductStore();
+const route = useRoute();
+const idProduct = parseInt(route.params.id);
+
+const dataSanPham = ref([]);
+const dataMauSac = ref([]);
+const dataSize = ref([]);
+const loadImage = ref([]);
+const products = ref([]);
+
 onMounted(() => {
-    PhotoService.getImages().then((data) => (images.value = data));
+    loadData();
+    loadImg();
+    loadDataSize();
+    loadProducts();
+    loadDataMauSac();
 });
 
-const images = ref();
+const loadProducts = async () => {
+    await productStore.fetchAll();
+    products.value = productStore.products;
+    console.log(productStore.products);
+};
+
+const loadData = async () => {
+    await productStore.fetchProductById(idProduct);
+    dataSanPham.value = productStore.product;
+    console.log(productStore.product);
+    loadImage.value = dataSanPham.value.images;
+};
+
+const loadImg = async () => {
+    await productStore.fetchAllImage(idProduct);
+    loadImage.value = productStore.images;
+    // console.log(loadImage.value);
+};
+
+const loadDataMauSac = async () => {
+    await productStore.fetchAllMauSac(idProduct);
+    dataMauSac.value = productStore.mauSacs;
+    // console.log(productStore.mauSacs);
+};
+
+const loadDataSize = async () => {
+    await productStore.fetchAllSize(idProduct);
+    dataSize.value = productStore.sizes;
+    // console.log(productStore.sizes);
+};
+
+const quantity = ref(1);
+
+const increment = () => {
+    quantity.value += 1;
+};
+
+const decrement = () => {
+    if (quantity.value > 1) {
+        quantity.value -= 1;
+    }
+};
+
 const responsiveOptions = ref([
     {
         breakpoint: '991px',
@@ -27,118 +83,16 @@ const responsiveOptions = ref([
 ]);
 const home = ref({
     icon: 'pi pi-home',
-    to: '/trang-chu'
+    to: '/'
 });
-const items = ref([{ label: 'Sản phẩm', to: '/san-pham' }, { label: 'MŨ BẢO HIỂM 3/4 ROYAL M20C' }]);
-const colors = [
-    {
-        imgSrc: 'https://royalhelmet.com.vn/ckfinder/userfiles/images/products/hwT0YOIMG_5015.jpg',
-        text: 'Đen Mờ',
-        price: 20,
-        inventoryStatus: 'Gần hết',
-        rating: 5
-    },
-    {
-        imgSrc: 'https://royalhelmet.com.vn/ckfinder/userfiles/images/products/dmzrOUIMG_5076.jpg',
-        text: 'Đen Bóng',
-        price: 20,
-        inventoryStatus: 'Còn hàng',
-        rating: 5
-    },
-    {
-        imgSrc: 'https://royalhelmet.com.vn/ckfinder/userfiles/images/products/GjL83QIMG_5067.jpg',
-        text: 'Vàng Mờ',
-        price: 20,
-        inventoryStatus: 'Còn hàng',
-        rating: 5
-    },
-    {
-        imgSrc: 'https://royalhelmet.com.vn/ckfinder/userfiles/images/products/qF37bUIMG_5058.jpg',
-        text: 'Hồng Mờ',
-        price: 20,
-        inventoryStatus: 'Còn hàng',
-        rating: 5
-    },
-    {
-        imgSrc: 'https://royalhelmet.com.vn/ckfinder/userfiles/images/products/asFeNUIMG_5050.jpg',
-        text: 'Xanh mực mờ',
-        price: 20,
-        inventoryStatus: 'Hết hàng',
-        rating: 5
-    },
-    {
-        imgSrc: 'https://royalhelmet.com.vn/ckfinder/userfiles/images/products/Hv1g8FIMG_5029.jpg',
-        text: 'Chột Mờ',
-        price: 20,
-        inventoryStatus: 'Còn hàng',
-        rating: 5
-    },
-    {
-        imgSrc: 'https://royalhelmet.com.vn/ckfinder/userfiles/images/products/qrIh2lIMG_4989.jpg',
-        text: 'Chuột Bóng',
-        price: 20,
-        inventoryStatus: 'Gần hết',
-        rating: 5
-    },
-    {
-        imgSrc: 'https://royalhelmet.com.vn/ckfinder/userfiles/images/products/1jgFG3IMG_4779.jpg',
-        text: 'Xanh Pastel Bóng',
-        price: 20,
-        inventoryStatus: 'Còn hàng',
-        rating: 5
-    },
-    {
-        imgSrc: 'https://royalhelmet.com.vn/ckfinder/userfiles/images/products/t0NPKnIMG_4999.jpg',
-        text: 'Trắng Bóng',
-        price: 20,
-        inventoryStatus: 'Còn hàng',
-        rating: 5
-    },
-    {
-        imgSrc: 'https://royalhelmet.com.vn/ckfinder/userfiles/images/products/sGyDewIMG_5038.jpg',
-        text: 'Xanh Lính Mờ',
-        price: 20,
-        inventoryStatus: 'Gần hết',
-        rating: 5
-    },
-    {
-        imgSrc: 'https://royalhelmet.com.vn/ckfinder/userfiles/images/products/4N5OaDIMG_2331.jpg',
-        text: 'Vàng Mờ',
-        price: 20,
-        inventoryStatus: 'Hết hàng',
-        rating: 5
-    },
-    {
-        imgSrc: 'https://royalhelmet.com.vn/ckfinder/userfiles/images/products/j5aoFDIMG_4472.jpg',
-        text: 'Xám Xi Măng',
-        price: 20,
-        inventoryStatus: 'Còn hàng',
-        rating: 5
-    }
-    // Thêm các mục khác ở đây
-];
+const items = ref([{ label: 'Sản phẩm', to: '/san-pham' }, { label: 'Sản phẩm chi tiết' }]);
 
-const getSeverity = (status) => {
-    switch (status) {
-        case 'Còn hàng':
-            return 'success';
-
-        case 'Gần hết':
-            return 'warning';
-
-        case 'Đã hết':
-            return 'danger';
-
-        default:
-            return null;
-    }
+const formatCurrency = (value) => {
+    if (!value) return '';
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
 };
 
-const dataTrangThai = ref([
-    { label: 'Tất cả bình luận', value: 'Tất cả' },
-    { label: 'Mới nhất', value: '1' },
-    { label: 'Cũ nhất', value: '0' }
-]);
+const hasTenKH = ref(dataSanPham.value.tenKH !== null && dataSanPham.value.tenKH !== undefined);
 </script>
 
 <template>
@@ -148,58 +102,67 @@ const dataTrangThai = ref([
                 <Breadcrumb :home="home" :model="items" />
                 <!-- Cột phải -->
                 <div class="card md:flex md:justify-content-center" style="margin-top: 0px">
+                    <!-- <div v-for="image in loadImage" :key="image.id">
+                        <img :src="image.anh" alt="Ảnh sản phẩm" />
+                    </div> -->
                     <div class="flex">
                         <div class="col-5">
-                            <Galleria :value="images" :responsiveOptions="responsiveOptions" :numVisible="5" containerStyle="max-width: 450px">
+                            <Galleria :value="loadImage" :responsiveOptions="responsiveOptions" :numVisible="5" containerStyle="max-width: 450px">
                                 <template #item="slotProps">
-                                    <img :src="slotProps.item.itemImageSrc" :alt="slotProps.item.alt" style="width: 100%" />
+                                    <img :src="slotProps.item.anh" :alt="slotProps.item" style="width: 100%" />
                                 </template>
                                 <template #thumbnail="slotProps">
-                                    <img :src="slotProps.item.thumbnailImageSrc" :alt="slotProps.item.alt" style="width: 100%" />
+                                    <img :src="slotProps.item.anh" :alt="slotProps.item" style="width: 100%" />
                                 </template>
                             </Galleria>
                         </div>
                         <div class="col-7">
-                            <h1 class="masp">MŨ BẢO HIỂM 3/4 ROYAL M20C</h1>
-                            <label for="">Mã SP: <span>MŨ BẢO HIỂM 3/4 ROYAL M20C</span></label>
-                            <label for="" style="margin-left: 20px">Loại: <span style="color: red">MŨ BẢO HIỂM 3/4 ROYAL M20C</span></label>
-                            <h2 style="color: red">550,000₫</h2>
-                            <label for="">- Vỏ bằng nhựa ABS nguyên sinh</label>
+                            <h1 class="masp">{{ dataSanPham.ten }}</h1>
+                            <label for=""
+                                >Mã SP: <span>{{ dataSanPham.ma }}</span></label
+                            >
+                            <label for="" style="margin-left: 20px"
+                                >Loại: <span style="color: red">{{ dataSanPham.loai }}</span></label
+                            >
+                            <h2 v-if="hasTenKH" style="color: red">{{ formatCurrency(dataSanPham.giaSauGiam) }}</h2>
+                            <h2 v-else style="color: red">{{ formatCurrency(dataSanPham.giaBan) }}</h2>
+                            <label for="">- Trọng lượng: {{ dataSanPham.trongLuong }}</label>
                             <br />
-                            <label for="">- Trọng lượng: 850g ± 50g</label>
+                            <label for="">- Số lượng tồn: {{ dataSanPham.soLuongTon }} </label>
                             <br />
-                            <label for="">- size L: 55 - 57cm - size XL: 57 - 59cm</label>
                             <br />
-                            <br>
                             <label class="ms">Màu sắc</label>
                             <br />
                             <div class="rounded-content-list">
-                                <div v-for="(color, index) in colors" :key="index" class="rounded-content" @click="handleContentClick(index)">
-                                    <a href=""><img :class="{ clicked: selected === index }" class="rounded-image" :src="color.imgSrc" alt="Hình ảnh" /></a>
-                                    <a class="rounded-text" href="">{{ color.text }}</a>
+                                <div v-for="(mauSacs, index) in dataMauSac" :key="index" class="rounded-content">
+                                    <img class="rounded-image" :src="mauSacs.anh" alt="Hình ảnh" />
+                                    <a class="rounded-text">{{ mauSacs.mauSac.ten }}</a>
                                 </div>
                             </div>
-                            <br>
-                            <label class="ms" style="margin-left: 5px">Kích cỡ</label>
-                            <label style="margin-left: 25px">
-                                <input type="radio" value="L" name="size" v-model="selectedSize" />
-                                L
-                            </label>
-                            <label style="margin-left: 25px">
-                                <input type="radio" value="XL" name="size" v-model="selectedSize" />
-                                XL
-                            </label>
+                            <br />
+                            <div class="flex flex-wrap gap-3">
+                                <label class="ms" style="margin-left: 5px">Kích cỡ</label>
+                                <div class="flex align-items-center" v-for="(s, index) in dataSize" :key="index">
+                                    <input type="radio" :id="'size' + s.id" :value="s.size.ten" v-model="selectedSize" :name="'sizeGroup'" />
+                                    <label :for="'size' + s.id" class="ml-2">{{ s.size.ten }}</label>
+                                </div>
+                            </div>
                             <br />
                             <br />
                             <div class="sl">
                                 <label for="quantity">Số lượng</label>
                                 <br />
-                                <div class="quantity buttons_added form-flat">
-                                    <input type="button" value="-" class="minus button is-form" />
-                                    <input type="text" class="input-text qty text" step="1" min="1" max="" name="quantity" value="1" title="SL" size="4" placeholder="" inputmode="numeric" />
-                                    <input type="button" value="+" class="plus button is-form" />
+                                <div class="quantity">
+                                    <button @click="decrement" class="minus p-button-secondary p-button-outlined">
+                                        <i class="pi pi-minus"></i>
+                                    </button>
+                                    <input v-model="quantity" class="input-soluong" style="width: 35px" disabled />
+                                    <button @click="increment" class="plus-phai p-button-secondary p-button-outlined">
+                                        <i class="pi pi-plus"></i>
+                                    </button>
                                 </div>
                                 <Button label="Thêm vào giỏ hàng" icon="pi pi-shopping-cart" class="p-button-rounded p-button-warning mr-2 mb-2" style="background: #e8bd72" />
+                                <Button label="Mua ngay" class="p-button-rounded p-button-warning mr-2 mb-2" style="background: #e8bd72" />
                             </div>
                         </div>
                     </div>
@@ -207,7 +170,7 @@ const dataTrangThai = ref([
                         <TabView>
                             <TabPanel header="Mô tả sản phẩm">
                                 <iframe
-                                    style="margin-left: 330px"
+                                    style="margin-left: 220px"
                                     width="560"
                                     height="315"
                                     src="https://www.youtube.com/embed/LavsX-c8m74"
@@ -218,13 +181,7 @@ const dataTrangThai = ref([
                                 ></iframe>
                                 <br />
                                 <br />
-                                <label for=""
-                                    >Chắc chắn khi tìm mua một chiếc mũ bảo hiểm, bạn đã từng đặt câu hỏi nên chọn mũ bảo hiểm nửa đầu hay mũ bảo hiểm fullface? Mũ bảo hiểm nửa đầu gọn, nhẹ nhưng lại hạn chế về khả năng bảo vệ trong khi mũ bảo hiểm
-                                    fullface cồng kềnh hơn nhưng lại có khả năng bảo vệ tuyệt vời? Liệu có loại mũ bảo hiểm nào vừa gọn, vừa an toàn lại vừa đẹp không? Mũ bảo hiểm ¾ Royal M20C chính là loại mũ mà bạn đang tìm kiếm!
-                                </label>
-                                <div class="text-center">
-                                    <img src="https://royalhelmet.com.vn/ckfinder/userfiles/images/products/cWpxqTIMG_5015.jpg" alt="" style="width: 20%" />
-                                </div>
+                                <label for=""> {{ dataSanPham.moTa }}</label>
                                 <h3>CHI TIẾT SẢN PHẨM</h3>
                                 <div class="ctn">
                                     <div class="item">
@@ -234,7 +191,7 @@ const dataTrangThai = ref([
                                     <Divider />
                                     <div class="item">
                                         <label>Trọng lượng: </label>
-                                        <span>Khoảng 950g</span>
+                                        <span> {{ dataSanPham.trongLuong }} </span>
                                     </div>
                                     <Divider />
                                     <div class="item">
@@ -259,7 +216,7 @@ const dataTrangThai = ref([
                                     <Divider />
                                     <div class="item">
                                         <label>Lót: </label>
-                                        <span>Vải lưới đen </span>
+                                        <span> {{ dataSanPham.demLot }}</span>
                                     </div>
                                     <Divider />
                                     <div class="item">
@@ -274,7 +231,7 @@ const dataTrangThai = ref([
                                     <Divider />
                                     <div class="item">
                                         <label>Thương hiệu: </label>
-                                        <span>Royce </span>
+                                        <span> {{ dataSanPham.thuongHieu }} </span>
                                     </div>
                                     <Divider />
                                     <div class="item">
@@ -302,51 +259,22 @@ const dataTrangThai = ref([
                                         <span>Theo đơn vị vận chuyển </span>
                                     </div>
                                 </div>
-                                <Divider />
-                                <div class="">
-                                    <h2>Sản phẩm tương tự</h2>
-                                    <Carousel :value="colors" :numVisible="3" :numScroll="3" :responsiveOptions="responsiveOptions">
-                                        <template #item="slotProps">
-                                            <div class="border-1 surface-border border-round m-2 text-center py-5 px-3">
-                                                <a href="">
-                                                    <img :src="slotProps.data.imgSrc" alt="Hình ảnh" style="width: 50%" />
-                                                </a>
-                                                <div>
-                                                    <a href=""
-                                                        ><h4 class="mb-1">{{ slotProps.data.text }}</h4></a
-                                                    >
-                                                    <h6 class="mt-0 mb-3">${{ slotProps.data.price }}</h6>
-                                                    <Tag :value="slotProps.data.inventoryStatus" :severity="getSeverity(slotProps.data.inventoryStatus)" />
-                                                    <div class="mt-5">
-                                                        <Button icon="pi pi-search" rounded class="mr-2" />
-                                                        <Button icon="pi pi-star-fill" rounded severity="success" class="mr-2" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </template>
-                                    </Carousel>
-                                </div>
                             </TabPanel>
                             <TabPanel header="Đánh giá">
                                 <br />
                                 <br />
                                 <div class="flex">
                                     <h6 style="margin-right: 10px"><span>1 </span> bình luận</h6>
-                                    <label style="margin-left: 800px" for="">Sắp xếp theo</label>
+                                    <label style="margin-left: 675px" for=""></label>
                                     <Dropdown :options="dataTrangThai" optionLabel="label" placeholder="Tất cả bình luận" class="w-full md:w-14rem" style="margin-left: 20px" />
                                 </div>
                                 <div class="">
                                     <Avatar icon="pi pi-user" class="" size="xlarge" />
-                                    <Editor editorStyle="height: 100px">
-                                        <template v-slot:toolbar>
-                                            <span class="ql-formats">
-                                                <button v-tooltip.bottom="'Bold'" class="ql-bold"></button>
-                                                <button v-tooltip.bottom="'Italic'" class="ql-italic"></button>
-                                                <button v-tooltip.bottom="'Underline'" class="ql-underline"></button>
-                                            </span>
-                                        </template>
-                                    </Editor>
-                                    <div class="flex flex-wrap justify-content-between align-items-center gap-3 mt-3" style="margin-left: 1130px">
+                                    <span class="p-float-label">
+                                        <Textarea v-model="value" rows="5" cols="145" />
+                                    </span>
+                                    <Toast />
+                                    <div class="flex flex-wrap justify-content-between align-items-center gap-3 mt-3" style="margin-left: 900px">
                                         <Button type="submit" label="Đăng" />
                                     </div>
                                 </div>
@@ -359,32 +287,31 @@ const dataTrangThai = ref([
                                         <span>Sản phẩm xịn</span>
                                     </div>
                                 </div>
-                                <Divider />
-                                <div class="">
-                                    <h2>Sản phẩm tương tự</h2>
-                                    <Carousel :value="colors" :numVisible="3" :numScroll="3" :responsiveOptions="responsiveOptions">
-                                        <template #item="slotProps">
-                                            <div class="border-1 surface-border border-round m-2 text-center py-5 px-3">
-                                                <a href="">
-                                                    <img :src="slotProps.data.imgSrc" alt="Hình ảnh" style="width: 50%" />
-                                                </a>
-                                                <div>
-                                                    <a href=""
-                                                        ><h4 class="mb-1">{{ slotProps.data.text }}</h4></a
-                                                    >
-                                                    <h6 class="mt-0 mb-3">${{ slotProps.data.price }}</h6>
-                                                    <Tag :value="slotProps.data.inventoryStatus" :severity="getSeverity(slotProps.data.inventoryStatus)" />
-                                                    <div class="mt-5">
-                                                        <Button icon="pi pi-search" rounded class="mr-2" />
-                                                        <Button icon="pi pi-star-fill" rounded severity="success" class="mr-2" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </template>
-                                    </Carousel>
-                                </div>
                             </TabPanel>
                         </TabView>
+                    </div>
+                    <Divider />
+                    <div class="">
+                        <h2>Sản phẩm tương tự</h2>
+                        <Carousel :value="products" :numVisible="3" :numScroll="3" :responsiveOptions="responsiveOptions">
+                            <template #item="slotProps">
+                                <div class="border-1 surface-border border-round m-2 text-center py-5 px-3">
+                                    <a href="">
+                                        <img :src="slotProps.data.sanPham.anh" alt="Hình ảnh" style="width: 50%" />
+                                    </a>
+                                    <div>
+                                        <a href=""
+                                            ><h4 class="mb-1">{{ slotProps.data.sanPham.ten }}</h4></a
+                                        >
+                                        <h6 class="mt-0 mb-3">{{ slotProps.data.giaBan }} đ</h6>
+                                        <div class="mt-5">
+                                            <Button icon="pi pi-search" rounded class="mr-2" />
+                                            <Button icon="pi pi-star-fill" rounded severity="success" class="mr-2" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                        </Carousel>
                     </div>
                 </div>
             </div>
@@ -503,5 +430,50 @@ const dataTrangThai = ref([
 
 .container {
     width: 1100px;
+}
+
+.size-container {
+    display: inline-block; /* hoặc sử dụng 'inline-flex' nếu bạn muốn chúng căng ra đều theo chiều ngang */
+    margin-right: 10px; /* Khoảng cách giữa các phần tử */
+}
+
+.minus,
+.plus {
+    cursor: pointer;
+    font-size: 15px;
+    background-color: #ffffff;
+    color: black;
+    padding: 10px 12px;
+    margin: 0;
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    transition: background-color 0.3s ease;
+    border: 1px solid #ccc;
+}
+.input-soluong {
+    font-size: 17px;
+    height: 44px;
+    border: 1px solid #ccc; /* Đặt viền màu ghi và kích thước to */
+    color: #333; /* Đặt màu chữ */
+    /* padding: 0 12px;  */
+    text-align: center;
+    width: 30px;
+    box-sizing: border-box;
+}
+.plus-phai {
+    cursor: pointer;
+    font-size: 15px;
+    background-color: #ffffff;
+    color: black;
+    padding: 10px 12px;
+    margin: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    transition: background-color 0.3s ease;
+    border: 1px solid #ccc;
 }
 </style>
