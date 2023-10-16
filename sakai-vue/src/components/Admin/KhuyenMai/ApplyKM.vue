@@ -4,8 +4,7 @@
     <Dialog v-model:visible="selectedProductDialog" header="Flex Scroll" :style="{ width: '75vw' }" maximizable modal :contentStyle="{ height: '300px' }" class="p-fluid">
         <template #header>
             <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-                <h5 class="m-0">Khuyến Mãi</h5>
-                <h3 class="ml-5">Số lượng khuyến mại: {{ props.myProp.soLuong }}</h3>
+                <h5 class="m-0">Khuyến Mại</h5>
             </div>
         </template>
         <div class="card p-fluid">
@@ -85,27 +84,16 @@ const applyKhuyenMai = () => {
     // đây là IdKM dùng để áp dụng được truyền từ component cha
     const idkm = props.myProp.id;
 
-   
-    // nếu số lượng CTSP được chọn > số lượng khuyến mại còn lại
-    if (sl > soLuong) {
-        toast.add({ severity: 'error', summary: 'Error Message', detail: 'Số lượng khuyến mại không đủ. Vui lòng chọn ít hơn hoặc bằng ' + soLuong + ' sản phẩm', life: 3000 });
-        selectedProductDialog.value = true;
-        return;
-    }
-    // cập nhật lại số lượng khuyến mại
-    khuyenmaiService.updateSLKhuyenMai(idkm, sl);
-    loadDataKhuyenmai();
-
     // duyệt qua mảng danh sách các CTSP được chọn 
     selectedProduct.value.forEach((product) => {
         const productId = product.id;
         // cập nhật lại giá tiền và id khuyến mại
         khuyenmaiService.updateCTSP(productId, idkm);
-        loadDataKhuyenmai();
         loadDataProduct();
         selectedProduct.value = [];
         selectedProductDialog.value = false;
     });
-    emits('update', sl, idkm);
+    loadDataProduct();
+    toast.add({ severity: 'success', summary: 'Successful', detail: 'Áp dụng khuyến mại thành công', life: 3000 });
 };
 </script>
