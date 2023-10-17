@@ -28,7 +28,6 @@ export const khuyenMaiStore = defineStore('khuyenmai', {
                         this.data[i].ten = form.ten;
                         this.data[i].thoiGianBatDau = form.thoiGianBatDau;
                         this.data[i].thoiGianKetThuc = form.thoiGianKetThuc;
-                        this.data[i].soLuong = form.soLuong;
                         this.data[i].moTa = form.moTa;
                         this.data[i].giaTriGiam = form.giaTriGiam;
                     }
@@ -48,20 +47,7 @@ export const khuyenMaiStore = defineStore('khuyenmai', {
                 }
             });
         },
-        updateSLKhuyenMai(id, sl) {
-            axios.put(`http://localhost:8080/api/khuyenMai/updateSLKhuyenMai/${id}?sl=${sl}`).then((r) => {
-                if (this.data.length == 0) {
-                    return (this.data.soLuong = 0);
-                } else {
-                    for (let i = 0; i < this.data.length; i++) {
-                        if (id == this.data[i]?.id) {
-                            this.data[i].soLuong = this.data[i].soLuong - sl;
-                        }
-                    }
-                }
-            });
-        },
-
+       
         async getProduct() {
             try {
                 const response = await axios.get(apiKhuyenMai + '/getAllCTSPByKhuyenMai');
