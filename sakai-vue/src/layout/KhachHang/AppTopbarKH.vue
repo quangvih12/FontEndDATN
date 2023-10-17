@@ -3,7 +3,7 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useLayout } from '@/layout/composables/layout';
 import { useRouter } from 'vue-router';
 import { userStore } from '@/service/Admin/User/UserService.js';
-
+import tokenService from '@/service/Authentication/TokenService.js'
 const userService = userStore();
 const { layoutConfig, onMenuToggle } = useLayout();
 
@@ -79,8 +79,10 @@ const fetchData = async () => {
 const selectedCustomer = ref(null);
 
 // hàm gọi sự thay đổi thông tin của khách hàng khi click vào CBB
-const displayKH = () => {
+const displayKH = async () =>  {
   selectedCustomer.value = khachHang.value.find(kh => kh.ten === selectedKH.value.ten);
+  const token =   await tokenService.gentoken(selectedCustomer.value.username)
+  localStorage.setItem('token', token);
 };
 </script>
 
@@ -98,6 +100,7 @@ const displayKH = () => {
             <i class="pi pi-ellipsis-v"></i>
         </button>
 
+        <Toast />
         <div class="layout-topbar-menu">
             <router-link to="/" class="layout-topbar-logo" style="width: 13%; margin-left: 10px">
                 <p style="font-size: 19px">Home</p>
