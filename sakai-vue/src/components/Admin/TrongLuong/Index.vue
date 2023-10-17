@@ -114,21 +114,16 @@ const initFilters = () => {
                             {{ slotProps.data.ma }}
                         </template>
                     </Column>
-                    <Column field="donVi" header="Value" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-                        <template #body="slotProps">
-                            <span class="p-column-title">value</span>
-                            {{ slotProps.data.value }}
-                        </template>
-                    </Column>
+                  
                     <Column field="donVi" header="Đơn vị" :sortable="true" headerStyle="width:14%; min-width:10rem;">
                         <template #body="slotProps">
                             <span class="p-column-title">don vi</span>
                             {{ slotProps.data.donVi }}
                         </template>
                     </Column>
-                    <Column field="donVi" header="Đơn vị" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+                    <Column field="value" header="Giá trị" :sortable="true" headerStyle="width:14%; min-width:10rem;">
                         <template #body="slotProps">
-                            <span class="p-column-title">don vi</span>
+                            <span class="p-column-title">value</span>
                             {{ slotProps.data.value }}
                         </template>
                     </Column>
