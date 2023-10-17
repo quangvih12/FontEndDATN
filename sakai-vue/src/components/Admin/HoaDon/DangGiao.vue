@@ -3,10 +3,12 @@
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
 import CustomerService from '@/service/CustomerService';
 import ProductService from '@/service/ProductService';
-import { ref, onBeforeMount, onMounted } from 'vue';
+import { ref, onBeforeMount, onMounted, watch } from 'vue';
+import { useToast } from 'primevue/usetoast';
 import DetailHoaDon from './DetailHoaDon.vue';
 import { HDStore } from '../../../service/Admin/HoaDon/HoaDonService';
 
+const toast = useToast();
 const useHD = HDStore();
 const customer1 = ref(null);
 const customer2 = ref(null);
@@ -15,8 +17,22 @@ const filters1 = ref(null);
 const loading1 = ref(null);
 const loading2 = ref(null);
 const products = ref(null);
+const idHD = ref(null);
 const data = ref([]);
+// confirm xác nhận
+const addProductDialog = ref(false);
 
+//hiện confirm
+const confirmAddProduct = (id) => {
+    idHD.value = id;
+    addProductDialog.value = true;
+};
+
+watch(addProductDialog, (newVal) => {
+    if (addProductDialog.value == false) {
+        idHD.value = null;
+    }
+});
 const loadData = async () => {
     await useHD.fetchDataByStatus(5);
     data.value = useHD.dataDangGiao;
@@ -38,12 +54,19 @@ const hienThiTrangThai = (trangThai) => {
     } else if (trangThai == 4) {
         return 'Đang chuẩn bị hàng';
     } else if (trangThai == 5) {
-        return 'Giao cho đơn vị vận chuyển';
+        return 'Đang giao';
     } else if (trangThai == 6) {
         return 'Yêu cầu đổi trả';
     } else {
         return 'Xác nhận đổi trả';
     }
+};
+
+
+const btnXacNhan = () => {
+    useHD.hoanThanh(idHD.value);
+    toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Xác nhận thành công', life: 3000 });
+    addProductDialog.value = false;
 };
 
 const columns = ref([
@@ -102,6 +125,7 @@ const formatDate = (value) => {
 };
 </script>
 <template>
+    <Toast />
     <div class="col-12 flex" style="margin-right: 10px; padding-left: 0">
         <span class="p-input-icon-left">
             <i class="pi pi-search" />
@@ -125,7 +149,7 @@ const formatDate = (value) => {
         v-model:selection="selectedProducts"
         dataKey="id"
         :paginator="true"
-        :rows="10"
+        :rows="5"
         :filters="filters1"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
         :rowsPerPageOptions="[5, 10, 25]"
@@ -147,7 +171,7 @@ const formatDate = (value) => {
         <Column field="diaChi" header="Địa chỉ" :sortable="false" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
                 <span class="p-column-title">diaChi</span>
-                {{ slotProps.data.diaChi }}
+                {{ slotProps.data.diaChiCuThe }}, {{ slotProps.data.tenPhuongXa }}, {{ slotProps.data.tenQuanHuyen }}, {{ slotProps.data.tenTinhThanh }}
             </template>
         </Column>
         <Column field="trangThai" header="Trạng thái" :sortable="false" headerStyle="width:14%; min-width:10rem;">
@@ -158,10 +182,20 @@ const formatDate = (value) => {
         </Column>
         <Column header="Hành động" headerStyle="min-width:10rem;">
             <template #body="slotProps">
-                <DetailHoaDon></DetailHoaDon>
-                <Button label="Nhận" class="p-button-outlined p-button-info mr-2 mb-2" @click="btnXacNhan(slotProps.data.idHD)" />
-                <Button label="Hủy" class="p-button-outlined p-button-info mr-2 mb-2" />
+                <DetailHoaDon :my-prop="slotProps.data"></DetailHoaDon>
+                <Button label="Hoàn thành" class="p-button-outlined p-button-info mr-2 mb-2" @click="confirmAddProduct(slotProps.data.idHD)" />
+                <Button label="Thất bại" class="p-button-outlined p-button-info mr-2 mb-2" />
             </template>
         </Column>
     </DataTable>
+    <Dialog v-model:visible="addProductDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
+        <div class="flex align-items-center justify-content-center">
+            <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+            <span>Bạn có chắc chắn muốn hoàn thành không ?</span>
+        </div>
+        <template #footer>
+            <Button label="No" icon="pi pi-times" class="p-button-text" @click="addProductDialog = false" />
+            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhan()" />
+        </template>
+    </Dialog>
 </template>

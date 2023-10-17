@@ -125,7 +125,7 @@ const formatDate = (value) => {
         v-model:selection="selectedProducts"
         dataKey="id"
         :paginator="true"
-        :rows="10"
+        :rows="5"
         :filters="filters1"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
         :rowsPerPageOptions="[5, 10, 25]"
@@ -147,7 +147,7 @@ const formatDate = (value) => {
         <Column field="diaChi" header="Địa chỉ" :sortable="false" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
                 <span class="p-column-title">diaChi</span>
-                {{ slotProps.data.diaChi }}
+                {{ slotProps.data.diaChiCuThe }}, {{ slotProps.data.tenPhuongXa }}, {{ slotProps.data.tenQuanHuyen }}, {{ slotProps.data.tenTinhThanh }}
             </template>
         </Column>
         <Column field="trangThai" header="Trạng thái" :sortable="false" headerStyle="width:14%; min-width:10rem;">
@@ -158,7 +158,7 @@ const formatDate = (value) => {
         </Column>
         <Column header="Hành động" headerStyle="min-width:10rem;">
             <template #body="slotProps">
-                <DetailHoaDon></DetailHoaDon>
+                <DetailHoaDon :my-prop="slotProps.data"></DetailHoaDon>
                 <Button label="Nhận" class="p-button-outlined p-button-info mr-2 mb-2" @click="btnXacNhan(slotProps.data.idHD)" />
                 <Button label="Hủy" class="p-button-outlined p-button-info mr-2 mb-2" />
             </template>

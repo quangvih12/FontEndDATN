@@ -4,6 +4,7 @@ import { FilterMatchMode, FilterOperator } from 'primevue/api';
 import CustomerService from '@/service/CustomerService';
 import ProductService from '@/service/ProductService';
 import { ref, onBeforeMount, onMounted } from 'vue';
+import { useToast } from 'primevue/usetoast';
 import DetailHoaDon from './DetailHoaDon.vue';
 import { HDStore } from '../../../service/Admin/HoaDon/HoaDonService';
 
@@ -85,8 +86,7 @@ onBeforeMount(() => {
 
 const initFilters1 = () => {
     filters1.value = {
-        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS }
     };
 };
 
@@ -106,15 +106,15 @@ const formatDate = (value) => {
     <div class="col-12 flex" style="margin-right: 10px; padding-left: 0">
         <span class="p-input-icon-left">
             <i class="pi pi-search" />
-            <InputText v-model="filters1['global'].value" placeholder="Keyword Search" style="min-width: 13rem; height: 40px;" />
+            <InputText v-model="filters1['global'].value" placeholder="Keyword Search" style="min-width: 13rem; height: 40px" />
         </span>
         <div class="p-inputgroup flex-1" style="margin-left: 20px">
-            <span class="p-inputgroup-addon" style="height: 40px;">Ngày bắt đầu</span>
-            <input type="datetime-local" style="min-width: 13rem; height: 40px;" />
+            <span class="p-inputgroup-addon" style="height: 40px">Ngày bắt đầu</span>
+            <input type="datetime-local" style="min-width: 13rem; height: 40px" />
         </div>
         <div class="p-inputgroup flex-1">
-            <span class="p-inputgroup-addon" style="height: 40px;">Ngày kết thúc</span>
-            <input type="datetime-local" style="min-width: 13rem; height: 40px;" />
+            <span class="p-inputgroup-addon" style="height: 40px">Ngày kết thúc</span>
+            <input type="datetime-local" style="min-width: 13rem; height: 40px" />
         </div>
         <div style="margin-left: 5px">
             <Button label="Seach" icon="pi pi-search" class="p-button-rounded p-button-primary mr-2 mb-2" />
@@ -126,7 +126,7 @@ const formatDate = (value) => {
         v-model:selection="selectedProducts"
         dataKey="id"
         :paginator="true"
-        :rows="10"
+        :rows="5"
         :filters="filters1"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
         :rowsPerPageOptions="[5, 10, 25]"
@@ -148,7 +148,7 @@ const formatDate = (value) => {
         <Column field="diaChi" header="Địa chỉ" :sortable="false" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
                 <span class="p-column-title">diaChi</span>
-                {{ slotProps.data.diaChi }}
+                {{ slotProps.data.diaChiCuThe }}, {{ slotProps.data.tenPhuongXa }}, {{ slotProps.data.tenQuanHuyen }}, {{ slotProps.data.tenTinhThanh }}
             </template>
         </Column>
         <Column field="trangThai" header="Trạng thái" :sortable="false" headerStyle="width:14%; min-width:10rem;">
@@ -159,9 +159,7 @@ const formatDate = (value) => {
         </Column>
         <Column header="Hành động" headerStyle="min-width:10rem;">
             <template #body="slotProps">
-                <DetailHoaDon></DetailHoaDon>
-                <Button label="Nhận" class="p-button-outlined p-button-info mr-2 mb-2" @click="btnXacNhan(slotProps.data.idHD)" />
-                <Button label="Hủy" class="p-button-outlined p-button-info mr-2 mb-2" />
+                <DetailHoaDon :my-prop="slotProps.data"></DetailHoaDon>
             </template>
         </Column>
     </DataTable>

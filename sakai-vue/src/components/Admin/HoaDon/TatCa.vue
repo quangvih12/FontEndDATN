@@ -15,6 +15,8 @@ const filters1 = ref(null);
 const loading1 = ref(null);
 const loading2 = ref(null);
 const products = ref(null);
+const startDate = ref(null);
+const endDate = ref([null]);
 const customerService = new CustomerService();
 const productService = new ProductService();
 const data = ref([]);
@@ -22,7 +24,7 @@ const data = ref([]);
 const loadData = async () => {
     await useHD.fetchData();
     data.value = useHD.dataAll;
-    console.log(data.value);
+    // console.log(data.value);
 };
 
 //chạy cái hiện data luôn
@@ -70,6 +72,11 @@ const onToggle = (val) => {
     selectedColumns.value = columns.value.filter((col) => val.includes(col));
 };
 
+const searchDate = async () => {
+    await useHD.searchDate(startDate.value, endDate.value);
+    // data.value = useHD.dataAll;
+};
+
 onBeforeMount(() => {
     productService.getProductsWithOrdersSmall().then((data) => (products.value = data));
     customerService.getCustomersLarge().then((data) => {
@@ -110,14 +117,14 @@ const formatDate = (value) => {
         </span>
         <div class="p-inputgroup flex-1" style="margin-left: 20px">
             <span class="p-inputgroup-addon" style="height: 40px">Ngày bắt đầu</span>
-            <input type="datetime-local" style="min-width: 13rem; height: 40px" />
+            <input type="datetime-local" v-model="startDate" style="min-width: 13rem; height: 40px" />
         </div>
         <div class="p-inputgroup flex-1">
             <span class="p-inputgroup-addon" style="height: 40px">Ngày kết thúc</span>
-            <input type="datetime-local" style="min-width: 13rem; height: 40px" />
+            <input type="datetime-local" v-model="endDate" style="min-width: 13rem; height: 40px" />
         </div>
         <div style="margin-left: 5px">
-            <Button label="Seach" icon="pi pi-search" class="p-button-rounded p-button-primary mr-2 mb-2" />
+            <Button label="Seach" @click="searchDate()" icon="pi pi-search" class="p-button-rounded p-button-primary mr-2 mb-2" />
         </div>
     </div>
     <DataTable
@@ -126,7 +133,7 @@ const formatDate = (value) => {
         v-model:selection="selectedProducts"
         dataKey="id"
         :paginator="true"
-        :rows="10"
+        :rows="5"
         :filters="filters1"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
         :rowsPerPageOptions="[5, 10, 25]"
@@ -148,7 +155,7 @@ const formatDate = (value) => {
         <Column field="diaChi" header="Địa chỉ" :sortable="false" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
                 <span class="p-column-title">diaChi</span>
-                {{ slotProps.data.diaChi }}
+                {{ slotProps.data.diaChiCuThe }}, {{ slotProps.data.tenPhuongXa }}, {{ slotProps.data.tenQuanHuyen }}, {{ slotProps.data.tenTinhThanh }}
             </template>
         </Column>
         <Column field="trangThai" header="Trạng thái" :sortable="false" headerStyle="width:14%; min-width:10rem;">
@@ -259,7 +266,7 @@ const formatDate = (value) => {
                 <UpdateSize :my-prop="slotProps.data"></UpdateSize>
                 <Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" @click="editProduct(slotProps.data)" />
                 <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2" @click="confirmDeleteProduct(slotProps.data.id)" /> -->
-                <DetailHoaDon></DetailHoaDon>
+                <DetailHoaDon :my-prop="slotProps.data"></DetailHoaDon>
             </template>
         </Column>
     </DataTable>

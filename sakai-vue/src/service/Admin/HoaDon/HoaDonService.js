@@ -56,6 +56,52 @@ export const HDStore = defineStore('hoaDon', {
             return this.dataDangGiao[0];
         },
 
+        //từ đang giao -> hoàn thành
+        hoanThanh(id) {
+            axios.put(apiHD + '/hoan-thanh/' + id).then((response) => {
+                if (this.check == 1) {
+                    if (this.dataDangGiao[0].trangThai == '5') {
+                        let index = -1;
+                        for (let i = 0; i < this.dataDangGiao.length; i++) {
+                            if (id == this.dataDangGiao[i].idHD) {
+                                index = i;
+                            }
+                        }
+                        this.dataHoanThanh.unshift(this.dataDangGiao[index]);
+                        this.dataDangGiao.splice(index, 1);
+                    }
+                }
+            });
+        },
+
+        //huỷ hoá đơn
+        huyHoaDon(id, lyDo) {
+            axios.put(apiHD + '/huyXacNhan/' + id + '?lyDo=' + lyDo).then((response) => {
+                if (this.check == 1) {
+                    if (this.dataChoXacNhan[0].trangThai == '2') {
+                        let index = -1;
+                        for (let i = 0; i < this.dataChoXacNhan.length; i++) {
+                            if (id == this.dataChoXacNhan[i].idHD) {
+                                index = i;
+                            }
+                        }
+                        this.dataDaHuy.unshift(this.dataChoXacNhan[index]);
+                        this.dataChoXacNhan.splice(index, 1);
+                    }
+                    if (this.dataDangChuanBi[0].trangThai == '4') {
+                        let index = -1;
+                        for (let i = 0; i < this.dataDangChuanBi.length; i++) {
+                            if (id == this.dataDangChuanBi[i].idHD) {
+                                index = i;
+                            }
+                        }
+                        this.dataDaHuy.unshift(this.dataDangChuanBi[index]);
+                        this.dataDangChuanBi.splice(index, 1);
+                    }
+                }
+            });
+        },
+
         //gửi cho giao hàng nhanh
         async giaoHangNhanh(danhSachSP, hoaDon) {
             const danhSachItem = [];
@@ -85,11 +131,11 @@ export const HDStore = defineStore('hoaDon', {
                 return_ward_code: '13010', //phường/xã cụ thể nơi gửi
                 client_order_code: '',
                 to_name: hoaDon.tenNguoiNhan, //tên người nhận
-                to_phone: '0375978188', //sdt người nhận
-                to_address: 'Nhà Ứng Lay', //địa chỉ cụ thể
-                to_ward_code: '190211', //xã
-                to_district_id: 1768, //huyện
-                cod_amount: 300000, //tổng tiền
+                to_phone: hoaDon.sdt, //sdt người nhận
+                to_address: hoaDon.diaChiCuThe, //địa chỉ cụ thể
+                to_ward_code: hoaDon.idPhuongXa, //xã
+                to_district_id: parseInt(hoaDon.idQuanHuyen), //huyện
+                cod_amount: parseInt(hoaDon.tongTien), //tổng tiền
                 content: 'Áo gì gì đấy', //nội dung hoá đơn
                 weight: 200,
                 length: 1,
@@ -100,7 +146,6 @@ export const HDStore = defineStore('hoaDon', {
                 pick_shift: [2],
                 items: danhSachItem
             };
-            // console.log(hoaDon);
             try {
                 const response = await axios.post('https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/preview', form, {
                     headers: {
@@ -109,7 +154,6 @@ export const HDStore = defineStore('hoaDon', {
                         ShopId: '4523827'
                     }
                 });
-                // console.log(response);
             } catch (error) {
                 console.error('Error fetching users:', error);
             }
@@ -130,7 +174,6 @@ export const HDStore = defineStore('hoaDon', {
             try {
                 const response = await axios.get(apiHD);
                 this.dataAll = response.data;
-                // console.log(response.data);
             } catch (error) {
                 console.error('Error fetching users:', error);
             }
@@ -147,6 +190,14 @@ export const HDStore = defineStore('hoaDon', {
                 if (status == 5) this.dataDangGiao = response.data;
                 if (status == 3) this.dataHoanThanh = response.data;
                 if (status == 7) this.dataHoanTraHoanTien = response.data;
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        },
+        //search date
+        async searchDate(startDate, endDate) {
+            try {
+                const response = await axios.get(apiHD + '/search-date?startDate=' + startDate + '&endDate=' + endDate);
             } catch (error) {
                 console.error('Error fetching users:', error);
             }
