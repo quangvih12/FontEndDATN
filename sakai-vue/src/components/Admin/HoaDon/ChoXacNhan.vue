@@ -54,6 +54,26 @@ const btnXacNhan = (idHD) => {
     toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Xác nhận thành công', life: 3000 });
 };
 
+const columns = ref([
+    { field: 'maHD', header: 'Mã hoá đơn' },
+    { field: 'nguoiTao', header: 'Người tạo' },
+    { field: 'ngayTao', header: 'Ngày tạo' },
+    { field: 'ngaySua', header: 'Ngày sửa' },
+    { field: 'tenNguoiNhan', header: 'Tên người nhận' },
+    { field: 'tienShip', header: 'Tiền ship' },
+    { field: 'tongTien', header: 'Tổng tiền' },
+    { field: 'tienSauKhiGiam', header: 'Tiền sau giảm' },
+    { field: 'tenPTTT', header: 'Phương thức thanh toán' },
+    { field: 'ngayThanhToan', header: 'Ngày thanh toán' },
+    { field: 'ngayShip', header: 'Ngày ship' },
+    { field: 'ngayNhan', header: 'Ngày nhận' }
+]);
+const selectedColumns = ref(columns.value);
+
+const onToggle = (val) => {
+    selectedColumns.value = columns.value.filter((col) => val.includes(col));
+};
+
 const customerService = new CustomerService();
 const productService = new ProductService();
 
@@ -73,15 +93,7 @@ onBeforeMount(() => {
 
 const initFilters1 = () => {
     filters1.value = {
-        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        name: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-        'country.name': { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-        representative: { value: null, matchMode: FilterMatchMode.IN },
-        date: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }] },
-        balance: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
-        status: { operator: FilterOperator.OR, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
-        activity: { value: [0, 50], matchMode: FilterMatchMode.BETWEEN },
-        verified: { value: null, matchMode: FilterMatchMode.EQUALS }
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS }
     };
 };
 
@@ -123,115 +135,41 @@ const formatDate = (value) => {
         dataKey="id"
         :paginator="true"
         :rows="5"
-        :filters="filters"
+        :filters="filters1"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
         :rowsPerPageOptions="[5, 10, 25]"
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
         responsiveLayout="scroll"
     >
+        <template #header>
+            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                <MultiSelect icon="pi pi-plus" placeholder="Select Columns" :modelValue="selectedColumns" :options="columns" optionLabel="header" @update:modelValue="onToggle" display="tag" />
+            </div>
+        </template>
         <Column field="stt" header="STT" :sortable="true" headerStyle="width:14%; min-width:1rem;">
             <template #body="slotProps">
                 <span class="p-column-title">stt</span>
                 {{ slotProps.data.stt }}
             </template>
         </Column>
-        <Column field="maHD" header="Mã hoá đơn" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+        <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column>
+        <Column field="diaChi" header="Địa chỉ" :sortable="false" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
-                <span class="p-column-title">maHD</span>
-                {{ slotProps.data.maHD }}
-            </template>
-        </Column>
-        <Column field="nguoiTao" header="Người tạo" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">ten</span>
-                {{ slotProps.data.nguoiTao }}
-            </template>
-        </Column>
-        <Column field="ngayTao" header="Ngày tạo" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">ten</span>
-                {{ slotProps.data.ngayTao }}
-            </template>
-        </Column>
-        <Column field="ngaySua" header="Ngày sửa" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">ten</span>
-                {{ slotProps.data.ngaySua }}
-            </template>
-        </Column>
-        <Column field="tenNguoiNhan" header="Người nhận" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">mota</span>
-                {{ slotProps.data.tenNguoiNhan }}
-            </template>
-        </Column>
-        <Column field="tienShip" header="Tiền ship" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">mota</span>
-                {{ slotProps.data.tienShip }}
-            </template>
-        </Column>
-        <Column field="tongTien" header="Tổng tiền" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">mota</span>
-                {{ slotProps.data.tongTien }}
-            </template>
-        </Column>
-        <Column field="tienSauKhiGiam" header="Tiền sau giảm" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">mota</span>
-                {{ slotProps.data.tienSauKhiGiam }}
+                <span class="p-column-title">diaChi</span>
+                {{ slotProps.data.diaChi }}
             </template>
         </Column>
         <Column field="trangThai" header="Trạng thái" :sortable="false" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
-                <span class="p-column-title">Category</span>
+                <span class="p-column-title">trangThai</span>
                 {{ hienThiTrangThai(slotProps.data.trangThai) }}
-            </template>
-        </Column>
-        <Column field="tenPTTT" header="Phương thức thanh toán" :sortable="false" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">Category</span>
-                {{ slotProps.data.tenPTTT }}
-            </template>
-        </Column>
-        <Column field="ngayThanhToan" header="Ngày thanh toán" :sortable="false" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">Category</span>
-                {{ slotProps.data.ngayThanhToan }}
-            </template>
-        </Column>
-        <Column field="diaChi" header="Địa chỉ" :sortable="false" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">Category</span>
-                {{ slotProps.data.diaChi }}
-            </template>
-        </Column>
-        <Column field="ngayShip" header="Ngày ship" :sortable="false" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">Category</span>
-                {{ slotProps.data.ngayShip }}
-            </template>
-        </Column>
-        <Column field="ngayNhan" header="Ngày nhận" :sortable="false" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">Category</span>
-                {{ slotProps.data.ngayNhan }}
-            </template>
-        </Column>
-        <Column field="hinhThucGiaoHang" header="Hình thức giao" :sortable="false" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">Category</span>
-                {{ slotProps.data.hinhThucGiaoHang }}
             </template>
         </Column>
         <Column header="Hành động" headerStyle="min-width:10rem;">
             <template #body="slotProps">
-                <div class="row flex">
-                    <DetailHoaDon></DetailHoaDon>
-                    <Button label="Nhận" class="p-button-outlined p-button-info mr-2 mb-2" @click="btnXacNhan(slotProps.data.idHD)" />
-                    <Button label="Hủy" class="p-button-outlined p-button-info mr-2 mb-2" />
-                </div>
+                <DetailHoaDon></DetailHoaDon>
+                <Button label="Nhận" class="p-button-outlined p-button-info mr-2 mb-2" @click="btnXacNhan(slotProps.data.idHD)" />
+                <Button label="Hủy" class="p-button-outlined p-button-info mr-2 mb-2" />
             </template>
         </Column>
     </DataTable>
