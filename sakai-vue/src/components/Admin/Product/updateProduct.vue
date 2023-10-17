@@ -303,7 +303,7 @@ const loadDataLoai = async () => {
 const dataTrongLuong = ref([]);
 const loadDataTrongLuong = async () => {
     await trongLuongStore.fetchAll();
-    dataTrongLuong.value = trongLuongStore.data;
+    dataTrongLuong.value = trongLuongStore.dataByStatus1;
 };
 
 const dataVatLieu = ref([]);

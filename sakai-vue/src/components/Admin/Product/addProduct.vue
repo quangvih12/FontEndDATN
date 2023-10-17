@@ -159,8 +159,8 @@ const loadDataLoai = async () => {
 
 const dataTrongLuong = ref([]);
 const loadDataTrongLuong = async () => {
-    await trongLuongStore.fetchAll();
-    dataTrongLuong.value = trongLuongStore.data;
+    await trongLuongStore.fetchDataByStatus(1);
+    dataTrongLuong.value = trongLuongStore.dataByStatus1;
 };
 
 const dataVatLieu = ref([]);
