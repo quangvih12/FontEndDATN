@@ -112,13 +112,13 @@ const loadProducts = async () => {
         const img = await loadImg(product.id);
         productList[key]['img'] = img;
     }
-     
+
     products.value = productList;
-    for(let i = 0; i < 1; i++){
-       soLuongSP.value =  products.value[i].soLuongSanPham;
-      console.log(soLuongSP.value);
+    for (let i = 0; i < 1; i++) {
+        soLuongSP.value = products.value[i].soLuongSanPham;
+        //   console.log(soLuongSP.value);
     }
-    //    console.log('sss: ', products.value);
+    // console.log('sss: ', products.value);
     showSpinner.value = false;
     visibledatatable.value = true;
 };
@@ -138,7 +138,8 @@ const loadMau = ref([]);
 const loadmau = async (idProduct) => {
     await productStore.fetchAllMauSac(idProduct); // Gọi hàm fetchAll từ Store
     loadMau.value = productStore.mauSacs;
-    // console.log('mau: ',  loadMau.value );
+    //   console.log('mau: ', loadMau.value);
+
     return loadMau.value;
 };
 
@@ -291,69 +292,76 @@ const handImportExcel = async (event) => {
     await productStore.uploadFile(formData);
     excel.value = productStore.excels;
     for (const o of excel.value) {
-        if (o.totalError === 0) {
-            // console.log(o)
-            toast.add({ severity: 'success', summary: 'Success Message', detail: 'Import excel thành công', life: 3000 });
-            break;
-        }
-        else {
-            for (const data of o.responseList) {
-                if (data.importMessageGiaBan !== null && data.importMessageGiaBan !== "SUCCESS") {
-                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageGiaBan, life: 30000 });
-
-                }
-                else if (data.importMessageDemLot !== null && data.importMessageDemLot !== "SUCCESS") {
-                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageDemLot, life: 30000 });
-
-                }
-                else if (data.importMessageGiaNhap !== null && data.importMessageGiaNhap !== "SUCCESS") {
-                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageGiaNhap, life: 30000 });
-
-                }
-                else if (data.importMessageSanPham !== null && data.importMessageSanPham !== "SUCCESS") {
-                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSanPham, life: 30000 });
-
-                }
-                else if (data.importMessageTrongLuong !== null && data.importMessageTrongLuong !== "SUCCESS") {
-                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageTrongLuong, life: 30000 });
-
-                }
-                else if (data.importMessageVatLieu !== null && data.importMessageVatLieu !== "SUCCESS") {
-                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageVatLieu, life: 30000 });
-
-                }
-                else if (data.importMessageThuongHieu !== null && data.importMessageThuongHieu !== "SUCCESS") {
-                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageThuongHieu, life: 30000 });
-
-                }
-                else if (data.importMessageSize !== null && data.importMessageSize !== "SUCCESS") {
-                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSize, life: 30000 });
-
-                }
-                else if (data.importMessageMauSac !== null && data.importMessageMauSac !== "SUCCESS") {
-                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageMauSac, life: 30000 });
-
-                }
-                else if (data.importMessageLoai !== null && data.importMessageLoai !== "SUCCESS") {
-                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageLoai, life: 30000 });
-
-                }
-                else if (data.importMessageSoLuong !== null && data.importMessageSoLuong !== "SUCCESS") {
-                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSoLuong, life: 30000 });
-
-                }
-                else if (data.importMessageQuaiDeo !== null && data.importMessageQuaiDeo !== "SUCCESS") {
-                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageQuaiDeo, life: 30000 });
-
-                }
-                else if (data.importMessageSoLuongSize !== null && data.importMessageSoLuongSize !== "SUCCESS") {
-                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSoLuongSize, life: 30000 });
-
-                }
+        // if (o.totalError === 0) {
+        //     // console.log(o)
+        //     toast.add({ severity: 'success', summary: 'Success Message', detail: 'Import excel thành công', life: 3000 });
+        //     break;
+        // }
+        // else {
+        for (const data of o.responseList) {
+            if (data.importMessageGiaBan !== null && data.importMessageGiaBan !== "SUCCESS") {
+                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageGiaBan, life: 30000 });
 
             }
-            break;
+            else if (data.importMessageDemLot !== null && data.importMessageDemLot !== "SUCCESS") {
+                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageDemLot, life: 30000 });
+
+            }
+            else if (data.importMessageGiaNhap !== null && data.importMessageGiaNhap !== "SUCCESS") {
+                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageGiaNhap, life: 30000 });
+
+            }
+            else if (data.importMessageSanPham !== null && data.importMessageSanPham !== "SUCCESS") {
+                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSanPham, life: 30000 });
+
+            }
+            else if (data.importMessageTrongLuong !== null && data.importMessageTrongLuong !== "SUCCESS") {
+                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageTrongLuong, life: 30000 });
+
+            }
+            else if (data.importMessageVatLieu !== null && data.importMessageVatLieu !== "SUCCESS") {
+                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageVatLieu, life: 30000 });
+
+            }
+            else if (data.importMessageThuongHieu !== null && data.importMessageThuongHieu !== "SUCCESS") {
+                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageThuongHieu, life: 30000 });
+
+            }
+            else if (data.importMessageSize !== null && data.importMessageSize !== "SUCCESS") {
+                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSize, life: 30000 });
+
+            }
+            else if (data.importMessageMauSac !== null && data.importMessageMauSac !== "SUCCESS") {
+                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageMauSac, life: 30000 });
+
+            }
+            else if (data.importMessageLoai !== null && data.importMessageLoai !== "SUCCESS") {
+                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageLoai, life: 30000 });
+
+            }
+            else if (data.importMessageSoLuong !== null && data.importMessageSoLuong !== "SUCCESS") {
+                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSoLuong, life: 30000 });
+
+            }
+            else if (data.importMessageQuaiDeo !== null && data.importMessageQuaiDeo !== "SUCCESS") {
+                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageQuaiDeo, life: 30000 });
+
+            }
+            else if (data.importMessageSoLuongSize !== null && data.importMessageSoLuongSize !== "SUCCESS") {
+                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSoLuongSize, life: 30000 });
+
+            }
+            else if (data.importMessageSoLuongMau !== null && data.importMessageSoLuongMau !== "SUCCESS") {
+                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSoLuongMau, life: 30000 });
+            }
+            else {
+                toast.add({ severity: 'success', summary: 'Success Message', detail: 'Import excel thành công', life: 3000 });
+                break;
+            }
+
         }
+        break;
+        //   }
     }
     showProgressSpinner.value = false;
     dis.value = true;
@@ -389,15 +397,15 @@ const loadDataByTrangThai = async () => {
     }
 
     products.value = productList;
- //   console.log(products.value);
-    if( products.value.length === 0){
+    //   console.log(products.value);
+    if (products.value.length === 0) {
         soLuongSP.value = 0;
-   }else{
-    for(let i = 0; i < 1; i++){
-       soLuongSP.value =  products.value[i].soLuongSanPham;
-    //   console.log(soLuongSP.value);
+    } else {
+        for (let i = 0; i < 1; i++) {
+            soLuongSP.value = products.value[i].soLuongSanPham;
+            //   console.log(soLuongSP.value);
+        }
     }
-   }
     showSpinner.value = false;
     visibledatatable.value = true;
 };
@@ -454,9 +462,11 @@ watch(trangThai, (newVal) => {
                                 </div>
                                 <div style="display: flex;">
                                     <h5 class="m-0" style="margin-right: 20px;"> Products </h5>
-                                <div style="margin-bottom:10px ;margin-left: 10px;border-radius: 50%; width: 30px ;height: 30px; background: rgb(76, 71, 83); color: white; text-align: center;font-size: 20px;"> {{ soLuongSP }}</div>
+                                    <div
+                                        style="margin-bottom:10px ;margin-left: 10px;border-radius: 50%; width: 30px ;height: 30px; background: rgb(76, 71, 83); color: white; text-align: center;font-size: 20px;">
+                                        {{ soLuongSP }}</div>
                                 </div>
-                               
+
                                 <span class="block mt-2 md:mt-0 p-input-icon-left">
                                     <i class="pi pi-search" />
                                     <InputText v-model="filters['global'].value" placeholder="Search..." />
@@ -502,7 +512,7 @@ watch(trangThai, (newVal) => {
                         <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header"
                             :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;">
                         </Column>
-                        <Column header="size - số lượng " headerStyle="width:14%; min-width:10rem;">
+                        <!-- <Column header="size - số lượng " headerStyle="width:14%; min-width:10rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">size</span>
                                 <div v-for="i in slotProps.data.size ">
@@ -513,16 +523,23 @@ watch(trangThai, (newVal) => {
                                     </div>
                                 </div>
                             </template>
-                        </Column>
+                        </Column> -->
                         <Column header="Màu Sắc " headerStyle="width:14%; min-width:10rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">size</span>
                                 <div v-for="i in slotProps.data.mauSac">
                                     <div class="col-6"
-                                        style="width: 110px;background-color: aliceblue; height: 60px; display: flex;margin-bottom: 5px; border: 1px solid aliceblue; border-radius: 10px;">
-                                        <p style="margin: auto;">{{ i.mauSac.ten }}</p>
+                                        style="width: 170px;background-color: aliceblue; height: 90px; display: flex;margin-bottom: 5px; border: 1px solid aliceblue; border-radius: 10px;">
+                                        <div>
+                                            <p style="margin: auto;">{{ i.mauSac.ten }}</p>
+                                            <p style="margin: auto;" v-if="i.sizeChiTiet !== null">size: {{
+                                                i.sizeChiTiet.size.ten }}</p>
+                                            <p style="margin: auto;">số lượng: {{ i.soLuong }}</p>
+
+                                        </div>
                                         <img :src="i.anh" class="shadow-2" width="100"
-                                            style="margin-bottom: 30px; height: 40px; width: 40px; margin-left: 10px;" />
+                                            style="margin-bottom: 30px; height: 50px; width: 50px; margin-left: 10px;" />
+
                                     </div>
                                 </div>
 
@@ -578,7 +595,7 @@ watch(trangThai, (newVal) => {
                             <div v-if="dis">
                                 <div class="custom-file-upload">
                                     <label class="upload-button">{{ setNameFile == "" ? "Tải lên tệp Excel" : setNameFile
-                                        }}<input type="file" name="excelFile" accept=".xls, .xlsx"
+                                    }}<input type="file" name="excelFile" accept=".xls, .xlsx"
                                             @change="handImportExcel($event)"></label>
 
                                 </div>

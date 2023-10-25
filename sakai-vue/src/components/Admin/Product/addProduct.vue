@@ -57,8 +57,8 @@ const schema = yup.object().shape({
     idMauSac: yup.array().required('vui lòng chọn màu sắc sản phẩm '),
     vatLieu: yup.number().required(' vui lòng chọn Vật liệu sản phẩm '),
     demLot: yup.string().required(' vui lòng chọn đệm lót sản phẩm '),
-    idSize: yup.array().required('Bạn cần chọn ít nhất một kích thước sản phẩm'),
-    soLuongSize: yup.number().required('bạn cần nhập số lượng size').typeError('Số lượng size phải là một số').min(1, 'Số lượng phải lớn hơn hoặc bằng 1').nullable(),
+    soLuongSize: yup.number().typeError('Số lượng size phải là một số').min(1, 'Số lượng phải lớn hơn hoặc bằng 1').nullable(),
+    // soLuongMauSac: yup.number().typeError('Số lượng màu sắc phải là một số').min(1, 'Số lượng phải lớn hơn hoặc bằng 1').nullable(),
     trongLuong: yup.string().required('vui lòng chọn trọng lượng sản phẩm'),
     imgMauSac: yup.array().required('vui lòng chọn ảnh màu sắc sản phẩm'),
     trangThai: yup.number().required('vui lòng chọn trạng thái của sản phẩm'),
@@ -89,29 +89,38 @@ const { value: TrangThai, errorMessage: TrangThaiSacError } = useField('trangTha
 const { value: MoTa, errorMessage: MoTaSacError } = useField('moTa');
 const { value: imagesProduct, errorMessage: imagesProductError } = useField('imagesProduct');
 const { value: imagesChinh, errorMessage: imagestError } = useField('anh');
+// const { value: soLuongMauSac, errorMessage: soLuongMauError } = useField('soLuongMauSac');
 
 const isOpen = ref(true);
 
 const onSubmit = handleSubmit(async (values) => {
     try {
+        //   console.log(values)
         // Kiểm tra trùng lặp trước khi thêm sản phẩm
-        const isDuplicate = await productStore.checkDuplicateName(name.value);
-        //  console.log(values)
+        const isDuplicate = await productStore.checkDuplicateName(values.name); // Sử dụng `values.name` thay vì `name.value`
+
         if (isDuplicate) {
             // Hiển thị thông báo lỗi hoặc xử lý theo nhu cầu của bạn
-            toast.add({ severity: 'error', summary: 'Error ', detail: 'Tên sản phẩm đã tồn tại', life: 3000 });
+            toast.add({ severity: 'error', summary: 'Error', detail: 'Tên sản phẩm đã tồn tại', life: 3000 });
         } else {
-            // Nếu không trùng lặp, thêm sản phẩm vào store
-
-            await productStore.add(values);
-            toast.add({ severity: 'success', summary: 'Success Message', detail: 'Thêm thành công', life: 3000 });
-            productDialog.value = false;
-            reset();
+            // const tong = values.soLuongMauSac.reduce((acc, so) => acc + so, 0);
+            const tong2 = values.soLuongSize ? values.soLuongSize.reduce((acc, so) => acc + so, 0) : 0;
+            if (tong2 > values.soLuongTon) {
+                toast.add({ severity: 'error', summary: 'Error', detail: 'Số lượng màu sắc hoặc size lớn hơn số lượng tồn', life: 3000 });
+            } else {
+                // Nếu không trùng lặp và tổng không lớn hơn số lượng tồn, thêm sản phẩm vào store
+                console.log(values)
+                await productStore.add(values);
+                toast.add({ severity: 'success', summary: 'Success Message', detail: 'Thêm thành công', life: 3000 });
+                productDialog.value = false;
+                reset();
+            }
         }
     } catch (error) {
         console.error('Lỗi xử lý dữ liệu:', error);
     }
 });
+
 
 const error = ref(false);
 
@@ -127,6 +136,7 @@ const selectedTrongLuong = ref(null);
 const selectedSizes = ref(null);
 
 const array = ref([]);
+const arrayMauSac = ref([]);
 
 const dataThuongHieu = ref([]);
 //load data thương hiệu tất cả
@@ -180,14 +190,19 @@ onMounted(() => {
 
 const reset = () => {
     resetForm();
-    array.value = 1;
+    imagesProduct.value = [];
+    array.value = [];
+    arrayMauSac.value = [];
     selectedSizes.value = null;
     selectedMauSac.value = null;
     selectedLoai.value = null;
     selectedCity.value = null;
     selectedTrongLuong.value = null;
     selectedvatLieu.value = null;
-    ImagesProduct.value = null;
+    ImagesProduct.value = [];
+    arrayImgMauSac.value = [];
+    imageUrls.value = [];
+    anh.value = 'https://cdn-icons-png.flaticon.com/512/2956/2956744.png';
 };
 
 const handleInputChange = (sizeId) => {
@@ -197,6 +212,14 @@ const handleInputChange = (sizeId) => {
         SoLuongSize.value = null;
     }
 };
+
+// const handleInputChangeMau = (sizeId) => {
+//     if (arrayMauSac.value.length > 0) {
+//         soLuongMauSac.value = arrayMauSac.value.join(',').replace(/^,/, '').split(',').map(Number);
+//     } else {
+//         soLuongMauSac.value = null;
+//     }
+// };
 
 const onCityChange = () => {
     if (selectedCity.value) {
@@ -260,17 +283,18 @@ function onFileInputImageMauSac(event) {
     const files = event.target.files;
     for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        // const objectURL = URL.createObjectURL(file);
+        const objectURL = URL.createObjectURL(file);
         const basePath = "D:\\imgDATN\\"; // Đường dẫn cố định
         const fileName = basePath + file.name;
         arrayImgMauSac.value.push(fileName);
 
-        imgMauSac.value = arrayImgMauSac.value.join(',').replace(/^,/, '').split(',');
-        //    console.log('anh mau: ', imgMauSac.value)
     }
+    imgMauSac.value = arrayImgMauSac.value.join(',').replace(/^,/, '').split(',');
 }
 
+
 const anh = ref('https://cdn-icons-png.flaticon.com/512/2956/2956744.png');
+
 function onFileInputImage(event) {
     const files = event.target.files;
     // Lặp qua từng tệp trong mảng files
@@ -293,9 +317,11 @@ function onFileInputImageProduct(event) {
 
     for (let i = 0; i < files.length; i++) {
         const file = files[i];
+        const objectURL = URL.createObjectURL(file);
         const basePath = "D:\\imgDATN\\"; // Đường dẫn cố định
         const fileName = basePath + file.name;
         imageUrls.value.push(fileName);
+
     }
     ImagesProduct.value = imageUrls.value;
     // console.log(ImagesProduct.value)
@@ -381,7 +407,7 @@ const openNew = () => {
                                 <div class="flex flex-wrap gap-3">
                                     <div class="flex align-items-center">
                                         <RadioButton v-model="QuaiDeo" type="radio" inputId="ingredient1" name="QuaiDeo"
-                                            value="Quai đeo cố định" :class="{ 'p-invalid': quaiDeoError }" />
+                                            value="Quai đeo cố định" :class="{ 'p-invalid': quaiDeoError }" checked />
                                         <label for="ingredient1" class="ml-2">Quai đeo cố định</label>
                                     </div>
                                     <div class="flex align-items-center">
@@ -430,7 +456,7 @@ const openNew = () => {
                                 <div class="flex flex-wrap gap-3">
                                     <div class="flex align-items-center">
                                         <RadioButton v-model="DemLot" inputId="ingredient1" name="pizza" value="Bọt biển "
-                                            :class="{ 'p-invalid': demLotError }" />
+                                            :class="{ 'p-invalid': demLotError }" checked />
                                         <label for="ingredient1" class="ml-2">Bọt biển </label>
                                     </div>
                                     <div class="flex align-items-center">
@@ -517,9 +543,9 @@ const openNew = () => {
                                 <small class="p-error">{{ SizeError }}</small>
                             </div>
                             <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
-                                <div style="display: flex">
+                                <!-- <div style="display: flex">
                                     <div style="width: 150px">
-                                        <p>nhập số lượng size:</p>
+                                        <p>Số lượng size:</p>
                                     </div>
                                     <div style="display: flex; flex-wrap: wrap">
                                         <div v-for="(size, index) in selectedSizes" :key="index" style="margin-top: 10px">
@@ -531,6 +557,24 @@ const openNew = () => {
                                                 style="height: 20px; width: 60px" />
                                         </div>
                                     </div>
+                                </div>
+                                <small class="p-error">{{ soLuongSizeError }}</small> -->
+                                <div style="display: flex">
+                                    <div style="width: 150px">
+                                        <p>Số lượng màu sắc :</p>
+                                    </div>
+                                    <div style="display: flex; flex-wrap: wrap">
+                                        <div v-for="(mau, index) in selectedMauSac" :key="index" style="margin-top: 10px">
+                                            <label :for="`input-${mau.id}`" style="margin-right: 10px; margin-left: 10px">{{
+                                                mau.ten }}</label>
+                                            <input type="number" :id="`input-${mau.id}`" v-model="array[index]"
+                                                @change="handleInputChange(mau.id)"
+                                                :class="{ 'p-invalid': soLuongSizeError }"
+                                                style="height: 20px; width: 60px" />
+                                        </div>
+
+                                    </div>
+
                                 </div>
                                 <small class="p-error">{{ soLuongSizeError }}</small>
                             </div>
@@ -548,6 +592,8 @@ const openNew = () => {
                                 <br />
                                 <small class="p-error">{{ ImgMauSacError }}</small>
                             </div>
+
+
                             <div class="field col-12 md:col-6" style="margin-bottom: 30px">
                                 <label for="address">Mô tả</label>
                                 <Textarea id="address" rows="4" v-model="MoTa"
