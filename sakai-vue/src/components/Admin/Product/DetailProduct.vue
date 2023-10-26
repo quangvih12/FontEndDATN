@@ -71,7 +71,7 @@ const selectedvatLieu = ref(null);
 const selectedTrongLuong = ref(null);
 const selectedSizes = ref(null);
 const array = ref([]);
-
+const arrayMauSac = ref([]);
 
 
 
@@ -215,6 +215,7 @@ const editProduct = () => {
     //màu sắc và ảnh màu sắc
     const tenMauSac = props.myProp.mauSac.map(s => s.mauSac.ten);
     const anhMauSac = props.myProp.mauSac.map(s => s.anh);
+    const soLuongMauSac = props.myProp.mauSac.map(s => s.soLuong);
     const selectedMauSacTen = [];
     for (const ten of tenMauSac) {
         const selected = dataMauSac.value.find(i => i.ten === ten);
@@ -235,6 +236,8 @@ const editProduct = () => {
         const anh = anhMauSac[i];
         arrayImageMauSac.value[i] = anh;
         selectedMauSac.value[i].anh = anh;
+        const soLuong = soLuongMauSac[i];
+        arrayMauSac.value[i] = soLuong;
     }
 
     for (const img of selectedMauSac.value) {
@@ -250,6 +253,11 @@ const editProduct = () => {
         ImagesProduct.value.push(img.anh);
         imagesProduct.value = ImagesProduct.value.join(",").replace(/^,/, '').split(',');
         //  console.log(imagesProduct.value)
+    }
+    if (arrayMauSac.value.length > 0) {
+        soLuongMauSac.value = arrayMauSac.value.join(',').replace(/^,/, '').split(',').map(Number);
+    } else {
+        soLuongMauSac.value = null;
     }
 
     product.value = { ...editProduct };
@@ -271,7 +279,8 @@ const editProduct = () => {
                 <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
                     <div class="Field col-12 md:col-12" style="margin-bottom: 30px">
                         <span class="p-float-label">
-                            <InputText id="name" name="name" type="text" v-model="name" :class="{ 'p-invalid': nameError }" disabled>
+                            <InputText id="name" name="name" type="text" v-model="name" :class="{ 'p-invalid': nameError }"
+                                disabled>
                             </InputText>
                             <label for="username">Tên sản phẩm</label>
                         </span>
@@ -309,17 +318,17 @@ const editProduct = () => {
                         <div class="flex flex-wrap gap-3">
                             <div class="flex align-items-center">
                                 <RadioButton v-model="QuaiDeo" type="radio" inputId="ingredient1" name="QuaiDeo"
-                                    value="Quai đeo cố định" :class="{ 'p-invalid': quaiDeoError }" disabled/>
+                                    value="Quai đeo cố định" :class="{ 'p-invalid': quaiDeoError }" disabled />
                                 <label for="ingredient1" class="ml-2">Quai đeo cố định</label>
                             </div>
                             <div class="flex align-items-center">
                                 <RadioButton v-model="QuaiDeo" type="radio" inputId="ingredient2" name="QuaiDeo"
-                                    value="Quai đeo dạng Y" :class="{ 'p-invalid': quaiDeoError }" disabled/>
+                                    value="Quai đeo dạng Y" :class="{ 'p-invalid': quaiDeoError }" disabled />
                                 <label for="ingredient2" class="ml-2">Quai đeo dạng Y</label>
                             </div>
                             <div class="flex align-items-center">
                                 <RadioButton v-model="QuaiDeo" type="radio" inputId="ingredient3" name="QuaiDeo"
-                                    value="Quai đeo đặc biệt" :class="{ 'p-invalid': quaiDeoError }" disabled/>
+                                    value="Quai đeo đặc biệt" :class="{ 'p-invalid': quaiDeoError }" disabled />
                                 <label for="ingredient3" class="ml-2" :class="{ 'p-invalid': equaiDeoError }">Quai đeo
                                     đặc biệt</label>
                             </div>
@@ -332,17 +341,17 @@ const editProduct = () => {
                         <div class="flex flex-wrap gap-3">
                             <div class="flex align-items-center">
                                 <RadioButton v-model="DemLot" inputId="ingredient1" name="pizza" value="Bọt biển "
-                                    :class="{ 'p-invalid': demLotError }" disabled/>
+                                    :class="{ 'p-invalid': demLotError }" disabled />
                                 <label for="ingredient1" class="ml-2">Bọt biển </label>
                             </div>
                             <div class="flex align-items-center">
                                 <RadioButton v-model="DemLot" inputId="ingredient2" name="pizza" value="Vật liệu mềm"
-                                    :class="{ 'p-invalid': demLotError }" disabled/>
+                                    :class="{ 'p-invalid': demLotError }" disabled />
                                 <label for="ingredient2" class="ml-2">Vật liệu mềm</label>
                             </div>
                             <div class="flex align-items-center">
                                 <RadioButton v-model="DemLot" inputId="ingredient4" name="pizza"
-                                    value="Đệm lót chống xốp nhiễu" :class="{ 'p-invalid': demLotError }" disabled/>
+                                    value="Đệm lót chống xốp nhiễu" :class="{ 'p-invalid': demLotError }" disabled />
                                 <label for="ingredient4" class="ml-2">Đệm lót chống xốp nhiễu</label>
                             </div>
                         </div>
@@ -353,12 +362,12 @@ const editProduct = () => {
                         <div class="flex flex-wrap gap-3">
                             <div class="flex align-items-center">
                                 <RadioButton v-model="TrangThai" inputId="ingredient1" name="pizza" value="1"
-                                    :class="{ 'p-invalid': TrangThaiSacError }" disabled/>
+                                    :class="{ 'p-invalid': TrangThaiSacError }" disabled />
                                 <label for="ingredient1" class="ml-2">Sẵn sàng để bán</label>
                             </div>
                             <div class="flex align-items-center">
                                 <RadioButton v-model="TrangThai" inputId="ingredient2" name="pizza" value="2"
-                                    :class="{ 'p-invalid': TrangThaiSacError }" disabled/>
+                                    :class="{ 'p-invalid': TrangThaiSacError }" disabled />
                                 <label for="ingredient2" class="ml-2">tồn kho</label>
                             </div>
 
@@ -374,7 +383,7 @@ const editProduct = () => {
                                     </Dropdown>
                                     <label for="dropdown">Loại</label>
                                 </span>
-                               
+
                             </div>
 
                             <small class="p-error">{{ loaiError }}</small>
@@ -385,11 +394,11 @@ const editProduct = () => {
                                     <MultiSelect v-model="selectedMauSac" :options="dataMauSac" optionLabel="ten"
                                         :filter="false" :maxSelectedLabels="3" :class="{ 'p-invalid': mauSacError }"
                                         @change="onMauSacChange" disabled>
-                                    </MultiSelect> 
+                                    </MultiSelect>
                                     <label for="multiselect">Màu sắc</label>
                                 </span>
 
-                             
+
                             </div>
                             <small class="p-error">{{ mauSacError }}</small>
                         </div>
@@ -399,11 +408,12 @@ const editProduct = () => {
                             <div style="display: flex">
                                 <span class="p-float-label" style="width: 239px">
                                     <Dropdown id="dropdown" :options="dataVatLieu" v-model="selectedvatLieu"
-                                        :class="{ 'p-invalid': vatLieuError }" optionLabel="ten" @change="onvatLieuChange" disabled>
+                                        :class="{ 'p-invalid': vatLieuError }" optionLabel="ten" @change="onvatLieuChange"
+                                        disabled>
                                     </Dropdown>
                                     <label for="dropdown">Vật liệu</label>
                                 </span>
-                              
+
                             </div>
                             <small class="p-error">{{ vatLieuError }}</small>
                         </div>
@@ -416,7 +426,7 @@ const editProduct = () => {
                                     </Dropdown>
                                     <label for="dropdown">Trọng Lượng</label>
                                 </span>
-                               
+
                             </div>
                             <small class="p-error">{{ trongLuongError }}</small>
                         </div>
@@ -429,7 +439,7 @@ const editProduct = () => {
                                     </MultiSelect>
                                     <label for="multiselect">Size</label>
                                 </span>
-                            
+
                             </div>
                             <small class="p-error">{{ SizeError }}</small>
                         </div>
@@ -442,7 +452,7 @@ const editProduct = () => {
                                     </Dropdown>
                                     <label for="dropdown">Thương Hiệu</label>
                                 </span>
-                               
+
                             </div>
 
                             <small class="p-error">{{ thuongHieuError }}</small>
@@ -463,11 +473,28 @@ const editProduct = () => {
                                 </div>
                             </div>
                             <small class="p-error">{{ soLuongSizeError }}</small>
+                            <div style="display: flex">
+                                <div style="width: 150px">
+                                    <p>Số lượng màu sắc :</p>
+                                </div>
+                                <div style="display: flex; flex-wrap: wrap">
+                                    <div v-for="(mau, index) in selectedMauSac" :key="index" style="margin-top: 10px">
+                                        <label :for="`input-${mau.id}`" style="margin-right: 10px; margin-left: 10px">{{
+                                            mau.ten }}</label>
+                                        <input type="number" :id="`input-${mau.id}`" v-model="arrayMauSac[index]"
+                                            @change="handleInputChangeMau(mau.id)" :class="{ 'p-invalid': soLuongMauError }"
+                                            style="height: 20px; width: 60px" disabled>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                            <small class="p-error">{{ soLuongMauError }}</small>
                         </div>
                         <div class="field col-12 md:col-12" style="margin-bottom: 30px">
                             <label for="address">Mô tả</label>
-                            <Textarea id="address" rows="4" v-model="MoTa"
-                                :class="{ 'p-invalid': MoTaSacError }" disabled></Textarea>
+                            <Textarea id="address" rows="4" v-model="MoTa" :class="{ 'p-invalid': MoTaSacError }"
+                                disabled></Textarea>
                             <small class="p-error">{{ MoTaSacError }}</small>
                         </div>
                     </div>
@@ -483,7 +510,7 @@ const editProduct = () => {
                                         style="width: 275px; height: 230px; top: 50%; left: 50%;  transform: translate(4%, 2%);">
                                 </div>
                                 <div class="buton" style="margin-top: 10px;">
-                                  
+
                                 </div>
                                 <small class="p-error">{{ imagestError }}</small>
                             </div>
@@ -508,10 +535,10 @@ const editProduct = () => {
                                     <span class="product-name">{{ color.ten }}</span>
                                     <img :src="color.anh" alt=""
                                         style="width: 50px; height: 50px; top: 50%; left: 50%;  transform: translate(4%, 2%); margin: 10px 0px 15px 0px;">
-                                
+
                                 </div>
 
-                             
+
                             </div>
 
                             <br />
@@ -520,7 +547,7 @@ const editProduct = () => {
 
                     </div>
                     <div class="field col-12 md:col-12">
-                      
+
                     </div>
                 </div>
                 <div style="width: 1000px; text-align: center;">
