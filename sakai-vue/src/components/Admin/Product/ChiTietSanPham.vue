@@ -450,7 +450,7 @@ watch(trangThai, (newVal) => {
                         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                         :rowsPerPageOptions="[5, 10, 25]"
                         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
-                        responsiveLayout="scroll">
+                        responsiveLayout="scroll" showGridlines>
                         <template #header>
 
                             <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
@@ -483,7 +483,7 @@ watch(trangThai, (newVal) => {
                                 {{ slotProps.data.stt }}
                             </template>
                         </Column>
-                        <Column header="Image" headerStyle="width:14%; min-width:10rem;">
+                        <Column header="Image" headerStyle="width:8%; min-width:5rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">Image</span>
                                 <!-- <div v-for="(i, index) in img"  > -->
@@ -496,21 +496,21 @@ watch(trangThai, (newVal) => {
                                 {{ slotProps.data.ten }}
                             </template>
                         </Column>
-                        <Column field="giaBan" header="Giá Bán" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+                        <Column field="giaBan" header="Giá Bán" :sortable="true" headerStyle="width:8%; min-width:5rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">Tên</span>
                                 {{ formatCurrency(slotProps.data.giaBan) }}
                             </template>
                         </Column>
                         <Column field="giaNhap" header="Giá nhập" :sortable="true"
-                            headerStyle="width:14%; min-width:10rem;">
+                            headerStyle="width:8%; min-width:5rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">Tên</span>
                                 {{ formatCurrency(slotProps.data.giaNhap) }}
                             </template>
                         </Column>
                         <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header"
-                            :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+                            :key="col.field + '_' + index" :sortable="true" headerStyle="width:8%; min-width:5rem;">
                         </Column>
                         <!-- <Column header="size - số lượng " headerStyle="width:14%; min-width:10rem;">
                             <template #body="slotProps">
@@ -524,7 +524,7 @@ watch(trangThai, (newVal) => {
                                 </div>
                             </template>
                         </Column> -->
-                        <Column header="Màu Sắc " headerStyle="width:14%; min-width:10rem;">
+                        <Column header="Màu Sắc " headerStyle="width:8%; min-width:5rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">size</span>
                                 <div v-for="i in slotProps.data.mauSac">
@@ -545,7 +545,7 @@ watch(trangThai, (newVal) => {
 
                             </template>
                         </Column>
-                        <Column header="Image" headerStyle="width: 14%; min-width: 10rem;">
+                        <Column header="Image" headerStyle="width: 15%; min-width: 10rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">size</span>
                                 <div class="image-container">
@@ -555,7 +555,7 @@ watch(trangThai, (newVal) => {
                                 </div>
                             </template>
                         </Column>
-                        <Column field="trangThai" header="Trạng Thái" sortable style="min-width:9rem">
+                        <Column field="trangThai" header="Trạng Thái" sortable headerStyle="width: 4%; min-width: 5rem;">
                             <template #body="slotProps">
                                 <Tag :value="getStatusLabel(slotProps.data.trangThai).text"
                                     :severity="getStatusLabel(slotProps.data.trangThai).severity" />

@@ -100,14 +100,15 @@ watch(
     <div class="card">
         <div class="card">
             <TabView>
-                <TabPanel header="Thống kê hoá đơn">
-                    <ThongKeHoaDon></ThongKeHoaDon>
-                </TabPanel>
+               
                 <!-- <TabPanel header="Thống kê sản phẩm">
                     <ThongKeSanPham></ThongKeSanPham>
                 </TabPanel> -->
                 <TabPanel header="Thống kê doanh thu">
                     <ThongKeTheoNgay></ThongKeTheoNgay>
+                </TabPanel>
+                <TabPanel header="Thống kê hoá đơn">
+                    <ThongKeHoaDon></ThongKeHoaDon>
                 </TabPanel>
             </TabView>
 
