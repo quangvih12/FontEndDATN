@@ -3,7 +3,7 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useLayout } from '@/layout/composables/layout';
 import { useRouter } from 'vue-router';
 import { userStore } from '@/service/Admin/User/UserService.js';
-import tokenService from '@/service/Authentication/TokenService.js'
+import tokenService from '@/service/Authentication/TokenService.js';
 const userService = userStore();
 const { layoutConfig, onMenuToggle } = useLayout();
 
@@ -27,9 +27,20 @@ const logoUrl = computed(() => {
 const onTopBarMenuButton = () => {
     topbarMenuActive.value = !topbarMenuActive.value;
 };
-const onSettingsClick = () => {
+
+const selectedUserId = computed(() => {
+    return selectedCustomer.value ? selectedCustomer.value.id : null;
+});
+
+const onSettingsClick = (event) => {
     topbarMenuActive.value = false;
-    router.push('/documentation');
+    if (event.item.label === 'Hồ sơ cá nhân' && selectedUserId.value) {
+        router.push(`/thong-tin-ca-nhan/${selectedUserId.value}`);
+    } else if (event.item.label === 'Lịch sử mua hàng') {
+        router.push('/lich-su-sp');
+    } else {
+        // Xử lý trường hợp khác nếu cần
+    }
 };
 const topbarMenuClasses = computed(() => {
     return {
@@ -66,12 +77,12 @@ const selectedKH = ref(null);
 const khachHang = ref([]);
 
 const fetchData = async () => {
-  try {
-     await  userService.getAllUser();
-    khachHang.value = userService.data;
-  } catch (error) {
-    // Xử lý lỗi ở đây nếu cần
-  }
+    try {
+        await userService.getAllUser();
+        khachHang.value = userService.data;
+    } catch (error) {
+        // Xử lý lỗi ở đây nếu cần
+    }
 };
 
 // dùng để lưu thông tin khách hàng khi được chọn CBB.
@@ -79,10 +90,26 @@ const fetchData = async () => {
 const selectedCustomer = ref(null);
 
 // hàm gọi sự thay đổi thông tin của khách hàng khi click vào CBB
-const displayKH = async () =>  {
-  selectedCustomer.value = khachHang.value.find(kh => kh.ten === selectedKH.value.ten);
-  const token =   await tokenService.gentoken(selectedCustomer.value.username)
-  localStorage.setItem('token', token);
+const displayKH = async () => {
+    selectedCustomer.value = khachHang.value.find((kh) => kh.ten === selectedKH.value.ten);
+    const token = await tokenService.gentoken(selectedCustomer.value.username);
+    localStorage.setItem('token', token);
+};
+
+const menu = ref();
+const items = ref([
+    {
+        label: 'Hồ sơ cá nhân',
+        command: onSettingsClick
+    },
+    {
+        label: 'Lịch sử mua hàng',
+        command: onSettingsClick
+    }
+]);
+
+const toggle = (event) => {
+    menu.value.toggle(event);
 };
 </script>
 
@@ -115,22 +142,20 @@ const displayKH = async () =>  {
                 <p style="font-size: 19px">Liên hệ</p>
             </router-link>
 
-        
-            <div class="layout-topbar-logo"  style="width: 16%; margin-left: 10px">          
-                <div  v-if="selectedCustomer === null">
-                    <Dropdown v-model="selectedKH" :options="khachHang" optionLabel="ten"
-                placeholder="Chọn KH" class="w-full md:w-8rem" style=" margin-top: 5px; max-height: 100px; overflow-y: auto;"  @change="displayKH" />
+            <div class="layout-topbar-logo" style="width: 16%; margin-left: 10px">
+                <div v-if="selectedCustomer === null">
+                    <Dropdown v-model="selectedKH" :options="khachHang" optionLabel="ten" placeholder="Chọn KH" class="w-full md:w-8rem" style="margin-top: 5px; max-height: 100px; overflow-y: auto" @change="displayKH" />
                 </div>
-            
-                <div v-else  style=" display: inline-block;">
+
+                <div v-else style="display: inline-block">
                     <div style="font-size: 10px">
                         <div>Tên: {{ selectedCustomer.ten }}</div>
                         <div>Role: {{ selectedCustomer.role }}</div>
                     </div>
-                </div>          
+                </div>
             </div>
 
-            <InputText type="text" v-model="value" style="height: 35px;width: 18%; margin-left: 5px;margin-top: 5px ;" />
+            <InputText type="text" v-model="value" style="height: 35px; width: 18%; margin-left: 5px; margin-top: 5px" />
             <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
                 <i class="pi pi-search"></i>
                 <span>Calendar</span>
@@ -142,14 +167,15 @@ const displayKH = async () =>  {
             <router-link to="/gio-hang" class="layout-topbar-logo" style="width: 16%; margin-left: 10px">
                 <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
                     <i class="pi pi-shopping-cart"></i>
-                    <span>Profile</span>
+                    <span>Shopping cart</span>
                 </button>
             </router-link>
-
-            <!-- <button @click="onSettingsClick()" class="p-link layout-topbar-button">
-                <i class="pi pi-cog"></i>
-                <span>Settings</span>
-            </button> -->
+            <div class="flex justify-content-center">
+                <button class="p-link layout-topbar-button" @click="toggle" aria-haspopup="true" aria-controls="overlay_tmenu">
+                    <i class="pi pi-user"></i>
+                </button>
+                <TieredMenu ref="menu" id="overlay_tmenu" :model="items" popup @command="onSettingsClick" />
+            </div>
         </div>
     </div>
 </template>

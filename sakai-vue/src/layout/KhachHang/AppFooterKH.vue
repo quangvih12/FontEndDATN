@@ -10,7 +10,6 @@ const logoUrl = computed(() => {
 </script>
 
 <template>
-
     <!-- Remove the container if you want to extend the Footer to full width. -->
     <!-- Footer -->
     <footer class="text-lg-start text-white" style="background-color: #3e4551">
@@ -24,7 +23,7 @@ const logoUrl = computed(() => {
                     <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
                         <h6 class="text-uppercase fw-bold">Công ty TNHH siêu to khổng lồ 1 thành viên</h6>
                         <hr class="mb-4 mt-0 d-inline-block mx-auto" style="width: 60px; background-color: #7c4dff; height: 2px" />
-                        <p>Ở đây đang đ biết nói gì(sẽ giới thiệu công ty vào chỗ này)</p>
+                        <p>Các thương hiệu mũ bảo hiểm của công ty như Royal, ROC, ROYCE, KIO... đã in đậm trong tâm trí khách hàng và khẳng định được chỗ đứng vững chắc tại thị trường trong nước cũng như quốc tế.</p>
                     </div>
                     <!--Grid column-->
 
