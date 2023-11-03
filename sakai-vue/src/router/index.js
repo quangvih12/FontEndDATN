@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory } from 'vue-router';
 import AppLayout from '@/layout/AppLayout.vue';
 import AppLayoutKH from '@/layout/KhachHang/AppLayoutKH.vue';
 import AppLayoutBH from '@/layout/BanHang/AppLayoutBH.vue';
+import {authMiddleware} from '@/service/Authentication/Middleware.js'
 
 const router = createRouter({
     history: createWebHashHistory(),
@@ -71,55 +72,75 @@ const router = createRouter({
                 {
                     path: '/thong-ke',
                     name: 'Thống kê',
-                    component: () => import('@/components/Admin/ThongKe/index.vue')
+                    component: () => import('@/components/Admin/ThongKe/index.vue'),
+                    beforeEnter: authMiddleware
                 },
                 {
                     path: '/pages/quan-ly-hoa-don',
                     name: 'quan-ly-hoa-don',
-                    component: () => import('@/components/Admin/HoaDon/index.vue')
+                    component: () => import('@/components/Admin/HoaDon/index.vue'),
+                    beforeEnter: authMiddleware
                 },
 
                 {
                     path: '/pages/mau-sac',
                     name: 'mausac',
-                    component: () => import('@/components/Admin/MauSac/index.vue')
+                    component: () => import('@/components/Admin/MauSac/index.vue'),
+                    beforeEnter: authMiddleware
+                },
+                {
+                    path: '/pages/khuyenmai',
+                    name: 'khuyenmai',
+                    component: () => import('@/components/Admin/khuyenMai/KhuyenMai.vue')
+                },
+                {
+                    path: '/pages/voucher',
+                    name: 'Voucher',
+                    component: () => import('@/components/Admin/Voucher/Voucher.vue')
                 },
                 {
                     path: '/pages/loai',
                     name: 'loai',
-                    component: () => import('@/components/Admin/Loai/index.vue')
+                    component: () => import('@/components/Admin/Loai/index.vue'),
+                    beforeEnter: authMiddleware
                 },
                
                 {
                     path: '/pages/trong-luong',
                     name: 'trongluong',
-                    component: () => import('@/components/Admin/TrongLuong/Index.vue')
+                    component: () => import('@/components/Admin/TrongLuong/Index.vue'),
+                    beforeEnter: authMiddleware
                 },
                 {
                     path: '/pages/vat-lieu',
                     name: 'vatlieu',
-                    component: () => import('@/components/Admin/VatLieu/Index.vue')
+                    component: () => import('@/components/Admin/VatLieu/Index.vue'),
+                    beforeEnter: authMiddleware
                 },
               
                 {
                     path: '/pages/product',
                     name: 'product',
-                    component: () => import('@/components/Admin/Product/ChiTietSanPham.vue')
+                    component: () => import('@/components/Admin/Product/ChiTietSanPham.vue'),
+                    beforeEnter: authMiddleware
                 },
                 {
                     path: '/pages/user',
                     name: 'user',
-                    component: () => import('@/components/Admin/QuanLyUser/ViewUser.vue')
+                    component: () => import('@/components/Admin/QuanLyUser/ViewUser.vue'),
+                    beforeEnter: authMiddleware
                 },
                 {
                     path: '/pages/size',
                     name: 'size',
-                    component: () => import('@/components/Admin/QuanLySize/ViewSize.vue')
+                    component: () => import('@/components/Admin/QuanLySize/ViewSize.vue'),
+                    beforeEnter: authMiddleware
                 },
                 {
                     path: '/pages/thuong-hieu',
                     name: 'thuong-hieu',
-                    component: () => import('@/components/Admin/QuanLyThuongHieu/ViewThuongHieu.vue')
+                    component: () => import('@/components/Admin/QuanLyThuongHieu/ViewThuongHieu.vue'),
+                    beforeEnter: authMiddleware
                 }
                 // {
                 //     path: '/uikit/menu',

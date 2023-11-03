@@ -21,6 +21,17 @@ export const ProductStore = defineStore('product', {
       }
     },
 
+    async fetchDataByStatus(status) {
+      try {
+        const response = await axios.get('/api/products/loc?comboBoxValue=' + status); // Thay đổi URL dựa trên API của bạn
+        this.products = response.data;
+        //  console.table(this.products.size);
+
+      } catch (error) {
+        console.error('Lỗi khi lấy danh sách sản phẩm:', error);
+      }
+    },
+
     async fetchAllImage(idProduct) {
       try {
 
@@ -31,7 +42,6 @@ export const ProductStore = defineStore('product', {
         console.error('Lỗi khi lấy danh sách sản phẩm:', error);
       }
     },
-
 
     async fetchAllSize(idProduct) {
       try {
@@ -49,7 +59,19 @@ export const ProductStore = defineStore('product', {
         const response = await axios.get(`/api/products/${idProduct}/mauSac`); // Thay đổi URL dựa trên API của bạn
         this.mauSacs = response.data;
         //  console.log('mau: ',   this.mauSacs  );
-        return this.mauSacs;
+        for (const o of this.mauSacs) {
+          if (o.sizeChiTiet !== null) {
+            this.mauSacs.sort((a, b) => {
+              if (a.sizeChiTiet && a.sizeChiTiet.id && b.sizeChiTiet && b.sizeChiTiet.id) {
+                return a.sizeChiTiet.id - b.sizeChiTiet.id;
+              }
+              return 0;
+            });
+            return this.mauSacs;
+          } else {
+            return this.mauSacs;
+          }
+        }
       } catch (error) {
         console.error('Lỗi khi lấy danh sách sản phẩm:', error);
       }
@@ -67,13 +89,13 @@ export const ProductStore = defineStore('product', {
         throw error; // Nếu có lỗi, ném ngoại lệ để xử lý ở một nơi khác
       }
     },
-    
 
-    async uploadFile(formData){
+
+    async uploadFile(formData) {
       try {
         const response = await axios.post("/api/products/view-data", formData);
         const newProductData = response.data;
-      //  console.log(response.data);
+        //  console.log(response.data);
         this.excels.unshift(newProductData);
       } catch (error) {
         console.error("Lỗi khi gọi API:", error);
@@ -94,7 +116,7 @@ export const ProductStore = defineStore('product', {
         newProductData['size'] = img_d;
         const img = await this.fetchAllImage(newProductData.id);
         newProductData['img'] = img;
-        //    console.log(newProductData);
+        //  console.log(newProductData);
         this.products.unshift(newProductData); // Thêm sản phẩm mới vào danh sách
       } catch (error) {
         console.error('Lỗi khi thêm sản phẩm:', error);
@@ -106,7 +128,7 @@ export const ProductStore = defineStore('product', {
         const index = this.products.findIndex(product => product.id === updatedProduct.id);
         if (index !== -1) {
           let newProductData = this.products[index];
-          newProductData =  response.data;
+          newProductData = response.data;
           newProductData['size'] = null;
           newProductData['img'] = null;
           newProductData['mauSac'] = null;
@@ -116,10 +138,10 @@ export const ProductStore = defineStore('product', {
           newProductData['size'] = img_d;
           const img = await this.fetchAllImage(newProductData.id);
           newProductData['img'] = img;
-         
+
           this.products[index] = newProductData;
-        //   console.log('pro: ',this.products[index]);
-        //  console.log('new: ',newProductData);
+          //      console.log('pro: ',updatedProduct);
+          //  console.log('new: ',newProductData);
         }
       } catch (error) {
         console.error('Lỗi khi sửa sản phẩm:', error);
@@ -150,9 +172,9 @@ export const ProductStore = defineStore('product', {
       }
     },
 
-    async deleteMauSac(productId, MauId) {
+    async deleteMauSac(MauId) {
       try {
-        await axios.delete(`/api/products/deleteMauSac?idSP=${productId}&idMau=${MauId}`); // Thay đổi URL tùy theo API của bạn
+        await axios.delete(`/api/products/deleteMauSac/${MauId}`); // Thay đổi URL tùy theo API của bạn
       } catch (error) {
         console.error('Lỗi khi xóa sản phẩm:', error);
       }

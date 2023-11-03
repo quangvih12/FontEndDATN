@@ -60,8 +60,7 @@ const schema = yup.object().shape({
     idMauSac: yup.array().required('vui lòng chọn màu sắc sản phẩm '),
     vatLieu: yup.number().required(' vui lòng chọn Vật liệu sản phẩm '),
     demLot: yup.string().required(' vui lòng chọn đệm lót sản phẩm '),
-    idSize: yup.array().required('Bạn cần chọn ít nhất một kích thước sản phẩm'),
-    soLuongSize: yup.number().required('bạn cần nhập số lượng size').min(1, 'Số lượng phải lớn hơn hoặc bằng 1').nullable(),
+    soLuongSize: yup.number().min(1, 'Số lượng phải lớn hơn hoặc bằng 1').nullable(),
     trongLuong: yup.string().required('vui lòng chọn trọng lượng sản phẩm'),
     imgMauSac: yup.array().required('vui lòng chọn ảnh màu sắc sản phẩm'),
     trangThai: yup.number().required('vui lòng chọn trạng thái của sản phẩm'),
@@ -108,11 +107,11 @@ const hideDialog = () => {
 
 const onSubmit = handleSubmit(async (values) => {
     try {
-        console.log(values);
+        // console.log('val: ', values);
         await productStore.edit(values);
         toast.add({ severity: 'success', summary: 'Success Message', detail: 'update thành công', life: 3000 });
         productDialog.value = false;
-        //   reset();
+        reset();
         //   }
     } catch (error) {
         console.error('Lỗi xử lý dữ liệu:', error);
@@ -158,14 +157,18 @@ const check = async () => {
 
 const reset = () => {
     resetForm();
-    array.value = 1;
+    imagesProduct.value = [];
+    array.value = [];
+    arrayMauSac.value = [];
     selectedSizes.value = null;
     selectedMauSac.value = null;
     selectedLoai.value = null;
     selectedCity.value = null;
-    selectedvatLieu.value = null;
-    ImagesProduct.value = null;
     selectedTrongLuong.value = null;
+    selectedvatLieu.value = null;
+    ImagesProduct.value = [];
+    arrayImgMauSac.value = [];
+    imageUrls.value = [];
 };
 
 const handleInputChange = () => {
@@ -173,6 +176,15 @@ const handleInputChange = () => {
         SoLuongSize.value = array.value.join(',').replace(/^,/, '').split(',').map(Number);
     } else {
         SoLuongSize.value = null;
+    }
+};
+
+const arrayMauSac = ref([]);
+const handleInputChangeMau = (sizeId) => {
+    if (arrayMauSac.value.length > 0) {
+        soLuongMauSac.value = arrayMauSac.value.join(',').replace(/^,/, '').split(',').map(Number);
+    } else {
+        soLuongMauSac.value = null;
     }
 };
 
@@ -239,37 +251,47 @@ sizes.value.forEach((item) => {
 
 const arrayImgMauSac = ref([]);
 function onFileInputImageMauSac(id) {
-    console.log('tc', imgMauSac.value);
+    // console.log('tc', imgMauSac.value);
     const index = selectedMauSac.value.findIndex((s) => s.id === id);
     const files = event.target.files;
 
     for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        const objectURL = URL.createObjectURL(file);
+        const basePath = "D:\\imgDATN\\"; // Đường dẫn cố định
+        const fileName = basePath + file.name;
 
         // Kiểm tra nếu index hợp lệ, sau đó cập nhật giá trị tại index đó
         if (index >= 0 && index < arrayImgMauSac.value.length) {
-            arrayImgMauSac.value[index] = objectURL;
+            arrayImgMauSac.value[index] = fileName;
         } else {
             // Nếu index không hợp lệ, hãy thêm objectURL vào cuối mảng
-            arrayImgMauSac.value.push(objectURL);
+            arrayImgMauSac.value.push(fileName);
         }
     }
 
     // Cập nhật giá trị imgMauSac.value sau khi đã duyệt qua tất cả các tệp
     imgMauSac.value = arrayImgMauSac.value.join(',').replace(/^,/, '').split(',');
-    console.log('sau', imgMauSac.value);
+    //   console.log('sau', imgMauSac.value);
 }
 
+const anh = ref(null);
 const ImagesProduct = ref([]);
+const imageUrls = ref([]);
 function onFileInputImageProduct(event) {
     const files = event.target.files;
+
+
     for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        const objectURL = URL.createObjectURL(file);
-        ImagesProduct.value.push(objectURL);
-        imagesProduct.value = ImagesProduct.value.join(',').replace(/^,/, '').split(',');
+        const basePath = "D:\\imgDATN\\"; // Đường dẫn cố định
+        const fileName = basePath + file.name;
+        imageUrls.value.push(fileName);
+
     }
+    ImagesProduct.value = imageUrls.value;
+    // console.log(ImagesProduct.value)
+    imagesProduct.value = ImagesProduct.value.join(',').replace(/^,/, '').split(',');
+    //  console.log('anh phu: ', imagesProduct.value)
 }
 
 const dataThuongHieu = ref([]);
@@ -319,7 +341,7 @@ onMounted(() => {
     loadDataLoai();
     loadDataTrongLuong();
     loadDataVatLieu();
-    // console.log('list update: ', props.myProp);
+    //   console.log('list update: ', props.myProp);
 });
 
 const arrayImageMauSac = ref([]);
@@ -390,21 +412,24 @@ const editProduct = () => {
     } else {
         Size.value = null;
     }
-    for (let i = 0; i < selectedSizes.value.length; i++) {
-        const size = selectedSizes.value[i].id;
-        const soLuong = soLuongSize[i];
-        array.value[i] = soLuong;
-        //   console.log(`Size: ${size}, Số lượng: ${soLuong}`);
-    }
-    if (array.value.length > 0) {
-        SoLuongSize.value = array.value.join(',').replace(/^,/, '').split(',').map(Number);
-    } else {
-        SoLuongSize.value = null;
-    }
+    // for (let i = 0; i < selectedSizes.value.length; i++) {
+    //     const size = selectedSizes.value[i].id;
+    //     const soLuong = soLuongSize[i];
+    //     array.value[i] = soLuong;
+    //     //   console.log(`Size: ${size}, Số lượng: ${soLuong}`);
+    // }
+    // if (array.value.length > 0) {
+    //     SoLuongSize.value = array.value.join(',').replace(/^,/, '').split(',').map(Number);
+    // } else {
+    //     SoLuongSize.value = null;
+    // }
 
     //màu sắc và ảnh màu sắc
     const tenMauSac = props.myProp.mauSac.map((s) => s.mauSac.ten);
     const anhMauSac = props.myProp.mauSac.map((s) => s.anh);
+    const SizeMauSac = props.myProp.mauSac.map((s) => s.sizeChiTiet?.size?.ten);
+    const IdMauSacChiTiet = props.myProp.mauSac.map((s) => s.id);
+    const soLuongMauSacs = props.myProp.mauSac.map(s => s.soLuong);
     const selectedMauSacTen = [];
     for (const ten of tenMauSac) {
         const selected = dataMauSac.value.find((i) => i.ten === ten);
@@ -413,6 +438,7 @@ const editProduct = () => {
         }
     }
     selectedMauSac.value = selectedMauSacTen;
+
     if (selectedMauSac.value.length > 0) {
         const selectedIds = selectedMauSac.value.map((item) => item.id);
         idMauSac.value = selectedIds.join(',').split(',').map(Number);
@@ -420,11 +446,35 @@ const editProduct = () => {
     } else {
         idMauSac.value = null;
     }
-    for (let i = 0; i < selectedMauSac.value.length; i++) {
-        const mauSac = selectedMauSac.value[i].ten;
+
+    const selectedMauSacCopy = selectedMauSac.value.map(item => ({ ...item }));
+
+
+    for (let i = 0; i < selectedMauSacCopy.length; i++) {
+        const mauSac = selectedMauSacCopy[i].ten;
         const anh = anhMauSac[i];
         arrayImageMauSac.value[i] = anh;
-        selectedMauSac.value[i].anh = anh;
+        selectedMauSacCopy[i].anh = anh;
+        const soLuong = soLuongMauSacs[i];
+        array.value[i] = soLuong;
+        const tenSize = SizeMauSac[i];
+        selectedMauSacCopy[i].tenSize = tenSize;
+        const idMauSacChiTiet = IdMauSacChiTiet[i];
+        selectedMauSacCopy[i].idMauSacChiTiet = idMauSacChiTiet;
+    }
+    selectedMauSacCopy.sort((a, b) => {
+        if (a.sizeChiTiet && a.sizeChiTiet.id && b.sizeChiTiet && b.sizeChiTiet.id) {
+            return a.sizeChiTiet.id - b.sizeChiTiet.id;
+        }
+        return 0;
+    });
+
+    selectedMauSac.value = selectedMauSacCopy;
+
+    if (array.value.length > 0) {
+        SoLuongSize.value = array.value.join(',').replace(/^,/, '').split(',').map(Number);
+    } else {
+        SoLuongSize.value = null;
     }
 
     for (const img of selectedMauSac.value) {
@@ -432,17 +482,15 @@ const editProduct = () => {
         imgMauSac.value = arrayImgMauSac.value.join(',').replace(/^,/, '').split(',');
     }
 
+
     // ảnh của sản phẩm
     arrayImage.value = props.myProp.img;
     for (const img of arrayImage.value) {
-        //  console.log(img.anh);
         ImagesProduct.value.push(img.anh);
         imagesProduct.value = ImagesProduct.value.join(',').replace(/^,/, '').split(',');
-        //  console.log(imagesProduct.value)
     }
 
-    // console.log(props.myProp.img)
-
+    //  console.log(selectedMauSac.value)
     product.value = { ...editProduct };
     productDialog.value = true;
 };
@@ -452,9 +500,12 @@ function onFileInputImage(event) {
     // Lặp qua từng tệp trong mảng files
     for (const file of files) {
         const objectURL = URL.createObjectURL(file);
+        anh.value = objectURL;
         // Gán giá trị cho phần tử có id là 'imagesChinh' (thay đổi id nếu cần)
-        imagesChinh.value = objectURL;
-        //    console.log(objectURL)
+        const basePath = "D:\\imgDATN\\"; // Đường dẫn cố định
+        const fileName = basePath + file.name;
+        imagesChinh.value = fileName;
+        // console.log('anh chinh: ', imagesChinh.value)
     }
 }
 
@@ -495,7 +546,7 @@ const deleteMauSac = async (idMauSacs) => {
             }
         }
 
-        const mauSacToDelete = selectedMauSac.value.findIndex((m) => m.id === idMauSacs);
+        const mauSacToDelete = selectedMauSac.value.findIndex((m) => m.idMauSacChiTiet === idMauSacs);
 
         // Đặt ảnh của màu sắc đó thành null (nếu màu sắc tồn tại)
         if (mauSacToDelete !== -1) {
@@ -506,22 +557,23 @@ const deleteMauSac = async (idMauSacs) => {
         }
 
         // Tạo một bản sao mới của selectedMauSac.value và lọc bỏ phần tử cần xóa
-        const updatedSelectedMauSac = selectedMauSac.value.filter((m) => m.id !== idMauSacs);
+        const updatedSelectedMauSac = selectedMauSac.value.filter((m) => m.idMauSacChiTiet !== idMauSacs);
 
         // Gán bản sao mới này cho selectedMauSac.value
         selectedMauSac.value = updatedSelectedMauSac;
 
         // Lọc bỏ màu sắc khỏi sản phẩm props.myProp
-        props.myProp.mauSac = props.myProp.mauSac.filter((s) => s.mauSac.id !== idMauSacs);
-
+        props.myProp.mauSac = props.myProp.mauSac.filter((s) => s.id !== idMauSacs);
+        // console.log( selectedMauSac.value)
         // // Gọi hàm xóa từ store nếu cần
-        await productStore.deleteMauSac(props.myProp.id, idMauSacs);
+        //  await productStore.deleteMauSac( idMauSacs);
     } catch (error) {
         console.error('Lỗi xóa màu sắc:', error);
     }
 };
 
 const deleteImg = async (img) => {
+    // console.log(img)
     for (let i = 0; i < ImagesProduct.value.length; i++) {
         if (ImagesProduct.value[i] === img) {
             //     console.log(idMauSac.value[i]);
@@ -539,24 +591,27 @@ const deleteImg = async (img) => {
             i--; // Để tránh bỏ lỡ phần tử sau khi xóa
         }
     }
-
+    //  console.log(imagesProduct.value)
     arrayImage.value = arrayImage.value.filter((s) => s.anh !== img);
 
     // Lọc bỏ màu sắc khỏi sản phẩm props.myProp
     props.myProp.img = props.myProp.img.filter((s) => s.anh !== img);
+    //  console.log( props.myProp.img)
     await productStore.deleteImg(props.myProp.id, img);
 };
 </script>
 
 <template>
     <Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" @click="editProduct()" />
-    <Dialog v-model:visible="productDialog" :style="{ width: '1050px' }" header="Product Details" :modal="true" class="p-fluid">
+    <Dialog v-model:visible="productDialog" :style="{ width: '1050px' }" header="Product Details" :modal="true"
+        class="p-fluid">
         <form @submit="onSubmit" style="margin-top: 30px">
             <div class="p-fluid formgrid grid">
                 <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
                     <div class="Field col-12 md:col-12" style="margin-bottom: 30px">
                         <span class="p-float-label">
-                            <InputText id="name" name="name" type="text" v-model="name" :class="{ 'p-invalid': nameError }"> </InputText>
+                            <InputText id="name" name="name" type="text" v-model="name" :class="{ 'p-invalid': nameError }">
+                            </InputText>
                             <label for="username">Tên sản phẩm</label>
                         </span>
                         <small class="p-error">{{ nameError }}</small>
@@ -564,7 +619,8 @@ const deleteImg = async (img) => {
 
                     <div class="Field col-12 md:col-12" style="margin-bottom: 30px">
                         <span class="p-float-label">
-                            <InputNumber id="soluong" v-model="soluong" :class="{ 'p-invalid': soLuongError }"> </InputNumber>
+                            <InputNumber id="soluong" v-model="soluong" :class="{ 'p-invalid': soLuongError }">
+                            </InputNumber>
                             <label for="SoLuongTon">Số lượng tồn</label>
                         </span>
                         <small class="p-error">{{ soLuongError }}</small>
@@ -579,7 +635,8 @@ const deleteImg = async (img) => {
                     </div>
                     <div class="Field col-12 md:col-12" style="margin-bottom: 30px">
                         <span class="p-float-label">
-                            <InputNumber id="number-input" name="GiaBan" v-model="GiaBan" :class="{ 'p-invalid': giaBanError }"></InputNumber>
+                            <InputNumber id="number-input" name="GiaBan" v-model="GiaBan"
+                                :class="{ 'p-invalid': giaBanError }"></InputNumber>
                             <label for="Field">Giá bán</label>
                         </span>
                         <small class="p-error">{{ giaBanError }}</small>
@@ -588,16 +645,20 @@ const deleteImg = async (img) => {
                         <label for="address">Quai Đeo</label>
                         <div class="flex flex-wrap gap-3">
                             <div class="flex align-items-center">
-                                <RadioButton v-model="QuaiDeo" type="radio" inputId="ingredient1" name="QuaiDeo" value="Quai đeo cố định" :class="{ 'p-invalid': quaiDeoError }" />
+                                <RadioButton v-model="QuaiDeo" type="radio" inputId="ingredient1" name="QuaiDeo"
+                                    value="Quai đeo cố định" :class="{ 'p-invalid': quaiDeoError }" />
                                 <label for="ingredient1" class="ml-2">Quai đeo cố định</label>
                             </div>
                             <div class="flex align-items-center">
-                                <RadioButton v-model="QuaiDeo" type="radio" inputId="ingredient2" name="QuaiDeo" value="Quai đeo dạng Y" :class="{ 'p-invalid': quaiDeoError }" />
+                                <RadioButton v-model="QuaiDeo" type="radio" inputId="ingredient2" name="QuaiDeo"
+                                    value="Quai đeo dạng Y" :class="{ 'p-invalid': quaiDeoError }" />
                                 <label for="ingredient2" class="ml-2">Quai đeo dạng Y</label>
                             </div>
                             <div class="flex align-items-center">
-                                <RadioButton v-model="QuaiDeo" type="radio" inputId="ingredient3" name="QuaiDeo" value="Quai đeo đặc biệt" :class="{ 'p-invalid': quaiDeoError }" />
-                                <label for="ingredient3" class="ml-2" :class="{ 'p-invalid': equaiDeoError }">Quai đeo đặc biệt</label>
+                                <RadioButton v-model="QuaiDeo" type="radio" inputId="ingredient3" name="QuaiDeo"
+                                    value="Quai đeo đặc biệt" :class="{ 'p-invalid': quaiDeoError }" />
+                                <label for="ingredient3" class="ml-2" :class="{ 'p-invalid': equaiDeoError }">Quai đeo đặc
+                                    biệt</label>
                             </div>
                         </div>
                         <small class="p-error">{{ quaiDeoError }}</small>
@@ -606,15 +667,18 @@ const deleteImg = async (img) => {
                         <label for="address">Đệm lót</label>
                         <div class="flex flex-wrap gap-3">
                             <div class="flex align-items-center">
-                                <RadioButton v-model="DemLot" inputId="ingredient1" name="pizza" value="Bọt biển " :class="{ 'p-invalid': demLotError }" />
+                                <RadioButton v-model="DemLot" inputId="ingredient1" name="pizza" value="Bọt biển "
+                                    :class="{ 'p-invalid': demLotError }" />
                                 <label for="ingredient1" class="ml-2">Bọt biển </label>
                             </div>
                             <div class="flex align-items-center">
-                                <RadioButton v-model="DemLot" inputId="ingredient2" name="pizza" value="Vật liệu mềm" :class="{ 'p-invalid': demLotError }" />
+                                <RadioButton v-model="DemLot" inputId="ingredient2" name="pizza" value="Vật liệu mềm"
+                                    :class="{ 'p-invalid': demLotError }" />
                                 <label for="ingredient2" class="ml-2">Vật liệu mềm</label>
                             </div>
                             <div class="flex align-items-center">
-                                <RadioButton v-model="DemLot" inputId="ingredient4" name="pizza" value="Đệm lót chống xốp nhiễu" :class="{ 'p-invalid': demLotError }" />
+                                <RadioButton v-model="DemLot" inputId="ingredient4" name="pizza"
+                                    value="Đệm lót chống xốp nhiễu" :class="{ 'p-invalid': demLotError }" />
                                 <label for="ingredient4" class="ml-2">Đệm lót chống xốp nhiễu</label>
                             </div>
                         </div>
@@ -624,11 +688,13 @@ const deleteImg = async (img) => {
                         <label for="address">Trạng thái</label>
                         <div class="flex flex-wrap gap-3">
                             <div class="flex align-items-center">
-                                <RadioButton v-model="TrangThai" inputId="ingredient1" name="pizza" value="1" :class="{ 'p-invalid': TrangThaiSacError }" />
+                                <RadioButton v-model="TrangThai" inputId="ingredient1" name="pizza" value="1"
+                                    :class="{ 'p-invalid': TrangThaiSacError }" />
                                 <label for="ingredient1" class="ml-2">Sẵn sàng để bán</label>
                             </div>
                             <div class="flex align-items-center">
-                                <RadioButton v-model="TrangThai" inputId="ingredient2" name="pizza" value="2" :class="{ 'p-invalid': TrangThaiSacError }" />
+                                <RadioButton v-model="TrangThai" inputId="ingredient2" name="pizza" value="2"
+                                    :class="{ 'p-invalid': TrangThaiSacError }" />
                                 <label for="ingredient2" class="ml-2">tồn kho</label>
                             </div>
                         </div>
@@ -638,10 +704,12 @@ const deleteImg = async (img) => {
                         <div class="Field col-6 md:col-6" style="margin-bottom: 30px">
                             <div style="display: flex">
                                 <span class="p-float-label" style="width: 239px">
-                                    <Dropdown id="dropdown" :options="dataLoai" v-model="selectedLoai" optionLabel="ten" :class="{ 'p-invalid': loaiError }" @change="onloaiChange"> </Dropdown>
+                                    <Dropdown id="dropdown" :options="dataLoai" v-model="selectedLoai" optionLabel="ten"
+                                        :class="{ 'p-invalid': loaiError }" @change="onloaiChange"> </Dropdown>
                                     <label for="dropdown">Loại</label>
                                 </span>
-                                <TableLoai :tableId="'tableLoai'" :rightGhId="'right_ghLoai'" :tableClass="'tableLoai'" :rightGhClass="'right_ghLoai'" />
+                                <TableLoai :tableId="'tableLoai'" :rightGhId="'right_ghLoai'" :tableClass="'tableLoai'"
+                                    :rightGhClass="'right_ghLoai'" />
                             </div>
 
                             <small class="p-error">{{ loaiError }}</small>
@@ -649,11 +717,14 @@ const deleteImg = async (img) => {
                         <div class="Field col-6 md:col-6" style="margin-bottom: 30px">
                             <div style="display: flex">
                                 <span class="p-float-label" style="width: 239px">
-                                    <MultiSelect v-model="selectedMauSac" :options="dataMauSac" optionLabel="ten" :filter="false" :maxSelectedLabels="3" :class="{ 'p-invalid': mauSacError }" @change="onMauSacChange"> </MultiSelect>
+                                    <MultiSelect v-model="selectedMauSac" :options="dataMauSac" optionLabel="ten"
+                                        :filter="false" :maxSelectedLabels="3" :class="{ 'p-invalid': mauSacError }"
+                                        @change="onMauSacChange"> </MultiSelect>
                                     <label for="multiselect">Màu sắc</label>
                                 </span>
 
-                                <TableMauSac :tableId="'TableMauSac'" :rightGhId="'right_ghMauSac'" :tableClass="'TableMauSac'" :rightGhClass="'right_ghMauSac'" />
+                                <TableMauSac :tableId="'TableMauSac'" :rightGhId="'right_ghMauSac'"
+                                    :tableClass="'TableMauSac'" :rightGhClass="'right_ghMauSac'" />
                             </div>
                             <small class="p-error">{{ mauSacError }}</small>
                         </div>
@@ -661,30 +732,39 @@ const deleteImg = async (img) => {
                         <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
                             <div style="display: flex">
                                 <span class="p-float-label" style="width: 239px">
-                                    <Dropdown id="dropdown" :options="dataVatLieu" v-model="selectedvatLieu" :class="{ 'p-invalid': vatLieuError }" optionLabel="ten" @change="onvatLieuChange"> </Dropdown>
+                                    <Dropdown id="dropdown" :options="dataVatLieu" v-model="selectedvatLieu"
+                                        :class="{ 'p-invalid': vatLieuError }" optionLabel="ten" @change="onvatLieuChange">
+                                    </Dropdown>
                                     <label for="dropdown">Vật liệu</label>
                                 </span>
-                                <TablevatLieu :tableId="'TablevatLieu'" :rightGhId="'right_ghvatLieu'" :tableClass="'TablevatLieu'" :rightGhClass="'right_ghvatLieu'" />
+                                <TablevatLieu :tableId="'TablevatLieu'" :rightGhId="'right_ghvatLieu'"
+                                    :tableClass="'TablevatLieu'" :rightGhClass="'right_ghvatLieu'" />
                             </div>
                             <small class="p-error">{{ vatLieuError }}</small>
                         </div>
                         <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
                             <div style="display: flex">
                                 <span class="p-float-label" style="width: 239px">
-                                    <Dropdown id="dropdown" :options="dataTrongLuong" v-model="selectedTrongLuong" optionLabel="value" :class="{ 'p-invalid': trongLuongError }" @change="onTrongLuongChange"> </Dropdown>
+                                    <Dropdown id="dropdown" :options="dataTrongLuong" v-model="selectedTrongLuong"
+                                        optionLabel="value" :class="{ 'p-invalid': trongLuongError }"
+                                        @change="onTrongLuongChange"> </Dropdown>
                                     <label for="dropdown">Trọng Lượng</label>
                                 </span>
-                                <TableTrongLuong :tableId="'TableTrongLuong'" :rightGhId="'right_ghTrongLuong'" :tableClass="'TableTrongLuong'" :rightGhClass="'right_ghTrongLuong'" />
+                                <TableTrongLuong :tableId="'TableTrongLuong'" :rightGhId="'right_ghTrongLuong'"
+                                    :tableClass="'TableTrongLuong'" :rightGhClass="'right_ghTrongLuong'" />
                             </div>
                             <small class="p-error">{{ trongLuongError }}</small>
                         </div>
                         <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
                             <div style="display: flex">
                                 <span class="p-float-label" style="width: 150px">
-                                    <MultiSelect v-model="selectedSizes" :options="dataSize" optionLabel="ten" :filter="false" :maxSelectedLabels="3" :class="{ 'p-invalid': SizeError }" @change="onSizeChange"> </MultiSelect>
+                                    <MultiSelect v-model="selectedSizes" :options="dataSize" optionLabel="ten"
+                                        :filter="false" :maxSelectedLabels="3" :class="{ 'p-invalid': SizeError }"
+                                        @change="onSizeChange"> </MultiSelect>
                                     <label for="multiselect">Size</label>
                                 </span>
-                                <TableSize :tableId="'TableMauSac'" :rightGhId="'right_ghMauSac'" :tableClass="'TableMauSac'" :rightGhClass="'right_ghMauSac'" />
+                                <TableSize :tableId="'TableMauSac'" :rightGhId="'right_ghMauSac'"
+                                    :tableClass="'TableMauSac'" :rightGhClass="'right_ghMauSac'" />
                             </div>
                             <small class="p-error">{{ SizeError }}</small>
                         </div>
@@ -692,10 +772,13 @@ const deleteImg = async (img) => {
                         <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
                             <div style="display: flex">
                                 <span class="p-float-label" style="width: 239px">
-                                    <Dropdown id="dropdown" :options="dataThuongHieu" v-model="selectedCity" optionLabel="ten" @change="onCityChange" :class="{ 'p-invalid': thuongHieuError }"> </Dropdown>
+                                    <Dropdown id="dropdown" :options="dataThuongHieu" v-model="selectedCity"
+                                        optionLabel="ten" @change="onCityChange" :class="{ 'p-invalid': thuongHieuError }">
+                                    </Dropdown>
                                     <label for="dropdown">Thương Hiệu</label>
                                 </span>
-                                <TableThuongHieu :tableId="'TableThuongHieu'" :rightGhId="'right_ghThuongHieu'" :tableClass="'TableThuongHieu'" :rightGhClass="'right_ghThuongHieu'" />
+                                <TableThuongHieu :tableId="'TableThuongHieu'" :rightGhId="'right_ghThuongHieu'"
+                                    :tableClass="'TableThuongHieu'" :rightGhClass="'right_ghThuongHieu'" />
                             </div>
 
                             <small class="p-error">{{ thuongHieuError }}</small>
@@ -706,54 +789,94 @@ const deleteImg = async (img) => {
                                     <p>nhập số lượng size:</p>
                                 </div>
                                 <div style="display: flex; flex-wrap: wrap">
-                                    <Div v-for="(size, index) in selectedSizes" :key="index" style="margin-top: 10px">
-                                        <label :for="`input-${size.id}`" style="margin-right: 10px; margin-left: 10px">{{ size.ten }}</label>
-                                        <input type="number" :id="`input-${size.id}`" v-model="array[index]" @change="handleInputChange()" :class="{ 'p-invalid': soLuongSizeError }" style="height: 20px; width: 60px" />
+                                    <Div v-for="(size, index) in selectedMauSac" :key="index" style="margin-top: 10px">
+                                        <label :for="`input-${size.id}`" style="margin-right: 10px; margin-left: 10px">{{
+                                            size.ten }}</label>
+                                        <label :for="`input-${size.id}`" style="margin-right: 10px; "
+                                            v-if="size.tenSize !== null"> - {{ size.tenSize }}</label>
+                                        <input type="number" :id="`input-${size.id}`" v-model="array[index]"
+                                            @change="handleInputChange()" :class="{ 'p-invalid': soLuongSizeError }"
+                                            style="height: 20px; width: 60px" />
 
-                                        <Button icon="pi pi-trash" class="p-button-warning mr-2" @click="deleteSize(size.id)" style="width: 25px; height: 25px; margin: 0px 10px 0px 10px" />
+
                                     </Div>
                                 </div>
                             </div>
                             <small class="p-error">{{ soLuongSizeError }}</small>
+                            <!-- <div style="display: flex">
+                                    <div style="width: 150px">
+                                        <p>Số lượng màu sắc :</p>
+                                    </div>
+                                    <div style="display: flex; flex-wrap: wrap">
+                                        <div v-for="(mau, index) in selectedMauSac" :key="index" style="margin-top: 10px">
+                                            <label :for="`input-${mau.id}`" style="margin-right: 10px; margin-left: 10px">{{
+                                                mau.ten }}</label>
+                                            <input type="number" :id="`input-${mau.id}`" v-model="array[index]"
+                                                @change="handleInputChange(mau.id)"
+                                                :class="{ 'p-invalid': soLuongSizeError }"
+                                                style="height: 20px; width: 60px" />
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                                <small class="p-error">{{ soLuongSizeError }}</small> -->
                         </div>
                         <div class="field col-12 md:col-12" style="margin-bottom: 30px">
                             <label for="address">Mô tả</label>
-                            <Textarea id="address" rows="4" v-model="MoTa" :class="{ 'p-invalid': MoTaSacError }"></Textarea>
+                            <Textarea id="address" rows="4" v-model="MoTa"
+                                :class="{ 'p-invalid': MoTaSacError }"></Textarea>
                             <small class="p-error">{{ MoTaSacError }}</small>
                         </div>
                     </div>
                 </div>
                 <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
                     <div class="p-fluid formgrid grid">
-                        <div class="Field col-12 md:col-6" style="margin-bottom: 30px; height: 300px; margin-top: 10px; display: inline-flex; justify-content: center; align-items: center">
+                        <div class="Field col-12 md:col-6"
+                            style="margin-bottom: 30px; height: 300px; margin-top: 10px; display: inline-flex; justify-content: center; align-items: center">
                             <div style="display: block; margin-left: 200px">
-                                <div class="t" style="border: 1px solid black; border-radius: 10px; width: 300px; height: 240px; margin-top: -60px">
-                                    <img :src="imagesChinh" alt="" style="width: 275px; height: 230px; top: 50%; left: 50%; transform: translate(4%, 2%)" />
+                                <div class="t"
+                                    style="border: 1px solid black; border-radius: 10px; width: 300px; height: 240px; margin-top: -60px">
+                                    <img :src="anh == null ? imagesChinh : anh" alt=""
+                                        style="width: 275px; height: 230px; top: 50%; left: 50%; transform: translate(4%, 2%)" />
                                 </div>
                                 <div class="buton" style="margin-top: 10px">
-                                    <FileUpload mode="basic" name="demo[]" accept="image/*" :maxFileSize="1000000" @input="onFileInputImage" style="display: flex" />
+                                    <FileUpload mode="basic" name="demo[]" accept="image/*" :maxFileSize="1000000"
+                                        @input="onFileInputImage" style="display: flex" />
                                 </div>
                                 <small class="p-error">{{ imagestError }}</small>
                             </div>
                         </div>
                         <div class="field col-12 md:col-12">
-                            <div v-for="(img, index) in arrayImage" :key="index" class="mausac-container" style="display: inline-block; margin-left: 30px; margin-bottom: 15px; height: 90x; width: 100px">
+                            <div v-for="(img, index) in arrayImage" :key="index" class="mausac-container"
+                                style="display: inline-block; margin-left: 30px; margin-bottom: 15px; height: 90x; width: 100px">
                                 <div class="img-product">
-                                    <img :src="img.anh" alt="" style="width: 100px; height: 90px; top: 50%; left: 50%; transform: translate(4%, 2%); margin: 10px 0px 15px 0px" />
-                                    <Button icon="pi pi-trash" class="p-button-warning mr-2" style="position: absolute; width: 25px; height: 25px; margin: 10px 0 0 10px; margin-left: 5px" @click="deleteImg(img.anh)" />
+                                    <img :src="img.anh" alt=""
+                                        style="width: 100px; height: 90px; top: 50%; left: 50%; transform: translate(4%, 2%); margin: 10px 0px 15px 0px" />
+                                    <Button icon="pi pi-trash" class="p-button-warning mr-2"
+                                        style="position: absolute; width: 25px; height: 25px; margin: 10px 0 0 10px; margin-left: 5px"
+                                        @click="deleteImg(img.anh)" />
                                 </div>
                             </div>
                         </div>
                         <div class="field col-12 md:col-12" style="display: inline-block">
-                            <div v-for="(color, index) in selectedMauSac" :key="index" class="mausac-container" style="display: inline-block; margin-left: 30px; margin-bottom: 15px; height: 90x; width: 100px">
+                            <div v-for="(color, index) in selectedMauSac" :key="index" class="mausac-container"
+                                style="display: inline-block; margin-left: 30px; margin-bottom: 15px; height: 90x; width: 100px">
                                 <div>
                                     Màu :
                                     <span class="product-name">{{ color.ten }}</span>
-                                    <img :src="color.anh" alt="" style="width: 50px; height: 50px; top: 50%; left: 50%; transform: translate(4%, 2%); margin: 10px 0px 15px 0px" />
-                                    <Button icon="pi pi-trash" class="p-button-warning mr-2" @click="deleteMauSac(color.id)" style="width: 25px; height: 25px; margin-left: 17px; margin-bottom: 25px" />
+                                    <span class="product-name" v-if="color.tenSize !== null"> - {{ color.tenSize
+                                    }}</span>
+
+                                    <img :src="color.anh" alt=""
+                                        style="width: 50px; height: 50px; top: 50%; left: 50%; transform: translate(4%, 2%); margin: 10px 0px 15px 0px" />
+                                    <Button icon="pi pi-trash" class="p-button-warning mr-2"
+                                        @click="deleteMauSac(color.idMauSacChiTiet)"
+                                        style="width: 25px; height: 25px; margin-left: 17px; margin-bottom: 25px" />
                                 </div>
 
-                                <FileUpload mode="basic" name="demo[]" accept="image/*" :maxFileSize="1000000" @input="onFileInputImageMauSac(color.id)" style="width: 100px; height: 40px" />
+                                <FileUpload mode="basic" name="demo[]" accept="image/*" :maxFileSize="1000000"
+                                    @input="onFileInputImageMauSac(color.id)" style="width: 100px; height: 40px" />
                             </div>
 
                             <br />
@@ -761,13 +884,16 @@ const deleteImg = async (img) => {
                         </div>
                     </div>
                     <div class="field col-12 md:col-12">
-                        <file-upload :upload-url="uploadUrl" :multiple="true" :maxFileSize="2000000" @input="onFileInputImageProduct" :class="{ 'p-invalid': imagesProductError }"></file-upload>
+                        <file-upload :upload-url="uploadUrl" :multiple="true" :maxFileSize="2000000"
+                            @input="onFileInputImageProduct" :class="{ 'p-invalid': imagesProductError }"></file-upload>
                         <small class="p-error">{{ imagesProductError }}</small>
                     </div>
                 </div>
                 <div style="width: 1000px; text-align: center">
-                    <Button type="submit" class="p-button-outlined" style="width: 200px; height: auto; margin: 10px" label="Lưu"></Button>
-                    <Button class="p-button-outlined" outlined severity="secondary" style="width: 200px; height: auto; margin: 10px" @click="reset()" label="clear"></Button>
+                    <Button type="submit" class="p-button-outlined" style="width: 200px; height: auto; margin: 10px"
+                        label="Lưu"></Button>
+                    <Button class="p-button-outlined" outlined severity="secondary"
+                        style="width: 200px; height: auto; margin: 10px" @click="reset()" label="clear"></Button>
                 </div>
             </div>
         </form>

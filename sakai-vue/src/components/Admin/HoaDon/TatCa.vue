@@ -15,6 +15,8 @@ const filters1 = ref(null);
 const loading1 = ref(null);
 const loading2 = ref(null);
 const products = ref(null);
+const startDate = ref(null);
+const endDate = ref([null]);
 const customerService = new CustomerService();
 const productService = new ProductService();
 const data = ref([]);
@@ -22,6 +24,7 @@ const data = ref([]);
 const loadData = async () => {
     await useHD.fetchData();
     data.value = useHD.dataAll;
+    // console.log(data.value);
 };
 
 //chạy cái hiện data luôn
@@ -49,6 +52,31 @@ const hienThiTrangThai = (trangThai) => {
     }
 };
 
+const columns = ref([
+    { field: 'maHD', header: 'Mã hoá đơn' },
+    { field: 'nguoiTao', header: 'Người tạo' },
+    { field: 'ngayTao', header: 'Ngày tạo' },
+    { field: 'ngaySua', header: 'Ngày sửa' },
+    { field: 'tenNguoiNhan', header: 'Tên người nhận' },
+    { field: 'tienShip', header: 'Tiền ship' },
+    { field: 'tongTien', header: 'Tổng tiền' },
+    { field: 'tienSauKhiGiam', header: 'Tiền sau giảm' },
+    { field: 'tenPTTT', header: 'Phương thức thanh toán' },
+    { field: 'ngayThanhToan', header: 'Ngày thanh toán' },
+    { field: 'ngayShip', header: 'Ngày ship' },
+    { field: 'ngayNhan', header: 'Ngày nhận' }
+]);
+const selectedColumns = ref(columns.value);
+
+const onToggle = (val) => {
+    selectedColumns.value = columns.value.filter((col) => val.includes(col));
+};
+
+const searchDate = async () => {
+    await useHD.searchDate(startDate.value, endDate.value);
+    // data.value = useHD.dataAll;
+};
+
 onBeforeMount(() => {
     productService.getProductsWithOrdersSmall().then((data) => (products.value = data));
     customerService.getCustomersLarge().then((data) => {
@@ -65,15 +93,7 @@ onBeforeMount(() => {
 
 const initFilters1 = () => {
     filters1.value = {
-        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        name: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-        'country.name': { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-        representative: { value: null, matchMode: FilterMatchMode.IN },
-        date: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }] },
-        balance: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
-        status: { operator: FilterOperator.OR, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
-        activity: { value: [0, 50], matchMode: FilterMatchMode.BETWEEN },
-        verified: { value: null, matchMode: FilterMatchMode.EQUALS }
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS }
     };
 };
 
@@ -97,131 +117,54 @@ const formatDate = (value) => {
         </span>
         <div class="p-inputgroup flex-1" style="margin-left: 20px">
             <span class="p-inputgroup-addon" style="height: 40px">Ngày bắt đầu</span>
-            <input type="datetime-local" style="min-width: 13rem; height: 40px" />
+            <input type="datetime-local" v-model="startDate" style="min-width: 13rem; height: 40px" />
         </div>
         <div class="p-inputgroup flex-1">
             <span class="p-inputgroup-addon" style="height: 40px">Ngày kết thúc</span>
-            <input type="datetime-local" style="min-width: 13rem; height: 40px" />
+            <input type="datetime-local" v-model="endDate" style="min-width: 13rem; height: 40px" />
         </div>
         <div style="margin-left: 5px">
-            <Button label="Seach" icon="pi pi-search" class="p-button-rounded p-button-primary mr-2 mb-2" />
+            <Button label="Seach" @click="searchDate()" icon="pi pi-search" class="p-button-rounded p-button-primary mr-2 mb-2" />
         </div>
     </div>
-    <!-- <DataTable
-        :value="customer1"
-        :paginator="true"
-        class="p-datatable-gridlines"
-        :rows="10"
-        dataKey="id"
-        :rowHover="true"
-        v-model:filters="filters1"
-        filterDisplay="menu"
-        :loading="loading1"
-        :filters="filters1"
-        responsiveLayout="scroll"
-        :globalFilterFields="['name', 'country.name', 'representative.name', 'balance', 'status']"
-    >
-        <template #empty> No customers found. </template>
-        <template #loading> Loading customers data. Please wait. </template>
-        <Column field="id" header="Id hóa đơn" style="min-width: 12rem">
-            <template #body="{ data }">
-                {{ data.id }}
-            </template>
-            <template #filter="{ filterModel }">
-                <InputText type="text" v-model="filterModel.value" class="p-column-filter" placeholder="Search by id" />
-            </template>
-        </Column>
-        <Column field="name" header="Khách hàng" style="min-width: 12rem">
-            <template #body="{ data }">
-                {{ data.name }}
-            </template>
-            <template #filter="{ filterModel }">
-                <InputText type="text" v-model="filterModel.value" class="p-column-filter" placeholder="Search by name" />
-            </template>
-        </Column>
-        <Column header="Địa chỉ" filterField="country.name" style="min-width: 12rem">
-            <template #body="{ data }">
-                <img src="/demo/images/flag/flag_placeholder.png" :alt="data.country.name" :class="'flag flag-' + data.country.code" width="30" />
-                <span style="margin-left: 0.5em; vertical-align: middle" class="image-text">{{ data.country.name }}</span>
-            </template>
-            <template #filter="{ filterModel }">
-                <InputText type="text" v-model="filterModel.value" class="p-column-filter" placeholder="Search by diaChi" />
-            </template>
-            <template #filterclear="{ filterCallback }">
-                <Button type="button" icon="pi pi-times" @click="filterCallback()" class="p-button-secondary"></Button>
-            </template>
-            <template #filterapply="{ filterCallback }">
-                <Button type="button" icon="pi pi-check" @click="filterCallback()" class="p-button-success"></Button>
-            </template>
-        </Column>
-        <Column header="Ngày tạo" filterField="date" dataType="date" style="min-width: 10rem">
-            <template #body="{ data }">
-                {{ formatDate(data.date) }}
-            </template>
-            <template #filter="{ filterModel }">
-                <Calendar v-model="filterModel.value" dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" />
-            </template>
-        </Column>
-        <Column header="Ngày cập nhật" filterField="date" dataType="date" style="min-width: 10rem">
-            <template #body="{ data }">
-                {{ formatDate(data.date) }}
-            </template>
-            <template #filter="{ filterModel }">
-                <Calendar v-model="filterModel.value" dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" />
-            </template>
-        </Column>
-        <Column field="status" header="Trạng thái" :filterMenuStyle="{ width: '14rem' }" style="min-width: 12rem">
-            <template #body="{ data }">
-                <span :class="'customer-badge status-' + data.status">{{ data.status }}</span>
-            </template>
-            <template #filter="{ filterModel }">
-                <Dropdown v-model="filterModel.value" :options="statuses" placeholder="Any" class="p-column-filter" :showClear="true">
-                    <template #value="slotProps">
-                        <span :class="'customer-badge status-' + slotProps.value" v-if="slotProps.value">{{ slotProps.value }}</span>
-                        <span v-else>{{ slotProps.placeholder }}</span>
-                    </template>
-                    <template #option="slotProps">
-                        <span :class="'customer-badge status-' + slotProps.option">{{ slotProps.option }}</span>
-                    </template>
-                </Dropdown>
-            </template>
-        </Column>
-        <Column header="Tổng tiền" filterField="balance" dataType="numeric" style="min-width: 10rem">
-            <template #body="{ data }">
-                {{ formatCurrency(data.balance) }}
-            </template>
-            <template #filter="{ filterModel }">
-                <InputNumber v-model="filterModel.value" mode="currency" currency="USD" locale="en-US" />
-            </template>
-        </Column>
-        <Column field="trangThai" header="Ghi chú" dataType="boolean" bodyClass="text-center" style="min-width: 8rem">
-            <template #body="{ data }">
-                <i class="pi" :class="{ 'text-green-500 pi-check-circle': data.verified, 'text-pink-500 pi-times-circle': !data.verified }"></i>
-            </template>
-            <template #filter="{ filterModel }">
-                <TriStateCheckbox v-model="filterModel.value" />
-            </template>
-        </Column>
-        <Column header="Chức năng" filterField="chucNang" style="min-width: 10rem" bodyClass="text-center">
-            <template #body="slotProps">
-                <DetailHoaDon></DetailHoaDon>
-            </template>
-        </Column>
-    </DataTable> -->
     <DataTable
         ref="dt"
         :value="data"
         v-model:selection="selectedProducts"
         dataKey="id"
         :paginator="true"
-        :rows="10"
-        :filters="filters"
+        :rows="5"
+        :filters="filters1"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
         :rowsPerPageOptions="[5, 10, 25]"
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
         responsiveLayout="scroll"
     >
+        <template #header>
+            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                <MultiSelect icon="pi pi-plus" placeholder="Select Columns" :modelValue="selectedColumns" :options="columns" optionLabel="header" @update:modelValue="onToggle" display="tag" />
+            </div>
+        </template>
         <Column field="stt" header="STT" :sortable="true" headerStyle="width:14%; min-width:1rem;">
+            <template #body="slotProps">
+                <span class="p-column-title">stt</span>
+                {{ slotProps.data.stt }}
+            </template>
+        </Column>
+        <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column>
+        <Column field="diaChi" header="Địa chỉ" :sortable="false" headerStyle="width:14%; min-width:10rem;">
+            <template #body="slotProps">
+                <span class="p-column-title">diaChi</span>
+                {{ slotProps.data.diaChiCuThe }}, {{ slotProps.data.tenPhuongXa }}, {{ slotProps.data.tenQuanHuyen }}, {{ slotProps.data.tenTinhThanh }}
+            </template>
+        </Column>
+        <Column field="trangThai" header="Trạng thái" :sortable="false" headerStyle="width:14%; min-width:10rem;">
+            <template #body="slotProps">
+                <span class="p-column-title">trangThai</span>
+                {{ hienThiTrangThai(slotProps.data.trangThai) }}
+            </template>
+        </Column>
+        <!-- <Column field="stt" header="STT" :sortable="true" headerStyle="width:14%; min-width:1rem;">
             <template #body="slotProps">
                 <span class="p-column-title">stt</span>
                 {{ slotProps.data.stt }}
@@ -235,95 +178,95 @@ const formatDate = (value) => {
         </Column>
         <Column field="nguoiTao" header="Người tạo" :sortable="true" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
-                <span class="p-column-title">ten</span>
+                <span class="p-column-title">nguoiTao</span>
                 {{ slotProps.data.nguoiTao }}
             </template>
         </Column>
         <Column field="ngayTao" header="Ngày tạo" :sortable="true" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
-                <span class="p-column-title">ten</span>
+                <span class="p-column-title">ngayTao</span>
                 {{ slotProps.data.ngayTao }}
             </template>
         </Column>
         <Column field="ngaySua" header="Ngày sửa" :sortable="true" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
-                <span class="p-column-title">ten</span>
+                <span class="p-column-title">ngaySua</span>
                 {{ slotProps.data.ngaySua }}
             </template>
         </Column>
         <Column field="tenNguoiNhan" header="Người nhận" :sortable="true" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
-                <span class="p-column-title">mota</span>
+                <span class="p-column-title">tenNguoiNhan</span>
                 {{ slotProps.data.tenNguoiNhan }}
             </template>
         </Column>
         <Column field="tienShip" header="Tiền ship" :sortable="true" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
-                <span class="p-column-title">mota</span>
+                <span class="p-column-title">tienShip</span>
                 {{ slotProps.data.tienShip }}
             </template>
         </Column>
         <Column field="tongTien" header="Tổng tiền" :sortable="true" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
-                <span class="p-column-title">mota</span>
+                <span class="p-column-title">tongTien</span>
                 {{ slotProps.data.tongTien }}
             </template>
         </Column>
         <Column field="tienSauKhiGiam" header="Tiền sau giảm" :sortable="true" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
-                <span class="p-column-title">mota</span>
+                <span class="p-column-title">tienSauKhiGiam</span>
                 {{ slotProps.data.tienSauKhiGiam }}
             </template>
         </Column>
         <Column field="trangThai" header="Trạng thái" :sortable="false" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
-                <span class="p-column-title">Category</span>
+                <span class="p-column-title">trangThai</span>
                 {{ hienThiTrangThai(slotProps.data.trangThai) }}
             </template>
         </Column>
         <Column field="tenPTTT" header="Phương thức thanh toán" :sortable="false" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
-                <span class="p-column-title">Category</span>
+                <span class="p-column-title">tenPTTT</span>
                 {{ slotProps.data.tenPTTT }}
             </template>
         </Column>
         <Column field="ngayThanhToan" header="Ngày thanh toán" :sortable="false" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
-                <span class="p-column-title">Category</span>
+                <span class="p-column-title">ngayThanhToan</span>
                 {{ slotProps.data.ngayThanhToan }}
             </template>
         </Column>
         <Column field="diaChi" header="Địa chỉ" :sortable="false" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
-                <span class="p-column-title">Category</span>
+                <span class="p-column-title">diaChi</span>
                 {{ slotProps.data.diaChi }}
             </template>
         </Column>
         <Column field="ngayShip" header="Ngày ship" :sortable="false" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
-                <span class="p-column-title">Category</span>
+                <span class="p-column-title">ngayShip</span>
                 {{ slotProps.data.ngayShip }}
             </template>
         </Column>
         <Column field="ngayNhan" header="Ngày nhận" :sortable="false" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
-                <span class="p-column-title">Category</span>
+                <span class="p-column-title">ngayNhan</span>
                 {{ slotProps.data.ngayNhan }}
             </template>
         </Column>
         <Column field="hinhThucGiaoHang" header="Hình thức giao" :sortable="false" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
-                <span class="p-column-title">Category</span>
+                <span class="p-column-title">hinhThucGiaoHang</span>
                 {{ slotProps.data.hinhThucGiaoHang }}
             </template>
-        </Column>
+        </Column> -->
         <Column header="Hành động" headerStyle="min-width:10rem;">
             <template #body="slotProps">
                 <!-- <DetailSize :my-prop="slotProps.data"></DetailSize>
                 <UpdateSize :my-prop="slotProps.data"></UpdateSize>
                 <Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" @click="editProduct(slotProps.data)" />
                 <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2" @click="confirmDeleteProduct(slotProps.data.id)" /> -->
-                <DetailHoaDon></DetailHoaDon>
+                <DetailHoaDon :my-prop="slotProps.data"></DetailHoaDon>
             </template>
         </Column>
     </DataTable>

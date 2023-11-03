@@ -2,9 +2,10 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useLayout } from '@/layout/composables/layout';
 import { useRouter } from 'vue-router';
-
+import { userStore } from '@/service/Admin/User/UserService.js';
+import tokenService from '@/service/Authentication/TokenService.js'
+const userService = userStore();
 const { layoutConfig, onMenuToggle } = useLayout();
-
 const outsideClickListener = ref(null);
 const topbarMenuActive = ref(false);
 const router = useRouter();
@@ -58,6 +59,33 @@ const isOutsideClicked = (event) => {
 
     return !(sidebarEl.isSameNode(event.target) || sidebarEl.contains(event.target) || topbarEl.isSameNode(event.target) || topbarEl.contains(event.target));
 };
+
+const selectedKH = ref(null);
+const khachHang = ref([]);
+
+const fetchData = async () => {
+  try {
+     await  userService.fetchDataByStatus();
+    khachHang.value = userService.data;
+  } catch (error) {
+    // Xử lý lỗi ở đây nếu cần
+  }
+};
+
+onMounted(() => {
+  fetchData();
+});
+
+// dùng để lưu thông tin khách hàng khi được chọn CBB.
+// nếu muốn dùng thông tin khách hàng khi đặt hàng thì dùng selectedCustomer.value
+const selectedCustomer = ref(null);
+
+// hàm gọi sự thay đổi thông tin của khách hàng khi click vào CBB
+const displayKH = async () =>  {
+  selectedCustomer.value = khachHang.value.find(kh => kh.ten === selectedKH.value.ten);
+  const token =   await tokenService.gentoken(selectedCustomer.value.username)
+  localStorage.setItem('token', token);
+};
 </script>
 
 <template>
@@ -74,6 +102,20 @@ const isOutsideClicked = (event) => {
         <button class="p-link layout-topbar-menu-button layout-topbar-button" @click="onTopBarMenuButton()">
             <i class="pi pi-ellipsis-v"></i>
         </button>
+
+        <div class="layout-topbar-menu" style=" display: inline-block; ">          
+                <div  v-if="selectedCustomer === null">
+                    <Dropdown v-model="selectedKH" :options="khachHang" optionLabel="ten"
+                placeholder="Chọn KH" class="w-full md:w-8rem" style=" margin-top: 5px; max-height: 100px; overflow-y: auto;"  @change="displayKH" />
+                </div>
+            
+                <div v-else class="layout-topbar-logo" style=" display: inline-block;">
+                    <div style="font-size: 10px">
+                        <div>Tên: {{ selectedCustomer.ten }}</div>
+                        <div>Role: {{ selectedCustomer.role }}</div>
+                    </div>
+                </div>          
+        </div>
 
         <div class="layout-topbar-menu" :class="topbarMenuClasses">
             <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">

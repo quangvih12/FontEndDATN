@@ -1,6 +1,6 @@
 <script setup>
 import { FilterMatchMode } from 'primevue/api';
-import { ref, onMounted, onBeforeMount, computed, reactive } from 'vue';
+import { ref, onMounted, onBeforeMount, computed, reactive, watch } from 'vue';
 import { ProductStore } from '../../../service/Admin/product/product.api';
 import AddProduct from './addProduct.vue';
 import { useToast } from 'primevue/usetoast';
@@ -114,7 +114,11 @@ const loadProducts = async () => {
     }
 
     products.value = productList;
-    //    console.log('sss: ', products.value);
+    for (let i = 0; i < 1; i++) {
+        soLuongSP.value = products.value[i].soLuongSanPham;
+        //   console.log(soLuongSP.value);
+    }
+    // console.log('sss: ', products.value);
     showSpinner.value = false;
     visibledatatable.value = true;
 };
@@ -134,7 +138,8 @@ const loadMau = ref([]);
 const loadmau = async (idProduct) => {
     await productStore.fetchAllMauSac(idProduct); // Gọi hàm fetchAll từ Store
     loadMau.value = productStore.mauSacs;
-    // console.log('mau: ',  loadMau.value );
+    //   console.log('mau: ', loadMau.value);
+
     return loadMau.value;
 };
 
@@ -147,7 +152,7 @@ const loadImg = async (idProduct) => {
 };
 
 const url = ref([]);
-
+let soLuongSP = ref(null);
 onMounted(() => {
     myDiv.value = document.getElementById('right_gh');
     div.value = document.getElementById('table');
@@ -205,7 +210,11 @@ const columns = ref([
     { field: 'vatLieu', header: 'Vật liệu' },
     { field: 'loai', header: 'Loại' },
     { field: 'moTa', header: 'Mô Tả' },
-
+    { field: 'giaSauGiam', header: 'Giá giảm giá' },
+    { field: 'tenKM', header: 'Tên Khuyến Mãi' },
+    { field: 'thoiGianBatDau', header: 'Thời gian bắt đầu' },
+    { field: 'thoiGianKetThuc', header: 'Thời gian kết thúc' },
+    { field: 'giaTriGiam', header: 'Giá Trị (%)' },
 ]);
 
 // hàm để tắt/mở cột
@@ -248,7 +257,7 @@ const deleteProduct = (id) => {
     products.value = productStore.products;
     toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Xoá thành công', life: 3000 });
     deleteProductDialog.value = false;
-   
+
 };
 const position = ref('center');
 const visible = ref(false);
@@ -263,7 +272,7 @@ const openPosition = (pos) => {
 
 const closePosition = () => {
     visible.value = false;
-    loadProducts();
+    // loadProducts();
 };
 
 const setNameFile = ref('');
@@ -283,75 +292,131 @@ const handImportExcel = async (event) => {
     await productStore.uploadFile(formData);
     excel.value = productStore.excels;
     for (const o of excel.value) {
-        if (o.totalError === 0) {
-           // console.log(o)
-            toast.add({ severity: 'success', summary: 'Success Message', detail: 'Import excel thành công', life: 3000 });
-            break;
-        }
-        else {
-            for (const data of o.responseList) {
-                if (data.giaBan === null) {
-                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageGiaBan, life: 30000 });
-                   
-                }
-                if (data.demLot === null) {
-                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageDemLot, life: 30000 });
-                   
-                }
-                if (data.giaNhap === null) {
-                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageGiaNhap, life: 30000 });
-                   
-                }
-                if (data.tenSanPham === null) {
-                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSanPham, life: 30000 });
-                    
-                }
-                if (data.valueTrongLuong === null) {
-                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageTrongLuong, life: 30000 });
-                   
-                }
-                if (data.tenVatLieu === null) {
-                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageVatLieu, life: 30000 });
-                 
-                }
-                if (data.tenThuongHieu === null) {
-                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageThuongHieu, life: 30000 });
-                  
-                }
-                if (data.tenSize === null) {
-                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSize, life: 30000 });
-                  
-                }
-                if (data.tenMau === null) {
-                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageMauSac, life: 30000 });
-                   
-                }
-                if (data.tenLoai === null) {
-                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageLoai, life: 30000 });
-                  
-                }
-                if (data.soLuong === null) {
-                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSoLuong, life: 30000 });
-                  
-                }
-                if (data.quaiDeo === null) {
-                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageQuaiDeo, life: 30000 });
-                   
-                }
-                if (data.soLuongSize === null) {
-                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSoLuongSize, life: 30000 });
-                 
-                }
+        // if (o.totalError === 0) {
+        //     // console.log(o)
+        //     toast.add({ severity: 'success', summary: 'Success Message', detail: 'Import excel thành công', life: 3000 });
+        //     break;
+        // }
+        // else {
+        for (const data of o.responseList) {
+            if (data.importMessageGiaBan !== null && data.importMessageGiaBan !== "SUCCESS") {
+                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageGiaBan, life: 30000 });
 
             }
-            break;
+            else if (data.importMessageDemLot !== null && data.importMessageDemLot !== "SUCCESS") {
+                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageDemLot, life: 30000 });
+
+            }
+            else if (data.importMessageGiaNhap !== null && data.importMessageGiaNhap !== "SUCCESS") {
+                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageGiaNhap, life: 30000 });
+
+            }
+            else if (data.importMessageSanPham !== null && data.importMessageSanPham !== "SUCCESS") {
+                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSanPham, life: 30000 });
+
+            }
+            else if (data.importMessageTrongLuong !== null && data.importMessageTrongLuong !== "SUCCESS") {
+                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageTrongLuong, life: 30000 });
+
+            }
+            else if (data.importMessageVatLieu !== null && data.importMessageVatLieu !== "SUCCESS") {
+                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageVatLieu, life: 30000 });
+
+            }
+            else if (data.importMessageThuongHieu !== null && data.importMessageThuongHieu !== "SUCCESS") {
+                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageThuongHieu, life: 30000 });
+
+            }
+            else if (data.importMessageSize !== null && data.importMessageSize !== "SUCCESS") {
+                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSize, life: 30000 });
+
+            }
+            else if (data.importMessageMauSac !== null && data.importMessageMauSac !== "SUCCESS") {
+                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageMauSac, life: 30000 });
+
+            }
+            else if (data.importMessageLoai !== null && data.importMessageLoai !== "SUCCESS") {
+                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageLoai, life: 30000 });
+
+            }
+            else if (data.importMessageSoLuong !== null && data.importMessageSoLuong !== "SUCCESS") {
+                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSoLuong, life: 30000 });
+
+            }
+            else if (data.importMessageQuaiDeo !== null && data.importMessageQuaiDeo !== "SUCCESS") {
+                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageQuaiDeo, life: 30000 });
+
+            }
+            else if (data.importMessageSoLuongSize !== null && data.importMessageSoLuongSize !== "SUCCESS") {
+                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSoLuongSize, life: 30000 });
+
+            }
+            else if (data.importMessageSoLuongMau !== null && data.importMessageSoLuongMau !== "SUCCESS") {
+                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSoLuongMau, life: 30000 });
+            }
+            else {
+                toast.add({ severity: 'success', summary: 'Success Message', detail: 'Import excel thành công', life: 3000 });
+                break;
+            }
+
         }
+        break;
+        //   }
     }
     showProgressSpinner.value = false;
     dis.value = true;
-   loadProducts();
+    loadProducts();
+};
+const trangThai = ref();
+const dataTrangThai = ref([
+    { label: 'Tất cả', value: 'tatCa' },
+    { label: 'Còn Hàng', value: 'conHang' },
+    { label: 'hết hàng', value: 'hetHang' },
+    { label: 'Tồn kho', value: 'tonKho' },
+    { label: 'Đang khuyến mãi', value: 'dangKhuyenMai' }
+]);
+
+const loadDataByTrangThai = async () => {
+    showSpinner.value = true;
+    visibledatatable.value = false;
+    await productStore.fetchDataByStatus(trangThai.value.value);
+    products.value = productStore.products;
+    const productList = productStore.products; // Lấy dữ liệu từ Store và gán vào biến products
+
+    for (const [key, product] of productList.entries()) {
+        // productList[key]['img'] = null;
+        productList[key]['size'] = null;
+        productList[key]['mauSac'] = null;
+        productList[key]['img'] = null;
+        const mau = await loadmau(product.id);
+        productList[key]['mauSac'] = mau;
+        const img_d = await loadSizeo(product.id);
+        productList[key]['size'] = img_d;
+        const img = await loadImg(product.id);
+        productList[key]['img'] = img;
+    }
+
+    products.value = productList;
+    //   console.log(products.value);
+    if (products.value.length === 0) {
+        soLuongSP.value = 0;
+    } else {
+        for (let i = 0; i < 1; i++) {
+            soLuongSP.value = products.value[i].soLuongSanPham;
+            //   console.log(soLuongSP.value);
+        }
+    }
+    showSpinner.value = false;
+    visibledatatable.value = true;
 };
 
+watch(trangThai, (newVal) => {
+    if (trangThai.value.value != 'tatCa') {
+        loadDataByTrangThai();
+    } else {
+        loadProducts();
+    }
+});
 </script>
 
 <template>
@@ -375,30 +440,38 @@ const handImportExcel = async (event) => {
                             <Button label="Import excel" icon="pi pi-download" @click="openPosition('top')"
                                 style="min-width: 10rem" severity="secondary" rounded />
                         </template>
-                       
+
                     </Toolbar>
                     <div style="margin-left: 500px;">
                         <ProgressSpinner v-if="showSpinner" />
                     </div>
-                    <DataTable ref="dt" :value="products" v-model:selection="selectedProducts" dataKey="id" v-if="visibledatatable"
-                        :paginator="true" :rows="5" :filters="filters"
+                    <DataTable ref="dt" :value="products" v-model:selection="selectedProducts" dataKey="id"
+                        v-if="visibledatatable" :paginator="true" :rows="5" :filters="filters"
                         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                         :rowsPerPageOptions="[5, 10, 25]"
                         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
-                        responsiveLayout="scroll">
+                        responsiveLayout="scroll" showGridlines>
                         <template #header>
-                            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-                                <MultiSelect icon="pi pi-plus" :modelValue="selectedColumns" :options="columns"
-                                    optionLabel="header" @update:modelValue="onToggle" display="chip"
-                                    placeholder="Select Columns" />
 
-
-                            </div>
                             <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-                                <h5 class="m-0"> Products</h5>
+
+                                <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                                    <MultiSelect icon="pi pi-plus" :modelValue="selectedColumns" :options="columns"
+                                        optionLabel="header" @update:modelValue="onToggle" display="chip"
+                                        placeholder="Select Columns" />
+                                </div>
+                                <div style="display: flex;">
+                                    <h5 class="m-0" style="margin-right: 20px;"> Products </h5>
+                                    <div
+                                        style="margin-bottom:10px ;margin-left: 10px;border-radius: 50%; width: 30px ;height: 30px; background: rgb(76, 71, 83); color: white; text-align: center;font-size: 20px;">
+                                        {{ soLuongSP }}</div>
+                                </div>
+
                                 <span class="block mt-2 md:mt-0 p-input-icon-left">
                                     <i class="pi pi-search" />
                                     <InputText v-model="filters['global'].value" placeholder="Search..." />
+                                    <Dropdown v-model="trangThai" :options="dataTrangThai" optionLabel="label"
+                                        placeholder="Tất cả" class="w-full md:w-14rem" style="margin-left: 20px" />
                                 </span>
                             </div>
                         </template>
@@ -410,7 +483,7 @@ const handImportExcel = async (event) => {
                                 {{ slotProps.data.stt }}
                             </template>
                         </Column>
-                        <Column header="Image" headerStyle="width:14%; min-width:10rem;">
+                        <Column header="Image" headerStyle="width:8%; min-width:5rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">Image</span>
                                 <!-- <div v-for="(i, index) in img"  > -->
@@ -423,22 +496,23 @@ const handImportExcel = async (event) => {
                                 {{ slotProps.data.ten }}
                             </template>
                         </Column>
-                        <Column field="giaBan" header="Giá Bán" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+                        <Column field="giaBan" header="Giá Bán" :sortable="true" headerStyle="width:8%; min-width:5rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">Tên</span>
                                 {{ formatCurrency(slotProps.data.giaBan) }}
                             </template>
                         </Column>
-                        <Column field="giaNhap" header="Giá nhập" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+                        <Column field="giaNhap" header="Giá nhập" :sortable="true"
+                            headerStyle="width:8%; min-width:5rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">Tên</span>
                                 {{ formatCurrency(slotProps.data.giaNhap) }}
                             </template>
                         </Column>
                         <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header"
-                            :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+                            :key="col.field + '_' + index" :sortable="true" headerStyle="width:8%; min-width:5rem;">
                         </Column>
-                        <Column header="size - số lượng " headerStyle="width:14%; min-width:10rem;">
+                        <!-- <Column header="size - số lượng " headerStyle="width:14%; min-width:10rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">size</span>
                                 <div v-for="i in slotProps.data.size ">
@@ -449,22 +523,29 @@ const handImportExcel = async (event) => {
                                     </div>
                                 </div>
                             </template>
-                        </Column>
-                        <Column header="Màu Sắc " headerStyle="width:14%; min-width:10rem;">
+                        </Column> -->
+                        <Column header="Màu Sắc " headerStyle="width:8%; min-width:5rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">size</span>
                                 <div v-for="i in slotProps.data.mauSac">
                                     <div class="col-6"
-                                        style="width: 110px;background-color: aliceblue; height: 60px; display: flex;margin-bottom: 5px; border: 1px solid aliceblue; border-radius: 10px;">
-                                        <p style="margin: auto;">{{ i.mauSac.ten }}</p>
+                                        style="width: 170px;background-color: aliceblue; height: 90px; display: flex;margin-bottom: 5px; border: 1px solid aliceblue; border-radius: 10px;">
+                                        <div>
+                                            <p style="margin: auto;">{{ i.mauSac.ten }}</p>
+                                            <p style="margin: auto;" v-if="i.sizeChiTiet !== null">size: {{
+                                                i.sizeChiTiet.size.ten }}</p>
+                                            <p style="margin: auto;">số lượng: {{ i.soLuong }}</p>
+
+                                        </div>
                                         <img :src="i.anh" class="shadow-2" width="100"
-                                            style="margin-bottom: 30px; height: 40px; width: 40px; margin-left: 10px;" />
+                                            style="margin-bottom: 30px; height: 50px; width: 50px; margin-left: 10px;" />
+
                                     </div>
                                 </div>
 
                             </template>
                         </Column>
-                        <Column header="Image" headerStyle="width: 14%; min-width: 10rem;">
+                        <Column header="Image" headerStyle="width: 15%; min-width: 10rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">size</span>
                                 <div class="image-container">
@@ -474,7 +555,7 @@ const handImportExcel = async (event) => {
                                 </div>
                             </template>
                         </Column>
-                        <Column field="trangThai" header="Trạng Thái" sortable style="min-width:9rem">
+                        <Column field="trangThai" header="Trạng Thái" sortable headerStyle="width: 4%; min-width: 5rem;">
                             <template #body="slotProps">
                                 <Tag :value="getStatusLabel(slotProps.data.trangThai).text"
                                     :severity="getStatusLabel(slotProps.data.trangThai).severity" />
@@ -490,10 +571,10 @@ const handImportExcel = async (event) => {
                                     @click="confirmDeleteProduct(slotProps.data.id)" />
                             </template>
                         </Column>
-                       
+
                     </DataTable>
-                   
-                  
+
+
                     <Dialog v-model:visible="deleteProductDialog" :style="{ width: '450px' }" header="Xóa Sản phẩm"
                         :modal="true">
                         <div class="flex align-items-center justify-content-center">
@@ -527,8 +608,8 @@ const handImportExcel = async (event) => {
                         </div>
 
                         <template #footer>
-                            <Button label="Export" icon="pi pi-upload" class="p-button" @click="generateExcel($event)" rounded
-                                style="height: 40px; margin-right: 150px;" severity="secondary" />
+                            <Button label="Export" icon="pi pi-upload" class="p-button" @click="generateExcel($event)"
+                                rounded style="height: 40px; margin-right: 150px;" severity="secondary" />
                             <Button label="Đóng" icon="pi pi-check" class="p-button" @click="closePosition()"
                                 severity="secondary" rounded style="height: 40px;" />
                         </template>

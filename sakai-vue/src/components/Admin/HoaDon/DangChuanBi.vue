@@ -1,9 +1,11 @@
 <!-- eslint-disable no-unused-vars -->
 <script setup>
+import * as yup from 'yup';
+import { useForm, useField } from 'vee-validate';
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
 import CustomerService from '@/service/CustomerService';
 import ProductService from '@/service/ProductService';
-import { ref, onBeforeMount, onMounted } from 'vue';
+import { ref, onBeforeMount, onMounted, watch } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import DetailHoaDon from './DetailHoaDon.vue';
 import { HDStore } from '../../../service/Admin/HoaDon/HoaDonService';
@@ -18,7 +20,42 @@ const loading1 = ref(null);
 const loading2 = ref(null);
 const products = ref(null);
 const data = ref([]);
+const idHD = ref(null);
 const dataHDCT = ref([]);
+
+//show dialog lý do
+const lyDoDialog = ref(false);
+// confirm xác nhận
+const addProductDialog = ref(false);
+// confirm huy
+const huyDialog = ref(false);
+
+//hiện dialog lý do
+const showDialogLyDo = (id) => {
+    idHD.value = id;
+    lyDoDialog.value = true;
+};
+
+//hiện confirm
+const confirmAddProduct = (id) => {
+    idHD.value = id;
+    addProductDialog.value = true;
+};
+
+//hiện confirm huy
+const confirmHuy = () => {
+    huyDialog.value = true;
+};
+
+watch(addProductDialog, (newVal) => {
+    if (addProductDialog.value == false) {
+        idHD.value = null;
+    }
+});
+
+watch(lyDoDialog, (newVal) => {
+    if (lyDoDialog.value == false) lyDo.value = '';
+});
 
 const loadData = async () => {
     await useHD.fetchDataByStatus(4);
@@ -50,15 +87,56 @@ const hienThiTrangThai = (trangThai) => {
 };
 
 const giaoHangNhanh = async (idHD, hoaDon) => {
-    const responeGHN = await useHD.findHdctByIdHd(1);
+    const responeGHN = await useHD.findHdctByIdHd(idHD);
     useHD.giaoHangNhanh(responeGHN, hoaDon);
 };
 
-const btnXacNhan = (idHD) => {
-    const responeDCB = useHD.dangChuanBi(idHD);
-    // console.log(responeDCB);
-    giaoHangNhanh(idHD, responeDCB);
+const btnXacNhan = () => {
+    const responeDCB = useHD.dangChuanBi(idHD.value);
+    giaoHangNhanh(idHD.value, responeDCB);
     toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Xác nhận thành công', life: 3000 });
+    addProductDialog.value = false;
+};
+
+const schema = yup.object().shape({
+    lyDo: yup.string().required('Lý do không được để trống')
+});
+const { handleSubmit, resetForm } = useForm({
+    validationSchema: schema
+});
+const { value: lyDo, errorMessage: LyDoError } = useField('lyDo');
+const btnXacNhanHuy = () => {
+    if (lyDo.value == null || lyDo.value.length <= 0) {
+        toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Huỷ thất bại', life: 3000 });
+        lyDo.value = '';
+        huyDialog.value = false;
+    } else {
+        useHD.huyHoaDon(idHD.value, lyDo.value);
+        toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Huỷ thành công', life: 3000 });
+        lyDo.value = '';
+        huyDialog.value = false;
+        lyDoDialog.value = false;
+    }
+};
+
+const columns = ref([
+    { field: 'maHD', header: 'Mã hoá đơn' },
+    { field: 'nguoiTao', header: 'Người tạo' },
+    { field: 'ngayTao', header: 'Ngày tạo' },
+    { field: 'ngaySua', header: 'Ngày sửa' },
+    { field: 'tenNguoiNhan', header: 'Tên người nhận' },
+    { field: 'tienShip', header: 'Tiền ship' },
+    { field: 'tongTien', header: 'Tổng tiền' },
+    { field: 'tienSauKhiGiam', header: 'Tiền sau giảm' },
+    { field: 'tenPTTT', header: 'Phương thức thanh toán' },
+    { field: 'ngayThanhToan', header: 'Ngày thanh toán' },
+    { field: 'ngayShip', header: 'Ngày ship' },
+    { field: 'ngayNhan', header: 'Ngày nhận' }
+]);
+const selectedColumns = ref(columns.value);
+
+const onToggle = (val) => {
+    selectedColumns.value = columns.value.filter((col) => val.includes(col));
 };
 
 const customerService = new CustomerService();
@@ -80,15 +158,7 @@ onBeforeMount(() => {
 
 const initFilters1 = () => {
     filters1.value = {
-        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        name: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-        'country.name': { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-        representative: { value: null, matchMode: FilterMatchMode.IN },
-        date: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }] },
-        balance: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
-        status: { operator: FilterOperator.OR, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
-        activity: { value: [0, 50], matchMode: FilterMatchMode.BETWEEN },
-        verified: { value: null, matchMode: FilterMatchMode.EQUALS }
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS }
     };
 };
 
@@ -129,117 +199,82 @@ const formatDate = (value) => {
         v-model:selection="selectedProducts"
         dataKey="id"
         :paginator="true"
-        :rows="10"
-        :filters="filters"
+        :rows="5"
+        :filters="filters1"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
         :rowsPerPageOptions="[5, 10, 25]"
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
         responsiveLayout="scroll"
     >
+        <template #header>
+            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                <MultiSelect icon="pi pi-plus" placeholder="Select Columns" :modelValue="selectedColumns" :options="columns" optionLabel="header" @update:modelValue="onToggle" display="tag" />
+            </div>
+        </template>
         <Column field="stt" header="STT" :sortable="true" headerStyle="width:14%; min-width:1rem;">
             <template #body="slotProps">
                 <span class="p-column-title">stt</span>
                 {{ slotProps.data.stt }}
             </template>
         </Column>
-        <Column field="maHD" header="Mã hoá đơn" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+        <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column>
+        <Column field="diaChi" header="Địa chỉ" :sortable="false" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
-                <span class="p-column-title">maHD</span>
-                {{ slotProps.data.maHD }}
-            </template>
-        </Column>
-        <Column field="nguoiTao" header="Người tạo" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">ten</span>
-                {{ slotProps.data.nguoiTao }}
-            </template>
-        </Column>
-        <Column field="ngayTao" header="Ngày tạo" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">ten</span>
-                {{ slotProps.data.ngayTao }}
-            </template>
-        </Column>
-        <Column field="ngaySua" header="Ngày sửa" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">ten</span>
-                {{ slotProps.data.ngaySua }}
-            </template>
-        </Column>
-        <Column field="tenNguoiNhan" header="Người nhận" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">mota</span>
-                {{ slotProps.data.tenNguoiNhan }}
-            </template>
-        </Column>
-        <Column field="tienShip" header="Tiền ship" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">mota</span>
-                {{ slotProps.data.tienShip }}
-            </template>
-        </Column>
-        <Column field="tongTien" header="Tổng tiền" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">mota</span>
-                {{ slotProps.data.tongTien }}
-            </template>
-        </Column>
-        <Column field="tienSauKhiGiam" header="Tiền sau giảm" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">mota</span>
-                {{ slotProps.data.tienSauKhiGiam }}
+                <span class="p-column-title">diaChi</span>
+                {{ slotProps.data.diaChiCuThe }}, {{ slotProps.data.tenPhuongXa }}, {{ slotProps.data.tenQuanHuyen }}, {{ slotProps.data.tenTinhThanh }}
             </template>
         </Column>
         <Column field="trangThai" header="Trạng thái" :sortable="false" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
-                <span class="p-column-title">Category</span>
+                <span class="p-column-title">trangThai</span>
                 {{ hienThiTrangThai(slotProps.data.trangThai) }}
-            </template>
-        </Column>
-        <Column field="tenPTTT" header="Phương thức thanh toán" :sortable="false" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">Category</span>
-                {{ slotProps.data.tenPTTT }}
-            </template>
-        </Column>
-        <Column field="ngayThanhToan" header="Ngày thanh toán" :sortable="false" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">Category</span>
-                {{ slotProps.data.ngayThanhToan }}
-            </template>
-        </Column>
-        <Column field="diaChi" header="Địa chỉ" :sortable="false" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">Category</span>
-                {{ slotProps.data.diaChi }}
-            </template>
-        </Column>
-        <Column field="ngayShip" header="Ngày ship" :sortable="false" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">Category</span>
-                {{ slotProps.data.ngayShip }}
-            </template>
-        </Column>
-        <Column field="ngayNhan" header="Ngày nhận" :sortable="false" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">Category</span>
-                {{ slotProps.data.ngayNhan }}
-            </template>
-        </Column>
-        <Column field="hinhThucGiaoHang" header="Hình thức giao" :sortable="false" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">Category</span>
-                {{ slotProps.data.hinhThucGiaoHang }}
             </template>
         </Column>
         <Column header="Hành động" headerStyle="min-width:10rem;">
             <template #body="slotProps">
-                <div class="row flex">
-                    <DetailHoaDon></DetailHoaDon>
-                    <Button label="Nhận" class="p-button-outlined p-button-info mr-2 mb-2" @click="btnXacNhan(slotProps.data.idHD)" />
-                    <Button label="Hủy" class="p-button-outlined p-button-info mr-2 mb-2" />
-                </div>
+                <DetailHoaDon :my-prop="slotProps.data"></DetailHoaDon>
+                <Button label="Giao" class="p-button-outlined p-button-info mr-2 mb-2" @click="confirmAddProduct(slotProps.data.idHD)" />
+                <Button label="Hủy" class="p-button-outlined p-button-info mr-2 mb-2" @click="showDialogLyDo(slotProps.data.idHD)" />
             </template>
         </Column>
     </DataTable>
+    <!-- lý do -->
+    <Dialog v-model:visible="lyDoDialog" :style="{ width: '450px' }" header="Huỷ hoá đơn" :modal="true">
+        <div class="card">
+            <form @submit="onSubmit">
+                <div class="p-fluid formgrid grid">
+                    <div class="field col-12" style="margin-bottom: 30px">
+                        <label for="address">Lý do</label>
+                        <Textarea id="lyDo" rows="4" v-model.trim="lyDo" :class="{ 'p-invalid': LyDoError }" required="true" autofocus></Textarea>
+                        <small class="p-error">{{ LyDoError }}</small>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <template #footer>
+            <Button label="No" icon="pi pi-times" class="p-button-text" @click="lyDoDialog = false" />
+            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="confirmHuy" />
+        </template>
+    </Dialog>
+    <Dialog v-model:visible="addProductDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
+        <div class="flex align-items-center justify-content-center">
+            <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+            <span>Bạn có chắc chắn muốn giao không ?</span>
+        </div>
+        <template #footer>
+            <Button label="No" icon="pi pi-times" class="p-button-text" @click="addProductDialog = false" />
+            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhan()" />
+        </template>
+    </Dialog>
+    <!-- comfirm huỷ -->
+    <Dialog v-model:visible="huyDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
+        <div class="flex align-items-center justify-content-center">
+            <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+            <span>Bạn có chắc chắn muốn huỷ không ?</span>
+        </div>
+        <template #footer>
+            <Button label="No" icon="pi pi-times" class="p-button-text" @click="huyDialog = false" />
+            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhanHuy()" />
+        </template>
+    </Dialog>
 </template>
