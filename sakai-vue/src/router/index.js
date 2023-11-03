@@ -127,7 +127,7 @@ const router = createRouter({
                 {
                     path: '/pages/user',
                     name: 'user',
-                    component: () => import('@/components/Admin/QuanLyUser/ViewUser.vue'),
+                    component: () => import('@/components/Admin/User/index.vue'),
                     beforeEnter: authMiddleware
                 },
                 {
