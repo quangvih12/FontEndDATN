@@ -22,10 +22,19 @@ const data = ref([]);
 // confirm xác nhận
 const addProductDialog = ref(false);
 
+// confirm huy
+const huyDialog = ref(false);
+
 //hiện confirm
 const confirmAddProduct = (id) => {
     idHD.value = id;
     addProductDialog.value = true;
+};
+
+//hiện confirm huy
+const confirmHuy = (id) => {
+    huyDialog.value = true;
+    idHD.value = id;
 };
 
 watch(addProductDialog, (newVal) => {
@@ -44,29 +53,34 @@ onMounted(() => {
 
 const hienThiTrangThai = (trangThai) => {
     if (trangThai == 0) {
-        return 'Đã hủy';
+        return { text: 'Đã hủy', severity: 'danger' };
     } else if (trangThai == 1) {
-        return 'Chờ thanh toán';
+        return { text: 'Chờ thanh toán', severity: 'secondary' };
     } else if (trangThai == 2) {
-        return 'Yêu cầu xác nhận';
+        return { text: 'Yêu cầu xác nhận', severity: 'success' };
     } else if (trangThai == 3) {
-        return 'Hoàn thành';
+        return { text: 'Hoàn thành', severity: 'info' };
     } else if (trangThai == 4) {
-        return 'Đang chuẩn bị hàng';
+        return { text: 'Đang chuẩn bị hàng', severity: 'success' };
     } else if (trangThai == 5) {
-        return 'Đang giao';
+        return { text: 'Giao cho đơn vị vận chuyển', severity: 'help' };
     } else if (trangThai == 6) {
-        return 'Yêu cầu đổi trả';
+        return { text: 'Yêu cầu đổi trả', severity: 'warning' };
     } else {
-        return 'Xác nhận đổi trả';
+        return { text: 'Xác nhận đổi trả', severity: 'success' };
     }
 };
-
 
 const btnXacNhan = () => {
     useHD.hoanThanh(idHD.value);
     toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Xác nhận thành công', life: 3000 });
     addProductDialog.value = false;
+};
+
+const btnXacNhanHuy = () => {
+    useHD.huyHoaDon(idHD.value, 'Người dùng không nhận hàng');
+    toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Xác nhận giao thất bại thành công', life: 3000 });
+    huyDialog.value = false;
 };
 
 const columns = ref([
@@ -83,6 +97,20 @@ const columns = ref([
     { field: 'ngayShip', header: 'Ngày ship' },
     { field: 'ngayNhan', header: 'Ngày nhận' }
 ]);
+const startDate = ref(null);
+const endDate = ref([null]);
+const typeSearchDate = ref(null);
+
+const searchDate = async () => {
+    if (typeSearchDate.value == null) {
+        const respone = await useHD.searchDateByTrangThai(startDate.value, endDate.value, 'ngayTao', 5);
+        data.value = respone;
+    } else {
+        const respone = await useHD.searchDateByTrangThai(startDate.value, endDate.value, typeSearchDate.value.value, 5);
+        data.value = respone;
+    }
+};
+
 const selectedColumns = ref(columns.value);
 
 const onToggle = (val) => {
@@ -127,20 +155,17 @@ const formatDate = (value) => {
 <template>
     <Toast />
     <div class="col-12 flex" style="margin-right: 10px; padding-left: 0">
-        <span class="p-input-icon-left">
-            <i class="pi pi-search" />
-            <InputText v-model="filters1['global'].value" placeholder="Keyword Search" style="min-width: 13rem; height: 40px" />
-        </span>
+        <Dropdown v-model="typeSearchDate" :options="dataSearchDate" optionLabel="label" placeholder="Ngày tạo" class="w-full md:w-14rem" style="height: 40px" />
         <div class="p-inputgroup flex-1" style="margin-left: 20px">
             <span class="p-inputgroup-addon" style="height: 40px">Ngày bắt đầu</span>
-            <input type="datetime-local" style="min-width: 13rem; height: 40px" />
+            <input type="datetime-local" v-model="startDate" style="min-width: 13rem; height: 40px" />
         </div>
         <div class="p-inputgroup flex-1">
             <span class="p-inputgroup-addon" style="height: 40px">Ngày kết thúc</span>
-            <input type="datetime-local" style="min-width: 13rem; height: 40px" />
+            <input type="datetime-local" v-model="endDate" style="min-width: 13rem; height: 40px" />
         </div>
         <div style="margin-left: 5px">
-            <Button label="Seach" icon="pi pi-search" class="p-button-rounded p-button-primary mr-2 mb-2" />
+            <Button label="Seach" @click="searchDate()" icon="pi pi-search" class="p-button-rounded p-button-primary mr-2 mb-2" />
         </div>
     </div>
     <DataTable
@@ -157,8 +182,14 @@ const formatDate = (value) => {
         responsiveLayout="scroll"
     >
         <template #header>
-            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-                <MultiSelect icon="pi pi-plus" placeholder="Select Columns" :modelValue="selectedColumns" :options="columns" optionLabel="header" @update:modelValue="onToggle" display="tag" />
+            <div class="col-12 flex">
+                <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                    <MultiSelect icon="pi pi-plus" placeholder="Select Columns" :modelValue="selectedColumns" :options="columns" optionLabel="header" @update:modelValue="onToggle" display="tag" />
+                </div>
+                <span class="p-input-icon-left" style="margin-left: 20px">
+                    <i class="pi pi-search" />
+                    <InputText v-model="filters1['global'].value" placeholder="Keyword Search" style="min-width: 13rem; height: 40px" />
+                </span>
             </div>
         </template>
         <Column field="stt" header="STT" :sortable="true" headerStyle="width:14%; min-width:1rem;">
@@ -177,14 +208,14 @@ const formatDate = (value) => {
         <Column field="trangThai" header="Trạng thái" :sortable="false" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
                 <span class="p-column-title">trangThai</span>
-                {{ hienThiTrangThai(slotProps.data.trangThai) }}
+                <Tag :value="hienThiTrangThai(slotProps.data.trangThai).text" :severity="hienThiTrangThai(slotProps.data.trangThai).severity" />
             </template>
         </Column>
         <Column header="Hành động" headerStyle="min-width:10rem;">
             <template #body="slotProps">
                 <DetailHoaDon :my-prop="slotProps.data"></DetailHoaDon>
                 <Button label="Hoàn thành" class="p-button-outlined p-button-info mr-2 mb-2" @click="confirmAddProduct(slotProps.data.idHD)" />
-                <Button label="Thất bại" class="p-button-outlined p-button-info mr-2 mb-2" />
+                <Button label="Thất bại" class="p-button-outlined p-button-info mr-2 mb-2" @click="confirmHuy(slotProps.data.idHD)" />
             </template>
         </Column>
     </DataTable>
@@ -196,6 +227,17 @@ const formatDate = (value) => {
         <template #footer>
             <Button label="No" icon="pi pi-times" class="p-button-text" @click="addProductDialog = false" />
             <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhan()" />
+        </template>
+    </Dialog>
+    <!-- comfirm huỷ -->
+    <Dialog v-model:visible="huyDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
+        <div class="flex align-items-center justify-content-center">
+            <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+            <span>Bạn có chắc chắn đơn hàng đã giao thất bại không ?</span>
+        </div>
+        <template #footer>
+            <Button label="No" icon="pi pi-times" class="p-button-text" @click="huyDialog = false" />
+            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhanHuy()" />
         </template>
     </Dialog>
 </template>

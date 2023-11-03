@@ -102,7 +102,7 @@ const formatDate = (value) => {
                         <TabPanel header="Đã hủy">
                             <DaHuyVue> </DaHuyVue>
                         </TabPanel>
-                        <TabPanel header="Trả hàng/Hoàn tiền">
+                        <TabPanel header="Trả hàng/hoàn tiền">
                             <TraHangHoanTienVue> </TraHangHoanTienVue>
                         </TabPanel>
                         <TabPanel header="Đã hoàn trả">
