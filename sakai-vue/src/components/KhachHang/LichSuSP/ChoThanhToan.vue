@@ -1,150 +1,304 @@
+<!-- eslint-disable no-unused-vars -->
 <script setup>
-const anh = '';
-const listSP = [
-    {
-        ten: 'sp1',
-        mauSac: 'Xanh',
-        loai: 'Nón 3/4',
-        soLuong: 2,
-        gia: 100000,
-        anh: 'https://scontent.xx.fbcdn.net/v/t1.15752-9/384493871_706347594225121_6598834362586102924_n.jpg?stp=dst-jpg_p206x206&_nc_cat=107&ccb=1-7&_nc_sid=aee45a&_nc_ohc=ajZoo7UQfa8AX93g7H2&_nc_ad=z-m&_nc_cid=0&_nc_ht=scontent.xx&oh=03_AdSOI1KiOFTvfEiZSrwsQ3dI_7QsQFhCgBA-f_D9wdXwJQ&oe=6541D15A',
-        trangThai: 2
-    },
-    {
-        ten: 'sp1',
-        mauSac: 'Xanh',
-        loai: 'Nón 3/4',
-        soLuong: 2,
-        gia: 100000,
-        anh: 'https://scontent.xx.fbcdn.net/v/t1.15752-9/384493871_706347594225121_6598834362586102924_n.jpg?stp=dst-jpg_p206x206&_nc_cat=107&ccb=1-7&_nc_sid=aee45a&_nc_ohc=ajZoo7UQfa8AX93g7H2&_nc_ad=z-m&_nc_cid=0&_nc_ht=scontent.xx&oh=03_AdSOI1KiOFTvfEiZSrwsQ3dI_7QsQFhCgBA-f_D9wdXwJQ&oe=6541D15A',
-        trangThai: 2
-    },
-    {
-        ten: 'sp1',
-        mauSac: 'Xanh',
-        loai: 'Nón 3/4',
-        soLuong: 2,
-        gia: 100000,
-        anh: 'https://scontent.xx.fbcdn.net/v/t1.15752-9/384493871_706347594225121_6598834362586102924_n.jpg?stp=dst-jpg_p206x206&_nc_cat=107&ccb=1-7&_nc_sid=aee45a&_nc_ohc=ajZoo7UQfa8AX93g7H2&_nc_ad=z-m&_nc_cid=0&_nc_ht=scontent.xx&oh=03_AdSOI1KiOFTvfEiZSrwsQ3dI_7QsQFhCgBA-f_D9wdXwJQ&oe=6541D15A',
-        trangThai: 2
+import * as yup from 'yup';
+import { useForm, useField } from 'vee-validate';
+import { FilterMatchMode, FilterOperator } from 'primevue/api';
+import CustomerService from '@/service/CustomerService';
+import ProductService from '@/service/ProductService';
+import { ref, onBeforeMount, onMounted, watch } from 'vue';
+import { useToast } from 'primevue/usetoast';
+import { HDStore } from '../../../service/Admin/HoaDon/HoaDonService';
+import DetailHoaDon from './TrangThaiDonHang.vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+const redirectToTrangThaiDonHang = (id) => {
+    // Chuyển hướng đến trang trang-thai-don-hang và truyền ID của hóa đơn qua URL
+    router.push({ name: 'trang-thai-don-hang', params: { id: id } });
+};
+const toast = useToast();
+const useHD = HDStore();
+const customer1 = ref(null);
+const customer2 = ref(null);
+const customer3 = ref(null);
+const filters1 = ref(null);
+const loading1 = ref(null);
+const loading2 = ref(null);
+const products = ref(null);
+const idHD = ref(null);
+const data = ref([]);
+
+//show dialog lý do
+const lyDoDialog = ref(false);
+// confirm xác nhận
+const addProductDialog = ref(false);
+// confirm huy
+const huyDialog = ref(false);
+
+//hiện dialog lý do
+const showDialogLyDo = (id) => {
+    idHD.value = id;
+    lyDoDialog.value = true;
+};
+
+//hiện confirm
+const confirmAddProduct = (id) => {
+    idHD.value = id;
+    addProductDialog.value = true;
+};
+
+//hiện confirm huy
+const confirmHuy = () => {
+    huyDialog.value = true;
+};
+
+watch(addProductDialog, (newVal) => {
+    if (addProductDialog.value == false) {
+        idHD.value = null;
     }
-];
+});
+
+watch(lyDoDialog, (newVal) => {
+    if (lyDoDialog.value == false) lyDo.value = '';
+});
+
+const loadData = async () => {
+    await useHD.fetchDataByStatus(2);
+    data.value = useHD.dataChoXacNhan;
+};
+//chạy cái hiện data luôn
+onMounted(() => {
+    loadData();
+});
+
+const hienThiTrangThai = (trangThai) => {
+    if (trangThai == 0) {
+        return { text: 'Đã hủy', severity: 'danger' };
+    } else if (trangThai == 1) {
+        return { text: 'Chờ thanh toán', severity: 'secondary' };
+    } else if (trangThai == 2) {
+        return { text: 'Yêu cầu xác nhận', severity: 'success' };
+    } else if (trangThai == 3) {
+        return { text: 'Hoàn thành', severity: 'info' };
+    } else if (trangThai == 4) {
+        return { text: 'Đang chuẩn bị hàng', severity: 'success' };
+    } else if (trangThai == 5) {
+        return { text: 'Giao cho đơn vị vận chuyển', severity: 'help' };
+    } else if (trangThai == 6) {
+        return { text: 'Yêu cầu đổi trả', severity: 'warning' };
+    } else {
+        return { text: 'Xác nhận đổi trả', severity: 'success' };
+    }
+};
+
+const btnXacNhan = () => {
+    useHD.choXacNhan(idHD.value);
+    toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Xác nhận thành công', life: 3000 });
+    addProductDialog.value = false;
+};
+
+const schema = yup.object().shape({
+    lyDo: yup.string().required('Lý do không được để trống')
+});
+const { handleSubmit, resetForm } = useForm({
+    validationSchema: schema
+});
+const { value: lyDo, errorMessage: LyDoError } = useField('lyDo');
+const btnXacNhanHuy = () => {
+    if (lyDo.value == null || lyDo.value.length <= 0) {
+        toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Huỷ thất bại', life: 3000 });
+        lyDo.value = '';
+        huyDialog.value = false;
+    } else {
+        useHD.huyHoaDon(idHD.value, lyDo.value);
+        toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Huỷ thành công', life: 3000 });
+        lyDo.value = '';
+        huyDialog.value = false;
+        lyDoDialog.value = false;
+    }
+};
+
+const columns = ref([
+    { field: 'maHD', header: 'Mã hoá đơn' },
+    { field: 'nguoiTao', header: 'Người tạo' },
+    { field: 'ngayTao', header: 'Ngày tạo' },
+    { field: 'ngaySua', header: 'Ngày sửa' },
+    { field: 'tenNguoiNhan', header: 'Tên người nhận' },
+    { field: 'tienShip', header: 'Tiền ship' },
+    { field: 'tongTien', header: 'Tổng tiền' },
+    { field: 'tienSauKhiGiam', header: 'Tiền sau giảm' },
+    { field: 'tenPTTT', header: 'Phương thức thanh toán' },
+    { field: 'ngayThanhToan', header: 'Ngày thanh toán' },
+    { field: 'ngayShip', header: 'Ngày ship' },
+    { field: 'ngayNhan', header: 'Ngày nhận' }
+]);
+const dataSearchDate = ref([
+    { label: 'Ngày tạo', value: 'ngayTao' },
+    { label: 'Ngày sửa', value: 'ngaySua' },
+    { label: 'Ngày thanh toán', value: 'ngayThanhToan' },
+    { label: 'Ngày ship', value: 'ngayShip' },
+    { label: 'Ngày nhận', value: 'ngayNhan' }
+]);
+const startDate = ref(null);
+const endDate = ref([null]);
+const typeSearchDate = ref(null);
+
+const searchDate = async () => {
+    if (typeSearchDate.value == null) {
+        const respone = await useHD.searchDateByTrangThai(startDate.value, endDate.value, 'ngayTao', 2);
+        data.value = respone;
+    } else {
+        const respone = await useHD.searchDateByTrangThai(startDate.value, endDate.value, typeSearchDate.value.value, 2);
+        data.value = respone;
+    }
+};
+
+const selectedColumns = ref(columns.value);
+
+const onToggle = (val) => {
+    selectedColumns.value = columns.value.filter((col) => val.includes(col));
+};
+
+const customerService = new CustomerService();
+const productService = new ProductService();
+
+onBeforeMount(() => {
+    productService.getProductsWithOrdersSmall().then((data) => (products.value = data));
+    customerService.getCustomersLarge().then((data) => {
+        customer1.value = data;
+        loading1.value = false;
+        customer1.value.forEach((customer) => (customer.date = new Date(customer.date)));
+    });
+    customerService.getCustomersLarge().then((data) => (customer2.value = data));
+    customerService.getCustomersMedium().then((data) => (customer3.value = data));
+    loading2.value = false;
+
+    initFilters1();
+});
+
+const initFilters1 = () => {
+    filters1.value = {
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS }
+    };
+};
+
+const formatCurrency = (value) => {
+    return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+};
+
+const formatDate = (value) => {
+    return value.toLocaleDateString('en-US', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    });
+};
 </script>
-
 <template>
-    <div class="sreach">
-        <span class="p-input-icon-left" style="width: 100%">
-            <i class="pi pi-search" />
-            <InputText v-model="value1" placeholder="Search" style="width: 100%" />
-        </span>
-    </div>
-    <div v-for="(items, index) in listSP" :key="index">
-        <div class="rong"></div>
-        <div class="san-pham">
-            <p>
-                <span class="hoan-thanh">{{ items.trangThai == 2 ? 'Chờ thanh toán' : 'Giao thất bại' }} <i class="pi pi-check" style="font-size: 1rem"></i></span> <span class="gach"> | </span>
-                <span class="giao-thanh-cong"> {{ items.trangThai == 2 ? 'Đơn hàng chưa được giao' : 'Đơn hàng đã được giao thất bại' }} <i class="pi pi-truck" style="font-size: 1.5rem"></i></span>
-            </p>
+    <!-- <Toast />
+    <div class="col-12 flex" style="margin-right: 10px; padding-left: 0">
+        <Dropdown v-model="typeSearchDate" :options="dataSearchDate" optionLabel="label" placeholder="Ngày tạo" class="w-full md:w-14rem" style="height: 40px" />
+        <div class="p-inputgroup flex-1" style="margin-left: 20px">
+            <span class="p-inputgroup-addon" style="height: 40px">Ngày bắt đầu</span>
+            <input type="datetime-local" v-model="startDate" style="min-width: 13rem; height: 40px" />
         </div>
-        <div class="thong-tin-sp">
-            <div class="product-container">
-                <div class="thumbnail">
-                    <img :src="items.anh" alt="Thumbnail" />
-                </div>
-                <div class="details">
-                    <p style="font-size: 18px; font-weight: bold; margin-bottom: 0">Sản phẩm: {{ items.ten }}</p>
-                    <p style="font-size: 17px; margin-bottom: 0">Màu sắc: {{ items.mauSac }}</p>
-                    <p style="font-size: 17px">Số lượng: {{ items.soLuong }}</p>
-                </div>
-            </div>
-            <div style="text-align: right">
-                <p style="font-size: 17px; margin-bottom: 0">
-                    Giá: <span style="font-weight: bold">{{ items.gia }}đ</span>
-                </p>
-                <p style="font-size: 17px; margin-bottom: 0">
-                    Thành tiền: <span style="font-weight: bold">{{ items.gia * items.soLuong }}đ</span>
-                </p>
-                <Button class="my-button" label="Thanh toán" severity="danger" />
-            </div>
+        <div class="p-inputgroup flex-1">
+            <span class="p-inputgroup-addon" style="height: 40px">Ngày kết thúc</span>
+            <input type="datetime-local" v-model="endDate" style="min-width: 13rem; height: 40px" />
         </div>
-        <!-- <div class="rong"></div> -->
-    </div>
+        <div style="margin-left: 5px">
+            <Button label="Seach" @click="searchDate()" icon="pi pi-search" class="p-button-rounded p-button-primary mr-2 mb-2" />
+        </div>
+    </div> -->
+    <DataTable
+        ref="dt"
+        :value="data"
+        v-model:selection="selectedProducts"
+        dataKey="id"
+        :paginator="true"
+        :rows="5"
+        :filters="filters1"
+        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+        :rowsPerPageOptions="[5, 10, 25]"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
+        responsiveLayout="scroll"
+    >
+        <template #header>
+            <div class="col-12 flex">
+                <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                    <MultiSelect icon="pi pi-plus" placeholder="Select Columns" :modelValue="selectedColumns" :options="columns" optionLabel="header" @update:modelValue="onToggle" display="tag" />
+                </div>
+                <span class="p-input-icon-left" style="margin-left: 20px">
+                    <i class="pi pi-search" />
+                    <InputText v-model="filters1['global'].value" placeholder="Keyword Search" style="min-width: 13rem; height: 40px" />
+                </span>
+            </div>
+        </template>
+        <Column field="stt" header="STT" :sortable="true" headerStyle="width:14%; min-width:1rem;">
+            <template #body="slotProps">
+                <span class="p-column-title">stt</span>
+                {{ slotProps.data.stt }}
+            </template>
+        </Column>
+        <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column>
+        <Column field="diaChi" header="Địa chỉ" :sortable="false" headerStyle="width:14%; min-width:10rem;">
+            <template #body="slotProps">
+                <span class="p-column-title">diaChi</span>
+                {{ slotProps.data.diaChiCuThe }}, {{ slotProps.data.tenPhuongXa }}, {{ slotProps.data.tenQuanHuyen }}, {{ slotProps.data.tenTinhThanh }}
+            </template>
+        </Column>
+        <Column field="trangThai" header="Trạng thái" :sortable="false" headerStyle="width:14%; min-width:10rem;">
+            <template #body="slotProps">
+                <span class="p-column-title">trangThai</span>
+                <Tag :value="hienThiTrangThai(slotProps.data.trangThai).text" :severity="hienThiTrangThai(slotProps.data.trangThai).severity" />
+            </template>
+        </Column>
+        <Column header="Hành động" headerStyle="min-width:10rem;">
+            <template #body="slotProps">
+                <Button :my-prop="slotProps.data" @click="redirectToTrangThaiDonHang(data.id)" label="Xem" class="p-button-outlined p-button-info mr-2 mb-2" />
+                <Button label="Nhận" class="p-button-outlined p-button-info mr-2 mb-2" @click="confirmAddProduct(slotProps.data.idHD)" />
+                <Button label="Hủy" class="p-button-outlined p-button-info mr-2 mb-2" @click="showDialogLyDo(slotProps.data.idHD)" />
+            </template>
+        </Column>
+    </DataTable>
+    <!-- lý do -->
+    <Dialog v-model:visible="lyDoDialog" :style="{ width: '450px' }" header="Huỷ hoá đơn" :modal="true">
+        <div class="card">
+            <form @submit="onSubmit">
+                <div class="p-fluid formgrid grid">
+                    <div class="field col-12" style="margin-bottom: 30px">
+                        <label for="address">Lý do</label>
+                        <Textarea id="lyDo" rows="4" v-model.trim="lyDo" :class="{ 'p-invalid': LyDoError }" required="true" autofocus></Textarea>
+                        <small class="p-error">{{ LyDoError }}</small>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <template #footer>
+            <Button label="No" icon="pi pi-times" class="p-button-text" @click="lyDoDialog = false" />
+            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="confirmHuy" />
+        </template>
+    </Dialog>
+    <Dialog v-model:visible="addProductDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
+        <div class="flex align-items-center justify-content-center">
+            <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+            <span>Bạn có chắc chắn muốn nhận không ?</span>
+        </div>
+        <template #footer>
+            <Button label="No" icon="pi pi-times" class="p-button-text" @click="addProductDialog = false" />
+            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhan()" />
+        </template>
+    </Dialog>
+    <!-- comfirm huỷ -->
+    <Dialog v-model:visible="huyDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
+        <div class="flex align-items-center justify-content-center">
+            <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+            <span>Bạn có chắc chắn muốn huỷ không ?</span>
+        </div>
+        <template #footer>
+            <Button label="No" icon="pi pi-times" class="p-button-text" @click="huyDialog = false" />
+            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhanHuy()" />
+        </template>
+    </Dialog>
 </template>
-
-<style scoped>
-.sreach {
-    margin-bottom: 10px;
-}
-.rong {
-    position: absolute;
-    /* top: 100px; */
-    left: 0;
-    right: 0;
-    margin: auto;
-    width: 1100px;
-    width: 100%;
-    height: 20px;
-    background: rgb(239, 243, 248);
-}
-.san-pham {
-    margin-top: 20px;
-    padding-top: 20px;
-    display: flex;
-    justify-content: flex-start;
-    position: relative;
-    align-items: center;
-}
-.san-pham i.pi-truck {
-    font-size: 1.5rem;
-    vertical-align: middle; /* Điều chỉnh vị trí của icon theo chiều dọc */
-}
-
-.san-pham::after {
-    content: '';
-    width: 100%;
-    height: 1px; /* Độ dày của dấu gạch ngang */
-    background-color: black; /* Màu sắc của dấu gạch ngang */
-    position: absolute;
-    bottom: 0;
-}
-.hoan-thanh {
-    color: red; /* Đặt màu cam cho chữ HOÀN THÀNH */
-}
-
-.giao-thanh-cong {
-    color: gray; /* Đặt màu ghi cho chữ Đơn hàng đã được giao thành công */
-}
-.gach {
-    font-size: 20px;
-}
-
-.thong-tin-sp {
-    /* padding-bottom: 10px; */
-    margin-top: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.product-container {
-    display: flex;
-    align-items: flex-start;
-}
-
-.thumbnail {
-    margin-right: 20px;
-}
-
-.thumbnail img {
-    width: 150px; /* Điều chỉnh kích thước của ảnh */
-    height: auto;
-}
-
-.details {
-    text-align: left;
-    /* flex: 1; */
-}
-
-.my-button {
-    margin-top: 10px;
-}
-</style>
