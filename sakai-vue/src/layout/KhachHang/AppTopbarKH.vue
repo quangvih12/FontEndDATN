@@ -3,17 +3,23 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useLayout } from '@/layout/composables/layout';
 import { useRouter } from 'vue-router';
 import { userStore } from '@/service/Admin/User/UserService.js';
-import tokenService from '@/service/Authentication/TokenService.js'
+import { gioHangStore } from '@/service/KhachHang/Giohang/GiohangCTService.js';
+import tokenService from '@/service/Authentication/TokenService.js';
+import userKHService from '@/service/KhachHang/UserService.js';
+
 const userService = userStore();
 const { layoutConfig, onMenuToggle } = useLayout();
 
 const outsideClickListener = ref(null);
 const topbarMenuActive = ref(false);
 const router = useRouter();
+const selectedCustomer = ref(null);
+const gioHangService = gioHangStore();
 
 onMounted(() => {
     bindOutsideClickListener();
     fetchData();
+    displayKH();
 });
 
 onBeforeUnmount(() => {
@@ -66,23 +72,53 @@ const selectedKH = ref(null);
 const khachHang = ref([]);
 
 const fetchData = async () => {
-  try {
-     await  userService.getAllUser();
-    khachHang.value = userService.data;
-  } catch (error) {
-    // Xử lý lỗi ở đây nếu cần
-  }
+    try {
+        await userService.getAllUser();
+        khachHang.value = userService.data;
+        console.log(userService.data, 'data test token');
+    } catch (error) {
+        // Xử lý lỗi ở đây nếu cần
+    }
+};
+
+const isTokenValid = async (token) => {
+    if (token) {
+        try {
+            // Gọi API `/validate-token` để kiểm tra tính hợp lệ của token
+            const response = await tokenService.validatetoken(token);
+
+            if (response.status === 200) {
+                // Nếu API trả về mã 200 (OK), token hợp lệ
+                return true;
+            }
+        } catch (error) {
+            // Xử lý lỗi nếu có lỗi khi gọi API
+            console.error('Error while validating token:', error);
+        }
+    }
 };
 
 // dùng để lưu thông tin khách hàng khi được chọn CBB.
 // nếu muốn dùng thông tin khách hàng khi đặt hàng thì dùng selectedCustomer.value
-const selectedCustomer = ref(null);
 
 // hàm gọi sự thay đổi thông tin của khách hàng khi click vào CBB
-const displayKH = async () =>  {
-  selectedCustomer.value = khachHang.value.find(kh => kh.ten === selectedKH.value.ten);
-  const token =   await tokenService.gentoken(selectedCustomer.value.username)
-  localStorage.setItem('token', token);
+const soLuong = ref(null);
+const displayKH = async () => {
+    const token = localStorage.getItem('token');
+    if (isTokenValid(token)) {
+        const userName = await tokenService.getUserNameByToken(token);
+
+        const user = await userKHService.getUserByUsername(userName);
+
+        await gioHangService.countGHCT(user.id);
+        soLuong.value = gioHangService.soLuong;
+
+        selectedCustomer.value = khachHang.value.find((kh) => kh.userName === userName);
+    } else {
+        selectedCustomer.value = khachHang.value.find((kh) => kh.ten === selectedKH.value.ten);
+        const tokens = await tokenService.gentoken(selectedCustomer.value.userName);
+        localStorage.setItem('token', tokens);
+    }
 };
 </script>
 
@@ -91,10 +127,6 @@ const displayKH = async () =>  {
         <router-link to="/" class="layout-topbar-logo">
             <img :src="logoUrl" alt="logo" />
         </router-link>
-
-        <!-- <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">
-            <i class="pi pi-bars"></i>
-        </button> -->
 
         <button class="p-link layout-topbar-menu-button layout-topbar-button" @click="onTopBarMenuButton()">
             <i class="pi pi-ellipsis-v"></i>
@@ -115,41 +147,28 @@ const displayKH = async () =>  {
                 <p style="font-size: 19px">Liên hệ</p>
             </router-link>
 
-        
-            <div class="layout-topbar-logo"  style="width: 16%; margin-left: 10px">          
-                <div  v-if="selectedCustomer === null">
-                    <Dropdown v-model="selectedKH" :options="khachHang" optionLabel="ten"
-                placeholder="Chọn KH" class="w-full md:w-8rem" style=" margin-top: 5px; max-height: 100px; overflow-y: auto;"  @change="displayKH" />
+            <div class="layout-topbar-logo" style="width: 16%; margin-left: 10px">
+                <div v-if="selectedCustomer === null">
+                    <Dropdown v-model="selectedKH" :options="khachHang" optionLabel="ten" placeholder="Chọn KH" class="w-full md:w-8rem" style="margin-top: 5px; max-height: 100px; overflow-y: auto" @change="displayKH" />
                 </div>
-            
-                <div v-else  style=" display: inline-block;">
+
+                <div v-else style="display: inline-block">
                     <div style="font-size: 10px">
                         <div>Tên: {{ selectedCustomer.ten }}</div>
                         <div>Role: {{ selectedCustomer.role }}</div>
                     </div>
-                </div>          
+                </div>
             </div>
 
-            <InputText type="text" v-model="value" style="height: 35px;width: 18%; margin-left: 5px;margin-top: 5px ;" />
+            <InputText type="text" v-model="value" style="height: 35px; width: 18%; margin-left: 5px; margin-top: 5px" />
             <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
                 <i class="pi pi-search"></i>
                 <span>Calendar</span>
             </button>
-            <!-- <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
-                <i class="pi pi-shopping-cart"></i>
-                <span>Profile</span>
-            </button> -->
-            <router-link to="/gio-hang" class="layout-topbar-logo" style="width: 16%; margin-left: 10px">
-                <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
-                    <i class="pi pi-shopping-cart"></i>
-                    <span>Profile</span>
-                </button>
-            </router-link>
 
-            <!-- <button @click="onSettingsClick()" class="p-link layout-topbar-button">
-                <i class="pi pi-cog"></i>
-                <span>Settings</span>
-            </button> -->
+            <router-link to="/gio-hang" class="layout-topbar-logo" style="width: 5%; margin-left: 3px">
+                <i class="pi pi-shopping-cart p-text-secondary" style="font-size: 2rem" v-badge="soLuong"></i>
+            </router-link>
         </div>
     </div>
 </template>
