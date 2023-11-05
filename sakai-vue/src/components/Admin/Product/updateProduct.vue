@@ -57,12 +57,12 @@ const schema = yup.object().shape({
     quaiDeo: yup.string().required('Bạn cần chọn quai đeo cho sản phẩm'),
     loai: yup.number().required('loại sản phẩm không được để trống'),
     thuongHieu: yup.number().required('vui lòng chọn Thương hiệu sản phẩm '),
-    idMauSac: yup.array().required('vui lòng chọn màu sắc sản phẩm '),
+    // idMauSac: yup.array().required('vui lòng chọn màu sắc sản phẩm '),
     vatLieu: yup.number().required(' vui lòng chọn Vật liệu sản phẩm '),
     demLot: yup.string().required(' vui lòng chọn đệm lót sản phẩm '),
-    soLuongSize: yup.number().min(1, 'Số lượng phải lớn hơn hoặc bằng 1').nullable(),
+    // soLuongSize: yup.number().min(1, 'Số lượng phải lớn hơn hoặc bằng 1').nullable(),
     trongLuong: yup.string().required('vui lòng chọn trọng lượng sản phẩm'),
-    imgMauSac: yup.array().required('vui lòng chọn ảnh màu sắc sản phẩm'),
+    //    imgMauSac: yup.array().required('vui lòng chọn ảnh màu sắc sản phẩm'),
     trangThai: yup.number().required('vui lòng chọn trạng thái của sản phẩm'),
     moTa: yup.string().required('Vui lòng điền mô tả sản phẩm').min(10, 'Mô tả sản phẩm phải có ít nhất 10 ký tự'),
     anh: yup.string().required('vui lòng chọn ảnh chính cho sản phẩm')
@@ -81,12 +81,12 @@ const { value: QuaiDeo, errorMessage: quaiDeoError } = useField('quaiDeo');
 const { value: Loai, errorMessage: loaiError } = useField('loai');
 const { value: ThuongHieu, errorMessage: thuongHieuError } = useField('thuongHieu');
 const { value: vatLieu, errorMessage: vatLieuError } = useField('vatLieu');
-const { value: idMauSac, errorMessage: mauSacError } = useField('idMauSac');
+// const { value: idMauSac, errorMessage: mauSacError } = useField('idMauSac');
 const { value: DemLot, errorMessage: demLotError } = useField('demLot');
-const { value: Size, errorMessage: SizeError } = useField('idSize');
-const { value: SoLuongSize, errorMessage: soLuongSizeError } = useField('soLuongSize');
+// const { value: Size, errorMessage: SizeError } = useField('idSize');
+// const { value: SoLuongSize, errorMessage: soLuongSizeError } = useField('soLuongSize');
 const { value: TrongLuong, errorMessage: trongLuongError } = useField('trongLuong');
-const { value: imgMauSac, errorMessage: ImgMauSacError } = useField('imgMauSac');
+// const { value: imgMauSac, errorMessage: ImgMauSacError } = useField('imgMauSac');
 const { value: TrangThai, errorMessage: TrangThaiSacError } = useField('trangThai');
 const { value: MoTa, errorMessage: MoTaSacError } = useField('moTa');
 const { value: imagesProduct, errorMessage: imagesProductError } = useField('imagesProduct');
@@ -107,7 +107,7 @@ const hideDialog = () => {
 
 const onSubmit = handleSubmit(async (values) => {
     try {
-        // console.log('val: ', values);
+
         await productStore.edit(values);
         toast.add({ severity: 'success', summary: 'Success Message', detail: 'update thành công', life: 3000 });
         productDialog.value = false;
@@ -190,7 +190,6 @@ const handleInputChangeMau = (sizeId) => {
 
 const onCityChange = () => {
     if (selectedCity.value) {
-        //   console.log(selectedCity.value)
         ThuongHieu.value = selectedCity.value.id;
     } else {
         ThuongHieu.value = null;
@@ -207,7 +206,6 @@ const onTrongLuongChange = () => {
 
 const onloaiChange = () => {
     if (selectedLoai.value) {
-        //    console.log(selectedLoai.value)
         Loai.value = selectedLoai.value.id;
     } else {
         Loai.value = null;
@@ -218,7 +216,6 @@ const onMauSacChange = () => {
     if (selectedMauSac.value.length > 0) {
         const selectedIds = selectedMauSac.value.map((item) => item.id);
         idMauSac.value = selectedIds.join(',').split(',').map(Number);
-        //  console.log(idMauSac.value);
     } else {
         idMauSac.value = null;
     }
@@ -251,7 +248,6 @@ sizes.value.forEach((item) => {
 
 const arrayImgMauSac = ref([]);
 function onFileInputImageMauSac(id) {
-    // console.log('tc', imgMauSac.value);
     const index = selectedMauSac.value.findIndex((s) => s.id === id);
     const files = event.target.files;
 
@@ -271,7 +267,6 @@ function onFileInputImageMauSac(id) {
 
     // Cập nhật giá trị imgMauSac.value sau khi đã duyệt qua tất cả các tệp
     imgMauSac.value = arrayImgMauSac.value.join(',').replace(/^,/, '').split(',');
-    //   console.log('sau', imgMauSac.value);
 }
 
 const anh = ref(null);
@@ -289,9 +284,7 @@ function onFileInputImageProduct(event) {
 
     }
     ImagesProduct.value = imageUrls.value;
-    // console.log(ImagesProduct.value)
     imagesProduct.value = ImagesProduct.value.join(',').replace(/^,/, '').split(',');
-    //  console.log('anh phu: ', imagesProduct.value)
 }
 
 const dataThuongHieu = ref([]);
@@ -341,12 +334,22 @@ onMounted(() => {
     loadDataLoai();
     loadDataTrongLuong();
     loadDataVatLieu();
-    //   console.log('list update: ', props.myProp);
 });
 
 const arrayImageMauSac = ref([]);
 const arrayImage = ref([]);
 
+const lstMauSac = ref([]);
+const listMauSac = async () => {
+    await productStore.fetchAllMauSac(id.value);
+    lstMauSac.value = productStore.mauSacs;
+}
+
+const lstSize = ref([]);
+const listSize = async () => {
+    await productStore.fetchAllSize(id.value);
+    lstSize.value = productStore.sizes;
+}
 const editProduct = () => {
     id.value = props.myProp.id;
     name.value = props.myProp.ten;
@@ -363,7 +366,6 @@ const editProduct = () => {
     const selectedThuongHieu = dataThuongHieu.value.find((item) => item.ten === props.myProp.thuongHieu);
     selectedCity.value = selectedThuongHieu;
     if (selectedCity.value) {
-        //   console.log(selectedCity.value)
         ThuongHieu.value = selectedCity.value.id;
     } else {
         ThuongHieu.value = null;
@@ -372,7 +374,6 @@ const editProduct = () => {
     const selectedLoais = dataLoai.value.find((item) => item.ten === props.myProp.loai);
     selectedLoai.value = selectedLoais;
     if (selectedLoai.value) {
-        //    console.log(selectedLoai.value)
         Loai.value = selectedLoai.value.id;
     } else {
         Loai.value = null;
@@ -385,7 +386,6 @@ const editProduct = () => {
     } else {
         vatLieu.value = null;
     }
-    //   console.log(dataTrongLuong.value)
     const selectedTrongLuongs = dataTrongLuong.value.find((item) => item.value === parseInt(props.myProp.trongLuong, 10));
     selectedTrongLuong.value = selectedTrongLuongs;
     if (selectedTrongLuong.value) {
@@ -396,33 +396,6 @@ const editProduct = () => {
 
     const tenSize = props.myProp.size.map((size) => size.size.ten);
     const soLuongSize = props.myProp.size.map((size) => size.soLuong);
-
-    //size và số lượng size
-    const selectedSizeIds = [];
-    for (const ten of tenSize) {
-        const selectedSizeId = dataSize.value.find((i) => i.ten === ten);
-        if (selectedSizeId) {
-            selectedSizeIds.push(selectedSizeId);
-        }
-    }
-    selectedSizes.value = selectedSizeIds;
-    if (selectedSizes.value.length > 0) {
-        const selectedIds = selectedSizes.value.map((item) => item.id);
-        Size.value = selectedIds.join(',').split(',').map(Number);
-    } else {
-        Size.value = null;
-    }
-    // for (let i = 0; i < selectedSizes.value.length; i++) {
-    //     const size = selectedSizes.value[i].id;
-    //     const soLuong = soLuongSize[i];
-    //     array.value[i] = soLuong;
-    //     //   console.log(`Size: ${size}, Số lượng: ${soLuong}`);
-    // }
-    // if (array.value.length > 0) {
-    //     SoLuongSize.value = array.value.join(',').replace(/^,/, '').split(',').map(Number);
-    // } else {
-    //     SoLuongSize.value = null;
-    // }
 
     //màu sắc và ảnh màu sắc
     const tenMauSac = props.myProp.mauSac.map((s) => s.mauSac.ten);
@@ -441,10 +414,9 @@ const editProduct = () => {
 
     if (selectedMauSac.value.length > 0) {
         const selectedIds = selectedMauSac.value.map((item) => item.id);
-        idMauSac.value = selectedIds.join(',').split(',').map(Number);
-        //  console.log(idMauSac.value);
+        //    idMauSac.value = selectedIds.join(',').split(',').map(Number);
     } else {
-        idMauSac.value = null;
+        //    idMauSac.value = null;
     }
 
     const selectedMauSacCopy = selectedMauSac.value.map(item => ({ ...item }));
@@ -472,14 +444,14 @@ const editProduct = () => {
     selectedMauSac.value = selectedMauSacCopy;
 
     if (array.value.length > 0) {
-        SoLuongSize.value = array.value.join(',').replace(/^,/, '').split(',').map(Number);
+        //  SoLuongSize.value = array.value.join(',').replace(/^,/, '').split(',').map(Number);
     } else {
-        SoLuongSize.value = null;
+        //   SoLuongSize.value = null;
     }
 
     for (const img of selectedMauSac.value) {
         arrayImgMauSac.value.push(img.anh);
-        imgMauSac.value = arrayImgMauSac.value.join(',').replace(/^,/, '').split(',');
+        //    imgMauSac.value = arrayImgMauSac.value.join(',').replace(/^,/, '').split(',');
     }
 
 
@@ -490,8 +462,10 @@ const editProduct = () => {
         imagesProduct.value = ImagesProduct.value.join(',').replace(/^,/, '').split(',');
     }
 
-    //  console.log(selectedMauSac.value)
     product.value = { ...editProduct };
+
+    listMauSac();
+    listSize();
     productDialog.value = true;
 };
 
@@ -505,14 +479,12 @@ function onFileInputImage(event) {
         const basePath = "D:\\imgDATN\\"; // Đường dẫn cố định
         const fileName = basePath + file.name;
         imagesChinh.value = fileName;
-        // console.log('anh chinh: ', imagesChinh.value)
     }
 }
 
 const deleteSize = async (idSize) => {
     for (let i = 0; i < Size.value.length; i++) {
         if (Size.value[i] === idSize) {
-            //    console.log(Size.value[i]);
             // Xóa phần tử trùng lặp tại vị trí i
             Size.value.splice(i, 1);
             i--; // Để tránh bỏ lỡ phần tử sau khi xóa
@@ -539,7 +511,6 @@ const deleteMauSac = async (idMauSacs) => {
     try {
         for (let i = 0; i < idMauSac.value.length; i++) {
             if (idMauSac.value[i] === idMauSacs) {
-                //     console.log(idMauSac.value[i]);
                 // Xóa phần tử trùng lặp tại vị trí i
                 idMauSac.value.splice(i, 1);
                 i--; // Để tránh bỏ lỡ phần tử sau khi xóa
@@ -564,7 +535,6 @@ const deleteMauSac = async (idMauSacs) => {
 
         // Lọc bỏ màu sắc khỏi sản phẩm props.myProp
         props.myProp.mauSac = props.myProp.mauSac.filter((s) => s.id !== idMauSacs);
-        // console.log( selectedMauSac.value)
         // // Gọi hàm xóa từ store nếu cần
         //  await productStore.deleteMauSac( idMauSacs);
     } catch (error) {
@@ -573,10 +543,8 @@ const deleteMauSac = async (idMauSacs) => {
 };
 
 const deleteImg = async (img) => {
-    // console.log(img)
     for (let i = 0; i < ImagesProduct.value.length; i++) {
         if (ImagesProduct.value[i] === img) {
-            //     console.log(idMauSac.value[i]);
             // Xóa phần tử trùng lặp tại vị trí i
             ImagesProduct.value.splice(i, 1);
             i--; // Để tránh bỏ lỡ phần tử sau khi xóa
@@ -585,19 +553,29 @@ const deleteImg = async (img) => {
 
     for (let i = 0; i < imagesProduct.value.length; i++) {
         if (imagesProduct.value[i] === img) {
-            //     console.log(idMauSac.value[i]);
             // Xóa phần tử trùng lặp tại vị trí i
             imagesProduct.value.splice(i, 1);
             i--; // Để tránh bỏ lỡ phần tử sau khi xóa
         }
     }
-    //  console.log(imagesProduct.value)
+
     arrayImage.value = arrayImage.value.filter((s) => s.anh !== img);
 
     // Lọc bỏ màu sắc khỏi sản phẩm props.myProp
     props.myProp.img = props.myProp.img.filter((s) => s.anh !== img);
-    //  console.log( props.myProp.img)
     await productStore.deleteImg(props.myProp.id, img);
+};
+
+const selectedProducts = ref(null);
+const filters = ref({});
+
+const getStatusLabel = (soLuong) => {
+    if (soLuong <= 0) {
+        return { text: 'hết Hàng', severity: 'danger' };
+    } else {
+        return { text: 'Còn hàng', severity: 'success' };
+    }
+
 };
 </script>
 
@@ -714,7 +692,7 @@ const deleteImg = async (img) => {
 
                             <small class="p-error">{{ loaiError }}</small>
                         </div>
-                        <div class="Field col-6 md:col-6" style="margin-bottom: 30px">
+                        <!-- <div class="Field col-6 md:col-6" style="margin-bottom: 30px">
                             <div style="display: flex">
                                 <span class="p-float-label" style="width: 239px">
                                     <MultiSelect v-model="selectedMauSac" :options="dataMauSac" optionLabel="ten"
@@ -727,7 +705,7 @@ const deleteImg = async (img) => {
                                     :tableClass="'TableMauSac'" :rightGhClass="'right_ghMauSac'" />
                             </div>
                             <small class="p-error">{{ mauSacError }}</small>
-                        </div>
+                        </div> -->
 
                         <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
                             <div style="display: flex">
@@ -755,7 +733,7 @@ const deleteImg = async (img) => {
                             </div>
                             <small class="p-error">{{ trongLuongError }}</small>
                         </div>
-                        <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
+                        <!-- <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
                             <div style="display: flex">
                                 <span class="p-float-label" style="width: 150px">
                                     <MultiSelect v-model="selectedSizes" :options="dataSize" optionLabel="ten"
@@ -767,7 +745,7 @@ const deleteImg = async (img) => {
                                     :tableClass="'TableMauSac'" :rightGhClass="'right_ghMauSac'" />
                             </div>
                             <small class="p-error">{{ SizeError }}</small>
-                        </div>
+                        </div> -->
 
                         <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
                             <div style="display: flex">
@@ -783,45 +761,7 @@ const deleteImg = async (img) => {
 
                             <small class="p-error">{{ thuongHieuError }}</small>
                         </div>
-                        <div class="Field col-12 md:col-12" style="margin-bottom: 30px">
-                            <div style="display: flex">
-                                <div style="width: 150px">
-                                    <p>nhập số lượng size:</p>
-                                </div>
-                                <div style="display: flex; flex-wrap: wrap">
-                                    <Div v-for="(size, index) in selectedMauSac" :key="index" style="margin-top: 10px">
-                                        <label :for="`input-${size.id}`" style="margin-right: 10px; margin-left: 10px">{{
-                                            size.ten }}</label>
-                                        <label :for="`input-${size.id}`" style="margin-right: 10px; "
-                                            v-if="size.tenSize !== null"> - {{ size.tenSize }}</label>
-                                        <input type="number" :id="`input-${size.id}`" v-model="array[index]"
-                                            @change="handleInputChange()" :class="{ 'p-invalid': soLuongSizeError }"
-                                            style="height: 20px; width: 60px" />
-
-
-                                    </Div>
-                                </div>
-                            </div>
-                            <small class="p-error">{{ soLuongSizeError }}</small>
-                            <!-- <div style="display: flex">
-                                    <div style="width: 150px">
-                                        <p>Số lượng màu sắc :</p>
-                                    </div>
-                                    <div style="display: flex; flex-wrap: wrap">
-                                        <div v-for="(mau, index) in selectedMauSac" :key="index" style="margin-top: 10px">
-                                            <label :for="`input-${mau.id}`" style="margin-right: 10px; margin-left: 10px">{{
-                                                mau.ten }}</label>
-                                            <input type="number" :id="`input-${mau.id}`" v-model="array[index]"
-                                                @change="handleInputChange(mau.id)"
-                                                :class="{ 'p-invalid': soLuongSizeError }"
-                                                style="height: 20px; width: 60px" />
-                                        </div>
-
-                                    </div>
-
-                                </div>
-                                <small class="p-error">{{ soLuongSizeError }}</small> -->
-                        </div>
+                       
                         <div class="field col-12 md:col-12" style="margin-bottom: 30px">
                             <label for="address">Mô tả</label>
                             <Textarea id="address" rows="4" v-model="MoTa"
@@ -859,35 +799,114 @@ const deleteImg = async (img) => {
                                 </div>
                             </div>
                         </div>
-                        <div class="field col-12 md:col-12" style="display: inline-block">
-                            <div v-for="(color, index) in selectedMauSac" :key="index" class="mausac-container"
-                                style="display: inline-block; margin-left: 30px; margin-bottom: 15px; height: 90x; width: 100px">
-                                <div>
-                                    Màu :
-                                    <span class="product-name">{{ color.ten }}</span>
-                                    <span class="product-name" v-if="color.tenSize !== null"> - {{ color.tenSize
-                                    }}</span>
-
-                                    <img :src="color.anh" alt=""
-                                        style="width: 50px; height: 50px; top: 50%; left: 50%; transform: translate(4%, 2%); margin: 10px 0px 15px 0px" />
-                                    <Button icon="pi pi-trash" class="p-button-warning mr-2"
-                                        @click="deleteMauSac(color.idMauSacChiTiet)"
-                                        style="width: 25px; height: 25px; margin-left: 17px; margin-bottom: 25px" />
-                                </div>
-
-                                <FileUpload mode="basic" name="demo[]" accept="image/*" :maxFileSize="1000000"
-                                    @input="onFileInputImageMauSac(color.id)" style="width: 100px; height: 40px" />
-                            </div>
-
-                            <br />
-                            <small class="p-error">{{ ImgMauSacError }}</small>
-                        </div>
+                    
                     </div>
                     <div class="field col-12 md:col-12">
                         <file-upload :upload-url="uploadUrl" :multiple="true" :maxFileSize="2000000"
                             @input="onFileInputImageProduct" :class="{ 'p-invalid': imagesProductError }"></file-upload>
                         <small class="p-error">{{ imagesProductError }}</small>
                     </div>
+                    <DataTable ref="dt" :value="lstSize" v-model:selection="selectedProducts" dataKey="id" :paginator="true"
+                        :rows="5" :filters="filters"
+                        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                        :rowsPerPageOptions="[5, 10, 25]" currentPageReportTemplate=" {first} to {last} of {totalRecords}"
+                        responsiveLayout="scroll" showGridlines>
+                        <template #header>
+
+                            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                                <div style="display: flex;">
+                                    <h5 class="m-0" style="margin-right: 20px;"> Quản lý Size </h5>
+                                </div>
+
+                            </div>
+                        </template>
+
+                        <Column field="code" header="STT" :sortable="true" style="width: 1px; padding: 5px;">
+                            <template #body="slotProps">
+                                <span class="p-column-title">STT</span>
+                                {{ lstSize.indexOf(slotProps.data) + 1 }}
+                            </template>
+                        </Column>
+
+
+                        <Column field="code" header="Tên Size" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+                            <template #body="slotProps">
+                                <span class="p-column-title">Tên Màu Sắc</span>
+                                {{ slotProps.data === null ? "sản phẩm chưa có size" : slotProps.data.size.ten }}
+                            </template>
+                        </Column>
+
+                        <Column header="Action" headerStyle="min-width:10rem;">
+                            <template #body="slotProps">
+
+                            </template>
+                        </Column>
+
+                    </DataTable>
+                </div>
+                <div class="Field col-12 md:col-12" style="margin-bottom: 30px">
+                    <DataTable ref="dt" :value="lstMauSac" v-model:selection="selectedProducts" dataKey="id"
+                        :paginator="true" :rows="5" :filters="filters"
+                        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                        :rowsPerPageOptions="[5, 10, 25]"
+                        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
+                        responsiveLayout="scroll" showGridlines>
+                        <template #header>
+
+                            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                                <div style="display: flex;">
+                                    <h5 class="m-0" style="margin-right: 20px;"> Quản lý Màu sắc</h5>
+                                </div>
+
+                            </div>
+                        </template>
+
+
+                        <Column field="code" header="STT" :sortable="true" style="width: 1px; padding: 5px;">
+                            <template #body="slotProps">
+                                <span class="p-column-title">STT</span>
+                                {{ lstMauSac.indexOf(slotProps.data) + 1 }}
+                            </template>
+                        </Column>
+                        <Column field="code" header="Ảnh" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+                            <template #body="slotProps">
+                                <span class="p-column-title">Ảnh</span>
+                                <img :src="slotProps.data.anh" :alt="i" class="shadow-2" width="50" />
+                            </template>
+                        </Column>
+                        <Column field="code" header="Tên Màu Sắc" :sortable="true"
+                            headerStyle="width:14%; min-width:10rem;">
+                            <template #body="slotProps">
+                                <span class="p-column-title">Tên Màu Sắc</span>
+                                {{ slotProps.data.mauSac.ten }}
+                            </template>
+                        </Column>
+                        <Column field="code" header="Tên Size" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+                            <template #body="slotProps">
+                                <span class="p-column-title">Size</span>
+                                {{ slotProps.data.sizeChiTiet === null ? "chưa có" : slotProps.data.sizeChiTiet.size.ten }}
+                            </template>
+                        </Column>
+                        <Column field="code" header="Số Lượng" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+                            <template #body="slotProps">
+                                <span class="p-column-title">Số Lượng</span>
+                                {{ slotProps.data.soLuong }}
+                            </template>
+                        </Column>
+                        <Column field="trangThai" header="Trạng Thái" sortable headerStyle="width: 4%; min-width: 5rem;">
+                            <template #body="slotProps">
+                                <!-- {{ slotProps.data.soLuong <= 0 ? "Hết":"còn hàng" }} -->
+                                <Tag :value="getStatusLabel(slotProps.data.soLuong).text"
+                                    :severity="getStatusLabel(slotProps.data.soLuong).severity" />
+                            </template>
+                        </Column>
+                        <Column header="Action" headerStyle="min-width:10rem;">
+                            <template #body="slotProps">
+
+                            </template>
+                        </Column>
+
+                    </DataTable>
                 </div>
                 <div style="width: 1000px; text-align: center">
                     <Button type="submit" class="p-button-outlined" style="width: 200px; height: auto; margin: 10px"

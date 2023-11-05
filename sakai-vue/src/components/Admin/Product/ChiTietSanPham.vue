@@ -116,9 +116,7 @@ const loadProducts = async () => {
     products.value = productList;
     for (let i = 0; i < 1; i++) {
         soLuongSP.value = products.value[i].soLuongSanPham;
-        //   console.log(soLuongSP.value);
     }
-    // console.log('sss: ', products.value);
     showSpinner.value = false;
     visibledatatable.value = true;
 };
@@ -129,7 +127,6 @@ const loadSize = ref([]);
 const loadSizeo = async (idProduct) => {
     await productStore.fetchAllSize(idProduct); // Gọi hàm fetchAll từ Store
     loadSize.value = productStore.sizes;
-    // console.log('size: ', loadSize.value);
     return loadSize.value;
 };
 
@@ -138,8 +135,6 @@ const loadMau = ref([]);
 const loadmau = async (idProduct) => {
     await productStore.fetchAllMauSac(idProduct); // Gọi hàm fetchAll từ Store
     loadMau.value = productStore.mauSacs;
-    //   console.log('mau: ', loadMau.value);
-
     return loadMau.value;
 };
 
@@ -292,12 +287,6 @@ const handImportExcel = async (event) => {
     await productStore.uploadFile(formData);
     excel.value = productStore.excels;
     for (const o of excel.value) {
-        // if (o.totalError === 0) {
-        //     // console.log(o)
-        //     toast.add({ severity: 'success', summary: 'Success Message', detail: 'Import excel thành công', life: 3000 });
-        //     break;
-        // }
-        // else {
         for (const data of o.responseList) {
             if (data.importMessageGiaBan !== null && data.importMessageGiaBan !== "SUCCESS") {
                 toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageGiaBan, life: 30000 });
@@ -397,13 +386,11 @@ const loadDataByTrangThai = async () => {
     }
 
     products.value = productList;
-    //   console.log(products.value);
     if (products.value.length === 0) {
         soLuongSP.value = 0;
     } else {
         for (let i = 0; i < 1; i++) {
             soLuongSP.value = products.value[i].soLuongSanPham;
-            //   console.log(soLuongSP.value);
         }
     }
     showSpinner.value = false;
@@ -429,9 +416,6 @@ watch(trangThai, (newVal) => {
                         <template v-slot:start>
                             <div class="my-2">
                                 <AddProduct />
-                                <!-- <Button label="Delete" icon="pi pi-trash" class="p-button-danger"
-                                    @click="confirmDeleteSelected"
-                                    :disabled="!selectedProducts || !selectedProducts.length" /> -->
                             </div>
                         </template>
 
@@ -486,7 +470,7 @@ watch(trangThai, (newVal) => {
                         <Column header="Image" headerStyle="width:8%; min-width:5rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">Image</span>
-                                <!-- <div v-for="(i, index) in img"  > -->
+
                                 <img :src="slotProps.data.anh" :alt="i" class="shadow-2" width="100" />
                             </template>
                         </Column>
@@ -502,8 +486,7 @@ watch(trangThai, (newVal) => {
                                 {{ formatCurrency(slotProps.data.giaBan) }}
                             </template>
                         </Column>
-                        <Column field="giaNhap" header="Giá nhập" :sortable="true"
-                            headerStyle="width:8%; min-width:5rem;">
+                        <Column field="giaNhap" header="Giá nhập" :sortable="true" headerStyle="width:8%; min-width:5rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">Tên</span>
                                 {{ formatCurrency(slotProps.data.giaNhap) }}
@@ -512,50 +495,34 @@ watch(trangThai, (newVal) => {
                         <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header"
                             :key="col.field + '_' + index" :sortable="true" headerStyle="width:8%; min-width:5rem;">
                         </Column>
-                        <!-- <Column header="size - số lượng " headerStyle="width:14%; min-width:10rem;">
-                            <template #body="slotProps">
-                                <span class="p-column-title">size</span>
-                                <div v-for="i in slotProps.data.size ">
-                                    <div class="col-6" style="width: 100px; display: flex;">
-                                        <p style="margin: auto;"> {{ i.size.ten }} </p>
-                                        <p style="margin: auto;">-</p>
-                                        <p style="margin: auto;"> {{ i.soLuong }}</p>
-                                    </div>
-                                </div>
-                            </template>
-                        </Column> -->
                         <Column header="Màu Sắc " headerStyle="width:8%; min-width:5rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">size</span>
-                                <div v-for="i in slotProps.data.mauSac">
-                                    <div class="col-6"
+                                <div v-for="(i, index) in slotProps.data.mauSac">
+                                    <div v-if="index < 2 || slotProps.data.showMore" class="col-6"
                                         style="width: 170px;background-color: aliceblue; height: 90px; display: flex;margin-bottom: 5px; border: 1px solid aliceblue; border-radius: 10px;">
                                         <div>
                                             <p style="margin: auto;">{{ i.mauSac.ten }}</p>
                                             <p style="margin: auto;" v-if="i.sizeChiTiet !== null">size: {{
                                                 i.sizeChiTiet.size.ten }}</p>
                                             <p style="margin: auto;">số lượng: {{ i.soLuong }}</p>
-
                                         </div>
                                         <img :src="i.anh" class="shadow-2" width="100"
                                             style="margin-bottom: 30px; height: 50px; width: 50px; margin-left: 10px;" />
-
                                     </div>
                                 </div>
-
-                            </template>
-                        </Column>
-                        <Column header="Image" headerStyle="width: 15%; min-width: 10rem;">
-                            <template #body="slotProps">
-                                <span class="p-column-title">size</span>
-                                <div class="image-container">
-                                    <div v-for="i in slotProps.data.img" class="image-item">
-                                        <img :src="i.anh" class="shadow-2" width="50" height="50" />
-                                    </div>
+                                <div v-if="!slotProps.data.showMore && slotProps.data.mauSac.length > 3"
+                                    @click="slotProps.data.showMore = !slotProps.data.showMore">
+                                    Xem thêm...
+                                </div>
+                                <div v-if="slotProps.data.showMore"
+                                    @click="slotProps.data.showMore = !slotProps.data.showMore">
+                                    Ẩn
                                 </div>
                             </template>
                         </Column>
-                        <Column field="trangThai" header="Trạng Thái" sortable headerStyle="width: 4%; min-width: 5rem;">
+
+                        <Column field="trangThai" header="Trạng Thái" sortable headerStyle="width: 5%; min-width: 8rem;">
                             <template #body="slotProps">
                                 <Tag :value="getStatusLabel(slotProps.data.trangThai).text"
                                     :severity="getStatusLabel(slotProps.data.trangThai).severity" />
@@ -614,14 +581,8 @@ watch(trangThai, (newVal) => {
                                 severity="secondary" rounded style="height: 40px;" />
                         </template>
                     </Dialog>
-
-
-
-
                 </section>
                 <section class="right_gh" id="right_gh" style="display: none">
-
-                    <!-- <Test/> -->
                 </section>
 
 
