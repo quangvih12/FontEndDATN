@@ -8,6 +8,10 @@ import TableMauSac from './DataTableMauSac.vue';
 import TablevatLieu from './DataTableVatLieu.vue';
 import TableTrongLuong from './DataTableTrongLuong.vue';
 import TableSize from './DataTableSize.vue';
+import AddSizeChiTiet from '../QuanLySize/addSizeChiTiet.vue';
+import AddMauSacChiTiet from '../MauSac/addMauSacChiTiet.vue';
+import UpdateMauSacChiTiet from '../MauSac/updateMauSacChiTiet.vue';
+import UpdateSizeChiTiet from '../QuanLySize/updateSizeChiTiet.vue';
 import { ProductStore } from '../../../service/Admin/product/product.api';
 import { useToast } from 'primevue/usetoast';
 import { useCounterStore } from '../../../service/Admin/ThuongHieu/ThuongHieuService.js';
@@ -57,12 +61,9 @@ const schema = yup.object().shape({
     quaiDeo: yup.string().required('Bạn cần chọn quai đeo cho sản phẩm'),
     loai: yup.number().required('loại sản phẩm không được để trống'),
     thuongHieu: yup.number().required('vui lòng chọn Thương hiệu sản phẩm '),
-    // idMauSac: yup.array().required('vui lòng chọn màu sắc sản phẩm '),
     vatLieu: yup.number().required(' vui lòng chọn Vật liệu sản phẩm '),
     demLot: yup.string().required(' vui lòng chọn đệm lót sản phẩm '),
-    // soLuongSize: yup.number().min(1, 'Số lượng phải lớn hơn hoặc bằng 1').nullable(),
     trongLuong: yup.string().required('vui lòng chọn trọng lượng sản phẩm'),
-    //    imgMauSac: yup.array().required('vui lòng chọn ảnh màu sắc sản phẩm'),
     trangThai: yup.number().required('vui lòng chọn trạng thái của sản phẩm'),
     moTa: yup.string().required('Vui lòng điền mô tả sản phẩm').min(10, 'Mô tả sản phẩm phải có ít nhất 10 ký tự'),
     anh: yup.string().required('vui lòng chọn ảnh chính cho sản phẩm')
@@ -81,12 +82,8 @@ const { value: QuaiDeo, errorMessage: quaiDeoError } = useField('quaiDeo');
 const { value: Loai, errorMessage: loaiError } = useField('loai');
 const { value: ThuongHieu, errorMessage: thuongHieuError } = useField('thuongHieu');
 const { value: vatLieu, errorMessage: vatLieuError } = useField('vatLieu');
-// const { value: idMauSac, errorMessage: mauSacError } = useField('idMauSac');
 const { value: DemLot, errorMessage: demLotError } = useField('demLot');
-// const { value: Size, errorMessage: SizeError } = useField('idSize');
-// const { value: SoLuongSize, errorMessage: soLuongSizeError } = useField('soLuongSize');
 const { value: TrongLuong, errorMessage: trongLuongError } = useField('trongLuong');
-// const { value: imgMauSac, errorMessage: ImgMauSacError } = useField('imgMauSac');
 const { value: TrangThai, errorMessage: TrangThaiSacError } = useField('trangThai');
 const { value: MoTa, errorMessage: MoTaSacError } = useField('moTa');
 const { value: imagesProduct, errorMessage: imagesProductError } = useField('imagesProduct');
@@ -350,8 +347,11 @@ const listSize = async () => {
     await productStore.fetchAllSize(id.value);
     lstSize.value = productStore.sizes;
 }
+
+const idProduct = ref(null);
 const editProduct = () => {
     id.value = props.myProp.id;
+    idProduct.value = props.myProp.id;
     name.value = props.myProp.ten;
     soluong.value = props.myProp.soLuongTon;
     GiaBan.value = props.myProp.giaBan;
@@ -394,13 +394,11 @@ const editProduct = () => {
         TrongLuong.value = null;
     }
 
-    const tenSize = props.myProp.size.map((size) => size.size.ten);
-    const soLuongSize = props.myProp.size.map((size) => size.soLuong);
 
     //màu sắc và ảnh màu sắc
-    const tenMauSac = props.myProp.mauSac.map((s) => s.mauSac.ten);
+    const tenMauSac = props.myProp.mauSac.map((s) => s.ten);
     const anhMauSac = props.myProp.mauSac.map((s) => s.anh);
-    const SizeMauSac = props.myProp.mauSac.map((s) => s.sizeChiTiet?.size?.ten);
+    const SizeMauSac = props.myProp.mauSac.map((s) => s?.tenSize);
     const IdMauSacChiTiet = props.myProp.mauSac.map((s) => s.id);
     const soLuongMauSacs = props.myProp.mauSac.map(s => s.soLuong);
     const selectedMauSacTen = [];
@@ -483,60 +481,22 @@ function onFileInputImage(event) {
 }
 
 const deleteSize = async (idSize) => {
-    for (let i = 0; i < Size.value.length; i++) {
-        if (Size.value[i] === idSize) {
-            // Xóa phần tử trùng lặp tại vị trí i
-            Size.value.splice(i, 1);
-            i--; // Để tránh bỏ lỡ phần tử sau khi xóa
-        }
+    try {
+        await productStore.deleteSize(idSize);
+        props.myProp.size = props.myProp.size.filter((s) => s.id !== idSize);
+        listSize();
+    } catch (error) {
+        toast.add({ severity: 'error', summary: 'Error', detail: 'Size đã tồn tại trong màu sắc ! hãy xóa màu sắc có size này trước', life: 10000 });
     }
-
-    //   Tìm chỉ mục của size có idSize trong selectedSizes.value
-    const indexToDelete = selectedSizes.value.findIndex((size) => size.id === idSize);
-
-    if (indexToDelete !== -1) {
-        // Xóa size khỏi selectedSizes.value
-        selectedSizes.value.splice(indexToDelete, 1);
-
-        // Đặt soLuong của size tương ứng trong array.value thành 0
-        array.value[indexToDelete] = null;
-    }
-
-    // Tiếp tục với việc xóa size khỏi props.myProp.size và productStore.deleteSize(props.myProp.id, idSize)
-    await productStore.deleteSize(props.myProp.id, idSize);
-    props.myProp.size = props.myProp.size.filter((s) => s.size.id !== idSize);
 };
 
 const deleteMauSac = async (idMauSacs) => {
     try {
-        for (let i = 0; i < idMauSac.value.length; i++) {
-            if (idMauSac.value[i] === idMauSacs) {
-                // Xóa phần tử trùng lặp tại vị trí i
-                idMauSac.value.splice(i, 1);
-                i--; // Để tránh bỏ lỡ phần tử sau khi xóa
-            }
-        }
-
-        const mauSacToDelete = selectedMauSac.value.findIndex((m) => m.idMauSacChiTiet === idMauSacs);
-
-        // Đặt ảnh của màu sắc đó thành null (nếu màu sắc tồn tại)
-        if (mauSacToDelete !== -1) {
-            //  mauSacToDelete.anh = "";
-            selectedMauSac.value.splice(mauSacToDelete, 1);
-            imgMauSac.value.splice(mauSacToDelete, 1);
-            arrayImgMauSac.value.splice(mauSacToDelete, 1);
-        }
-
-        // Tạo một bản sao mới của selectedMauSac.value và lọc bỏ phần tử cần xóa
-        const updatedSelectedMauSac = selectedMauSac.value.filter((m) => m.idMauSacChiTiet !== idMauSacs);
-
-        // Gán bản sao mới này cho selectedMauSac.value
-        selectedMauSac.value = updatedSelectedMauSac;
-
         // Lọc bỏ màu sắc khỏi sản phẩm props.myProp
         props.myProp.mauSac = props.myProp.mauSac.filter((s) => s.id !== idMauSacs);
         // // Gọi hàm xóa từ store nếu cần
-        //  await productStore.deleteMauSac( idMauSacs);
+        await productStore.deleteMauSac(idMauSacs);
+        listMauSac();
     } catch (error) {
         console.error('Lỗi xóa màu sắc:', error);
     }
@@ -692,20 +652,6 @@ const getStatusLabel = (soLuong) => {
 
                             <small class="p-error">{{ loaiError }}</small>
                         </div>
-                        <!-- <div class="Field col-6 md:col-6" style="margin-bottom: 30px">
-                            <div style="display: flex">
-                                <span class="p-float-label" style="width: 239px">
-                                    <MultiSelect v-model="selectedMauSac" :options="dataMauSac" optionLabel="ten"
-                                        :filter="false" :maxSelectedLabels="3" :class="{ 'p-invalid': mauSacError }"
-                                        @change="onMauSacChange"> </MultiSelect>
-                                    <label for="multiselect">Màu sắc</label>
-                                </span>
-
-                                <TableMauSac :tableId="'TableMauSac'" :rightGhId="'right_ghMauSac'"
-                                    :tableClass="'TableMauSac'" :rightGhClass="'right_ghMauSac'" />
-                            </div>
-                            <small class="p-error">{{ mauSacError }}</small>
-                        </div> -->
 
                         <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
                             <div style="display: flex">
@@ -733,19 +679,6 @@ const getStatusLabel = (soLuong) => {
                             </div>
                             <small class="p-error">{{ trongLuongError }}</small>
                         </div>
-                        <!-- <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
-                            <div style="display: flex">
-                                <span class="p-float-label" style="width: 150px">
-                                    <MultiSelect v-model="selectedSizes" :options="dataSize" optionLabel="ten"
-                                        :filter="false" :maxSelectedLabels="3" :class="{ 'p-invalid': SizeError }"
-                                        @change="onSizeChange"> </MultiSelect>
-                                    <label for="multiselect">Size</label>
-                                </span>
-                                <TableSize :tableId="'TableMauSac'" :rightGhId="'right_ghMauSac'"
-                                    :tableClass="'TableMauSac'" :rightGhClass="'right_ghMauSac'" />
-                            </div>
-                            <small class="p-error">{{ SizeError }}</small>
-                        </div> -->
 
                         <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
                             <div style="display: flex">
@@ -761,7 +694,7 @@ const getStatusLabel = (soLuong) => {
 
                             <small class="p-error">{{ thuongHieuError }}</small>
                         </div>
-                       
+
                         <div class="field col-12 md:col-12" style="margin-bottom: 30px">
                             <label for="address">Mô tả</label>
                             <Textarea id="address" rows="4" v-model="MoTa"
@@ -799,7 +732,7 @@ const getStatusLabel = (soLuong) => {
                                 </div>
                             </div>
                         </div>
-                    
+
                     </div>
                     <div class="field col-12 md:col-12">
                         <file-upload :upload-url="uploadUrl" :multiple="true" :maxFileSize="2000000"
@@ -817,7 +750,9 @@ const getStatusLabel = (soLuong) => {
                                 <div style="display: flex;">
                                     <h5 class="m-0" style="margin-right: 20px;"> Quản lý Size </h5>
                                 </div>
-
+                                <div style="bottom: 100;">
+                                    <AddSizeChiTiet :my-prop="idProduct"></AddSizeChiTiet>
+                                </div>
                             </div>
                         </template>
 
@@ -832,13 +767,15 @@ const getStatusLabel = (soLuong) => {
                         <Column field="code" header="Tên Size" :sortable="true" headerStyle="width:14%; min-width:10rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">Tên Màu Sắc</span>
-                                {{ slotProps.data === null ? "sản phẩm chưa có size" : slotProps.data.size.ten }}
+                                {{ slotProps.data === null ? "sản phẩm chưa có size" : slotProps.data.ten }}
                             </template>
                         </Column>
 
                         <Column header="Action" headerStyle="min-width:10rem;">
                             <template #body="slotProps">
-
+                                <UpdateSizeChiTiet :my-prop="slotProps.data" :idProduct="idProduct"></UpdateSizeChiTiet>
+                                <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2"
+                                    @click="deleteSize(slotProps.data.id)" />
                             </template>
                         </Column>
 
@@ -857,7 +794,8 @@ const getStatusLabel = (soLuong) => {
                                 <div style="display: flex;">
                                     <h5 class="m-0" style="margin-right: 20px;"> Quản lý Màu sắc</h5>
                                 </div>
-
+                                <AddMauSacChiTiet :my-prop="lstMauSac" :idProduct="idProduct" :soLuongTong="soluong">
+                                </AddMauSacChiTiet>
                             </div>
                         </template>
 
@@ -878,13 +816,13 @@ const getStatusLabel = (soLuong) => {
                             headerStyle="width:14%; min-width:10rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">Tên Màu Sắc</span>
-                                {{ slotProps.data.mauSac.ten }}
+                                {{ slotProps.data.ten }}
                             </template>
                         </Column>
                         <Column field="code" header="Tên Size" :sortable="true" headerStyle="width:14%; min-width:10rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">Size</span>
-                                {{ slotProps.data.sizeChiTiet === null ? "chưa có" : slotProps.data.sizeChiTiet.size.ten }}
+                                {{ slotProps.data.tenSize === null ? "chưa có" : slotProps.data.tenSize }}
                             </template>
                         </Column>
                         <Column field="code" header="Số Lượng" :sortable="true" headerStyle="width:14%; min-width:10rem;">
@@ -902,7 +840,10 @@ const getStatusLabel = (soLuong) => {
                         </Column>
                         <Column header="Action" headerStyle="min-width:10rem;">
                             <template #body="slotProps">
-
+                                <UpdateMauSacChiTiet :my-prop="slotProps.data" :idProduct="idProduct" :soLuongTong="soluong"
+                                    :lst="lstMauSac"></UpdateMauSacChiTiet>
+                                <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2"
+                                    @click="deleteMauSac(slotProps.data.id)" />
                             </template>
                         </Column>
 

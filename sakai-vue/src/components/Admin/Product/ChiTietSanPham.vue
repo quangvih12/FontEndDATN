@@ -502,9 +502,9 @@ watch(trangThai, (newVal) => {
                                     <div v-if="index < 2 || slotProps.data.showMore" class="col-6"
                                         style="width: 170px;background-color: aliceblue; height: 90px; display: flex;margin-bottom: 5px; border: 1px solid aliceblue; border-radius: 10px;">
                                         <div>
-                                            <p style="margin: auto;">{{ i.mauSac.ten }}</p>
-                                            <p style="margin: auto;" v-if="i.sizeChiTiet !== null">size: {{
-                                                i.sizeChiTiet.size.ten }}</p>
+                                            <p style="margin: auto;">{{ i.ten }}</p>
+                                            <p style="margin: auto;" v-if="i.tenSize !== null">size: {{
+                                                i.tenSize }}</p>
                                             <p style="margin: auto;">số lượng: {{ i.soLuong }}</p>
                                         </div>
                                         <img :src="i.anh" class="shadow-2" width="100"
