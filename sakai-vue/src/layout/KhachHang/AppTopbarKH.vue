@@ -21,7 +21,7 @@ const gioHangService = gioHangStore();
 onMounted(() => {
     bindOutsideClickListener();
     fetchData();
-    displayKH();
+   // displayKH();
 });
 
 onBeforeUnmount(() => {
@@ -88,6 +88,7 @@ const fetchData = async () => {
     try {
         await userService.getAllUser();
         khachHang.value = userService.data;
+     //   console.log(khachHang.value);
     } catch (error) {
         // Xử lý lỗi ở đây nếu cần
     }
@@ -117,21 +118,22 @@ const isTokenValid = async (token) => {
 // hàm gọi sự thay đổi thông tin của khách hàng khi click vào CBB
 const soLuong = ref(null);
 const displayKH = async () => {
-    const token = localStorage.getItem('token');
-    if (isTokenValid(token)) {
-        const userName = await tokenService.getUserNameByToken(token);
+ //   const token = localStorage.getItem('token');
+    
+    // if (isTokenValid(token)) {
+    //     const userName = await tokenService.getUserNameByToken(token);
 
-        const user = await userKHService.getUserByUsername(userName);
+    //     const user = await userKHService.getUserByUsername(userName);
 
-        await gioHangService.countGHCT(user.id);
-        soLuong.value = gioHangService.soLuong;
+    //     await gioHangService.countGHCT(user.id);
+    //     soLuong.value = gioHangService.soLuong;
 
-        selectedCustomer.value = khachHang.value.find((kh) => kh.userName === userName);
-    } else {
+    //     selectedCustomer.value = khachHang.value.find((kh) => kh.userName === userName);
+    // } else {
         selectedCustomer.value = khachHang.value.find((kh) => kh.ten === selectedKH.value.ten);
         const tokens = await tokenService.gentoken(selectedCustomer.value.userName);
         localStorage.setItem('token', tokens);
-    }
+   // }
 
 };
 </script>
