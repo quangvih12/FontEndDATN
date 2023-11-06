@@ -25,8 +25,8 @@ const products = ref(null);
 const data = ref([]);
 
 const loadData = async () => {
-    await useHD.fetchDataByStatus(0);
-    data.value = useHD.dataDaHuy;
+    await useHD.fetchDataByStatus(7);
+    data.value = useHD.dataHoanTraHoanTien;
 };
 //chạy cái hiện data luôn
 onMounted(() => {
@@ -67,23 +67,16 @@ const columns = ref([
     { field: 'ngayShip', header: 'Ngày ship' },
     { field: 'ngayNhan', header: 'Ngày nhận' }
 ]);
-const dataSearchDate = ref([
-    { label: 'Ngày tạo', value: 'ngayTao' },
-    { label: 'Ngày sửa', value: 'ngaySua' },
-    { label: 'Ngày thanh toán', value: 'ngayThanhToan' },
-    { label: 'Ngày ship', value: 'ngayShip' },
-    { label: 'Ngày nhận', value: 'ngayNhan' }
-]);
 const startDate = ref(null);
 const endDate = ref([null]);
 const typeSearchDate = ref(null);
 
 const searchDate = async () => {
     if (typeSearchDate.value == null) {
-        const respone = await useHD.searchDateByTrangThai(startDate.value, endDate.value, 'ngayTao', 0);
+        const respone = await useHD.searchDateByTrangThai(startDate.value, endDate.value, 'ngayTao', 7);
         data.value = respone;
     } else {
-        const respone = await useHD.searchDateByTrangThai(startDate.value, endDate.value, typeSearchDate.value.value, 0);
+        const respone = await useHD.searchDateByTrangThai(startDate.value, endDate.value, typeSearchDate.value.value, 7);
         data.value = respone;
     }
 };
@@ -190,6 +183,8 @@ const formatDate = (value) => {
         <Column header="Hành động" headerStyle="min-width:10rem;">
             <template #body="slotProps">
                 <Button :my-prop="slotProps.data" @click="redirectToTrangThaiDonHang(data.id)" label="Xem" class="p-button-outlined p-button-info mr-2 mb-2" />
+                <Button label="Nhận" class="p-button-outlined p-button-info mr-2 mb-2" @click="btnXacNhan(slotProps.data.idHD)" />
+                <Button label="Hủy" class="p-button-outlined p-button-info mr-2 mb-2" />
             </template>
         </Column>
     </DataTable>

@@ -5,32 +5,37 @@ import DaHuy from './DaHuy.vue';
 import ChoThanhToan from './ChoThanhToan.vue';
 import VanChuyen from './VanChuyen.vue';
 import DangGiao from './DangGiao.vue';
+import HoanTra from './TraHangHoanTien.vue'
 </script>
 <template>
-    <div class="grid">
-        <TabView class="tab-view">
-            <TabPanel header="Tất cả">
-                <TatCa></TatCa>
-            </TabPanel>
-            <TabPanel header="Chờ thanh toán">
-                <ChoThanhToan></ChoThanhToan>
-            </TabPanel>
-            <TabPanel header="Vận chuyển">
-                <VanChuyen></VanChuyen>
-            </TabPanel>
-            <TabPanel header="Đang giao">
-                <DangGiao></DangGiao>
-            </TabPanel>
-            <TabPanel header="Hoàn thành">
-                <HoanThanh></HoanThanh>
-            </TabPanel>
-            <TabPanel header="Đã huỷ">
-                <DaHuy></DaHuy>
-            </TabPanel>
-            <TabPanel header="Hoàn trả">
-                <ThongKeTheoNgay></ThongKeTheoNgay>
-            </TabPanel>
-        </TabView>
+    <div class="container">
+        <div class="grid">
+            <TabView class="tab-view">
+                <div class="card">
+                    <TabPanel header="Tất cả">
+                        <TatCa></TatCa>
+                    </TabPanel>
+                    <TabPanel header="Chờ thanh toán">
+                        <ChoThanhToan></ChoThanhToan>
+                    </TabPanel>
+                    <TabPanel header="Vận chuyển">
+                        <VanChuyen></VanChuyen>
+                    </TabPanel>
+                    <TabPanel header="Đang giao">
+                        <DangGiao></DangGiao>
+                    </TabPanel>
+                    <TabPanel header="Hoàn thành">
+                        <HoanThanh></HoanThanh>
+                    </TabPanel>
+                    <TabPanel header="Đã huỷ">
+                        <DaHuy></DaHuy>
+                    </TabPanel>
+                    <TabPanel header="Hoàn trả">
+                        <HoanTra></HoanTra>
+                    </TabPanel>
+                </div>
+            </TabView>
+        </div>
     </div>
 </template>
 

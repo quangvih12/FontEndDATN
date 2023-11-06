@@ -51,7 +51,12 @@ const router = createRouter({
                     path: '/lich-su-sp',
                     name: 'lich-su-sp',
                     component: () => import('@/components/KhachHang/LichSuSP/LichSuSP.vue')
-                }
+                },
+                {
+                    path: '/trang-thai-don-hang/:id',
+                    name: 'trang-thai-don-hang',
+                    component: () => import('@/components/KhachHang/LichSuSP/TrangThaiDonHang.vue')
+                },
             ]
         },
         {
@@ -127,7 +132,7 @@ const router = createRouter({
                 {
                     path: '/pages/user',
                     name: 'user',
-                    component: () => import('@/components/Admin/QuanLyUser/ViewUser.vue'),
+                    component: () => import('@/components/Admin/User/index.vue'),
                     beforeEnter: authMiddleware
                 },
                 {

@@ -24,14 +24,14 @@ const loadData = async () => {
 const loadDataHangMoi = async () => {
     await useTrangChuService.fetchDataByNgayTao();
     dataHangMoi.value = useTrangChuService.dataHangMoi;
-    // console.log(dataHangMoi.value);
+    console.log(dataHangMoi.value,"trang chu");
 };
 
 //load data hang moi
 const loadDataTreEm = async () => {
     await useTrangChuService.fetchDataByTreEm('Trẻ em');
     dataTreEm.value = useTrangChuService.dataTreEm;
-    console.log(dataTreEm.value);
+    // console.log(dataTreEm.value);
 };
 
 const formatCurrency = (value) => {
@@ -93,6 +93,27 @@ const thumbnailsSP = [
         imageUrl: 'https://nontrum.vn/wp-content/uploads/2019/10/non-balder-vang-1-e1583121638578.jpg',
         name: 'ROC R43 Frozen Xanh',
         price: '320,000 ₫'
+    },
+    {
+        imageUrl: 'https://nontrum.vn/wp-content/uploads/2019/10/non-balder-vang-1-e1583121638578.jpg',
+        name: 'ROC R43 Frozen Xanh',
+        price: '320,000 ₫'
+    },
+    {
+        imageUrl: 'https://nontrum.vn/wp-content/uploads/2019/10/non-balder-vang-1-e1583121638578.jpg',
+        name: 'ROC R43 Frozen Xanh abc',
+        price: '320,000 ₫'
+    },
+    
+    {
+        imageUrl: 'https://nontrum.vn/wp-content/uploads/2019/10/non-balder-vang-1-e1583121638578.jpg',
+        name: 'ROC R43 Frozen Xanh',
+        price: '320,000 ₫'
+    },
+    {
+        imageUrl: 'https://nontrum.vn/wp-content/uploads/2019/10/non-balder-vang-1-e1583121638578.jpg',
+        name: 'ROC R43 Frozen Xanh',
+        price: '320,000 ₫'
     }
     // Thêm các đối tượng khác nếu cần
 ];
@@ -137,81 +158,65 @@ const banner9 =
                 </div>
             </div>
             <!-- SP hot -->
-            <div class="sp" style="margin-bottom: 40px">
-                <div><img :src="banner2" alt="Thumbnail" class="banner2" /></div>
-                <div><img :src="banner3" alt="Thumbnail" class="banner3" /></div>
-                <div>
-                    <div class="flex-container">
-                        <div class="flex-item" v-for="(thumbnail, index) in thumbnailsSP" :key="index">
-                            <a href="http://localhost:5173/#/trang-chu">
-                                <img :src="thumbnail.imageUrl" alt="Thumbnail" class="anh-sp" />
-                                <p class="ten-sp">{{ thumbnail.name }}</p>
-                                <br />
-                                <p class="gia-sp">{{ formatCurrency(thumbnail.price) }}</p>
-                            </a>
-                        </div>
-                    </div>
+            <div><img :src="banner2" alt="Thumbnail" class="banner2" /></div>
+            <div><img :src="banner3" alt="Thumbnail" class="banner3" /></div>
+            <div class="flex-container">
+                <div class="flex-item" v-for="(thumbnail, index) in thumbnailsSP" :key="index">
+                    <a href="http://localhost:5173/#/trang-chu">
+                        <img :src="thumbnail.imageUrl" alt="Thumbnail" />
+                        <p class="ten-sp">{{ thumbnail.name }}</p>
+                        <br />
+                        <p class="gia-sp">{{ formatCurrency(thumbnail.price) }}</p>
+                    </a>
                 </div>
             </div>
-
             <!-- SP mới -->
             <div><img :src="banner4" alt="Thumbnail" class="banner2" /></div>
             <div><img :src="banner5" alt="Thumbnail" class="banner3" /></div>
-            <div>
-                <div class="flex-container">
-                    <div class="flex-item" v-for="(spct, index) in dataHangMoi" :key="index">
-                        <div class="product-top">
-                            <a href="" class="product-thumb">
-                                <img :src="spct.sanPham.anh" alt="Thumbnail" class="product-image" />
-                            </a>
-                            <a class="xct" @click="goToProductDetail(spct.id)">Xem chi tiết</a>
-                        </div>
-                        <p class="ten-sp">{{ spct.sanPham.ten }}</p>
-                        <br />
-                        <p class="gia-sp" style="color: red">{{ formatCurrency(spct.giaBan) }}</p>
+            <div class="flex-container">
+                <div class="flex-item" v-for="(spct, index) in dataHangMoi" :key="index">
+                    <div class="product-top">
+                        <a href="" class="product-thumb">
+                            <img :src="spct.sanPham.anh" alt="Thumbnail" class="product-image" />
+                        </a>
+                        <a class="xct" @click="goToProductDetail(spct.id)">Xem chi tiết</a>
                     </div>
+                    <p class="ten-sp">{{ spct.sanPham.ten }}</p>
+                    <br />
+                    <p class="gia-sp" style="color: red">{{ formatCurrency(spct.giaBan) }}</p>
                 </div>
             </div>
-
             <!-- Nón full -->
-            <div class="sp">
-                <div><img :src="banner6" alt="Thumbnail" class="banner2" /></div>
-                <div><img :src="banner7" alt="Thumbnail" class="banner3" /></div>
-                <div>
-                    <div class="flex-container">
-                        <div class="flex-item" v-for="(spct, index) in dataFullrace" :key="index">
-                            <div class="product-top">
-                                <a href="" class="product-thumb">
-                                    <img :src="spct.sanPham.anh" alt="Thumbnail" class="product-image" />
-                                </a>
-                                <a class="xct" @click="goToProductDetail(spct.id)">Xem chi tiết</a>
-                            </div>
-                            <p class="ten-sp">{{ spct.sanPham.ten }}</p>
-                            <br />
-                            <p class="gia-sp">{{ formatCurrency(spct.giaBan) }}</p>
-                        </div>
+            <div><img :src="banner6" alt="Thumbnail" class="banner2" /></div>
+            <div><img :src="banner7" alt="Thumbnail" class="banner3" /></div>
+            <div class="flex-container">
+                <div class="flex-item" v-for="(spct, index) in dataFullrace" :key="index">
+                    <div class="product-top">
+                        <a href="" class="product-thumb">
+                            <img :src="spct.sanPham.anh" alt="Thumbnail" class="product-image" />
+                        </a>
+                        <a class="xct" @click="goToProductDetail(spct.id)">Xem chi tiết</a>
                     </div>
+                    <p class="ten-sp">{{ spct.sanPham.ten }}</p>
+                    <br />
+                    <p class="gia-sp">{{ formatCurrency(spct.giaBan) }}</p>
                 </div>
             </div>
 
             <!-- Nón trẻ em -->
-            <div class="sp">
-                <div><img :src="banner8" alt="Thumbnail" class="banner2" /></div>
-                <div><img :src="banner9" alt="Thumbnail" class="banner3" /></div>
-                <div>
-                    <div class="flex-container">
-                        <div class="flex-item" v-for="(ctsp, index) in dataTreEm" :key="index">
-                            <div class="product-top">
-                                <a href="" class="product-thumb">
-                                    <img :src="spct.sanPham.anh" alt="Thumbnail" class="product-image" />
-                                </a>
-                                <a class="xct" @click="goToProductDetail(spct.id)">Xem chi tiết</a>
-                            </div>
-                            <p class="ten-sp">{{ ctsp.sanPham.ten }}</p>
-                            <br />
-                            <p class="gia-sp">{{ formatCurrency(ctsp.giaBan) }}</p>
-                        </div>
+            <div><img :src="banner8" alt="Thumbnail" class="banner2" /></div>
+            <div><img :src="banner9" alt="Thumbnail" class="banner3" /></div>
+            <div class="flex-container">
+                <div class="flex-item" v-for="(ctsp, index) in dataTreEm" :key="index">
+                    <div class="product-top">
+                        <a href="" class="product-thumb">
+                            <img :src="spct.sanPham.anh" alt="Thumbnail" class="product-image" />
+                        </a>
+                        <a class="xct" @click="goToProductDetail(spct.id)">Xem chi tiết</a>
                     </div>
+                    <p class="ten-sp">{{ ctsp.sanPham.ten }}</p>
+                    <br />
+                    <p class="gia-sp">{{ formatCurrency(ctsp.giaBan) }}</p>
                 </div>
             </div>
             <div class="thong-tin">
@@ -373,6 +378,7 @@ const banner9 =
     margin-top: 10px;
     margin-bottom: -5px;
     color: black;
+    height: 35px;
 }
 .gia-sp {
     text-align: left;
@@ -420,21 +426,22 @@ const banner9 =
 
 .flex-container {
     display: flex;
-    justify-content: space-between; /* Chia đều khoảng trống giữa các cột */
-    overflow: hidden;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    width: 1100px;
 }
 
 .flex-item {
-    flex: 1; /* Cung cấp độ rộng đều cho mỗi cột */
+    flex: 0 0 calc(20% - 10px); /* 20% độ rộng cho mỗi cột và 10px là khoảng cách giữa các cột */
     border: 1px solid #ccc;
-    padding: 1px;
-    margin-right: 10px; /* Khoảng cách giữa các cột */
-    width: 210px;
-    border-radius: 8px;
+    padding: 10px;
+    box-sizing: border-box; /* Đảm bảo rằng padding và border không làm tăng kích thước của các cột */
+    margin-bottom: 20px; /* Khoảng cách giữa các dòng */
+    margin-right: 12px;
 }
 
-/* Loại bỏ margin cuối cùng của cột cuối cùng */
-.flex-item:last-child {
+/* Đảm bảo chỉ 5 cột trên mỗi dòng */
+.flex-item:nth-child(5n) {
     margin-right: 0;
 }
 
