@@ -39,7 +39,6 @@ export const useDetailProductStore = defineStore('detail',{
         const response = await axios.get(apiDetail + `/findBySize/`+idProduct); // Thay đổi URL dựa trên API của bạn
         this.sizes = response.data;
         // console.log(response.data);
-        return this.sizes;
       } catch (error) {
         console.error('Lỗi khi lấy danh sách sản phẩm:', error);
       }
@@ -50,7 +49,6 @@ export const useDetailProductStore = defineStore('detail',{
         const response = await axios.get(apiDetail + `/findByMauSac/`+idProduct); // Thay đổi URL dựa trên API của bạn
         this.mauSacs = response.data;
         //  console.log('mau: ',   this.mauSacs  );
-        return this.mauSacs;
       } catch (error) {
         console.error('Lỗi khi lấy danh sách sản phẩm:', error);
       }

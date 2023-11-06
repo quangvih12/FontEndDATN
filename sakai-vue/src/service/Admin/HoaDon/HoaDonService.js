@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
-import { da } from 'date-fns/locale';
 
 const apiHD = 'http://localhost:8080/api/admin/hoaDon';
 const apiHDCT = 'http://localhost:8080/api/admin/hoa-don-chi-tiet';
@@ -78,25 +77,41 @@ export const HDStore = defineStore('hoaDon', {
         huyHoaDon(id, lyDo) {
             axios.put(apiHD + '/huyXacNhan/' + id + '?lyDo=' + lyDo).then((response) => {
                 if (this.check == 1) {
-                    if (this.dataChoXacNhan[0].trangThai == '2') {
-                        let index = -1;
-                        for (let i = 0; i < this.dataChoXacNhan.length; i++) {
-                            if (id == this.dataChoXacNhan[i].idHD) {
-                                index = i;
+                    if (this.dataChoXacNhan.length > 0) {
+                        if (this.dataChoXacNhan[0].trangThai == '2') {
+                            let index = -1;
+                            for (let i = 0; i < this.dataChoXacNhan.length; i++) {
+                                if (id == this.dataChoXacNhan[i].idHD) {
+                                    index = i;
+                                }
                             }
+                            this.dataDaHuy.unshift(response.data);
+                            this.dataChoXacNhan.splice(index, 1);
                         }
-                        this.dataDaHuy.unshift(this.dataChoXacNhan[index]);
-                        this.dataChoXacNhan.splice(index, 1);
                     }
-                    if (this.dataDangChuanBi[0].trangThai == '4') {
-                        let index = -1;
-                        for (let i = 0; i < this.dataDangChuanBi.length; i++) {
-                            if (id == this.dataDangChuanBi[i].idHD) {
-                                index = i;
+                    if (this.dataDangChuanBi.length > 0) {
+                        if (this.dataDangChuanBi[0].trangThai == '4') {
+                            let index = -1;
+                            for (let i = 0; i < this.dataDangChuanBi.length; i++) {
+                                if (id == this.dataDangChuanBi[i].idHD) {
+                                    index = i;
+                                }
                             }
+                            this.dataDaHuy.unshift(response.data);
+                            this.dataDangChuanBi.splice(index, 1);
                         }
-                        this.dataDaHuy.unshift(this.dataDangChuanBi[index]);
-                        this.dataDangChuanBi.splice(index, 1);
+                    }
+                    if (this.dataDangGiao.length > 0) {
+                        if (this.dataDangGiao[0].trangThai == '5') {
+                            let index = -1;
+                            for (let i = 0; i < this.dataDangGiao.length; i++) {
+                                if (id == this.dataDangGiao[i].idHD) {
+                                    index = i;
+                                }
+                            }
+                            this.dataDaHuy.unshift(response.data);
+                            this.dataDangGiao.splice(index, 1);
+                        }
                     }
                 }
             });
@@ -195,9 +210,48 @@ export const HDStore = defineStore('hoaDon', {
             }
         },
         //search date
-        async searchDate(startDate, endDate) {
+        async searchDate(startDate, endDate, cbbValue) {
+            console.log(cbbValue);
             try {
-                const response = await axios.get(apiHD + '/search-date?startDate=' + startDate + '&endDate=' + endDate);
+                const response = await axios.get(apiHD + '/search-date?startDate=' + startDate + '&endDate=' + endDate + '&comboBoxValue=' + cbbValue);
+                this.dataAll = response.data;
+                return this.dataAll;
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        },
+        //search date theo trạng thái
+        async searchDateByTrangThai(startDate, endDate, cbbValue, trangThai) {
+            try {
+                const response = await axios.get(apiHD + '/search-date-by-trang-thai?startDate=' + startDate + '&endDate=' + endDate + '&comboBoxValue=' + cbbValue + '&trangThai=' + trangThai);
+                if (trangThai == 2) {
+                    this.dataChoXacNhan = response.data;
+                    return this.dataChoXacNhan;
+                }
+                if (trangThai == 8) {
+                    this.dataDaHoanTra = response.data;
+                    return this.dataDaHoanTra;
+                }
+                if (trangThai == 0) {
+                    this.dataDaHuy = response.data;
+                    return this.dataDaHuy;
+                }
+                if (trangThai == 4) {
+                    this.dataDangChuanBi = response.data;
+                    return this.dataDangChuanBi;
+                }
+                if (trangThai == 5) {
+                    this.dataDangGiao = response.data;
+                    return this.dataDangGiao;
+                }
+                if (trangThai == 3) {
+                    this.dataHoanThanh = response.data;
+                    return this.dataHoanThanh;
+                }
+                if (trangThai == 7) {
+                    this.dataHoanTraHoanTien = response.data;
+                    return this.dataHoanTraHoanTien;
+                }
             } catch (error) {
                 console.error('Error fetching users:', error);
             }

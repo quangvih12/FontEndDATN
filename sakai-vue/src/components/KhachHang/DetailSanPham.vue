@@ -44,7 +44,6 @@ const loadProducts = async () => {
 const loadData = async () => {
     await productStore.fetchProductById(idProduct);
     dataSanPham.value = productStore.product;
-
     await productStore.getAllSLTon(idProduct);
     soLuongTon.value = productStore.slTon;
 };
@@ -99,6 +98,7 @@ const formatCurrency = (value) => {
     if (!value) return '';
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
 };
+
 
 const hasTenKH = ref(dataSanPham.value.tenKH !== null && dataSanPham.value.tenKH !== undefined);
 
@@ -179,6 +179,7 @@ const getSizeByMauSac = async (idms) => {
     await productStore.getSizeByMauSac(idProduct, idms);
     dataSize.value = productStore.sizes;
 };
+
 </script>
 
 <template>
@@ -207,8 +208,11 @@ const getSizeByMauSac = async (idms) => {
                             <label for="" style="margin-left: 20px"
                                 >Loại: <span style="color: red">{{ dataSanPham.loai }}</span></label
                             >
-                            <h2 v-if="hasTenKH" style="color: red">{{ formatCurrency(dataSanPham.giaSauGiam) }}</h2>
-                            <h2 v-else style="color: red">{{ formatCurrency(dataSanPham.giaBan) }}</h2>
+                            <div class="gb">
+                                <h2 style="color: red" :class="{ 'gach-di': dataSanPham.id }">{{ formatCurrency(dataSanPham.giaBan) }}</h2>
+                                <h2 style="color: red">{{ formatCurrency(dataSanPham.giaSauGiam) }}</h2>
+                                <Tag v-if="dataSanPham.id !== null && dataSanPham.id !== undefined" severity="danger" style="margin-left: 15px">Giảm {{ dataSanPham.giaTriGiam }}%</Tag>
+                            </div>
                             <label for="">- Trọng lượng: {{ dataSanPham.trongLuong }}</label>
                             <br />
                             <label for="">- Vật liệu: {{ dataSanPham.vatLieu }}</label>
@@ -225,7 +229,9 @@ const getSizeByMauSac = async (idms) => {
                             <label class="ms">Màu sắc</label>
                             <br />
                             <div class="rounded-content-list">
+
                                 <div v-for="(mauSacs, index) in dataMauSac" :key="index" class="rounded-content" @click="selectMauSac(mauSacs)" :class="{ selected: isMauSacSelected(mauSacs) }">
+
                                     <img class="rounded-image" :src="mauSacs.anh" alt="Hình ảnh" />
                                     <a class="rounded-text">{{ mauSacs.ten }}</a>
                                 </div>
@@ -413,8 +419,10 @@ const getSizeByMauSac = async (idms) => {
 </template>
 
 <style scoped>
+
 div.selected {
     border: 2px solid red;
+
 }
 .grid {
     margin-top: 45px;
@@ -586,5 +594,9 @@ div.selected {
     border-bottom-right-radius: 20px;
     transition: background-color 0.3s ease;
     border: 1px solid #ccc;
+}
+
+.selected {
+    border-color: #e8bd72; /* Màu border khi được chọn */
 }
 </style>

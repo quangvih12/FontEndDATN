@@ -60,8 +60,7 @@ const schema = yup.object().shape({
     idMauSac: yup.array().required('vui lòng chọn màu sắc sản phẩm '),
     vatLieu: yup.number().required(' vui lòng chọn Vật liệu sản phẩm '),
     demLot: yup.string().required(' vui lòng chọn đệm lót sản phẩm '),
-    idSize: yup.array().required('Bạn cần chọn ít nhất một kích thước sản phẩm'),
-    soLuongSize: yup.number().required('bạn cần nhập số lượng size').min(1, 'Số lượng phải lớn hơn hoặc bằng 1').nullable(),
+    soLuongSize: yup.number().min(1, 'Số lượng phải lớn hơn hoặc bằng 1').nullable(),
     trongLuong: yup.string().required('vui lòng chọn trọng lượng sản phẩm'),
     imgMauSac: yup.array().required('vui lòng chọn ảnh màu sắc sản phẩm'),
     trangThai: yup.number().required('vui lòng chọn trạng thái của sản phẩm'),
@@ -108,11 +107,11 @@ const hideDialog = () => {
 
 const onSubmit = handleSubmit(async (values) => {
     try {
-   //      console.log(values);
+        // console.log('val: ', values);
         await productStore.edit(values);
         toast.add({ severity: 'success', summary: 'Success Message', detail: 'update thành công', life: 3000 });
         productDialog.value = false;
-        //   reset();
+        reset();
         //   }
     } catch (error) {
         console.error('Lỗi xử lý dữ liệu:', error);
@@ -158,14 +157,18 @@ const check = async () => {
 
 const reset = () => {
     resetForm();
-    array.value = 1;
+    imagesProduct.value = [];
+    array.value = [];
+    arrayMauSac.value = [];
     selectedSizes.value = null;
     selectedMauSac.value = null;
     selectedLoai.value = null;
     selectedCity.value = null;
-    selectedvatLieu.value = null;
-    ImagesProduct.value = null;
     selectedTrongLuong.value = null;
+    selectedvatLieu.value = null;
+    ImagesProduct.value = [];
+    arrayImgMauSac.value = [];
+    imageUrls.value = [];
 };
 
 const handleInputChange = () => {
@@ -173,6 +176,15 @@ const handleInputChange = () => {
         SoLuongSize.value = array.value.join(',').replace(/^,/, '').split(',').map(Number);
     } else {
         SoLuongSize.value = null;
+    }
+};
+
+const arrayMauSac = ref([]);
+const handleInputChangeMau = (sizeId) => {
+    if (arrayMauSac.value.length > 0) {
+        soLuongMauSac.value = arrayMauSac.value.join(',').replace(/^,/, '').split(',').map(Number);
+    } else {
+        soLuongMauSac.value = null;
     }
 };
 
@@ -274,7 +286,7 @@ function onFileInputImageProduct(event) {
         const basePath = "D:\\imgDATN\\"; // Đường dẫn cố định
         const fileName = basePath + file.name;
         imageUrls.value.push(fileName);
-       
+
     }
     ImagesProduct.value = imageUrls.value;
     // console.log(ImagesProduct.value)
@@ -329,7 +341,7 @@ onMounted(() => {
     loadDataLoai();
     loadDataTrongLuong();
     loadDataVatLieu();
-    // console.log('list update: ', props.myProp);
+    //   console.log('list update: ', props.myProp);
 });
 
 const arrayImageMauSac = ref([]);
@@ -400,21 +412,24 @@ const editProduct = () => {
     } else {
         Size.value = null;
     }
-    for (let i = 0; i < selectedSizes.value.length; i++) {
-        const size = selectedSizes.value[i].id;
-        const soLuong = soLuongSize[i];
-        array.value[i] = soLuong;
-        //   console.log(`Size: ${size}, Số lượng: ${soLuong}`);
-    }
-    if (array.value.length > 0) {
-        SoLuongSize.value = array.value.join(',').replace(/^,/, '').split(',').map(Number);
-    } else {
-        SoLuongSize.value = null;
-    }
+    // for (let i = 0; i < selectedSizes.value.length; i++) {
+    //     const size = selectedSizes.value[i].id;
+    //     const soLuong = soLuongSize[i];
+    //     array.value[i] = soLuong;
+    //     //   console.log(`Size: ${size}, Số lượng: ${soLuong}`);
+    // }
+    // if (array.value.length > 0) {
+    //     SoLuongSize.value = array.value.join(',').replace(/^,/, '').split(',').map(Number);
+    // } else {
+    //     SoLuongSize.value = null;
+    // }
 
     //màu sắc và ảnh màu sắc
     const tenMauSac = props.myProp.mauSac.map((s) => s.mauSac.ten);
     const anhMauSac = props.myProp.mauSac.map((s) => s.anh);
+    const SizeMauSac = props.myProp.mauSac.map((s) => s.sizeChiTiet?.size?.ten);
+    const IdMauSacChiTiet = props.myProp.mauSac.map((s) => s.id);
+    const soLuongMauSacs = props.myProp.mauSac.map(s => s.soLuong);
     const selectedMauSacTen = [];
     for (const ten of tenMauSac) {
         const selected = dataMauSac.value.find((i) => i.ten === ten);
@@ -423,6 +438,7 @@ const editProduct = () => {
         }
     }
     selectedMauSac.value = selectedMauSacTen;
+
     if (selectedMauSac.value.length > 0) {
         const selectedIds = selectedMauSac.value.map((item) => item.id);
         idMauSac.value = selectedIds.join(',').split(',').map(Number);
@@ -430,11 +446,35 @@ const editProduct = () => {
     } else {
         idMauSac.value = null;
     }
-    for (let i = 0; i < selectedMauSac.value.length; i++) {
-        const mauSac = selectedMauSac.value[i].ten;
+
+    const selectedMauSacCopy = selectedMauSac.value.map(item => ({ ...item }));
+
+
+    for (let i = 0; i < selectedMauSacCopy.length; i++) {
+        const mauSac = selectedMauSacCopy[i].ten;
         const anh = anhMauSac[i];
         arrayImageMauSac.value[i] = anh;
-        selectedMauSac.value[i].anh = anh;
+        selectedMauSacCopy[i].anh = anh;
+        const soLuong = soLuongMauSacs[i];
+        array.value[i] = soLuong;
+        const tenSize = SizeMauSac[i];
+        selectedMauSacCopy[i].tenSize = tenSize;
+        const idMauSacChiTiet = IdMauSacChiTiet[i];
+        selectedMauSacCopy[i].idMauSacChiTiet = idMauSacChiTiet;
+    }
+    selectedMauSacCopy.sort((a, b) => {
+        if (a.sizeChiTiet && a.sizeChiTiet.id && b.sizeChiTiet && b.sizeChiTiet.id) {
+            return a.sizeChiTiet.id - b.sizeChiTiet.id;
+        }
+        return 0;
+    });
+
+    selectedMauSac.value = selectedMauSacCopy;
+
+    if (array.value.length > 0) {
+        SoLuongSize.value = array.value.join(',').replace(/^,/, '').split(',').map(Number);
+    } else {
+        SoLuongSize.value = null;
     }
 
     for (const img of selectedMauSac.value) {
@@ -442,17 +482,15 @@ const editProduct = () => {
         imgMauSac.value = arrayImgMauSac.value.join(',').replace(/^,/, '').split(',');
     }
 
+
     // ảnh của sản phẩm
     arrayImage.value = props.myProp.img;
     for (const img of arrayImage.value) {
-        //  console.log(img.anh);
         ImagesProduct.value.push(img.anh);
         imagesProduct.value = ImagesProduct.value.join(',').replace(/^,/, '').split(',');
-        //  console.log(imagesProduct.value)
     }
 
-    //  console.log(props.myProp.img)
-
+    //  console.log(selectedMauSac.value)
     product.value = { ...editProduct };
     productDialog.value = true;
 };
@@ -508,7 +546,7 @@ const deleteMauSac = async (idMauSacs) => {
             }
         }
 
-        const mauSacToDelete = selectedMauSac.value.findIndex((m) => m.id === idMauSacs);
+        const mauSacToDelete = selectedMauSac.value.findIndex((m) => m.idMauSacChiTiet === idMauSacs);
 
         // Đặt ảnh của màu sắc đó thành null (nếu màu sắc tồn tại)
         if (mauSacToDelete !== -1) {
@@ -519,23 +557,23 @@ const deleteMauSac = async (idMauSacs) => {
         }
 
         // Tạo một bản sao mới của selectedMauSac.value và lọc bỏ phần tử cần xóa
-        const updatedSelectedMauSac = selectedMauSac.value.filter((m) => m.id !== idMauSacs);
+        const updatedSelectedMauSac = selectedMauSac.value.filter((m) => m.idMauSacChiTiet !== idMauSacs);
 
         // Gán bản sao mới này cho selectedMauSac.value
         selectedMauSac.value = updatedSelectedMauSac;
 
         // Lọc bỏ màu sắc khỏi sản phẩm props.myProp
-        props.myProp.mauSac = props.myProp.mauSac.filter((s) => s.mauSac.id !== idMauSacs);
-
+        props.myProp.mauSac = props.myProp.mauSac.filter((s) => s.id !== idMauSacs);
+        // console.log( selectedMauSac.value)
         // // Gọi hàm xóa từ store nếu cần
-        await productStore.deleteMauSac(props.myProp.id, idMauSacs);
+        //  await productStore.deleteMauSac( idMauSacs);
     } catch (error) {
         console.error('Lỗi xóa màu sắc:', error);
     }
 };
 
 const deleteImg = async (img) => {
-    console.log(img)
+    // console.log(img)
     for (let i = 0; i < ImagesProduct.value.length; i++) {
         if (ImagesProduct.value[i] === img) {
             //     console.log(idMauSac.value[i]);
@@ -751,20 +789,38 @@ const deleteImg = async (img) => {
                                     <p>nhập số lượng size:</p>
                                 </div>
                                 <div style="display: flex; flex-wrap: wrap">
-                                    <Div v-for="(size, index) in selectedSizes" :key="index" style="margin-top: 10px">
+                                    <Div v-for="(size, index) in selectedMauSac" :key="index" style="margin-top: 10px">
                                         <label :for="`input-${size.id}`" style="margin-right: 10px; margin-left: 10px">{{
                                             size.ten }}</label>
+                                        <label :for="`input-${size.id}`" style="margin-right: 10px; "
+                                            v-if="size.tenSize !== null"> - {{ size.tenSize }}</label>
                                         <input type="number" :id="`input-${size.id}`" v-model="array[index]"
                                             @change="handleInputChange()" :class="{ 'p-invalid': soLuongSizeError }"
                                             style="height: 20px; width: 60px" />
 
-                                        <Button icon="pi pi-trash" class="p-button-warning mr-2"
-                                            @click="deleteSize(size.id)"
-                                            style="width: 25px; height: 25px; margin: 0px 10px 0px 10px" />
+
                                     </Div>
                                 </div>
                             </div>
                             <small class="p-error">{{ soLuongSizeError }}</small>
+                            <!-- <div style="display: flex">
+                                    <div style="width: 150px">
+                                        <p>Số lượng màu sắc :</p>
+                                    </div>
+                                    <div style="display: flex; flex-wrap: wrap">
+                                        <div v-for="(mau, index) in selectedMauSac" :key="index" style="margin-top: 10px">
+                                            <label :for="`input-${mau.id}`" style="margin-right: 10px; margin-left: 10px">{{
+                                                mau.ten }}</label>
+                                            <input type="number" :id="`input-${mau.id}`" v-model="array[index]"
+                                                @change="handleInputChange(mau.id)"
+                                                :class="{ 'p-invalid': soLuongSizeError }"
+                                                style="height: 20px; width: 60px" />
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                                <small class="p-error">{{ soLuongSizeError }}</small> -->
                         </div>
                         <div class="field col-12 md:col-12" style="margin-bottom: 30px">
                             <label for="address">Mô tả</label>
@@ -781,7 +837,7 @@ const deleteImg = async (img) => {
                             <div style="display: block; margin-left: 200px">
                                 <div class="t"
                                     style="border: 1px solid black; border-radius: 10px; width: 300px; height: 240px; margin-top: -60px">
-                                    <img :src="anh==null? imagesChinh : anh" alt=""
+                                    <img :src="anh == null ? imagesChinh : anh" alt=""
                                         style="width: 275px; height: 230px; top: 50%; left: 50%; transform: translate(4%, 2%)" />
                                 </div>
                                 <div class="buton" style="margin-top: 10px">
@@ -809,9 +865,13 @@ const deleteImg = async (img) => {
                                 <div>
                                     Màu :
                                     <span class="product-name">{{ color.ten }}</span>
+                                    <span class="product-name" v-if="color.tenSize !== null"> - {{ color.tenSize
+                                    }}</span>
+
                                     <img :src="color.anh" alt=""
                                         style="width: 50px; height: 50px; top: 50%; left: 50%; transform: translate(4%, 2%); margin: 10px 0px 15px 0px" />
-                                    <Button icon="pi pi-trash" class="p-button-warning mr-2" @click="deleteMauSac(color.id)"
+                                    <Button icon="pi pi-trash" class="p-button-warning mr-2"
+                                        @click="deleteMauSac(color.idMauSacChiTiet)"
                                         style="width: 25px; height: 25px; margin-left: 17px; margin-bottom: 25px" />
                                 </div>
 
@@ -859,4 +919,5 @@ const deleteImg = async (img) => {
 //     width: 25px;
 //     height: 25px;
 //     margin: 10px 0 0 10px;
-// }</style>
+// }
+</style>

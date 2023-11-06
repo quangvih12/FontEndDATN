@@ -3,9 +3,11 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useLayout } from '@/layout/composables/layout';
 import { useRouter } from 'vue-router';
 import { userStore } from '@/service/Admin/User/UserService.js';
+
 import { gioHangStore } from '@/service/KhachHang/Giohang/GiohangCTService.js';
 import tokenService from '@/service/Authentication/TokenService.js';
 import userKHService from '@/service/KhachHang/UserService.js';
+
 
 const userService = userStore();
 const { layoutConfig, onMenuToggle } = useLayout();
@@ -33,9 +35,20 @@ const logoUrl = computed(() => {
 const onTopBarMenuButton = () => {
     topbarMenuActive.value = !topbarMenuActive.value;
 };
-const onSettingsClick = () => {
+
+const selectedUserId = computed(() => {
+    return selectedCustomer.value ? selectedCustomer.value.id : null;
+});
+
+const onSettingsClick = (event) => {
     topbarMenuActive.value = false;
-    router.push('/documentation');
+    if (event.item.label === 'Hồ sơ cá nhân' && selectedUserId.value) {
+        router.push(`/thong-tin-ca-nhan/${selectedUserId.value}`);
+    } else if (event.item.label === 'Lịch sử mua hàng') {
+        router.push('/lich-su-sp');
+    } else {
+        // Xử lý trường hợp khác nếu cần
+    }
 };
 const topbarMenuClasses = computed(() => {
     return {
@@ -75,7 +88,6 @@ const fetchData = async () => {
     try {
         await userService.getAllUser();
         khachHang.value = userService.data;
-        console.log(userService.data, 'data test token');
     } catch (error) {
         // Xử lý lỗi ở đây nếu cần
     }
@@ -96,6 +108,7 @@ const isTokenValid = async (token) => {
             console.error('Error while validating token:', error);
         }
     }
+
 };
 
 // dùng để lưu thông tin khách hàng khi được chọn CBB.
@@ -119,6 +132,7 @@ const displayKH = async () => {
         const tokens = await tokenService.gentoken(selectedCustomer.value.userName);
         localStorage.setItem('token', tokens);
     }
+
 };
 </script>
 
@@ -169,6 +183,7 @@ const displayKH = async () => {
             <router-link to="/gio-hang" class="layout-topbar-logo" style="width: 5%; margin-left: 3px">
                 <i class="pi pi-shopping-cart p-text-secondary" style="font-size: 2rem" v-badge="soLuong"></i>
             </router-link>
+
         </div>
     </div>
 </template>
