@@ -3,7 +3,7 @@ import { useToast } from 'primevue/usetoast';
 import { useForm, useField } from 'vee-validate';
 import { onMounted, ref, watch } from 'vue';
 import * as yup from 'yup';
-import { useDiaChi } from '../../../service/KhachHang/DiaChi';
+import { useDiaChi } from '../../../service/KhachHang/DiaChiService';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();

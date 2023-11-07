@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue';
 import { useForm, useField } from 'vee-validate';
 import * as yup from 'yup';
-import { useDiaChi } from '../../../service/KhachHang/DiaChi';
+import { useDiaChi } from '../../../service/KhachHang/DiaChiService';
 import { useRoute } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
 

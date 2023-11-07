@@ -4,7 +4,7 @@ import { ref, onMounted, onBeforeMount, watch } from 'vue';
 import Them from './Add.vue';
 import Detail from './Detail.vue';
 import Update from './Update.vue';
-import { useDiaChi } from '../../../service/KhachHang/DiaChi';
+import { useDiaChi } from '../../../service/KhachHang/DiaChiService';
 import { useToast } from 'primevue/usetoast';
 import { useRoute } from 'vue-router';
 
