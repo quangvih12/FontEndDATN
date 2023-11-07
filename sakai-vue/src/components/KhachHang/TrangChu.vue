@@ -104,7 +104,7 @@ const thumbnailsSP = [
         name: 'ROC R43 Frozen Xanh abc',
         price: '320,000 ₫'
     },
-    
+
     {
         imageUrl: 'https://nontrum.vn/wp-content/uploads/2019/10/non-balder-vang-1-e1583121638578.jpg',
         name: 'ROC R43 Frozen Xanh',
@@ -480,4 +480,4 @@ const banner9 =
 .flex-item:hover .xct {
     bottom: 0px;
 }
-</style> 
+</style>

@@ -4,7 +4,7 @@ import { FilterMatchMode, FilterOperator } from 'primevue/api';
 import CustomerService from '@/service/CustomerService';
 import ProductService from '@/service/ProductService';
 import { ref, onBeforeMount, onMounted } from 'vue';
-import { HDStore } from '../../../service/Admin/HoaDon/HoaDonService';
+import { HDKHStore } from '../../../service/KhachHang/HoaDonKHService';
 import DetailHoaDon from './TrangThaiDonHang.vue';
 import { useRouter } from 'vue-router';
 
@@ -12,9 +12,9 @@ const router = useRouter();
 
 const redirectToTrangThaiDonHang = (id) => {
     // Chuyển hướng đến trang trang-thai-don-hang và truyền ID của hóa đơn qua URL
-    router.push({ name: 'trang-thai-don-hang', params: { id: id } });
+    router.push({ name: 'trangThaiDonHang', params: { id: id } });
 };
-const useHD = HDStore();
+const useHD = HDKHStore();
 const customer1 = ref(null);
 const customer2 = ref(null);
 const customer3 = ref(null);
@@ -25,7 +25,7 @@ const products = ref(null);
 const data = ref([]);
 
 const loadData = async () => {
-    await useHD.fetchDataByStatus(0);
+    await useHD.fetchDataByStatus(1, 0);
     data.value = useHD.dataDaHuy;
 };
 //chạy cái hiện data luôn
@@ -55,17 +55,9 @@ const hienThiTrangThai = (trangThai) => {
 
 const columns = ref([
     { field: 'maHD', header: 'Mã hoá đơn' },
-    { field: 'nguoiTao', header: 'Người tạo' },
-    { field: 'ngayTao', header: 'Ngày tạo' },
-    { field: 'ngaySua', header: 'Ngày sửa' },
     { field: 'tenNguoiNhan', header: 'Tên người nhận' },
-    { field: 'tienShip', header: 'Tiền ship' },
     { field: 'tongTien', header: 'Tổng tiền' },
-    { field: 'tienSauKhiGiam', header: 'Tiền sau giảm' },
-    { field: 'tenPTTT', header: 'Phương thức thanh toán' },
-    { field: 'ngayThanhToan', header: 'Ngày thanh toán' },
-    { field: 'ngayShip', header: 'Ngày ship' },
-    { field: 'ngayNhan', header: 'Ngày nhận' }
+    { field: 'tienSauKhiGiam', header: 'Tiền sau giảm' }
 ]);
 const dataSearchDate = ref([
     { label: 'Ngày tạo', value: 'ngayTao' },
@@ -159,10 +151,7 @@ const formatDate = (value) => {
     >
         <template #header>
             <div class="col-12 flex">
-                <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-                    <MultiSelect icon="pi pi-plus" placeholder="Select Columns" :modelValue="selectedColumns" :options="columns" optionLabel="header" @update:modelValue="onToggle" display="tag" />
-                </div>
-                <span class="p-input-icon-left" style="margin-left: 20px">
+                <span class="p-input-icon-left">
                     <i class="pi pi-search" />
                     <InputText v-model="filters1['global'].value" placeholder="Keyword Search" style="min-width: 13rem; height: 40px" />
                 </span>
@@ -174,7 +163,31 @@ const formatDate = (value) => {
                 {{ slotProps.data.stt }}
             </template>
         </Column>
-        <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column>
+        <Column field="maHD" header="Mã hoá đơn" :sortable="true" headerStyle="width:14%; min-width:1rem;">
+            <template #body="slotProps">
+                <span class="p-column-title">maHD</span>
+                {{ slotProps.data.maHD }}
+            </template>
+        </Column>
+        <Column field="tenNguoiNhan" header="Tên người nhận" :sortable="true" headerStyle="width:14%; min-width:1rem;">
+            <template #body="slotProps">
+                <span class="p-column-title">tenNguoiNhan</span>
+                {{ slotProps.data.tenNguoiNhan }}
+            </template>
+        </Column>
+        <Column field="tongTien" header="Tổng tiền" :sortable="true" headerStyle="width:14%; min-width:1rem;">
+            <template #body="slotProps">
+                <span class="p-column-title">tongTien</span>
+                {{ slotProps.data.tongTien }}
+            </template>
+        </Column>
+        <Column field="tienSauGiam" header="Tiền sau giảm" :sortable="true" headerStyle="width:14%; min-width:1rem;">
+            <template #body="slotProps">
+                <span class="p-column-title">tienSauGiam</span>
+                {{ slotProps.data.tienSauGiam }}
+            </template>
+        </Column>
+        <!-- <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column> -->
         <Column field="diaChi" header="Địa chỉ" :sortable="false" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
                 <span class="p-column-title">diaChi</span>
@@ -189,7 +202,7 @@ const formatDate = (value) => {
         </Column>
         <Column header="Hành động" headerStyle="min-width:10rem;">
             <template #body="slotProps">
-                <Button :my-prop="slotProps.data" @click="redirectToTrangThaiDonHang(data.id)" label="Xem" class="p-button-outlined p-button-info mr-2 mb-2" />
+                <Button :my-prop="slotProps.data" @click="redirectToTrangThaiDonHang(slotProps.data.idHD)" label="Xem" class="p-button-outlined p-button-info mr-2 mb-2" />
             </template>
         </Column>
     </DataTable>
