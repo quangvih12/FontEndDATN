@@ -55,6 +55,7 @@ const onSubmit = handleSubmit(async (values) => {
         anh: values.anh,
         idSizeChiTiet: values.idSizeChiTiet
     };
+    console.log(form)
     let sum = 0;
     for (const mauSac of props.lst) {
         sum += Math.floor(mauSac.soLuong);
@@ -117,7 +118,8 @@ const openNew = () => {
 const lstSize = ref([]);
 const loadDataSize = async () => {
     await productStore.fetchAllSize(props.idProduct);
-    lstSize.value = productStore.sizes;
+    lstSize.value = [{id: -1, ten: 'Không có'}, ...productStore.sizes];
+
 }
 
 

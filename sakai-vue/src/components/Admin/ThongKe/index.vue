@@ -3,7 +3,7 @@ import { onMounted, reactive, ref, watch } from 'vue';
 import ProductService from '@/service/ProductService';
 import { useLayout } from '@/layout/composables/layout';
 import ThongKeHoaDon from './ThongKeHoaDon.vue';
-import ThongKeSanPham from './ThongKeSanPham.vue';
+import ThongKeSanPham from './ThongKeLoiNhuan.vue';
 import ThongKeTheoNgay from './ThongKeDoanhThu.vue';
 
 const { isDarkTheme } = useLayout();
@@ -100,16 +100,16 @@ watch(
     <div class="card">
         <div class="card">
             <TabView>
-               
-                <!-- <TabPanel header="Thống kê sản phẩm">
-                    <ThongKeSanPham></ThongKeSanPham>
-                </TabPanel> -->
                 <TabPanel header="Thống kê doanh thu">
                     <ThongKeTheoNgay></ThongKeTheoNgay>
                 </TabPanel>
-                <TabPanel header="Thống kê hoá đơn">
-                    <ThongKeHoaDon></ThongKeHoaDon>
+                <TabPanel header="Thống kê Lợi nhuận">
+                    <ThongKeSanPham></ThongKeSanPham>
                 </TabPanel>
+              
+                <!-- <TabPanel header="Thống kê hoá đơn">
+                    <ThongKeHoaDon></ThongKeHoaDon>
+                </TabPanel> -->
             </TabView>
 
         </div>
