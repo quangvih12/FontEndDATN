@@ -24,7 +24,7 @@ const loadData = async () => {
 const loadDataHangMoi = async () => {
     await useTrangChuService.fetchDataByNgayTao();
     dataHangMoi.value = useTrangChuService.dataHangMoi;
-    console.log(dataHangMoi.value,"trang chu");
+    // console.log(dataHangMoi.value);
 };
 
 //load data hang moi
