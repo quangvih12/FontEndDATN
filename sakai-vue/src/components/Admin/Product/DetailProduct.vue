@@ -134,7 +134,7 @@ onMounted(() => {
 
 const arrayImageMauSac = ref([]);
 const arrayImage = ref([]);
-
+const lstChiTietSP = ref([]);
 const editProduct = () => {
     id.value = props.myProp.id;
     name.value = props.myProp.ten;
@@ -181,99 +181,31 @@ const editProduct = () => {
     } else {
         TrongLuong.value = null;
     }
-
-    const tenSize = props.myProp.size.map((size) => size.size.ten);
-    const soLuongSize = props.myProp.size.map((size) => size.soLuong);
-
-    //size và số lượng size
-    // const selectedSizeIds = [];
-    // for (const ten of tenSize) {
-    //     const selectedSizeId = dataSize.value.find((i) => i.ten === ten);
-    //     if (selectedSizeId) {
-    //         selectedSizeIds.push(selectedSizeId);
-    //     }
-    // }
-    // selectedSizes.value = selectedSizeIds;
-    // if (selectedSizes.value.length > 0) {
-    //     const selectedIds = selectedSizes.value.map((item) => item.id);
-    //     Size.value = selectedIds.join(',').split(',').map(Number);
-    // } else {
-    //     Size.value = null;
-    // }
-
-    //màu sắc và ảnh màu sắc
-    const tenMauSac = props.myProp.mauSac.map((s) => s.mauSac.ten);
-    const anhMauSac = props.myProp.mauSac.map((s) => s.anh);
-    const SizeMauSac = props.myProp.mauSac.map((s) => s.sizeChiTiet?.size?.ten);
-    const IdMauSacChiTiet = props.myProp.mauSac.map((s) => s.id);
-    const soLuongMauSacs = props.myProp.mauSac.map(s => s.soLuong);
-    const selectedMauSacTen = [];
-    for (const ten of tenMauSac) {
-        const selected = dataMauSac.value.find((i) => i.ten === ten);
-        if (selected) {
-            selectedMauSacTen.push(selected);
-        }
-    }
-    selectedMauSac.value = selectedMauSacTen;
-
-    if (selectedMauSac.value.length > 0) {
-        const selectedIds = selectedMauSac.value.map((item) => item.id);
-        //    idMauSac.value = selectedIds.join(',').split(',').map(Number);
-        //  console.log(idMauSac.value);
-    } else {
-        //    idMauSac.value = null;
-    }
-
-    const selectedMauSacCopy = selectedMauSac.value.map(item => ({ ...item }));
-
-
-    for (let i = 0; i < selectedMauSacCopy.length; i++) {
-        const mauSac = selectedMauSacCopy[i].ten;
-        const anh = anhMauSac[i];
-        arrayImageMauSac.value[i] = anh;
-        selectedMauSacCopy[i].anh = anh;
-        const soLuong = soLuongMauSacs[i];
-        array.value[i] = soLuong;
-        const tenSize = SizeMauSac[i];
-        selectedMauSacCopy[i].tenSize = tenSize;
-        const idMauSacChiTiet = IdMauSacChiTiet[i];
-        selectedMauSacCopy[i].idMauSacChiTiet = idMauSacChiTiet;
-    }
-    selectedMauSacCopy.sort((a, b) => {
-        if (a.sizeChiTiet && a.sizeChiTiet.id && b.sizeChiTiet && b.sizeChiTiet.id) {
-            return a.sizeChiTiet.id - b.sizeChiTiet.id;
-        }
-        return 0;
-    });
-
-    selectedMauSac.value = selectedMauSacCopy;
-
-    if (array.value.length > 0) {
-        //  SoLuongSize.value = array.value.join(',').replace(/^,/, '').split(',').map(Number);
-    } else {
-        //   SoLuongSize.value = null;
-    }
-
-    for (const img of selectedMauSac.value) {
-        arrayImgMauSac.value.push(img.anh);
-        //    imgMauSac.value = arrayImgMauSac.value.join(',').replace(/^,/, '').split(',');
-    }
-
-
-    // ảnh của sản phẩm
     arrayImage.value = props.myProp.img;
     for (const img of arrayImage.value) {
         ImagesProduct.value.push(img.anh);
         imagesProduct.value = ImagesProduct.value.join(',').replace(/^,/, '').split(',');
     }
-
-    //  console.log(selectedMauSac.value)
+    
+    lstChiTietSP.value = props.myProp.sanPhamChiTiet;
+    console.log(props.myProp)
     product.value = { ...editProduct };
 
     productDialog.value = true;
 };
 
+const getStatusLabel = (soLuong) => {
+    if (soLuong <= 0) {
+        return { text: 'hết Hàng', severity: 'danger' };
+    } else {
+        return { text: 'Còn hàng', severity: 'success' };
+    }
 
+};
+
+const formatCurrency = (value) => {
+    return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+};
 </script>
 
 
@@ -295,32 +227,7 @@ const editProduct = () => {
                         <small class="p-error">{{ nameError }}</small>
                     </div>
 
-                    <div class="Field col-12 md:col-12" style="margin-bottom: 30px">
-                        <span class="p-float-label">
-                            <InputNumber id="soluong" v-model="soluong" :class="{ 'p-invalid': soLuongError }" disabled>
-                            </InputNumber>
-                            <label for="SoLuongTon">Số lượng tồn</label>
-                        </span>
-                        <small class="p-error">{{ soLuongError }}</small>
-                    </div>
 
-                    <div class="Field col-12 md:col-12" style="margin-bottom: 30px">
-                        <span class="p-float-label">
-                            <InputNumber id="Field" v-model="GiaNhap" :class="{ 'p-invalid': giaNhapError }" disabled>
-                            </InputNumber>
-                            <label for="Field">Giá Nhập</label>
-                        </span>
-                        <small class="p-error">{{ giaNhapError }}</small>
-                    </div>
-                    <div class="Field col-12 md:col-12" style="margin-bottom: 30px">
-
-                        <span class="p-float-label">
-                            <InputNumber id="number-input" name="GiaBan" v-model="GiaBan"
-                                :class="{ 'p-invalid': giaBanError }" disabled></InputNumber>
-                            <label for="Field">Giá bán</label>
-                        </span>
-                        <small class="p-error">{{ giaBanError }}</small>
-                    </div>
                     <div class="Field col-12 md:col-12" style="margin-bottom: 30px">
                         <label for="address">Quai Đeo</label>
                         <div class="flex flex-wrap gap-3">
@@ -396,20 +303,6 @@ const editProduct = () => {
 
                             <small class="p-error">{{ loaiError }}</small>
                         </div>
-                        <div class="Field col-6 md:col-6" style="margin-bottom: 30px">
-                            <div style="display: flex">
-                                <span class="p-float-label" style="width: 239px">
-                                    <MultiSelect v-model="selectedMauSac" :options="dataMauSac" optionLabel="ten"
-                                        :filter="false" :maxSelectedLabels="3" :class="{ 'p-invalid': mauSacError }"
-                                        @change="onMauSacChange" disabled>
-                                    </MultiSelect>
-                                    <label for="multiselect">Màu sắc</label>
-                                </span>
-
-
-                            </div>
-                            <small class="p-error">{{ mauSacError }}</small>
-                        </div>
 
 
                         <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
@@ -425,33 +318,7 @@ const editProduct = () => {
                             </div>
                             <small class="p-error">{{ vatLieuError }}</small>
                         </div>
-                        <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
-                            <div style="display: flex">
-                                <span class="p-float-label" style="width: 239px">
-                                    <Dropdown id="dropdown" :options="dataTrongLuong" v-model="selectedTrongLuong" disabled
-                                        optionLabel="value" :class="{ 'p-invalid': trongLuongError }"
-                                        @change="onTrongLuongChange">
-                                    </Dropdown>
-                                    <label for="dropdown">Trọng Lượng</label>
-                                </span>
-
-                            </div>
-                            <small class="p-error">{{ trongLuongError }}</small>
-                        </div>
-                        <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
-                            <div style="display: flex">
-                                <span class="p-float-label" style="width: 150px">
-                                    <MultiSelect v-model="selectedSizes" :options="dataSize" optionLabel="ten"
-                                        :filter="false" :maxSelectedLabels="3" :class="{ 'p-invalid': SizeError }" disabled
-                                        @change="onSizeChange">
-                                    </MultiSelect>
-                                    <label for="multiselect">Size</label>
-                                </span>
-
-                            </div>
-                            <small class="p-error">{{ SizeError }}</small>
-                        </div>
-
+                    
                         <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
                             <div style="display: flex">
                                 <span class="p-float-label" style="width: 239px">
@@ -465,88 +332,121 @@ const editProduct = () => {
 
                             <small class="p-error">{{ thuongHieuError }}</small>
                         </div>
-                        <div class="Field col-12 md:col-12" style="margin-bottom: 30px">
 
 
-                            <div style="display: flex">
-                                <div style="width: 150px">
-                                    <p>Số lượng màu sắc :</p>
-                                </div>
-                                <div style="display: flex; flex-wrap: wrap">
-                                    <Div v-for="(size, index) in selectedMauSac" :key="index" style="margin-top: 10px">
-                                        <label :for="`input-${size.id}`" style="margin-right: 10px; margin-left: 10px">{{
-                                            size.ten }}</label>
-                                        <label :for="`input-${size.id}`" style="margin-right: 10px; "
-                                            v-if="size.tenSize !== null"> - {{ size.tenSize }}</label>
-                                        <input type="number" :id="`input-${size.id}`" v-model="array[index]"
-                                            @change="handleInputChange()" :class="{ 'p-invalid': soLuongSizeError }"
-                                            style="height: 20px; width: 60px" disabled />
-                                    </Div>
-                                </div>
-
-                            </div>
-                            <small class="p-error">{{ soLuongMauError }}</small>
-                        </div>
-                        <div class="field col-12 md:col-12" style="margin-bottom: 30px">
-                            <label for="address">Mô tả</label>
-                            <Textarea id="address" rows="4" v-model="MoTa" :class="{ 'p-invalid': MoTaSacError }"
-                                disabled></Textarea>
-                            <small class="p-error">{{ MoTaSacError }}</small>
-                        </div>
+                    
                     </div>
                 </div>
                 <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
                     <div class="p-fluid formgrid grid">
                         <div class="Field col-12 md:col-6"
-                            style="margin-bottom: 30px; height: 300px;margin-top: 10px; display: inline-flex; justify-content: center; align-items: center;">
-                            <div style="display: block; margin-left: 200px;">
-                                <div class="t"
-                                    style="border: 1px solid black; border-radius: 10px; width: 300px; height:240px; margin-top: -60px;">
-                                    <img :src="imagesChinh" alt=""
-                                        style="width: 275px; height: 230px; top: 50%; left: 50%;  transform: translate(4%, 2%);">
-                                </div>
-                                <div class="buton" style="margin-top: 10px;">
-
-                                </div>
-                                <small class="p-error">{{ imagestError }}</small>
-                            </div>
+                            style="margin-bottom: 30px; height: 300px;margin-top: -30px; margin-left: 100px;display: inline-flex; justify-content: center; align-items: center;">
+                            <Galleria :value="arrayImage" :responsiveOptions="responsiveOptions" :numVisible="5"
+                                containerStyle="max-width: 340px"  style="">
+                                <template #item="slotProps">
+                                    <img :src="imagesChinh" :alt="slotProps.item.alt" style="width: 70%; height: ;" />
+                                </template>
+                                <template #thumbnail="slotProps">
+                                    <img :src="slotProps.item.anh" :alt="slotProps.item.alt" style="width: 80px; height:80px ;"  />
+                               
+                                </template>
+                            </Galleria>       
                         </div>
-                        <div class="field col-12 md:col-12">
-                            <div v-for="(img, index) in arrayImage" :key="index" class="mausac-container"
-                                style="display:  inline-block;margin-left: 30px; margin-bottom: 15px; height:90x ; width: 100px;">
-                                <div>
-                                    <img :src="img.anh" alt=""
-                                        style="width: 100px; height: 90px; top: 50%; left: 50%;  transform: translate(4%, 2%); margin: 10px 0px 15px 0px;">
-
-                                </div>
-
-                            </div>
-
-                        </div>
-                        <div class="field col-12 md:col-12" style="display:inline-block;">
-                            <div v-for="(color, index) in selectedMauSac" :key="index" class="mausac-container"
-                                style="display: inline-block;margin-left: 30px; margin-bottom: 15px; height:90x ; width: 100px;">
-                                <div>
-                                    Màu :
-                                    <span class="product-name">{{ color.ten }}</span>
-                                    <span class="product-name" v-if="color.tenSize !== null"> - {{ color.tenSize
-                                    }}</span>
-
-                                    <img :src="color.anh" alt=""
-                                        style="width: 50px; height: 50px; top: 50%; left: 50%; transform: translate(4%, 2%); margin: 10px 0px 15px 0px" />
-                                </div>
-
-
-                            </div>
-
-                            <br />
-                            <small class="p-error">{{ ImgMauSacError }}</small>
-                        </div>
-
                     </div>
-                    <div class="field col-12 md:col-12">
+                  
+                    <div class="field col-12 md:col-12" style="margin-bottom: 30px; margin-top: 20px;" >
+                            <label for="address">Mô tả</label>
+                            <Textarea id="address" rows="4" v-model="MoTa" :class="{ 'p-invalid': MoTaSacError }"
+                                disabled></Textarea>
+                            <small class="p-error">{{ MoTaSacError }}</small>
+                        </div>
+                </div>
 
-                    </div>
+                <div class="Field col-12 md:col-12" style="margin-bottom: 30px">
+                    <DataTable ref="dt" :value="lstChiTietSP" v-model:selection="selectedProducts" dataKey="id"
+                        :paginator="true" :rows="5" :filters="filters"
+                        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                        :rowsPerPageOptions="[5, 10, 25]"
+                        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
+                        responsiveLayout="scroll" showGridlines>
+                        <template #header>
+
+                            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                                <div style="display: flex;">
+                                    <h5 class="m-0" style="margin-right: 20px;">Chi Tiết Sản Phẩm </h5>
+                                </div>
+                                <AddMauSacChiTiet :my-prop="lstMauSac" :idProduct="idProduct" :soLuongTong="soluong">
+                                </AddMauSacChiTiet>
+                            </div>
+                        </template>
+
+
+                        <Column field="code" header="STT" :sortable="true" style="width: 1px; padding: 5px;">
+                            <template #body="slotProps">
+                                <span class="p-column-title">STT</span>
+                                {{ lstChiTietSP.indexOf(slotProps.data) + 1 }}
+                            </template>
+                        </Column>
+                        <Column field="code" header="Ảnh" :sortable="true" headerStyle="width:14%; min-width:5rem;">
+                            <template #body="slotProps">
+                                <span class="p-column-title">Ảnh</span>
+                                <img :src="slotProps.data.anh" :alt="i" class="shadow-2" width="50" />
+                            </template>
+                        </Column>
+                        <Column field="code" header="Tên Màu Sắc" :sortable="true"
+                            headerStyle="width:14%; min-width:10rem;">
+                            <template #body="slotProps">
+                                <span class="p-column-title">Tên Màu Sắc</span>
+                                {{ slotProps.data.tenMauSac }}
+                            </template>
+                        </Column>
+                        <Column field="code" header="Tên Size" :sortable="true" headerStyle="width:14%; min-width:8rem;">
+                            <template #body="slotProps">
+                                <span class="p-column-title">Size</span>
+                                {{ slotProps.data.tenSize === null ? "chưa có" : slotProps.data.tenSize }}
+                            </template>
+                        </Column>
+                        <Column field="code" header="Số Lượng" :sortable="true" headerStyle="width:14%; min-width:8rem;">
+                            <template #body="slotProps">
+                                <span class="p-column-title">Số Lượng</span>
+                                {{ slotProps.data.soLuongTon }}
+                            </template>
+                        </Column>
+                        <Column field="code" header="Giá Nhập" :sortable="true" headerStyle="width:14%; min-width:8rem;">
+                            <template #body="slotProps">
+                                <span class="p-column-title">Số Lượng</span>
+                                {{ formatCurrency(slotProps.data.giaNhap) }}
+                            </template>
+                        </Column>
+                        <Column field="code" header="Giá Bán" :sortable="true" headerStyle="width:14%; min-width:8rem;">
+                            <template #body="slotProps">
+                                <span class="p-column-title">Số Lượng</span>
+                                {{ formatCurrency(slotProps.data.giaBan) }}
+                            </template>
+                        </Column>
+                        <Column field="code" header="Trọng Lượng" :sortable="true" headerStyle="width:14%; min-width:8rem;">
+                            <template #body="slotProps">
+                                <span class="p-column-title">Số Lượng</span>
+                                {{ slotProps.data.trongLuong }}
+                            </template>
+                        </Column>
+                        <Column field="trangThai" header="Trạng Thái" sortable headerStyle="width: 4%; min-width: 5rem;">
+                            <template #body="slotProps">
+                                <!-- {{ slotProps.data.soLuong <= 0 ? "Hết":"còn hàng" }} -->
+                                <Tag :value="getStatusLabel(slotProps.data.soLuongTon).text"
+                                    :severity="getStatusLabel(slotProps.data.soLuongTon).severity" />
+                            </template>
+                        </Column>
+                        <!-- <Column header="Action" headerStyle="min-width:10rem;">
+                            <template #body="slotProps">
+                                <UpdateMauSacChiTiet :my-prop="slotProps.data" :idProduct="idProduct" :soLuongTong="soluong"
+                                    :lst="lstMauSac"></UpdateMauSacChiTiet>
+                                <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2"
+                                    @click="deleteMauSac(slotProps.data.id)" />
+                            </template>
+                        </Column> -->
+
+                    </DataTable>
                 </div>
                 <div style="width: 1000px; text-align: center;">
                     <Button class="p-button-outlined" outlined severity="secondary"
