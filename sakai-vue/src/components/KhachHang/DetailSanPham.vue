@@ -14,22 +14,35 @@ const gioHangService = gioHangStore();
 const productStore = useDetailProductStore();
 const route = useRoute();
 const idProduct = parseInt(route.params.id);
-const toast = useToast();
-const dataSanPham = ref([]);
+
+
+const dataSanPham = ref({});
+
 const dataMauSac = ref([]);
 const dataSize = ref([]);
 const loadImage = ref([]);
 const products = ref([]);
+
+const dataListSPCT = ref([]);
+
 const dataSanPhamSelected = ref([]);
 const soLuongTon = ref('');
 
+
 onMounted(() => {
     loadData();
-    loadImg();
-    loadDataSize();
-    loadProducts();
-    loadDataMauSac();
+    // loadImg();
+    // loadDataSize();
+    // loadProducts();
+    // loadDataMauSac();
+    loaddataListSPCT();
 });
+
+
+const loaddataListSPCT = async () => {
+    await productStore.fetchSPCTByIdSP(idProduct);
+    dataListSPCT.value = productStore.products;
+    console.log(dataListSPCT.value);
 
 const getSLTonTong = async (idctsp) => {
     await productStore.getAllSLTon(idctsp);
@@ -44,7 +57,15 @@ const loadProducts = async () => {
 const loadData = async () => {
     await productStore.fetchProductById(idProduct);
     dataSanPham.value = productStore.product;
-    await productStore.getAllSLTon(idProduct);
+
+    loadImage.value = dataSanPham.value.images;
+    console.log(dataSanPham.value);
+};
+
+const loadProducts = async () => {
+    await productStore.fetchAll();
+    products.value = productStore.products;
+    // console.log(productStore.products);
     soLuongTon.value = productStore.slTon;
 };
 

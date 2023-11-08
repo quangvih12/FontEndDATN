@@ -5,7 +5,7 @@ import DaHuy from './DaHuy.vue';
 import ChoThanhToan from './ChoThanhToan.vue';
 import VanChuyen from './VanChuyen.vue';
 import DangGiao from './DangGiao.vue';
-import HoanTra from './TraHangHoanTien.vue'
+import HoanTra from './TraHangHoanTien.vue';
 </script>
 <template>
     <div class="container">
@@ -15,10 +15,8 @@ import HoanTra from './TraHangHoanTien.vue'
                     <TabPanel header="Tất cả">
                         <TatCa></TatCa>
                     </TabPanel>
-                    <TabPanel header="Chờ thanh toán">
-                        <ChoThanhToan></ChoThanhToan>
-                    </TabPanel>
-                    <TabPanel header="Vận chuyển">
+
+                    <TabPanel header="Đã thanh toán">
                         <VanChuyen></VanChuyen>
                     </TabPanel>
                     <TabPanel header="Đang giao">
