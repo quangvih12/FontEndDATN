@@ -10,31 +10,39 @@ const productStore = useDetailProductStore();
 const route = useRoute();
 const idProduct = parseInt(route.params.id);
 
-const dataSanPham = ref([]);
+const dataSanPham = ref({});
 const dataMauSac = ref([]);
 const dataSize = ref([]);
 const loadImage = ref([]);
 const products = ref([]);
+const dataListSPCT = ref([]);
 
 onMounted(() => {
     loadData();
-    loadImg();
-    loadDataSize();
-    loadProducts();
-    loadDataMauSac();
+    // loadImg();
+    // loadDataSize();
+    // loadProducts();
+    // loadDataMauSac();
+    loaddataListSPCT();
 });
 
-const loadProducts = async () => {
-    await productStore.fetchAll();
-    products.value = productStore.products;
-    // console.log(productStore.products);
+const loaddataListSPCT = async () => {
+    await productStore.fetchSPCTByIdSP(idProduct);
+    dataListSPCT.value = productStore.products;
+    console.log(dataListSPCT.value);
 };
 
 const loadData = async () => {
     await productStore.fetchProductById(idProduct);
     dataSanPham.value = productStore.product;
-    // console.log(productStore.product);
     loadImage.value = dataSanPham.value.images;
+    console.log(dataSanPham.value);
+};
+
+const loadProducts = async () => {
+    await productStore.fetchAll();
+    products.value = productStore.products;
+    // console.log(productStore.products);
 };
 
 const loadImg = async () => {
