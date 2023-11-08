@@ -3,6 +3,7 @@ import axios from 'axios';
 
 const apiDetail = 'http://localhost:8080/api/khach-hang/detail';
 
+
 export const useDetailProductStore = defineStore('detail', {
     id: 'product',
     state: () => ({
@@ -40,6 +41,7 @@ export const useDetailProductStore = defineStore('detail', {
             }
         },
 
+
         async fetchAllSize(idProduct) {
             try {
                 const response = await axios.get(apiDetail + `/findBySize/` + idProduct); // Thay đổi URL dựa trên API của bạn
@@ -50,23 +52,63 @@ export const useDetailProductStore = defineStore('detail', {
             }
         },
 
-        async fetchAllMauSac(idProduct) {
-            try {
-                const response = await axios.get(apiDetail + `/findByMauSac/` + idProduct); // Thay đổi URL dựa trên API của bạn
-                this.mauSacs = response.data;
-                //  console.log('mau: ',   this.mauSacs  );
-            } catch (error) {
-                console.error('Lỗi khi lấy danh sách sản phẩm:', error);
-            }
-        },
-        async fetchAll() {
-            try {
-                const response = await axios.get(apiDetail + '/getAll'); // Thay đổi URL dựa trên API của bạn
-                this.products = response.data;
-                //  console.table(this.products.size);
-            } catch (error) {
-                console.error('Lỗi khi lấy danh sách sản phẩm:', error);
-            }
-        }
-    }
+
+    async fetchAllMauSac(idProduct) {
+      try {
+        const response = await axios.get(apiDetail + `/findByMauSac/`+idProduct); // Thay đổi URL dựa trên API của bạn
+        this.mauSacs = response.data;
+        //  console.log('mau: ',   this.mauSacs  );
+      } catch (error) {
+        console.error('Lỗi khi lấy danh sách sản phẩm:', error);
+      }
+    },
+    async fetchAll() {
+      try {
+        const response = await axios.get(apiDetail + '/getAll'); // Thay đổi URL dựa trên API của bạn
+        this.products = response.data;
+        //  console.table(this.products.size);
+
+      } catch (error) {
+        console.error('Lỗi khi lấy danh sách sản phẩm:', error);
+      }
+    },
+
+    async getSizeByMauSac(idCTSP, idMS) {
+      try {
+        const response = await axios.get(`http://localhost:8080/api/khach-hang/detail/getSizeByMS/${idCTSP}?idms=${idMS}`); // Thay đổi URL dựa trên API của bạn
+        this.sizes = response.data;
+        return this.sizes;
+      } catch (error) {
+        console.error('Lỗi khi lấy danh sách sản phẩm:', error);
+      }
+    },
+    async getMauSacBySize(idCTSP, idSizeCT) {
+      try {
+        const response = await axios.get(`http://localhost:8080/api/khach-hang/detail/getMauSacBySize/${idCTSP}?idsizect=${idSizeCT}`); // Thay đổi URL dựa trên API của bạn
+        this.mauSacs = response.data;
+        return this.mauSacs;
+      } catch (error) {
+        console.error('Lỗi khi lấy danh sách sản phẩm:', error);
+      }
+    },
+    async getSanPhamSelected(idCTSP, idMS, idSizeCT) {
+      try {
+        const response = await axios.get(`http://localhost:8080/api/khach-hang/detail/getSanPhamSelected/${idCTSP}?idms=${idMS}&idsizect=${idSizeCT}`); // Thay đổi URL dựa trên API của bạn
+        this.data = response.data;
+        return this.data;
+      } catch (error) {
+        console.error('Lỗi khi lấy danh sách sản phẩm:', error);
+      }
+    },
+    async getAllSLTon(idCTSP) {
+      try {
+        const response = await axios.get(apiDetail + '/getSLTon/'+idCTSP); // Thay đổi URL dựa trên API của bạn
+        this.slTon = response.data;
+        //  console.table(this.products.size)
+      } catch (error) {
+        console.error('Lỗi khi lấy danh sách sản phẩm:', error);
+      }
+    },
+  }
 });
+

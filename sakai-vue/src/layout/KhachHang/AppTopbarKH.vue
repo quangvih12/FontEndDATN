@@ -3,17 +3,25 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useLayout } from '@/layout/composables/layout';
 import { useRouter } from 'vue-router';
 import { userStore } from '@/service/Admin/User/UserService.js';
+
+import { gioHangStore } from '@/service/KhachHang/Giohang/GiohangCTService.js';
 import tokenService from '@/service/Authentication/TokenService.js';
+import userKHService from '@/service/KhachHang/UserService.js';
+
+
 const userService = userStore();
 const { layoutConfig, onMenuToggle } = useLayout();
 
 const outsideClickListener = ref(null);
 const topbarMenuActive = ref(false);
 const router = useRouter();
+const selectedCustomer = ref(null);
+const gioHangService = gioHangStore();
 
 onMounted(() => {
     bindOutsideClickListener();
     fetchData();
+   // displayKH();
 });
 
 onBeforeUnmount(() => {
@@ -80,36 +88,53 @@ const fetchData = async () => {
     try {
         await userService.getAllUser();
         khachHang.value = userService.data;
+     //   console.log(khachHang.value);
     } catch (error) {
         // Xử lý lỗi ở đây nếu cần
     }
 };
 
-// dùng để lưu thông tin khách hàng khi được chọn CBB.
-// nếu muốn dùng thông tin khách hàng khi đặt hàng thì dùng selectedCustomer.value
-const selectedCustomer = ref(null);
+const isTokenValid = async (token) => {
+    if (token) {
+        try {
+            // Gọi API `/validate-token` để kiểm tra tính hợp lệ của token
+            const response = await tokenService.validatetoken(token);
 
-// hàm gọi sự thay đổi thông tin của khách hàng khi click vào CBB
-const displayKH = async () => {
-    selectedCustomer.value = khachHang.value.find((kh) => kh.ten === selectedKH.value.ten);
-    const token = await tokenService.gentoken(selectedCustomer.value.username);
-    localStorage.setItem('token', token);
+            if (response.status === 200) {
+                // Nếu API trả về mã 200 (OK), token hợp lệ
+                return true;
+            }
+        } catch (error) {
+            // Xử lý lỗi nếu có lỗi khi gọi API
+            console.error('Error while validating token:', error);
+        }
+    }
+
 };
 
-const menu = ref();
-const items = ref([
-    {
-        label: 'Hồ sơ cá nhân',
-        command: onSettingsClick
-    },
-    {
-        label: 'Lịch sử mua hàng',
-        command: onSettingsClick
-    }
-]);
+// dùng để lưu thông tin khách hàng khi được chọn CBB.
+// nếu muốn dùng thông tin khách hàng khi đặt hàng thì dùng selectedCustomer.value
 
-const toggle = (event) => {
-    menu.value.toggle(event);
+// hàm gọi sự thay đổi thông tin của khách hàng khi click vào CBB
+const soLuong = ref(null);
+const displayKH = async () => {
+ //   const token = localStorage.getItem('token');
+    
+    // if (isTokenValid(token)) {
+    //     const userName = await tokenService.getUserNameByToken(token);
+
+    //     const user = await userKHService.getUserByUsername(userName);
+
+    //     await gioHangService.countGHCT(user.id);
+    //     soLuong.value = gioHangService.soLuong;
+
+    //     selectedCustomer.value = khachHang.value.find((kh) => kh.userName === userName);
+    // } else {
+        selectedCustomer.value = khachHang.value.find((kh) => kh.ten === selectedKH.value.ten);
+        const tokens = await tokenService.gentoken(selectedCustomer.value.userName);
+        localStorage.setItem('token', tokens);
+   // }
+
 };
 </script>
 
@@ -118,10 +143,6 @@ const toggle = (event) => {
         <router-link to="/" class="layout-topbar-logo">
             <img :src="logoUrl" alt="logo" />
         </router-link>
-
-        <!-- <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">
-            <i class="pi pi-bars"></i>
-        </button> -->
 
         <button class="p-link layout-topbar-menu-button layout-topbar-button" @click="onTopBarMenuButton()">
             <i class="pi pi-ellipsis-v"></i>
@@ -160,22 +181,11 @@ const toggle = (event) => {
                 <i class="pi pi-search"></i>
                 <span>Calendar</span>
             </button>
-            <!-- <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
-                <i class="pi pi-shopping-cart"></i>
-                <span>Profile</span>
-            </button> -->
-            <router-link to="/gio-hang" class="layout-topbar-logo" style="width: 16%; margin-left: 10px">
-                <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
-                    <i class="pi pi-shopping-cart"></i>
-                    <span>Shopping cart</span>
-                </button>
+
+            <router-link to="/gio-hang" class="layout-topbar-logo" style="width: 5%; margin-left: 3px">
+                <i class="pi pi-shopping-cart p-text-secondary" style="font-size: 2rem" v-badge="soLuong"></i>
             </router-link>
-            <div class="flex justify-content-center">
-                <button class="p-link layout-topbar-button" @click="toggle" aria-haspopup="true" aria-controls="overlay_tmenu">
-                    <i class="pi pi-user"></i>
-                </button>
-                <TieredMenu ref="menu" id="overlay_tmenu" :model="items" popup @command="onSettingsClick" />
-            </div>
+
         </div>
     </div>
 </template>

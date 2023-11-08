@@ -23,6 +23,7 @@ const loadData = async () => {
 const loadDataHangMoi = async () => {
     await useTrangChuService.fetchDataHangMoi();
     dataHangMoi.value = useTrangChuService.dataHangMoi;
+
 };
 
 //load data hang moi

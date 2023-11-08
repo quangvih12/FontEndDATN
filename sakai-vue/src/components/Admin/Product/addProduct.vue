@@ -109,7 +109,7 @@ const onSubmit = handleSubmit(async (values) => {
                 toast.add({ severity: 'error', summary: 'Error', detail: 'Số lượng màu sắc hoặc size lớn hơn số lượng tồn', life: 3000 });
             } else {
                 // Nếu không trùng lặp và tổng không lớn hơn số lượng tồn, thêm sản phẩm vào store
-                console.log(values)
+          //      console.log(values)
                 await productStore.add(values);
                 toast.add({ severity: 'success', summary: 'Success Message', detail: 'Thêm thành công', life: 3000 });
                 productDialog.value = false;
