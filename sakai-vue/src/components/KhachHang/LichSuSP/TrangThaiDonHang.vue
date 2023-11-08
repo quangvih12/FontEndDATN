@@ -1,14 +1,72 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import Timeline from 'primevue/timeline';
+import { useRoute } from 'vue-router';
+import { HDKHStore } from '../../../service/KhachHang/HoaDonKHService';
+
+const router = useRoute();
+const useHD = HDKHStore();
+const idHD = router.params.id;
+const dataSP = ref([]);
+const dataHD = ref({});
+onMounted(() => {
+    loadData();
+    loadDataHD();
+});
+const loadData = async () => {
+    dataSP.value = await useHD.findHdctByIdHd(idHD);
+};
+
+const loadDataHD = async () => {
+    dataHD.value = await useHD.findHdByIdHd(idHD);
+    console.log(dataHD.value);
+};
+
+const ngayDat = ref('');
+const ngayThanhToan = ref('');
+const ngayGiao = ref('');
+const ngayNhan = ref('');
+watch(dataHD, (newVal) => {
+    ngayDat.value = dataHD.value.ngayTao;
+    ngayThanhToan.value = dataHD.value.ngayThanhToan;
+    ngayGiao.value = dataHD.value.ngayShip;
+    ngayNhan.value = dataHD.value.ngayNhan;
+});
 
 const events = ref([
-    { status: 'Đơn hàng đã đặt', date: '15/10/2020', icon: 'pi pi-wallet', color: '#9C27B0' },
-    { status: 'Đơn hàng đã thanh toán', date: '15/10/2020', icon: 'pi pi-money-bill', color: '#673AB7' },
-    { status: 'Đã giao cho ĐVVC', date: '15/10/2020', icon: 'pi pi-car', color: '#FF9800' },
-    { status: 'Đã nhận được hàng', date: '16/10/2020', icon: 'pi pi-box', color: '#607D8B' },
+    { status: 'Ngày đã đặt', date: ngayDat, icon: 'pi pi-wallet', color: '#9C27B0' },
+    { status: 'Ngày đã thanh toán', date: ngayThanhToan, icon: 'pi pi-money-bill', color: '#673AB7' },
+    { status: 'Đã giao cho ĐVVC', date: ngayGiao, icon: 'pi pi-car', color: '#FF9800' },
+    { status: 'Đã nhận được hàng', date: ngayNhan, icon: 'pi pi-box', color: '#607D8B' },
     { status: 'Đánh giá', date: '17/10/2020', icon: 'pi pi-star', color: '#F55C3B' }
 ]);
+
+const tinhTongTien = (tienShip, tongTien) => {
+    return parseInt(tienShip) + parseInt(tongTien);
+};
+const formatCurrency = (value) => {
+    return parseInt(value).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+};
+
+const hienThiTrangThai = (trangThai) => {
+    if (parseInt(trangThai) == 0) {
+        return { text: 'Đã hủy', severity: 'danger' };
+    } else if (parseInt(trangThai) == 1) {
+        return { text: 'Chờ thanh toán', severity: 'secondary' };
+    } else if (parseInt(trangThai) == 2) {
+        return { text: 'Yêu cầu xác nhận', severity: 'success' };
+    } else if (parseInt(trangThai) == 3) {
+        return { text: 'Hoàn thành', severity: 'info' };
+    } else if (parseInt(trangThai) == 4) {
+        return { text: 'Đang chuẩn bị hàng', severity: 'success' };
+    } else if (parseInt(trangThai) == 5) {
+        return { text: 'Đang giao', severity: 'help' };
+    } else if (parseInt(trangThai) == 6) {
+        return { text: 'Yêu cầu đổi trả', severity: 'warning' };
+    } else {
+        return { text: 'Xác nhận đổi trả', severity: 'success' };
+    }
+};
 </script>
 <template>
     <div class="container">
@@ -18,13 +76,17 @@ const events = ref([
                     <div>
                         <h3>Trạng thái đơn hàng</h3>
                     </div>
-                    <div style="margin-left: 600px">
-                        <label for="">Mã đơn hàng: <span> 230909SXN2SJKS </span></label>
-                    </div>
-                    <div style="margin-left: 10px">
+                    <div style="margin-left: 600px; font-size: 18px">
+                        <label for=""
+                            >Mã đơn hàng: <span> {{ dataHD.maHD }} </span></label
+                        >
                         <span> | </span>
-                        <label for="" style="color: red; margin-left: 10px">ĐÃ NHẬN ĐƯỢC HÀNG</label>
+                        <label for="" style="color: red">{{ hienThiTrangThai(dataHD.trangThai).text }}</label>
                     </div>
+                    <!-- <div style="margin-left: 10px">
+                        <span> | </span>
+                        <label for="" style="color: red; margin-left: 10px">{{ hienThiTrangThai(dataHD.trangThai).text }}</label>
+                    </div> -->
                 </div>
                 <div>
                     <Timeline :value="events" layout="horizontal" align="bottom" class="customized-timeline">
@@ -51,106 +113,53 @@ const events = ref([
                     </div>
                 </div>
                 <Divider />
-                <div class="flex">
-                    <div>
-                        <Image src="https://royalhelmet.com.vn/ckfinder/userfiles/images/products/NOQJHlDEN.jpg" alt="Image" width="150" preview />
-                    </div>
-                    <div class="product-details">
-                        <h5 class="flex details">MŨ BẢO HIỂM 3/4 XH 01</h5>
-                        <div class="flex details">
-                            <div>
-                                <p>Size: <span>L</span></p>
-                                <p>Màu sắc: <span>Vàng, xanh</span></p>
-                                <p>Số lượng: x<span>5</span></p>
-                            </div>
-                            <div class="price">
-                                <h6 style="color: red">419.000 vnđ</h6>
-                                <Button type="button" label="Mua lại" style="width: 200px" />
+                <div v-for="(hdct, index) in dataSP" :key="index">
+                    <div class="flex">
+                        <div>
+                            <Image :src="hdct.anh" alt="Image" width="150" preview />
+                        </div>
+                        <div class="product-details">
+                            <h5 class="flex details">{{ hdct.tenSP }}</h5>
+                            <div class="flex details">
+                                <div>
+                                    <p>
+                                        Size: <span>{{ hdct.tenSize }}</span>
+                                    </p>
+                                    <p>
+                                        Màu sắc: <span>{{ hdct.tenMS }}</span>
+                                    </p>
+                                    <p>
+                                        Số lượng: x<span>{{ hdct.soLuong }}</span>
+                                    </p>
+                                </div>
+                                <div class="price">
+                                    <h6 style="color: red">{{ formatCurrency(hdct.giaBan) }}</h6>
+                                    <Button type="button" label="Mua lại" style="width: 200px" />
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <Divider />
                 </div>
-                <Divider />
-                <div class="flex">
-                    <div>
-                        <Image src="https://royalhelmet.com.vn/ckfinder/userfiles/images/products/NOQJHlDEN.jpg" alt="Image" width="150" preview />
-                    </div>
-                    <div class="product-details">
-                        <h5 class="flex details">MŨ BẢO HIỂM 3/4 XH 01</h5>
-                        <div class="flex details">
-                            <div>
-                                <p>Size: <span>L</span></p>
-                                <p>Màu sắc: <span>Vàng, xanh</span></p>
-                                <p>Số lượng: x<span>5</span></p>
-                            </div>
-                            <div class="price">
-                                <h6 style="color: red">419.000 vnđ</h6>
-                                <Button type="button" label="Mua lại" style="width: 200px" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <Divider />
-                <div class="flex">
-                    <div>
-                        <Image src="https://royalhelmet.com.vn/ckfinder/userfiles/images/products/NOQJHlDEN.jpg" alt="Image" width="150" preview />
-                    </div>
-                    <div class="product-details">
-                        <h5 class="flex details">MŨ BẢO HIỂM 3/4 XH 01</h5>
-                        <div class="flex details">
-                            <div>
-                                <p>Size: <span>L</span></p>
-                                <p>Màu sắc: <span>Vàng, xanh</span></p>
-                                <p>Số lượng: x<span>5</span></p>
-                            </div>
-                            <div class="price">
-                                <h6 style="color: red">419.000 vnđ</h6>
-                                <Button type="button" label="Mua lại" style="width: 200px" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <Divider />
-                <div class="flex">
-                    <div>
-                        <Image src="https://royalhelmet.com.vn/ckfinder/userfiles/images/products/NOQJHlDEN.jpg" alt="Image" width="150" preview />
-                    </div>
-                    <div class="product-details">
-                        <h5 class="flex details">MŨ BẢO HIỂM 3/4 XH 01</h5>
-                        <div class="flex details">
-                            <div>
-                                <p>Size: <span>L</span></p>
-                                <p>Màu sắc: <span>Vàng, xanh</span></p>
-                                <p>Số lượng: x<span>5</span></p>
-                            </div>
-                            <div class="price">
-                                <h6 style="color: red">419.000 vnđ</h6>
-                                <Button type="button" label="Mua lại" style="width: 200px" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <Divider />
+
                 <div class="flex">
                     <div>
                         <h4>Địa chỉ nhận hàng</h4>
-                        <p>Nguyễn Long Vũ</p>
-                        <p>(+84) 375978188</p>
-                        <p>40 Ngách 38, Ngõ 342 Hồ Tùng Mậu, Phường Phú Diễn, Quận Bắc Từ Liêm, Hà Nội</p>
+                        <p>{{ dataHD.tenNguoiNhan }}</p>
+                        <p>{{ dataHD.sdt }}</p>
+                        <p>{{ dataHD.diaChiCuThe }}, {{ dataHD.tenPhuongXa }}, {{ dataHD.tenQuanHuyen }}, {{ dataHD.tenTinhThanh }}</p>
                     </div>
                     <div class="c2">
                         <p>Tổng tiền hàng</p>
                         <p>Phí vận chuyển</p>
-                        <p>Khuyến mại</p>
-                        <p>Vourcher</p>
+
                         <p>Thành tiền</p>
                     </div>
                     <div class="c2">
-                        <p>₫419.000</p>
-                        <p>₫12.800</p>
-                        <p><span>-</span>₫12.800</p>
-                        <p><span>-</span>₫62.850</p>
-                        <p style="font-weight: bold; color: red">₫356.150</p>
+                        <p>{{ formatCurrency(dataHD.tongTien) }}</p>
+                        <p>{{ formatCurrency(dataHD.tienShip) }}</p>
+
+                        <p style="font-weight: bold; color: red">{{ formatCurrency(tinhTongTien(dataHD.tienShip, dataHD.tongTien)) }}</p>
                     </div>
                 </div>
             </div>
@@ -179,5 +188,4 @@ const events = ref([
 .price {
     text-align: right; /* Đặt giá tiền ở bên phải */
 }
-
 </style>

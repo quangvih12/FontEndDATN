@@ -152,10 +152,8 @@ const formatDate = (value) => {
     >
         <template #header>
             <div class="col-12 flex">
-                <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-                    <MultiSelect icon="pi pi-plus" placeholder="Select Columns" :modelValue="selectedColumns" :options="columns" optionLabel="header" @update:modelValue="onToggle" display="tag" />
-                </div>
-                <span class="p-input-icon-left" style="margin-left: 20px">
+                
+                <span class="p-input-icon-left" >
                     <i class="pi pi-search" />
                     <InputText v-model="filters1['global'].value" placeholder="Keyword Search" style="min-width: 13rem; height: 40px" />
                 </span>
@@ -167,7 +165,31 @@ const formatDate = (value) => {
                 {{ slotProps.data.stt }}
             </template>
         </Column>
-        <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column>
+        <Column field="maHD" header="Mã hoá đơn" :sortable="true" headerStyle="width:14%; min-width:1rem;">
+            <template #body="slotProps">
+                <span class="p-column-title">maHD</span>
+                {{ slotProps.data.maHD }}
+            </template>
+        </Column>
+        <Column field="tenNguoiNhan" header="Tên người nhận" :sortable="true" headerStyle="width:14%; min-width:1rem;">
+            <template #body="slotProps">
+                <span class="p-column-title">tenNguoiNhan</span>
+                {{ slotProps.data.tenNguoiNhan }}
+            </template>
+        </Column>
+        <Column field="tongTien" header="Tổng tiền" :sortable="true" headerStyle="width:14%; min-width:1rem;">
+            <template #body="slotProps">
+                <span class="p-column-title">tongTien</span>
+                {{ slotProps.data.tongTien }}
+            </template>
+        </Column>
+        <Column field="tienSauGiam" header="Tiền sau giảm" :sortable="true" headerStyle="width:14%; min-width:1rem;">
+            <template #body="slotProps">
+                <span class="p-column-title">tienSauGiam</span>
+                {{ slotProps.data.tienSauGiam }}
+            </template>
+        </Column>
+        <!-- <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column> -->
         <Column field="diaChi" header="Địa chỉ" :sortable="false" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
                 <span class="p-column-title">diaChi</span>

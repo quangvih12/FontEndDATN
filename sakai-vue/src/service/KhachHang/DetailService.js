@@ -3,46 +3,55 @@ import axios from 'axios';
 
 const apiDetail = 'http://localhost:8080/api/khach-hang/detail';
 
-export const useDetailProductStore = defineStore('detail',{
-  id: 'product',
-  state: () => ({
-    product: {},
-    products: [],
-    images: [],
-    sizes: [],
-    mauSacs: [],
-    data: [],
-    slTon: '',
-  }),
-  actions: {
-    async fetchProductById(idProduct) {
-      try {
-        const response = await axios.get(apiDetail +'/'+idProduct);
-        this.product = response.data;
-        
-      } catch (error) {
-        console.error('Lỗi khi lấy chi tiết sản phẩm:', error);
-        throw error;
-      }
-    },
-    async fetchAllImage(idProduct) {
-      try {
-        const response = await axios.get(apiDetail + `/findByImage/`+idProduct); // Thay đổi URL dựa trên API của bạn
-        this.images = response.data;
-      } catch (error) {
-        console.error('Lỗi khi lấy danh sách sản phẩm:', error);
-      }
-    },
 
-    async fetchAllSize(idProduct) {
-      try {
-        const response = await axios.get(apiDetail + `/findBySize/`+idProduct); // Thay đổi URL dựa trên API của bạn
-        this.sizes = response.data;
-        // console.log(response.data);
-      } catch (error) {
-        console.error('Lỗi khi lấy danh sách sản phẩm:', error);
-      }
-    },
+export const useDetailProductStore = defineStore('detail', {
+    id: 'product',
+    state: () => ({
+        product: {},
+        products: [],
+        images: [],
+        sizes: [],
+        mauSacs: []
+    }),
+    actions: {
+        async fetchSPCTByIdSP(idProduct) {
+            try {
+                const response = await axios.get(apiDetail + `/find-spct-by-idSP/` + idProduct);
+                this.products = response.data;
+            } catch (error) {
+                console.error('Lỗi khi lấy chi tiết sản phẩm:', error);
+                throw error;
+            }
+        },
+        async fetchProductById(idProduct) {
+            try {
+                const response = await axios.get(apiDetail + `/find-by-id/` + idProduct);
+                this.product = response.data;
+            } catch (error) {
+                console.error('Lỗi khi lấy chi tiết sản phẩm:', error);
+                throw error;
+            }
+        },
+        async fetchAllImage(idProduct) {
+            try {
+                const response = await axios.get(apiDetail + `/findByImage/` + idProduct); // Thay đổi URL dựa trên API của bạn
+                this.images = response.data;
+            } catch (error) {
+                console.error('Lỗi khi lấy danh sách sản phẩm:', error);
+            }
+        },
+
+
+        async fetchAllSize(idProduct) {
+            try {
+                const response = await axios.get(apiDetail + `/findBySize/` + idProduct); // Thay đổi URL dựa trên API của bạn
+                this.sizes = response.data;
+                // console.log(response.data);
+            } catch (error) {
+                console.error('Lỗi khi lấy danh sách sản phẩm:', error);
+            }
+        },
+
 
     async fetchAllMauSac(idProduct) {
       try {
@@ -102,3 +111,4 @@ export const useDetailProductStore = defineStore('detail',{
     },
   }
 });
+

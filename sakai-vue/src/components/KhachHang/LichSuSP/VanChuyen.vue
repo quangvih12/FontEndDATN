@@ -1,11 +1,13 @@
 <!-- eslint-disable no-unused-vars -->
 <script setup>
+import * as yup from 'yup';
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
 import CustomerService from '@/service/CustomerService';
 import ProductService from '@/service/ProductService';
+import { useForm, useField } from 'vee-validate';
 import { ref, onBeforeMount, onMounted, watch } from 'vue';
 import { useToast } from 'primevue/usetoast';
-import { HDStore } from '../../../service/Admin/HoaDon/HoaDonService';
+import { HDKHStore } from '../../../service/KhachHang/HoaDonKHService';
 import DetailHoaDon from './TrangThaiDonHang.vue';
 import { useRouter } from 'vue-router';
 
@@ -13,10 +15,10 @@ const router = useRouter();
 
 const redirectToTrangThaiDonHang = (id) => {
     // Chuyển hướng đến trang trang-thai-don-hang và truyền ID của hóa đơn qua URL
-    router.push({ name: 'trang-thai-don-hang', params: { id: id } });
+    router.push({ name: 'trangThaiDonHang', params: { id: id } });
 };
 const toast = useToast();
-const useHD = HDStore();
+const useHD = HDKHStore();
 const customer1 = ref(null);
 const customer2 = ref(null);
 const customer3 = ref(null);
@@ -26,8 +28,19 @@ const loading2 = ref(null);
 const products = ref(null);
 const idHD = ref(null);
 const data = ref([]);
+
+//show dialog lý do
+const lyDoDialog = ref(false);
 // confirm xác nhận
 const addProductDialog = ref(false);
+// confirm huy
+const huyDialog = ref(false);
+
+//hiện dialog lý do
+const showDialogLyDo = (id) => {
+    idHD.value = id;
+    lyDoDialog.value = true;
+};
 
 //hiện confirm
 const confirmAddProduct = (id) => {
@@ -35,14 +48,23 @@ const confirmAddProduct = (id) => {
     addProductDialog.value = true;
 };
 
+//hiện confirm huy
+const confirmHuy = () => {
+    huyDialog.value = true;
+};
+
 watch(addProductDialog, (newVal) => {
     if (addProductDialog.value == false) {
         idHD.value = null;
     }
 });
+watch(lyDoDialog, (newVal) => {
+    if (lyDoDialog.value == false) lyDo.value = '';
+});
+
 const loadData = async () => {
-    await useHD.fetchDataByStatus(5);
-    data.value = useHD.dataDangGiao;
+    await useHD.fetchDataByStatus(1, 4);
+    data.value = useHD.dataDangChuanBi;
 };
 //chạy cái hiện data luôn
 onMounted(() => {
@@ -77,18 +99,35 @@ const btnXacNhan = () => {
 
 const columns = ref([
     { field: 'maHD', header: 'Mã hoá đơn' },
-    { field: 'nguoiTao', header: 'Người tạo' },
-    { field: 'ngayTao', header: 'Ngày tạo' },
-    { field: 'ngaySua', header: 'Ngày sửa' },
+
     { field: 'tenNguoiNhan', header: 'Tên người nhận' },
-    { field: 'tienShip', header: 'Tiền ship' },
+
     { field: 'tongTien', header: 'Tổng tiền' },
-    { field: 'tienSauKhiGiam', header: 'Tiền sau giảm' },
-    { field: 'tenPTTT', header: 'Phương thức thanh toán' },
-    { field: 'ngayThanhToan', header: 'Ngày thanh toán' },
-    { field: 'ngayShip', header: 'Ngày ship' },
-    { field: 'ngayNhan', header: 'Ngày nhận' }
+    { field: 'tienSauKhiGiam', header: 'Tiền sau giảm' }
 ]);
+
+const schema = yup.object().shape({
+    lyDo: yup.string().required('Lý do không được để trống')
+});
+const { handleSubmit, resetForm } = useForm({
+    validationSchema: schema
+});
+
+const { value: lyDo, errorMessage: LyDoError } = useField('lyDo');
+const btnXacNhanHuy = () => {
+    if (lyDo.value == null || lyDo.value.length <= 0) {
+        toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Huỷ thất bại', life: 3000 });
+        lyDo.value = '';
+        huyDialog.value = false;
+    } else {
+        useHD.huyHoaDon(idHD.value, lyDo.value);
+        toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Huỷ thành công', life: 3000 });
+        lyDo.value = '';
+        huyDialog.value = false;
+        lyDoDialog.value = false;
+    }
+};
+
 const startDate = ref(null);
 const endDate = ref([null]);
 const typeSearchDate = ref(null);
@@ -175,10 +214,7 @@ const formatDate = (value) => {
     >
         <template #header>
             <div class="col-12 flex">
-                <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-                    <MultiSelect icon="pi pi-plus" placeholder="Select Columns" :modelValue="selectedColumns" :options="columns" optionLabel="header" @update:modelValue="onToggle" display="tag" />
-                </div>
-                <span class="p-input-icon-left" style="margin-left: 20px">
+                <span class="p-input-icon-left">
                     <i class="pi pi-search" />
                     <InputText v-model="filters1['global'].value" placeholder="Keyword Search" style="min-width: 13rem; height: 40px" />
                 </span>
@@ -205,9 +241,8 @@ const formatDate = (value) => {
         </Column>
         <Column header="Hành động" headerStyle="min-width:10rem;">
             <template #body="slotProps">
-                <Button :my-prop="slotProps.data" @click="redirectToTrangThaiDonHang(data.id)" label="Xem" class="p-button-outlined p-button-info mr-2 mb-2" />
-                <Button label="Hoàn thành" class="p-button-outlined p-button-info mr-2 mb-2" @click="confirmAddProduct(slotProps.data.idHD)" />
-                <Button label="Thất bại" class="p-button-outlined p-button-info mr-2 mb-2" />
+                <Button @click="redirectToTrangThaiDonHang(slotProps.data.idHD)" label="Xem" class="p-button-outlined p-button-info mr-2 mb-2" />
+                <Button label="Huỷ" class="p-button-outlined p-button-info mr-2 mb-2" @click="showDialogLyDo(slotProps.data.idHD)" />
             </template>
         </Column>
     </DataTable>
@@ -219,6 +254,35 @@ const formatDate = (value) => {
         <template #footer>
             <Button label="No" icon="pi pi-times" class="p-button-text" @click="addProductDialog = false" />
             <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhan()" />
+        </template>
+    </Dialog>
+    <!-- lý do -->
+    <Dialog v-model:visible="lyDoDialog" :style="{ width: '450px' }" header="Huỷ hoá đơn" :modal="true">
+        <div class="card">
+            <form @submit="onSubmit">
+                <div class="p-fluid formgrid grid">
+                    <div class="field col-12" style="margin-bottom: 30px">
+                        <label for="address">Lý do</label>
+                        <Textarea id="lyDo" rows="4" v-model.trim="lyDo" :class="{ 'p-invalid': LyDoError }" required="true" autofocus></Textarea>
+                        <small class="p-error">{{ LyDoError }}</small>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <template #footer>
+            <Button label="No" icon="pi pi-times" class="p-button-text" @click="lyDoDialog = false" />
+            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="confirmHuy" />
+        </template>
+    </Dialog>
+    <!-- comfirm huỷ -->
+    <Dialog v-model:visible="huyDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
+        <div class="flex align-items-center justify-content-center">
+            <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+            <span>Bạn có chắc chắn muốn huỷ không ?</span>
+        </div>
+        <template #footer>
+            <Button label="No" icon="pi pi-times" class="p-button-text" @click="huyDialog = false" />
+            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhanHuy()" />
         </template>
     </Dialog>
 </template>
