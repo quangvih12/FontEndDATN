@@ -54,6 +54,11 @@ const router = createRouter({
                     component: () => import('@/components/KhachHang/LichSuSP/TrangThaiDonHang.vue')
                 },
                 {
+
+                    path: '/dia-chi/:id',
+                    name: 'dia-chi',
+                    component: () => import('@/components/KhachHang/DiaChiKhachHang/Index.vue')
+             },{
                     path: '/lich-su-sp',
                     name: 'lich-su-sp',
                     component: () => import('@/components/KhachHang/LichSuSP/LichSuSP.vue')
