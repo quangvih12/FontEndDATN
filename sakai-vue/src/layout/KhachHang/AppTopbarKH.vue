@@ -46,10 +46,13 @@ const onSettingsClick = (event) => {
         router.push(`/thong-tin-ca-nhan/${selectedUserId.value}`);
     } else if (event.item.label === 'Lịch sử mua hàng') {
         router.push('/lich-su-sp');
+    } else if (event.item.label === 'Địa chỉ' && selectedUserId.value) {
+        router.push(`/dia-chi/${selectedUserId.value}`);
     } else {
         // Xử lý trường hợp khác nếu cần
     }
 };
+
 const topbarMenuClasses = computed(() => {
     return {
         'layout-topbar-menu-mobile-active': topbarMenuActive.value
@@ -136,6 +139,26 @@ const displayKH = async () => {
    // }
 
 };
+
+const menu = ref();
+const items = ref([
+    {
+        label: 'Hồ sơ cá nhân',
+        command: onSettingsClick
+    },
+    {
+        label: 'Địa chỉ',
+        command: onSettingsClick
+    },
+    {
+        label: 'Lịch sử mua hàng',
+        command: onSettingsClick
+    },
+]);
+
+const toggle = (event) => {
+    menu.value.toggle(event);
+};
 </script>
 
 <template>
@@ -159,11 +182,11 @@ const displayKH = async () => {
             <router-link to="/" class="layout-topbar-logo" style="width: 28%; margin-left: 10px">
                 <p style="font-size: 19px">Về chúng tôi</p>
             </router-link>
-            <router-link to="/pages/size" class="layout-topbar-logo" style="width: 16%; margin-left: 10px">
+            <router-link to="/pages/size" class="layout-topbar-logo" style="width: 16%; margin-left: 10px; margin-right: 15px">
                 <p style="font-size: 19px">Liên hệ</p>
             </router-link>
 
-            <div class="layout-topbar-logo" style="width: 16%; margin-left: 10px">
+            <div class="layout-topbar-logo" style="width: 16%; margin-right: 40px">
                 <div v-if="selectedCustomer === null">
                     <Dropdown v-model="selectedKH" :options="khachHang" optionLabel="ten" placeholder="Chọn KH" class="w-full md:w-8rem" style="margin-top: 5px; max-height: 100px; overflow-y: auto" @change="displayKH" />
                 </div>
@@ -175,17 +198,15 @@ const displayKH = async () => {
                     </div>
                 </div>
             </div>
-
-            <InputText type="text" v-model="value" style="height: 35px; width: 18%; margin-left: 5px; margin-top: 5px" />
-            <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
-                <i class="pi pi-search"></i>
-                <span>Calendar</span>
-            </button>
-
-            <router-link to="/gio-hang" class="layout-topbar-logo" style="width: 5%; margin-left: 3px">
+            <router-link to="/gio-hang" class="layout-topbar-logo" style="width: 5%; margin-right: 3px">
                 <i class="pi pi-shopping-cart p-text-secondary" style="font-size: 2rem" v-badge="soLuong"></i>
             </router-link>
-
+            <div class="flex justify-content-center">
+                <button class="p-link layout-topbar-button" @click="toggle" aria-haspopup="true" aria-controls="overlay_tmenu">
+                    <i class="pi pi-user"></i>
+                </button>
+                <TieredMenu ref="menu" id="overlay_tmenu" :model="items" popup @command="onSettingsClick" />
+            </div>
         </div>
     </div>
 </template>

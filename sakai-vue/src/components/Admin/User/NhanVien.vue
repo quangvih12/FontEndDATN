@@ -36,7 +36,7 @@ const loadData = async () => {
         productList[key]['diaChi'] = diaChi;
     }
     dataUser.value = productList;
-    console.log(dataUser.value);
+    // console.log(dataUser.value);
 };
 
 const diaChi = ref([]);

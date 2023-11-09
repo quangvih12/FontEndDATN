@@ -22,7 +22,7 @@ const router = createRouter({
                     component: () => import('@/components/KhachHang/GioiThieu.vue')
                 },
                 {
-                    path: '/thong-tin-khach-hang',
+                    path: '/thong-tin-khach-hang/:id',
                     name: 'thong-tin-khach-hang',
                     component: () => import('@/components/KhachHang/ThongTinKhachHang.vue')
                 },
@@ -54,6 +54,11 @@ const router = createRouter({
                     component: () => import('@/components/KhachHang/LichSuSP/TrangThaiDonHang.vue')
                 },
                 {
+
+                    path: '/dia-chi/:id',
+                    name: 'dia-chi',
+                    component: () => import('@/components/KhachHang/DiaChiKhachHang/Index.vue')
+             },{
                     path: '/lich-su-sp',
                     name: 'lich-su-sp',
                     component: () => import('@/components/KhachHang/LichSuSP/LichSuSP.vue')
