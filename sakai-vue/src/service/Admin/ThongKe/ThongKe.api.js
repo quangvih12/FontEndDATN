@@ -5,12 +5,18 @@ export const ThongKeStore = defineStore('thongKe', {
     state: () => ({
         data: [],
         tongDoanhThu: 0,
+        tongLoiNhuan: 0,
+        tongDonhangHoanThanh: 0,
+        tongDonhangDangGiao: 0,
+        tongDonhangHuy: 0,
         lstAdminThongKeLoaiResponses: [],
         lstAdminThongKeSanPhamCaoResponses: [],
         lstAdminThongKeSanPhamThapResponses: [],
         lstAdminThongKeThangResponses: [],
         lstAdminThongKeThuongHieuResponses: [],
         lstAdminThongKeThangNamResponses:[],
+        lstAdminThongKeLoiNhuanSanPhamResponse:[],
+        lstAdminThongKeLoiNhuanHoaDonResponse:[]
     }),
     actions: {
 
@@ -109,6 +115,21 @@ export const ThongKeStore = defineStore('thongKe', {
                 this.lstAdminThongKeThangResponses =  response.data.lstAdminThongKeThangResponses;
                 this.lstAdminThongKeThuongHieuResponses =  response.data.lstAdminThongKeThuongHieuResponses;
                 this.lstAdminThongKeThangNamResponses = response.data.lstAdminThongKeThangNamResponses;
+            } catch (error) {
+                console.error('Lỗi khi get sản phẩm:', error);
+            }
+        },
+
+        async fetchAllLoiNhuan(year,startDate, endDate) {
+            try {
+                const response = await axios.get(`/api/admin/Thong-ke/loi-nhuan?year=${year}&startDate=${startDate}&endDate=${endDate}`);
+              //  this.data = response.data;
+                this.tongLoiNhuan = response.data.tongLoiNhuan;
+                this.tongDonhangHoanThanh = response.data.tongDonhangHoanThanh;
+                this.tongDonhangDangGiao = response.data.tongDonhangDangGiao;
+                this.tongDonhangHuy = response.data.tongDonhangHuy;
+                this.lstAdminThongKeLoiNhuanSanPhamResponse = response.data.adminThongKeLoiNhuanSanPhamResponses;
+                this.lstAdminThongKeLoiNhuanHoaDonResponse = response.data.adminThongKeLoiNhuanHoaDonResponses;
             } catch (error) {
                 console.error('Lỗi khi get sản phẩm:', error);
             }
