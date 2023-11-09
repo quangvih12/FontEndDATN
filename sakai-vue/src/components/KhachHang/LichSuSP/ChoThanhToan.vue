@@ -7,7 +7,7 @@ import CustomerService from '@/service/CustomerService';
 import ProductService from '@/service/ProductService';
 import { ref, onBeforeMount, onMounted, watch } from 'vue';
 import { useToast } from 'primevue/usetoast';
-import { HDStore } from '../../../service/Admin/HoaDon/HoaDonService';
+import { HDKHStore } from '../../../service/KhachHang/HoaDonKHService';
 import DetailHoaDon from './TrangThaiDonHang.vue';
 import { useRouter } from 'vue-router';
 
@@ -15,10 +15,10 @@ const router = useRouter();
 
 const redirectToTrangThaiDonHang = (id) => {
     // Chuyển hướng đến trang trang-thai-don-hang và truyền ID của hóa đơn qua URL
-    router.push({ name: 'trang-thai-don-hang', params: { id: id } });
+    router.push({ name: 'trangThaiDonHang', params: { id: id } });
 };
 const toast = useToast();
-const useHD = HDStore();
+const useHD = HDKHStore();
 const customer1 = ref(null);
 const customer2 = ref(null);
 const customer3 = ref(null);
@@ -64,8 +64,8 @@ watch(lyDoDialog, (newVal) => {
 });
 
 const loadData = async () => {
-    await useHD.fetchDataByStatus(2);
-    data.value = useHD.dataChoXacNhan;
+    await useHD.fetchDataByStatus(1, 1);
+    data.value = useHD.dataChoThanhToan;
 };
 //chạy cái hiện data luôn
 onMounted(() => {
@@ -121,17 +121,9 @@ const btnXacNhanHuy = () => {
 
 const columns = ref([
     { field: 'maHD', header: 'Mã hoá đơn' },
-    { field: 'nguoiTao', header: 'Người tạo' },
-    { field: 'ngayTao', header: 'Ngày tạo' },
-    { field: 'ngaySua', header: 'Ngày sửa' },
     { field: 'tenNguoiNhan', header: 'Tên người nhận' },
-    { field: 'tienShip', header: 'Tiền ship' },
     { field: 'tongTien', header: 'Tổng tiền' },
-    { field: 'tienSauKhiGiam', header: 'Tiền sau giảm' },
-    { field: 'tenPTTT', header: 'Phương thức thanh toán' },
-    { field: 'ngayThanhToan', header: 'Ngày thanh toán' },
-    { field: 'ngayShip', header: 'Ngày ship' },
-    { field: 'ngayNhan', header: 'Ngày nhận' }
+    { field: 'tienSauKhiGiam', header: 'Tiền sau giảm' }
 ]);
 const dataSearchDate = ref([
     { label: 'Ngày tạo', value: 'ngayTao' },
@@ -256,8 +248,8 @@ const formatDate = (value) => {
         </Column>
         <Column header="Hành động" headerStyle="min-width:10rem;">
             <template #body="slotProps">
-                <Button :my-prop="slotProps.data" @click="redirectToTrangThaiDonHang(data.id)" label="Xem" class="p-button-outlined p-button-info mr-2 mb-2" />
-                <Button label="Nhận" class="p-button-outlined p-button-info mr-2 mb-2" @click="confirmAddProduct(slotProps.data.idHD)" />
+                <Button :my-prop="slotProps.data" @click="redirectToTrangThaiDonHang(slotProps.data.idHD)" label="Xem" class="p-button-outlined p-button-info mr-2 mb-2" />
+                <Button label="Thanh toán" class="p-button-outlined p-button-info mr-2 mb-2" @click="confirmAddProduct(slotProps.data.idHD)" />
                 <Button label="Hủy" class="p-button-outlined p-button-info mr-2 mb-2" @click="showDialogLyDo(slotProps.data.idHD)" />
             </template>
         </Column>

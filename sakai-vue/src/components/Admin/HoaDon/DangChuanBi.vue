@@ -53,9 +53,7 @@ watch(addProductDialog, (newVal) => {
     }
 });
 
-watch(lyDoDialog, (newVal) => {
-    if (lyDoDialog.value == false) lyDo.value = '';
-});
+
 
 const loadData = async () => {
     await useHD.fetchDataByStatus(4);

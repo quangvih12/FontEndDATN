@@ -2,7 +2,7 @@ import { createRouter, createWebHashHistory } from 'vue-router';
 import AppLayout from '@/layout/AppLayout.vue';
 import AppLayoutKH from '@/layout/KhachHang/AppLayoutKH.vue';
 import AppLayoutBH from '@/layout/BanHang/AppLayoutBH.vue';
-import {authMiddleware} from '@/service/Authentication/Middleware.js'
+import { authMiddleware } from '@/service/Authentication/Middleware.js';
 
 const router = createRouter({
     history: createWebHashHistory(),
@@ -22,7 +22,7 @@ const router = createRouter({
                     component: () => import('@/components/KhachHang/GioiThieu.vue')
                 },
                 {
-                    path: '/thong-tin-khach-hang',
+                    path: '/thong-tin-khach-hang/:id',
                     name: 'thong-tin-khach-hang',
                     component: () => import('@/components/KhachHang/ThongTinKhachHang.vue')
                 },
@@ -48,15 +48,21 @@ const router = createRouter({
                     component: () => import('@/components/KhachHang/GioHang/GioHang.vue')
                 },
                 {
+                    path: '/trang-thai-don-hang/:id',
+                    name: 'trangThaiDonHang',
+                    props: true, // Cho phép các tham số route được truyền vào component như props
+                    component: () => import('@/components/KhachHang/LichSuSP/TrangThaiDonHang.vue')
+                },
+                {
+
+                    path: '/dia-chi/:id',
+                    name: 'dia-chi',
+                    component: () => import('@/components/KhachHang/DiaChiKhachHang/Index.vue')
+             },{
                     path: '/lich-su-sp',
                     name: 'lich-su-sp',
                     component: () => import('@/components/KhachHang/LichSuSP/LichSuSP.vue')
-                },
-                {
-                    path: '/trang-thai-don-hang/:id',
-                    name: 'trang-thai-don-hang',
-                    component: () => import('@/components/KhachHang/LichSuSP/TrangThaiDonHang.vue')
-                },
+                }
             ]
         },
         {
@@ -109,7 +115,7 @@ const router = createRouter({
                     component: () => import('@/components/Admin/Loai/index.vue'),
                     beforeEnter: authMiddleware
                 },
-               
+
                 {
                     path: '/pages/trong-luong',
                     name: 'trongluong',
@@ -122,7 +128,7 @@ const router = createRouter({
                     component: () => import('@/components/Admin/VatLieu/Index.vue'),
                     beforeEnter: authMiddleware
                 },
-              
+
                 {
                     path: '/pages/product',
                     name: 'product',

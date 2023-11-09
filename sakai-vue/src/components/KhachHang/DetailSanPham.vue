@@ -14,40 +14,33 @@ const gioHangService = gioHangStore();
 const productStore = useDetailProductStore();
 const route = useRoute();
 const idProduct = parseInt(route.params.id);
-const toast = useToast();
-const dataSanPham = ref([]);
+
+
+
+const dataSanPham = ref({});
+
 const dataMauSac = ref([]);
 const dataSize = ref([]);
 const loadImage = ref([]);
 const products = ref([]);
-const dataSanPhamSelected = ref([]);
+const getSize = ref(null);
+const dataListSPCT = ref([]);
+const idMau = ref(null);
 const soLuongTon = ref('');
+const selectedMauSac = ref('');
+let prevDataSizeLength = ref(null);
+let prevDataMauLength = ref(null);
 
-onMounted(() => {
-    loadData();
-    loadImg();
-    loadDataSize();
-    loadProducts();
-    loadDataMauSac();
+onMounted(async () => {
+    await loadData();
+    await loaddataListSPCT();
+    await loadImg();
+    await loadDataSize();
+    await loadDataMauSac();
+
+    prevDataSizeLength.value = dataSize.value.length;
+    prevDataMauLength.value = dataMauSac.value.length;
 });
-
-const getSLTonTong = async (idctsp) => {
-    await productStore.getAllSLTon(idctsp);
-    slTon.value = productStore.slTon;
-};
-
-const loadProducts = async () => {
-    await productStore.fetchAll();
-    products.value = productStore.products;
-};
-
-const loadData = async () => {
-    await productStore.fetchProductById(idProduct);
-    dataSanPham.value = productStore.product;
-    await productStore.getAllSLTon(idProduct);
-    soLuongTon.value = productStore.slTon;
-};
-
 const loadImg = async () => {
     await productStore.fetchAllImage(idProduct);
     loadImage.value = productStore.images;
@@ -61,6 +54,73 @@ const loadDataSize = async () => {
     await productStore.fetchAllSize(idProduct);
     dataSize.value = productStore.sizes;
 };
+
+const idSanPhamChiTiet = ref(null);
+watch([getSize, idMau], async ([newGetSize, newIdMau]) => {
+    
+    if (getSize.value == null) {
+        await productStore.fetchIdSPCT(idProduct, getSize.value, idMau.value);
+        dataListSPCT.value = productStore.products;
+        idSanPhamChiTiet.value = dataListSPCT.value.id;
+    } else {
+        await productStore.fetchIdSPCT(idProduct, getSize.value, idMau.value);
+        dataListSPCT.value = productStore.products;
+        idSanPhamChiTiet.value = dataListSPCT.value.id;
+        // await productStore.getMauSacBySize(idProduct, getSize.value);
+        // dataMauSac.value = productStore.mauSacs;
+    }
+
+});
+
+let isFirstRun = true;
+
+watch([dataSize, dataMauSac], async ([newDataSize, newDataMau]) => {
+    if (newDataSize.length !== prevDataSizeLength.value || newDataMau.length !== prevDataMauLength.value) {
+
+        if (isFirstRun && newDataSize.length > 0 && newDataMau.length > 0) {
+           
+            selectedMauSac.value = newDataMau[0];
+            idMau.value = selectedMauSac.value.id;
+            getSize.value = newDataSize[0].id;
+            isFirstRun = false;
+        }
+        else if (newDataSize.length === 0 && newDataMau.length > 0) {
+            selectedMauSac.value = newDataMau[0];
+            idMau.value = selectedMauSac.value.id;
+        }
+        prevDataSizeLength.value = newDataSize.length;
+        prevDataMauLength.value = newDataMau.length;
+    }
+});
+
+
+
+const loaddataListSPCT = async () => {
+    await productStore.fetchSPCTByIdSP(idProduct);
+    dataListSPCT.value = productStore.products;
+    //  console.log(dataListSPCT.value);
+}
+const getSLTonTong = async (idctsp) => {
+    await productStore.getAllSLTon(idctsp);
+    slTon.value = productStore.slTon;
+};
+
+const loadData = async () => {
+    await productStore.fetchProductById(idProduct);
+    dataSanPham.value = productStore.product;
+
+    // loadImage.value = dataSanPham.value.images;
+    // console.log(dataSanPham.value);
+};
+
+const loadProducts = async () => {
+    await productStore.fetchAll();
+    products.value = productStore.products;
+    // console.log(productStore.products);
+    soLuongTon.value = productStore.slTon;
+};
+
+
 
 const quantity = ref(1);
 
@@ -102,28 +162,26 @@ const formatCurrency = (value) => {
 
 const hasTenKH = ref(dataSanPham.value.tenKH !== null && dataSanPham.value.tenKH !== undefined);
 
-const selectedMauSac = ref('');
-const selectedSize = ref('');
 
+const toast = useToast();
 const addToCart = async () => {
     const cartItem = {
         soLuong: quantity.value,
-        tenMauSac: selectedMauSac.value.idMS,
-        tenSize: selectedSize.value.id,
-        sanPhamChiTiet: idProduct
+        sanPhamChiTiet: idSanPhamChiTiet.value
     };
     const token = localStorage.getItem('token');
-    if (!selectedMauSac.value) {
-        toast.add({ severity: 'warn', summary: '', detail: 'Vui lòng chọn phân loại sản phẩm ', life: 5000 });
+  //  console.log(token)
+    if (quantity.value > dataListSPCT.value.soLuongTon) {
+        toast.add({ severity: 'warn', summary: '', detail: 'Số lượng tồn không đủ', life: 5000 });
         return;
     }
-
+   
     await gioHangService.addToCart(cartItem, token);
     toast.add({ severity: 'success', summary: 'Successful', detail: 'Thêm vào giỏ hàng thành công', life: 3000 });
     router.push({ name: 'gio-hang' });
 };
 
-const selectMauSac = (mauSacs) => {
+const selectMauSac = async (mauSacs) => {
     // Loại bỏ viền đỏ của màu sắc đã chọn trước đó (nếu có)
     if (selectedMauSac.value) {
         selectedMauSac.value.selected = false;
@@ -136,9 +194,9 @@ const selectMauSac = (mauSacs) => {
         // Nếu màu sắc chưa được chọn, thêm viền đỏ và đánh dấu đã chọn
         selectedMauSac.value = mauSacs;
         selectedMauSac.value.selected = true;
+        idMau.value = selectedMauSac.value.id;
 
-        getSizeByMauSac(mauSacs.idMS);
-        // updateSoLuongTon();
+        //  await getSizeByMauSac(mauSacs.id);
     }
 };
 
@@ -146,40 +204,19 @@ const isMauSacSelected = (mauSacs) => {
     return mauSacs === selectedMauSac.value;
 };
 
-const selectSize = async (size) => {
-    if (selectedSize.value) {
-        selectedSize.value.selected = false;
-    }
 
-    // Nếu size đã được chọn thì hủy chọn
-    if (size === selectedSize.value) {
-        selectedSize.value = null;
-    } else {
-        // Nếu size chưa được chọn, thêm viền đỏ và đánh dấu đã chọn
-        selectedSize.value = size;
-        selectedSize.value.selected = true;
-
-        if (selectedMauSac) {
-            selectedMauSac.selected = true;
-        }
-        getMauSacBySize(size.id);
-    }
-};
-
-const isSizeSelected = (size) => {
-    return size === selectedSize.value;
+const isMauSacDisbled = (size) => {
+    return size === null;
 };
 
 const getMauSacBySize = async (idsizect) => {
     await productStore.getMauSacBySize(idProduct, idsizect);
     dataMauSac.value = productStore.mauSacs;
+   // console.log(dataMauSac.value)
 };
 
-const getSizeByMauSac = async (idms) => {
-    await productStore.getSizeByMauSac(idProduct, idms);
-    dataSize.value = productStore.sizes;
-};
 
+const check = ref(false);
 </script>
 
 <template>
@@ -191,9 +228,11 @@ const getSizeByMauSac = async (idms) => {
                 <div class="card md:flex md:justify-content-center" style="margin-top: 0px">
                     <div class="flex">
                         <div class="col-5">
-                            <Galleria :value="loadImage" :responsiveOptions="responsiveOptions" :numVisible="5" containerStyle="max-width: 450px">
+
+                            <Galleria :value="loadImage" :responsiveOptions="responsiveOptions" :numVisible="5"
+                                containerStyle="max-width: 450px">
                                 <template #item="slotProps">
-                                    <img :src="slotProps.item.anh" :alt="slotProps.item" style="width: 100%" />
+                                    <img :src="dataSanPham.anh" :alt="slotProps.item" style="width: 100%" />
                                 </template>
                                 <template #thumbnail="slotProps">
                                     <img :src="slotProps.item.anh" :alt="slotProps.item" style="width: 100%" />
@@ -201,19 +240,24 @@ const getSizeByMauSac = async (idms) => {
                             </Galleria>
                         </div>
                         <div class="col-7">
-                            <h1 class="masp">{{ dataSanPham.tenSP }}</h1>
-                            <label for=""
-                                >Mã SP: <span>{{ dataSanPham.maSP }}</span></label
-                            >
-                            <label for="" style="margin-left: 20px"
-                                >Loại: <span style="color: red">{{ dataSanPham.loai }}</span></label
-                            >
-                            <div class="gb">
-                                <h2 style="color: red" :class="{ 'gach-di': dataSanPham.id }">{{ formatCurrency(dataSanPham.giaBan) }}</h2>
-                                <h2 style="color: red">{{ formatCurrency(dataSanPham.giaSauGiam) }}</h2>
-                                <Tag v-if="dataSanPham.id !== null && dataSanPham.id !== undefined" severity="danger" style="margin-left: 15px">Giảm {{ dataSanPham.giaTriGiam }}%</Tag>
+                            <h1 class="masp">{{ dataSanPham.ten }}</h1>
+                            <label for="">Mã SP: <span>{{ dataSanPham.ma }}</span></label>
+                            <label for="" style="margin-left: 20px">Loại: <span style="color: red">{{ dataSanPham.loai
+                            }}</span></label>
+                            <div class="gb" style="display:  flex;">
+                                <h2 s v-if="dataListSPCT.soLuongTon !== 0 ">
+                                  <span    tyle="color: rgb(0, 0, 0)" > {{formatCurrency(dataListSPCT.giaBan) !== '' ? formatCurrency(dataListSPCT.giaBan) : 'Hết hàng' }}</span> 
+                                </h2>
+                                <p style="color: red"  v-else> Hết hàng</p>
+                                <div >
+                                    <h2 style="color: red; margin-left: 20px;" v-if="dataListSPCT.tenKM !== null && dataListSPCT.tenKM !== undefined">{{ formatCurrency(dataListSPCT.giaSauGiam) }}</h2>
+                                <Tag v-if="dataListSPCT.tenKM !== null && dataListSPCT.tenKM !== undefined" severity="danger" 
+                                style="width: 60px ; height: 20px;  margin-left: 5px; margin-bottom: 10px;">Giảm {{ dataListSPCT.giaTriGiam }}%</Tag>
+                                </div>
+                             
                             </div>
-                            <label for="">- Trọng lượng: {{ dataSanPham.trongLuong }}</label>
+                            <label for="">- Trọng lượng: {{ dataListSPCT.trongLuong }} ({{ dataListSPCT.donVi }})
+                            </label>
                             <br />
                             <label for="">- Vật liệu: {{ dataSanPham.vatLieu }}</label>
                             <br />
@@ -223,25 +267,34 @@ const getSizeByMauSac = async (idms) => {
                             <br />
                             <label for="">- Thương hiệu: {{ dataSanPham.thuongHieu }}</label>
                             <br />
-                            <label for="">- Số lượng tồn: {{ soLuongTon }} </label>
+                            <label for="">- Số lượng tồn: {{ dataListSPCT.soLuongTon }}</label>
                             <br />
                             <br />
                             <label class="ms">Màu sắc</label>
                             <br />
                             <div class="rounded-content-list">
-
-                                <div v-for="(mauSacs, index) in dataMauSac" :key="index" class="rounded-content" @click="selectMauSac(mauSacs)" :class="{ selected: isMauSacSelected(mauSacs) }">
+                        
+                                <div v-for="(mauSacs, index) in dataMauSac" :key="index" class="rounded-content"
+                                    @click="selectMauSac(mauSacs)"
+                                    :class="{ selected: isMauSacSelected(mauSacs), disabled:  isMauSacDisbled(mauSacs) }">
 
                                     <img class="rounded-image" :src="mauSacs.anh" alt="Hình ảnh" />
                                     <a class="rounded-text">{{ mauSacs.ten }}</a>
                                 </div>
+
+
+
                             </div>
                             <br />
                             <label class="ms">Size</label>
                             <br />
                             <div class="rounded-content-list">
-                                <div v-for="(size, index) in dataSize" :key="index" class="rounded-content-size" @click="selectSize(size)" :class="{ selected: isSizeSelected(size) }">
-                                    <a class="rounded-text">{{ size.ten }} ({{ size.moTa }})</a>
+                                <div v-for="(size, index) in dataSize" :key="index" style="margin-right: 10px;">
+
+                                    <RadioButton v-model="getSize" inputId="ingredient2" name="pizza" :value="size.id"
+                                        style="margin-right: 10px; color: white;" />
+                                    <label>{{ size.ten }} </label>
+
                                 </div>
                             </div>
 
@@ -251,32 +304,30 @@ const getSizeByMauSac = async (idms) => {
                                 <label for="quantity">Số lượng</label>
                                 <br />
                                 <div class="quantity">
-                                    <button @click="decrement" class="minus p-button-secondary p-button-outlined">
+                                    <button @click="decrement" class="minus p-button-secondary p-button-outlined"   :disabled="dataListSPCT.giaBan == null || dataListSPCT.soLuongTon == 0 ">
                                         <i class="pi pi-minus"></i>
                                     </button>
                                     <input v-model="quantity" class="input-soluong" style="width: 35px" disabled />
-                                    <button @click="increment" class="plus-phai p-button-secondary p-button-outlined">
+                                    <button @click="increment" class="plus-phai p-button-secondary p-button-outlined"   :disabled="dataListSPCT.giaBan == null || dataListSPCT.soLuongTon == 0 ">
                                         <i class="pi pi-plus"></i>
                                     </button>
                                 </div>
-                                <Button label="Thêm vào giỏ hàng" @click="addToCart" icon="pi pi-shopping-cart" class="p-button-rounded p-button-warning mr-2 mb-2" style="background: #e8bd72" />
-                                <Button label="Mua ngay" class="p-button-rounded p-button-warning mr-2 mb-2" style="background: #e8bd72" />
+                                <Button label="Thêm vào giỏ hàng" @click="addToCart" icon="pi pi-shopping-cart"
+                                    class="p-button-rounded p-button-warning mr-2 mb-2" style="background: #e8bd72"
+                                    :disabled="dataListSPCT.giaBan == null || dataListSPCT.soLuongTon == 0 " />
+                                <Button label="Mua ngay" class="p-button-rounded p-button-warning mr-2 mb-2"
+                                    style="background: #e8bd72"   :disabled="dataListSPCT.giaBan == null || dataListSPCT.soLuongTon == 0 " />
                             </div>
                         </div>
                     </div>
                     <div class="tab-view-container">
                         <TabView>
                             <TabPanel header="Mô tả sản phẩm">
-                                <iframe
-                                    style="margin-left: 220px"
-                                    width="560"
-                                    height="315"
+                                <iframe style="margin-left: 220px" width="560" height="315"
                                     src="https://www.youtube.com/embed/LavsX-c8m74"
-                                    title="Tự tin sống chất cùng Quỳnh Anh Shyn | Mũ bảo hiểm Royal Helmet"
-                                    frameborder="0"
+                                    title="Tự tin sống chất cùng Quỳnh Anh Shyn | Mũ bảo hiểm Royal Helmet" frameborder="0"
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                    allowfullscreen
-                                ></iframe>
+                                    allowfullscreen></iframe>
                                 <br />
                                 <br />
                                 <label for=""> {{ dataSanPham.moTa }}</label>
@@ -364,7 +415,8 @@ const getSizeByMauSac = async (idms) => {
                                 <div class="flex">
                                     <h6 style="margin-right: 10px"><span>1 </span> bình luận</h6>
                                     <label style="margin-left: 675px" for=""></label>
-                                    <Dropdown :options="dataTrangThai" optionLabel="label" placeholder="Tất cả bình luận" class="w-full md:w-14rem" style="margin-left: 20px" />
+                                    <Dropdown :options="dataTrangThai" optionLabel="label" placeholder="Tất cả bình luận"
+                                        class="w-full md:w-14rem" style="margin-left: 20px" />
                                 </div>
                                 <div class="">
                                     <Avatar icon="pi pi-user" class="" size="xlarge" />
@@ -372,7 +424,8 @@ const getSizeByMauSac = async (idms) => {
                                         <Textarea v-model="value" rows="5" cols="145" />
                                     </span>
                                     <Toast />
-                                    <div class="flex flex-wrap justify-content-between align-items-center gap-3 mt-3" style="margin-left: 900px">
+                                    <div class="flex flex-wrap justify-content-between align-items-center gap-3 mt-3"
+                                        style="margin-left: 900px">
                                         <Button type="submit" label="Đăng" />
                                     </div>
                                 </div>
@@ -398,9 +451,9 @@ const getSizeByMauSac = async (idms) => {
                                         <img :src="slotProps.data.sanPham.anh" alt="Hình ảnh" style="width: 50%" />
                                     </a>
                                     <div>
-                                        <a href=""
-                                            ><h4 class="mb-1">{{ slotProps.data.sanPham.ten }}</h4></a
-                                        >
+                                        <a href="">
+                                            <h4 class="mb-1">{{ slotProps.data.sanPham.ten }}</h4>
+                                        </a>
                                         <h6 class="mt-0 mb-3">{{ slotProps.data.giaBan }} đ</h6>
                                         <div class="mt-5">
                                             <Button icon="pi pi-search" rounded class="mr-2" />
@@ -419,25 +472,37 @@ const getSizeByMauSac = async (idms) => {
 </template>
 
 <style scoped>
-
 div.selected {
     border: 2px solid red;
 
+}
+.strikethrough {
+    text-decoration: line-through;
+    color: rgb(5, 5, 5); /* Màu chữ cho giá bán gạch ngang (tuỳ chọn) */
 }
 .grid {
     margin-top: 45px;
     display: flex;
     justify-content: center;
 }
+
 .ms {
     color: #5a6069;
-    font-weight: bold; /* Làm đậm chữ */
+    font-weight: bold;
+    /* Làm đậm chữ */
+}
+
+div.disabled {
+    pointer-events: none;
+    opacity: 0.6;
 }
 
 .masp {
     color: #e8bd72;
-    text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5); /* Đổ bóng chữ */
-    font-weight: bold; /* Làm đậm chữ */
+    text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+    /* Đổ bóng chữ */
+    font-weight: bold;
+    /* Làm đậm chữ */
 }
 
 .rounded-content-list {
@@ -453,8 +518,10 @@ div.selected {
     border-radius: 6px;
     cursor: pointer;
     margin: 4px;
-    flex-basis: calc(25% - 8px); /* Đặt kích thước ban đầu của mỗi ô, chừa khoảng cách 8px giữa các ô */
-    max-width: calc(25% - 8px); /* Đặt giới hạn kích thước tối đa của mỗi ô */
+    flex-basis: calc(25% - 8px);
+    /* Đặt kích thước ban đầu của mỗi ô, chừa khoảng cách 8px giữa các ô */
+    max-width: calc(25% - 8px);
+    /* Đặt giới hạn kích thước tối đa của mỗi ô */
     box-sizing: border-box;
 }
 
@@ -484,11 +551,16 @@ div.selected {
     font-size: 12px;
     color: #333;
 }
+
 .sl {
-    display: flex; /* Sử dụng flexbox để căn chỉnh các phần tử theo chiều ngang */
-    align-items: center; /* Căn phần tử theo chiều dọc để chúng đều nhau */
-    gap: 10px; /* Khoảng cách giữa các phần tử */
+    display: flex;
+    /* Sử dụng flexbox để căn chỉnh các phần tử theo chiều ngang */
+    align-items: center;
+    /* Căn phần tử theo chiều dọc để chúng đều nhau */
+    gap: 10px;
+    /* Khoảng cách giữa các phần tử */
 }
+
 /* CSS cho nút tăng giảm số lượng (phiên bản nhỏ hơn) */
 .quantity {
     display: flex;
@@ -498,13 +570,17 @@ div.selected {
 .minus,
 .plus {
     cursor: pointer;
-    font-size: 15px; /* Kích thước chữ nhỏ hơn */
+    font-size: 15px;
+    /* Kích thước chữ nhỏ hơn */
     background-color: #ffffff;
     color: black;
-    padding: 10px 16px; /* Kích thước padding nhỏ hơn */
+    padding: 10px 16px;
+    /* Kích thước padding nhỏ hơn */
     margin: 0;
-    border-top-left-radius: 20px; /* Bo tròn góc trên trái của nút giảm số lượng */
-    border-bottom-left-radius: 20px; /* Bo tròn góc dưới trái của nút giảm số lượng */
+    border-top-left-radius: 20px;
+    /* Bo tròn góc trên trái của nút giảm số lượng */
+    border-bottom-left-radius: 20px;
+    /* Bo tròn góc dưới trái của nút giảm số lượng */
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
     transition: background-color 0.3s ease;
@@ -512,38 +588,49 @@ div.selected {
 }
 
 .plus {
-    border-top-right-radius: 20px; /* Bo tròn góc trên phải của nút tăng số lượng */
-    border-bottom-right-radius: 20px; /* Bo tròn góc dưới phải của nút tăng số lượng */
+    border-top-right-radius: 20px;
+    /* Bo tròn góc trên phải của nút tăng số lượng */
+    border-bottom-right-radius: 20px;
+    /* Bo tròn góc dưới phải của nút tăng số lượng */
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
 }
 
 /* CSS cho ô nhập số lượng */
 .qty {
-    font-size: 15px; /* Kích thước chữ nhỏ hơn */
+    font-size: 15px;
+    /* Kích thước chữ nhỏ hơn */
     text-align: center;
-    padding: 10px 12px; /* Kích thước padding nhỏ hơn */
+    padding: 10px 12px;
+    /* Kích thước padding nhỏ hơn */
     border: 1px solid #ccc;
     border-radius: 0;
-    width: 50px; /* Kích thước width nhỏ hơn */
+    width: 50px;
+    /* Kích thước width nhỏ hơn */
     margin: 0;
 }
 
 .ctn {
     display: flex;
-    flex-direction: column; /* Xếp theo cột */
-    align-items: flex-start; /* Căn các phần tử theo trục dọc (cột) */
+    flex-direction: column;
+    /* Xếp theo cột */
+    align-items: flex-start;
+    /* Căn các phần tử theo trục dọc (cột) */
 }
 
 .item {
     display: flex;
-    align-items: center; /* Căn các phần tử label và span theo trục ngang */
-    margin-bottom: 0px; /* Khoảng cách giữa các item */
+    align-items: center;
+    /* Căn các phần tử label và span theo trục ngang */
+    margin-bottom: 0px;
+    /* Khoảng cách giữa các item */
 }
 
 .item label {
-    width: 150px; /* Độ rộng cố định của label để tạo ra một cột cố định */
-    text-align: left; /* Căn phải nếu bạn muốn label nằm ở bên phải */
+    width: 150px;
+    /* Độ rộng cố định của label để tạo ra một cột cố định */
+    text-align: left;
+    /* Căn phải nếu bạn muốn label nằm ở bên phải */
     margin-right: 30px;
 }
 
@@ -552,8 +639,10 @@ div.selected {
 }
 
 .size-container {
-    display: inline-block; /* hoặc sử dụng 'inline-flex' nếu bạn muốn chúng căng ra đều theo chiều ngang */
-    margin-right: 10px; /* Khoảng cách giữa các phần tử */
+    display: inline-block;
+    /* hoặc sử dụng 'inline-flex' nếu bạn muốn chúng căng ra đều theo chiều ngang */
+    margin-right: 10px;
+    /* Khoảng cách giữa các phần tử */
 }
 
 .minus,
@@ -571,16 +660,20 @@ div.selected {
     transition: background-color 0.3s ease;
     border: 1px solid #ccc;
 }
+
 .input-soluong {
     font-size: 17px;
     height: 44px;
-    border: 1px solid #ccc; /* Đặt viền màu ghi và kích thước to */
-    color: #333; /* Đặt màu chữ */
+    border: 1px solid #ccc;
+    /* Đặt viền màu ghi và kích thước to */
+    color: #333;
+    /* Đặt màu chữ */
     /* padding: 0 12px;  */
     text-align: center;
     width: 30px;
     box-sizing: border-box;
 }
+
 .plus-phai {
     cursor: pointer;
     font-size: 15px;
@@ -597,6 +690,7 @@ div.selected {
 }
 
 .selected {
-    border-color: #e8bd72; /* Màu border khi được chọn */
+    border-color: #e8bd72;
+    /* Màu border khi được chọn */
 }
 </style>
