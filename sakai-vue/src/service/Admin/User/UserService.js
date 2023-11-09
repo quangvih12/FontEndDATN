@@ -17,7 +17,7 @@ export const userStore = defineStore('user', {
         async getAllUser() {
             this.check = 0;
             try {
-                const response = await axios.get(apiUser + '/getAllUser');
+                const response = await axios.get(apiUser + 'getAllUser');
                 this.data = response.data;
             } catch (error) {
                
@@ -27,7 +27,7 @@ export const userStore = defineStore('user', {
          async fetchDataByStatus() {
             this.check = 1;
             try {
-                const response = await axios.get(apiUser + '/getAllUserByRole?role=ADMIN' );
+                const response = await axios.get(apiUser + 'getAllUserByRole?role=ADMIN' );
                 this.data = response.data;
                 
             } catch (error) {

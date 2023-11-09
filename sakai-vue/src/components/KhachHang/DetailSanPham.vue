@@ -1,21 +1,33 @@
 <script setup>
 import Breadcrumb from 'primevue/breadcrumb';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import TabView from 'primevue/tabview';
+import { useToast } from 'primevue/usetoast';
 import TabPanel from 'primevue/tabpanel';
 import { useDetailProductStore } from '../../service/KhachHang/DetailService'; // Đường dẫn đến store của bạn
 import { useRoute } from 'vue-router';
+import { gioHangStore } from '@/service/KhachHang/Giohang/GiohangCTService.js';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
+const gioHangService = gioHangStore();
 const productStore = useDetailProductStore();
 const route = useRoute();
 const idProduct = parseInt(route.params.id);
 
+
 const dataSanPham = ref({});
+
 const dataMauSac = ref([]);
 const dataSize = ref([]);
 const loadImage = ref([]);
 const products = ref([]);
+
 const dataListSPCT = ref([]);
+
+const dataSanPhamSelected = ref([]);
+const soLuongTon = ref('');
+
 
 onMounted(() => {
     loadData();
@@ -26,15 +38,26 @@ onMounted(() => {
     loaddataListSPCT();
 });
 
+
 const loaddataListSPCT = async () => {
     await productStore.fetchSPCTByIdSP(idProduct);
     dataListSPCT.value = productStore.products;
     console.log(dataListSPCT.value);
+
+const getSLTonTong = async (idctsp) => {
+    await productStore.getAllSLTon(idctsp);
+    slTon.value = productStore.slTon;
+};
+
+const loadProducts = async () => {
+    await productStore.fetchAll();
+    products.value = productStore.products;
 };
 
 const loadData = async () => {
     await productStore.fetchProductById(idProduct);
     dataSanPham.value = productStore.product;
+
     loadImage.value = dataSanPham.value.images;
     console.log(dataSanPham.value);
 };
@@ -43,24 +66,21 @@ const loadProducts = async () => {
     await productStore.fetchAll();
     products.value = productStore.products;
     // console.log(productStore.products);
+    soLuongTon.value = productStore.slTon;
 };
 
 const loadImg = async () => {
     await productStore.fetchAllImage(idProduct);
     loadImage.value = productStore.images;
-    // console.log(loadImage.value);
 };
-
 const loadDataMauSac = async () => {
     await productStore.fetchAllMauSac(idProduct);
     dataMauSac.value = productStore.mauSacs;
-    // console.log(productStore.mauSacs);
 };
 
 const loadDataSize = async () => {
     await productStore.fetchAllSize(idProduct);
     dataSize.value = productStore.sizes;
-    // console.log(productStore.sizes);
 };
 
 const quantity = ref(1);
@@ -100,10 +120,87 @@ const formatCurrency = (value) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
 };
 
-const selectedColorIndex = ref(null);
-function selectColor(index) {
-    selectedColorIndex.value = index;
-}
+
+const hasTenKH = ref(dataSanPham.value.tenKH !== null && dataSanPham.value.tenKH !== undefined);
+
+const selectedMauSac = ref('');
+const selectedSize = ref('');
+
+const addToCart = async () => {
+    const cartItem = {
+        soLuong: quantity.value,
+        tenMauSac: selectedMauSac.value.idMS,
+        tenSize: selectedSize.value.id,
+        sanPhamChiTiet: idProduct
+    };
+    const token = localStorage.getItem('token');
+    if (!selectedMauSac.value) {
+        toast.add({ severity: 'warn', summary: '', detail: 'Vui lòng chọn phân loại sản phẩm ', life: 5000 });
+        return;
+    }
+
+    await gioHangService.addToCart(cartItem, token);
+    toast.add({ severity: 'success', summary: 'Successful', detail: 'Thêm vào giỏ hàng thành công', life: 3000 });
+    router.push({ name: 'gio-hang' });
+};
+
+const selectMauSac = (mauSacs) => {
+    // Loại bỏ viền đỏ của màu sắc đã chọn trước đó (nếu có)
+    if (selectedMauSac.value) {
+        selectedMauSac.value.selected = false;
+    }
+
+    // Nếu màu sắc đã được chọn thì hủy chọn
+    if (mauSacs === selectedMauSac.value) {
+        selectedMauSac.value = null;
+    } else {
+        // Nếu màu sắc chưa được chọn, thêm viền đỏ và đánh dấu đã chọn
+        selectedMauSac.value = mauSacs;
+        selectedMauSac.value.selected = true;
+
+        getSizeByMauSac(mauSacs.idMS);
+        // updateSoLuongTon();
+    }
+};
+
+const isMauSacSelected = (mauSacs) => {
+    return mauSacs === selectedMauSac.value;
+};
+
+const selectSize = async (size) => {
+    if (selectedSize.value) {
+        selectedSize.value.selected = false;
+    }
+
+    // Nếu size đã được chọn thì hủy chọn
+    if (size === selectedSize.value) {
+        selectedSize.value = null;
+    } else {
+        // Nếu size chưa được chọn, thêm viền đỏ và đánh dấu đã chọn
+        selectedSize.value = size;
+        selectedSize.value.selected = true;
+
+        if (selectedMauSac) {
+            selectedMauSac.selected = true;
+        }
+        getMauSacBySize(size.id);
+    }
+};
+
+const isSizeSelected = (size) => {
+    return size === selectedSize.value;
+};
+
+const getMauSacBySize = async (idsizect) => {
+    await productStore.getMauSacBySize(idProduct, idsizect);
+    dataMauSac.value = productStore.mauSacs;
+};
+
+const getSizeByMauSac = async (idms) => {
+    await productStore.getSizeByMauSac(idProduct, idms);
+    dataSize.value = productStore.sizes;
+};
+
 </script>
 
 <template>
@@ -113,9 +210,6 @@ function selectColor(index) {
                 <Breadcrumb :home="home" :model="items" />
                 <!-- Cột phải -->
                 <div class="card md:flex md:justify-content-center" style="margin-top: 0px">
-                    <!-- <div v-for="image in loadImage" :key="image.id">
-                        <img :src="image.anh" alt="Ảnh sản phẩm" />
-                    </div> -->
                     <div class="flex">
                         <div class="col-5">
                             <Galleria :value="loadImage" :responsiveOptions="responsiveOptions" :numVisible="5" containerStyle="max-width: 450px">
@@ -128,9 +222,9 @@ function selectColor(index) {
                             </Galleria>
                         </div>
                         <div class="col-7">
-                            <h1 class="masp">{{ dataSanPham.ten }}</h1>
+                            <h1 class="masp">{{ dataSanPham.tenSP }}</h1>
                             <label for=""
-                                >Mã SP: <span>{{ dataSanPham.ma }}</span></label
+                                >Mã SP: <span>{{ dataSanPham.maSP }}</span></label
                             >
                             <label for="" style="margin-left: 20px"
                                 >Loại: <span style="color: red">{{ dataSanPham.loai }}</span></label
@@ -142,25 +236,36 @@ function selectColor(index) {
                             </div>
                             <label for="">- Trọng lượng: {{ dataSanPham.trongLuong }}</label>
                             <br />
-                            <label for="">- Số lượng tồn: {{ dataSanPham.soLuongTon }} </label>
+                            <label for="">- Vật liệu: {{ dataSanPham.vatLieu }}</label>
+                            <br />
+                            <label for="">- Quai Đeo: {{ dataSanPham.quaiDeo }}</label>
+                            <br />
+                            <label for="">- Đệm lót: {{ dataSanPham.demLot }}</label>
+                            <br />
+                            <label for="">- Thương hiệu: {{ dataSanPham.thuongHieu }}</label>
+                            <br />
+                            <label for="">- Số lượng tồn: {{ soLuongTon }} </label>
                             <br />
                             <br />
                             <label class="ms">Màu sắc</label>
                             <br />
                             <div class="rounded-content-list">
-                                <div v-for="(mauSacs, index) in dataMauSac" :key="index" :class="{ 'rounded-content': true, selected: index === selectedColorIndex }" @click="selectColor(index)">
+
+                                <div v-for="(mauSacs, index) in dataMauSac" :key="index" class="rounded-content" @click="selectMauSac(mauSacs)" :class="{ selected: isMauSacSelected(mauSacs) }">
+
                                     <img class="rounded-image" :src="mauSacs.anh" alt="Hình ảnh" />
-                                    <a class="rounded-text">{{ mauSacs.mauSac.ten }}</a>
+                                    <a class="rounded-text">{{ mauSacs.ten }}</a>
                                 </div>
                             </div>
                             <br />
-                            <div class="flex flex-wrap gap-3">
-                                <label class="ms" style="margin-left: 5px">Kích cỡ</label>
-                                <div class="flex align-items-center" v-for="(s, index) in dataSize" :key="index">
-                                    <input type="radio" :id="'size' + s.id" :value="s.size.ten" v-model="selectedSize" :name="'sizeGroup'" />
-                                    <label :for="'size' + s.id" class="ml-2">{{ s.size.ten }}</label>
+                            <label class="ms">Size</label>
+                            <br />
+                            <div class="rounded-content-list">
+                                <div v-for="(size, index) in dataSize" :key="index" class="rounded-content-size" @click="selectSize(size)" :class="{ selected: isSizeSelected(size) }">
+                                    <a class="rounded-text">{{ size.ten }} ({{ size.moTa }})</a>
                                 </div>
                             </div>
+
                             <br />
                             <br />
                             <div class="sl">
@@ -175,7 +280,7 @@ function selectColor(index) {
                                         <i class="pi pi-plus"></i>
                                     </button>
                                 </div>
-                                <Button label="Thêm vào giỏ hàng" icon="pi pi-shopping-cart" class="p-button-rounded p-button-warning mr-2 mb-2" style="background: #e8bd72" />
+                                <Button label="Thêm vào giỏ hàng" @click="addToCart" icon="pi pi-shopping-cart" class="p-button-rounded p-button-warning mr-2 mb-2" style="background: #e8bd72" />
                                 <Button label="Mua ngay" class="p-button-rounded p-button-warning mr-2 mb-2" style="background: #e8bd72" />
                             </div>
                         </div>
@@ -335,15 +440,10 @@ function selectColor(index) {
 </template>
 
 <style scoped>
-.gb {
-    display: flex;
-    align-items: baseline;
-}
 
-.gach-di {
-    text-decoration: line-through;
-    font-size: 1em;
-    margin-right: 15px;
+div.selected {
+    border: 2px solid red;
+
 }
 .grid {
     margin-top: 45px;
@@ -354,6 +454,7 @@ function selectColor(index) {
     color: #5a6069;
     font-weight: bold; /* Làm đậm chữ */
 }
+
 .masp {
     color: #e8bd72;
     text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5); /* Đổ bóng chữ */
@@ -375,6 +476,21 @@ function selectColor(index) {
     margin: 4px;
     flex-basis: calc(25% - 8px); /* Đặt kích thước ban đầu của mỗi ô, chừa khoảng cách 8px giữa các ô */
     max-width: calc(25% - 8px); /* Đặt giới hạn kích thước tối đa của mỗi ô */
+    box-sizing: border-box;
+}
+
+.rounded-content-size {
+    display: flex;
+    align-items: center;
+    padding: 3px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    cursor: pointer;
+    margin: 4px;
+    width: 80px;
+    height: 40px;
+    /* flex-basis: calc(25% - 8px); 
+    max-width: calc(25% - 8px);  */
     box-sizing: border-box;
 }
 

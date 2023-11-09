@@ -1,29 +1,211 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { gioHangStore } from '@/service/KhachHang/Giohang/GiohangCTService.js';
+import { useDetailProductStore } from '@/service/KhachHang/DetailService.js';
+import { da } from 'date-fns/locale';
+import { useToast } from 'primevue/usetoast';
+const productStore = useDetailProductStore();
+
+const gioHangService = gioHangStore();
+const toast = useToast();
+const selectedMauSac = ref('');
+const selectedSize = ref('');
+const mauSac = ref({});
+const sizeCT = ref(null);
 const checked = ref(false);
+const msctImage = ref(null);
 const tongTien = 3000000;
 const tongSLSP = 2;
-const dataSP = [
-    { ten: 'Royce XH01 Đen Nhám', mauSac: 'xanh', soLuong: 3, gia: 10000, imageUrl: 'https://nontrum.vn/wp-content/uploads/2019/10/non-balder-vang-1-e1583121638578.jpg' },
-    { ten: 'SP2', mauSac: 'xanh', soLuong: 3, gia: 10000, imageUrl: 'https://nontrum.vn/wp-content/uploads/2019/10/non-balder-vang-1-e1583121638578.jpg' },
-    { ten: 'SP3', mauSac: 'xanh', soLuong: 3, gia: 100000000, imageUrl: 'https://nontrum.vn/wp-content/uploads/2019/10/non-balder-vang-1-e1583121638578.jpg' },
-    { ten: 'SP3', mauSac: 'xanh', soLuong: 3, gia: 100000000, imageUrl: 'https://nontrum.vn/wp-content/uploads/2019/10/non-balder-vang-1-e1583121638578.jpg' },
-    { ten: 'SP3', mauSac: 'xanh', soLuong: 3, gia: 100000000, imageUrl: 'https://nontrum.vn/wp-content/uploads/2019/10/non-balder-vang-1-e1583121638578.jpg' },
-    { ten: 'SP3', mauSac: 'xanh', soLuong: 3, gia: 100000000, imageUrl: 'https://nontrum.vn/wp-content/uploads/2019/10/non-balder-vang-1-e1583121638578.jpg' },
-    { ten: 'SP3', mauSac: 'xanh', soLuong: 3, gia: 100000000, imageUrl: 'https://nontrum.vn/wp-content/uploads/2019/10/non-balder-vang-1-e1583121638578.jpg' },
-    { ten: 'SP4', mauSac: 'xanh', soLuong: 3, gia: 10000, imageUrl: 'https://nontrum.vn/wp-content/uploads/2019/10/non-balder-vang-1-e1583121638578.jpg' }
-];
+// const dataSP = [
+//     { ten: 'Royce XH01 Đen Nhám', mauSac: 'xanh', soLuong: 3, gia: 10000, imageUrl: 'https://nontrum.vn/wp-content/uploads/2019/10/non-balder-vang-1-e1583121638578.jpg' },
+//     { ten: 'SP2', mauSac: 'xanh', soLuong: 3, gia: 10000, imageUrl: 'https://nontrum.vn/wp-content/uploads/2019/10/non-balder-vang-1-e1583121638578.jpg' },
+//     { ten: 'SP3', mauSac: 'xanh', soLuong: 3, gia: 100000000, imageUrl: 'https://nontrum.vn/wp-content/uploads/2019/10/non-balder-vang-1-e1583121638578.jpg' },
+//     { ten: 'SP3', mauSac: 'xanh', soLuong: 3, gia: 100000000, imageUrl: 'https://nontrum.vn/wp-content/uploads/2019/10/non-balder-vang-1-e1583121638578.jpg' },
+//     { ten: 'SP3', mauSac: 'xanh', soLuong: 3, gia: 100000000, imageUrl: 'https://nontrum.vn/wp-content/uploads/2019/10/non-balder-vang-1-e1583121638578.jpg' },
+//     { ten: 'SP3', mauSac: 'xanh', soLuong: 3, gia: 100000000, imageUrl: 'https://nontrum.vn/wp-content/uploads/2019/10/non-balder-vang-1-e1583121638578.jpg' },
+//     { ten: 'SP3', mauSac: 'xanh', soLuong: 3, gia: 100000000, imageUrl: 'https://nontrum.vn/wp-content/uploads/2019/10/non-balder-vang-1-e1583121638578.jpg' },
+//     { ten: 'SP4', mauSac: 'xanh', soLuong: 3, gia: 10000, imageUrl: 'https://nontrum.vn/wp-content/uploads/2019/10/non-balder-vang-1-e1583121638578.jpg' }
+// ];
 
-const quantity = ref(1);
+const dataGHCT = ref([]);
+const listMSCT = ref([]);
+const listSizeCT = ref([]);
+const listTenMS = ref([]);
+const data = ref({});
 
-const increment = () => {
-    quantity.value += 1;
+onMounted(async () => {
+    loadDataGioHang();
+    loadMSCT();
+    loadSizeCT();
+    loadTenMS();
+});
+
+const loadDataGioHang = async () => {
+    await gioHangService.getAllGHCT();
+    dataGHCT.value = gioHangService.data;
 };
 
-const decrement = () => {
-    if (quantity.value > 1) {
-        quantity.value -= 1;
+const loadMSCT = async () => {
+    await gioHangService.getAllMSCT();
+    listMSCT.value = gioHangService.data;
+};
+
+const loadTenMS = async () => {
+    await gioHangService.getTenMS();
+    listTenMS.value = gioHangService.data;
+};
+
+const loadSizeCT = async () => {
+    await gioHangService.getAllSizeCT();
+    listSizeCT.value = gioHangService.data;
+};
+
+const updateSoLuong = (product, event) => {
+    const newValue = parseInt(event.target.value, 10); // Đảm bảo giá trị nhập vào là số
+    if (!isNaN(newValue)) {
+        product.soLuong = newValue;
     }
+};
+
+const increment = async (idGHCT) => {
+    await gioHangService.congSL(idGHCT);
+    dataGHCT.value = gioHangService.data; // Tăng giá trị soLuong lên 1 đơn vị
+    loadDataGioHang();
+};
+
+const decrement = async (idGHCT) => {
+    await gioHangService.getGHCT(idGHCT);
+    data.value = gioHangService.data;
+
+    if (data.value.soLuong <= 1) {
+        toast.add({ severity: 'warn', summary: '', detail: 'Số lượng phải lớn hơn không', life: 3000 });
+        return;
+    }
+
+    await gioHangService.truSL(idGHCT);
+    dataGHCT.value = gioHangService.data; // Tăng giá trị soLuong lên 1 đơn vị
+    loadDataGioHang();
+};
+
+const selectedGHCT = ref(null);
+
+const dataMauSac = ref([]);
+
+const loadDataMauSac = async (productID) => {
+    await productStore.fetchAllMauSac(productID);
+    dataMauSac.value = productStore.mauSacs;
+};
+
+const selectedSizeMauSac = ref(false);
+const dataSize = ref([]);
+const ghct = ref({});
+const editProduct = async (data) => {
+    ghct.value = { ...data };
+
+    console.log(ghct, 'ghct test');
+    await productStore.fetchAllMauSac(data.idCTSP);
+    dataMauSac.value = productStore.mauSacs;
+
+    await productStore.fetchAllSize(data.idCTSP);
+    dataSize.value = productStore.sizes;
+    selectedSizeMauSac.value = true;
+};
+
+const deleteGioHang = async (idghct) => {
+    await gioHangService.xoaGHCT(idghct);
+    dataGHCT.value = gioHangService.data;
+    toast.add({ severity: 'warn', summary: '', detail: 'Xoá thành công', life: 3000 });
+    loadDataGioHang();
+};
+
+const updateMauSacSize = async (idghct) => {
+    await gioHangService.updateMauSacSize(idghct, selectedMauSac.value.idMS, selectedSize.value.id);
+    dataGHCT.value = gioHangService.data;
+    loadDataGioHang();
+    toast.add({ severity: 'success', summary: '', detail: 'Cập nhật thành công', life: 3000 });
+
+    selectedSizeMauSac.value = false;
+};
+
+const getAnhMauSac = (idMauSacChiTiet, idSanPham, idSizeCT) => {
+    const mauSacChiTiet = listMSCT.value.find((mau) => mau.mauSac.id === idMauSacChiTiet && mau.sanPhamChiTiet.id === idSanPham && mau.sizeChiTiet.id === idSizeCT);
+    if (mauSacChiTiet) {
+        return mauSacChiTiet.anh; // Điều này phụ thuộc vào cấu trúc dữ liệu từ gioHangService
+    } else {
+        return 'Màu không xác định'; // Hoặc trả về một giá trị mặc định khác nếu không tìm thấy
+    }
+};
+
+const getTenMauSac = (idMauSac) => {
+    const mauSac = listTenMS.value.find((mau) => mau.id === idMauSac);
+    if (mauSac) {
+        console.log(mauSac.ten, 'ngu ko ta');
+        return mauSac.ten; // Điều này phụ thuộc vào cấu trúc dữ liệu từ gioHangService
+    } else {
+        return 'Màu không xác định'; // Hoặc trả về một giá trị mặc định khác nếu không tìm thấy
+    }
+};
+
+const getTenSize = (idSizeChiTiet) => {
+    const sizechitiet = listSizeCT.value.find((size) => size.id === idSizeChiTiet);
+    if (sizechitiet) {
+        return sizechitiet.size.ten + ' - ' + sizechitiet.size.moTa; // Điều này phụ thuộc vào cấu trúc dữ liệu từ gioHangService
+    } else {
+        return 'size không xác định'; // Hoặc trả về một giá trị mặc định khác nếu không tìm thấy
+    }
+};
+// const getMsctById = async(idmsct) => {
+
+//     await gioHangService.getMauSacByID(idmsct);
+//     msctImage.value = gioHangService.data;
+//     return mausacCT.value.anh;
+
+// }
+
+const hideDialog = () => {
+    selectedSizeMauSac.value = false;
+};
+
+const selectMauSac = (mauSacs) => {
+    if (mauSac.moTa === getTenMauSac()) {
+        selectedMauSac.value.selected = true;
+    }
+    // Loại bỏ viền đỏ của màu sắc đã chọn trước đó (nếu có)
+    if (selectedMauSac.value) {
+        selectedMauSac.value.selected = false;
+    }
+
+    // Nếu màu sắc đã được chọn thì hủy chọn
+    if (mauSacs === selectedMauSac.value) {
+        selectedMauSac.value = null;
+    } else {
+        // Nếu màu sắc chưa được chọn, thêm viền đỏ và đánh dấu đã chọn
+        selectedMauSac.value = mauSacs;
+        selectedMauSac.value.selected = true;
+    }
+};
+
+const isMauSacSelected = (mauSacs) => {
+    return mauSacs === selectedMauSac.value;
+};
+
+const selectSize = (size) => {
+    if (selectedSize.value) {
+        selectedSize.value.selected = false;
+    }
+
+    // Nếu size đã được chọn thì hủy chọn
+    if (size === selectedSize.value) {
+        selectedSize.value = null;
+    } else {
+        // Nếu size chưa được chọn, thêm viền đỏ và đánh dấu đã chọn
+        selectedSize.value = size;
+        selectedSize.value.selected = true;
+    }
+};
+
+const isSizeSelected = (size) => {
+    return size === selectedSize.value;
 };
 </script>
 <template>
@@ -32,141 +214,49 @@ const decrement = () => {
             <!-- Cột trái -->
             <div class="p-col-6">
                 <div class="trai">
-                    <!-- <table class="tong-sl-sp table">
-                        <tr>
-                            <td><Checkbox v-model="checked" :binary="true" style="width: 50px; margin-bottom: 10px" /></td>
-                            <td class="tieu-de-trai">Sản phẩm</td>
-                            <td class="tieu-de-trai">Giá</td>
-                            <td class="tieu-de-trai">Số tượng</td>
-                            <td class="tieu-de-trai">Tổng</td>
-                            <td></td>
-                        </tr>
-                        <tr v-for="(items, index) in dataSP" :key="index">
-                            <td><Checkbox v-model="checked" :binary="true" style="width: 50px; margin-bottom: 10px" /></td>
-                            <td class="content-trai">
-                                <div class="product-container">
-                                    <div class="thumbnail">
-                                        <img :src="items.imageUrl" alt="Thumbnail" class="anh" />
-                                    </div>
-                                    <div class="details">
-                                        <p class="ten-sp">{{ items.ten }}</p>
-                                        <p>{{ items.mauSac }}</p>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="content-trai">{{ items.gia }}đ</td>
-                            <td class="content-trai">
-                                <InputText type="number" v-model="items.soLuong" style="width: 70px" />
-                                <InputNumber v-model="items.soLuong" inputId="horizontal-buttons" showButtons buttonLayout="horizontal" :step="1" incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus" currency="EUR" />
-                            </td>
-                            <td class="content-trai">{{ items.gia * items.soLuong }}đ</td>
-                            <td><Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2" style="width: 35px; height: 35px; margin-bottom: 10px; margin-left: 5px" /></td>
-                        </tr>
-                    </table> -->
-                    <!-- <DataTable
-                        ref="dt"
-                        :value="dataSP"
-                        v-model:selection="selectedProducts"
-                        dataKey="id"
-                        :filters="filters"
-                        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
-                        responsiveLayout="scroll"
-                    >
+                    <DataTable :value="dataGHCT" v-model:selection="selectedGHCT" dataKey="id" :filters="filters" paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown">
                         <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-                        <Column field="code" header="Sản phẩm" headerStyle="width:20%; min-width:15rem;">
-                            <template #body="slotProps">
-                                <div class="product-container">
-                                    <div class="thumbnail">
-                                        <img :src="slotProps.data.imageUrl" :alt="slotProps.data.image" class="shadow-2" width="50" />
-                                    </div>
-                                    <div class="details">
-                                        <p style="margin-bottom: 0">{{ slotProps.data.ten }}</p>
-                                        <p>{{ slotProps.data.mauSac }}</p>
-                                    </div>
-                                </div>
-                            </template>
-                        </Column>
 
-                        <Column header="Giá" headerStyle="width:14%; min-width:6rem;">
-                            <template #body="slotProps">
-                                <span class="p-column-title">Code</span>
-                                {{ slotProps.data.gia }}đ
-                            </template>
-                        </Column>
-                        <Column header="Số lượng" headerStyle="width:10%; min-width:7rem;">
-                            <template #body="slotProps">
-                                <span class="p-column-title">Code</span>
-                                <InputNumber
-                                    v-model="slotProps.data.soLuong"
-                                    showButtons
-                                    buttonLayout="vertical"
-                                    style="width: 50px"
-                                    decrementButtonClassName="p-button-secondary"
-                                    incrementButtonClassName="p-button-secondary"
-                                    incrementButtonIcon="pi pi-plus"
-                                    decrementButtonIcon="pi pi-minus"
-                                />
-                            </template>
-                        </Column>
-                        <Column header="Tổng" headerStyle="min-width:6rem;">
-                            <template #body="slotProps">
-                                <span class="p-column-title">Code</span>
-                                {{ slotProps.data.soLuong * slotProps.data.gia }}đ
-                            </template>
-                        </Column>
-                        <Column headerStyle="min-width:2rem;">
-                            <template #body="slotProps">
-                                <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2" @click="confirmDeleteProduct(slotProps.data)" />
-                            </template>
-                        </Column>
-                    </DataTable> -->
-                    <DataTable ref="dt" :value="dataSP" v-model:selection="selectedProducts" dataKey="id" :filters="filters" paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown">
-                        <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
                         <Column field="code" header="Sản phẩm" headerStyle="width:20%; min-width:16rem;">
                             <template #body="slotProps">
                                 <div class="product-container">
                                     <div class="thumbnail">
-                                        <img :src="slotProps.data.imageUrl" :alt="slotProps.data.image" class="shadow-2" width="50" />
+                                        <img :src="getAnhMauSac(slotProps.data.tenMauSac, slotProps.data.idCTSP, slotProps.data.tenSize)" alt="Ảnh sản phẩm" class="shadow-2" width="50" />
                                     </div>
                                     <div class="details">
-                                        <p style="margin-bottom: 0; font-size: 17px">{{ slotProps.data.ten }}</p>
-                                        <p style="font-size: 17px">{{ slotProps.data.mauSac }}</p>
+                                        <p style="margin-bottom: 0; font-size: 17px">{{ slotProps.data.tenSP }}</p>
                                     </div>
                                 </div>
                             </template>
                         </Column>
 
-                        <Column header="Giá" headerStyle="width:14%; min-width:7rem;">
+                        <Column field="code" header="Phân loại hàng" headerStyle="width:10%; min-width:8rem;">
+                            <template #body="slotProps">
+                                <div @click="editProduct(slotProps.data)">
+                                    <p style="font-size: 17px">{{ getTenMauSac(slotProps.data.tenMauSac) }}</p>
+                                    <p style="font-size: 17px">{{ getTenSize(slotProps.data.tenSize) }}</p>
+                                </div>
+                            </template>
+                        </Column>
+
+                        <Column header="Giá" headerStyle="width:14%; min-width:10rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">Code</span>
-                                <p style="font-size: 17px">{{ slotProps.data.gia }}đ</p>
+                                <p style="font-size: 12px" :class="{ strikethrough: true }">{{ slotProps.data.giaBan }}đ</p>
+                                <span v-if="slotProps.data.giaSPSauGiam === null">{{ slotProps.data.giaBan }}đ</span>
+                                <span v-else>{{ slotProps.data.giaSPSauGiam }}đ</span>
                             </template>
                         </Column>
                         <Column header="Số lượng" headerStyle="width:10%; min-width:10rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">Code</span>
-                                <!-- <InputNumber
-                                    v-model="slotProps.data.soLuong"
-                                    showButtons
-                                    buttonLayout="vertical"
-                                    style="width: 50px"
-                                    decrementButtonClassName="p-button-secondary"
-                                    incrementButtonClassName="p-button-secondary"
-                                    incrementButtonIcon="pi pi-plus"
-                                    decrementButtonIcon="pi pi-minus"
-                                /> -->
-                                <!-- <div class="quantity buttons_added form-flat">
-                                    <input type="button" value="" class="minus button is-form" />
-                                    <input type="number" class="input-text qty text" step="1" min="1" max="" name="quantity" value="1" title="SL" size="4" placeholder="" inputmode="numeric" />
-                                    <input type="button" value="+" class="plus button is-form" />
-                                </div> -->
+
                                 <div class="quantity">
-                                    <button @click="decrement" class="minus p-button-secondary p-button-outlined">
+                                    <button @click="decrement(slotProps.data.idGHCT)" class="minus p-button-secondary p-button-outlined">
                                         <i class="pi pi-minus"></i>
                                     </button>
-                                    <input v-model="quantity" class="input-soluong" style="width: 35px" />
-                                    <button @click="increment" class="plus-phai p-button-secondary p-button-outlined">
+                                    <input :value="slotProps.data.soLuong" @input="updateSoLuong(slotProps.data, $event)" class="input-soluong" style="width: 35px" />
+                                    <button @click="increment(slotProps.data.idGHCT)" class="plus-phai p-button-secondary p-button-outlined">
                                         <i class="pi pi-plus"></i>
                                     </button>
                                 </div>
@@ -175,15 +265,48 @@ const decrement = () => {
                         <Column header="Tổng" headerStyle="min-width:6rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">Code</span>
-                                <p style="font-size: 17px">{{ slotProps.data.soLuong * slotProps.data.gia }}đ</p>
+                                <p style="font-size: 15px">{{ slotProps.data.soLuong * slotProps.data.giaBan }}đ</p>
                             </template>
                         </Column>
                         <Column headerStyle="min-width:2rem;">
                             <template #body="slotProps">
-                                <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2" @click="confirmDeleteProduct(slotProps.data)" />
+                                <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2" @click="deleteGioHang(slotProps.data.idGHCT)" />
                             </template>
                         </Column>
                     </DataTable>
+
+                    <Dialog v-model:visible="selectedSizeMauSac" :style="{ width: '450px' }" header="Cập nhật phân loại hàng" :modal="true">
+                        <label class="ms">Màu sắc</label>
+                        <br />
+
+                        <div class="rounded-content-list">
+                            <div v-for="(mauSacs, index) in dataMauSac" :key="index" class="rounded-content" @click="selectMauSac(mauSacs)" :class="{ selected: isMauSacSelected(mauSacs) }">
+                                <img class="rounded-image" :src="mauSacs.anh" alt="Hình ảnh" />
+                                <a class="rounded-text">{{ mauSacs.ten }}</a>
+                            </div>
+                        </div>
+                        <!-- <div class="rounded-content-list">
+                                <div v-for="(mauSacs, index) in dataMauSac" :key="index" class="rounded-content"  @click="selectedMauSac = mauSacs.mauSac.ten"  :class="{ 'border-red': mauSacs.mauSac.ten === selectedMauSac,'selected': mauSacs.mauSac.ten === selectedMauSac }" >
+                                     <img class="rounded-image" :src="mauSacs.anh" alt="Hình ảnh" /> 
+                                    <a class="rounded-text"  >{{ mauSacs.mauSac.ten }}</a>
+                                   
+                                </div>
+                        </div> -->
+
+                        <br />
+                        <label class="ms">Size</label>
+                        <br />
+                        <div class="rounded-content-list">
+                            <div v-for="(size, index) in dataSize" :key="index" class="rounded-content-size" @click="selectSize(size)" :class="{ selected: isSizeSelected(size) }">
+                                <a class="rounded-text">{{ size.ten }} ({{ size.moTa }})</a>
+                            </div>
+                        </div>
+
+                        <template #footer>
+                            <Button label="Trở lại" icon="pi pi-times" class="p-button-text" @click="hideDialog" />
+                            <Button type="Xác nhận" label="Save" icon="pi pi-check" class="p-button-text" @click="updateMauSacSize(ghct.idGHCT)" />
+                        </template>
+                    </Dialog>
                 </div>
             </div>
             <!-- cột phải -->
@@ -209,6 +332,62 @@ const decrement = () => {
 </template>
 
 <style scoped>
+div.selected {
+    border: 2px solid red;
+}
+div.border-red {
+    border-color: red; /* Đặt màu viền thành đỏ */
+    border-width: 2px; /* Hoặc thiết lập kiểu viền khác tùy ý */
+}
+.rounded-content-list {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.rounded-content-size {
+    display: flex;
+    align-items: center;
+    padding: 3px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    cursor: pointer;
+    margin: 4px;
+    width: 80px;
+    height: 40px;
+    /* flex-basis: calc(25% - 8px); 
+    max-width: calc(25% - 8px);  */
+    box-sizing: border-box;
+}
+
+.rounded-content {
+    display: flex;
+    align-items: center;
+    padding: 1px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    cursor: pointer;
+    margin: 4px;
+    flex-basis: calc(25% - 8px); /* Đặt kích thước ban đầu của mỗi ô, chừa khoảng cách 8px giữa các ô */
+    max-width: calc(25% - 8px); /* Đặt giới hạn kích thước tối đa của mỗi ô */
+    box-sizing: border-box;
+}
+.rounded-image {
+    width: 50px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.rounded-text {
+    font-size: 15px;
+    color: #333;
+}
+
+.strikethrough {
+    text-decoration: line-through;
+    color: red; /* Màu chữ cho giá bán gạch ngang (tuỳ chọn) */
+}
+
 .grid {
     /* margin-top: 70px; */
     /* position: absolute;

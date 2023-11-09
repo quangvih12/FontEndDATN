@@ -92,7 +92,7 @@ const products = ref(null);
 
             </template>
         </Dialog>
-        <Button type="button" icon="pi pi-pencil" @click="open" class="p-button-success"
+        <Button type="button" icon="pi pi-plus" @click="open" class="p-button-success"
             style="width: 50px; height: 40px; margin-left: 20px" />
     </div>
 </template>

@@ -71,33 +71,38 @@
                         <Button type="button" label="Tháng" @click="toggle1"
                             style="width: 80px; height: 40px;background: none;   color: black;" />
                         <Button type="button" label="Tháng" @click="load()"
-                            style="width: 70px; height: 40px;background: none;    color: black;"> <i 
-                                class="pi pi-replay" style="font-size: 1.8rem; margin-right: 200px;"></i></Button>
+                            style="width: 70px; height: 40px;background: none;    color: black;"> <i class="pi pi-replay"
+                                style="font-size: 1.8rem; margin-right: 200px;"></i></Button>
 
                         <OverlayPanel ref="op1" style="height: 100px;">
+                            <form @submit="onSubmit">
+                                <div style="display: flex; height: 50px;">
 
-                            <div style="display: flex; height: 50px;">
+                                    <div class="" style="height: 30px; margin-right: 20px;  display: block;">
+                                        <label style="width: 100px;">start month</label>
+                                        <span class="p-float-label">
 
-                                <div class="" style="height: 30px; margin-right: 20px;  display: block;">
-                                    <label style="width: 100px;">start month</label>
-                                    <span class="p-float-label">
+                                            <InputText type="datetime-local" style="width: 160px;" v-model="startDate"
+                                                :class="{ 'p-invalid': startDateError }" />
+                                            <!-- <label  style="width: 100px;">start month</label> -->
+                                        </span>
+                                        <small class="p-error">{{ startDateError }}</small>
+                                    </div>
+                                    <div class="" style="height: 30px; margin-right: 20px;  display: block;">
+                                        <label style="width: 100px;">end month</label>
+                                        <span class="p-float-label">
 
-                                        <InputText type="datetime-local" style="width: 160px;" />
-                                        <!-- <label  style="width: 100px;">start month</label> -->
-                                    </span>
+                                            <InputText type="datetime-local" style="width: 160px;" v-model="endDate"
+                                                :class="{ 'p-invalid': endDateError }" />
+                                            <!-- <label  style="width: 100px;">start month</label> -->
+                                        </span>
+                                        <small class="p-error">{{ endDateError }}</small>
+                                    </div>
+                                    <Button type="submit"
+                                        style="background: none; height: 50px; border: none; margin-top: 10px;"><i
+                                            class="pi pi-search" style="font-size: 1.8rem; color: blue"></i></Button>
                                 </div>
-                                <div class="" style="height: 30px; margin-right: 20px;  display: block;">
-                                    <label style="width: 100px;">end month</label>
-                                    <span class="p-float-label">
-
-                                        <InputText type="datetime-local" style="width: 160px;" />
-                                        <!-- <label  style="width: 100px;">start month</label> -->
-                                    </span>
-                                </div>
-                                <Button style="background: none; height: 50px; border: none; margin-top: 10px;"><i
-                                        class="pi pi-search" style="font-size: 1.8rem; color: blue"></i></Button>
-                            </div>
-
+                            </form>
                         </OverlayPanel>
 
 
@@ -157,7 +162,8 @@ import { ThongKeStore } from "../../../service/Admin/ThongKe/ThongKe.api";
 import { useLoaiService } from '../../../service/Admin/Loai/LoaiService';
 import { useCounterStore } from '../../../service/Admin/ThuongHieu/ThuongHieuService.js';
 import { ProductStore } from '../../../service/Admin/product/product.api';
-
+import { useForm, useField, defineRule } from 'vee-validate';
+import * as yup from 'yup';
 import OverlayPanel from 'primevue/overlaypanel';
 
 
@@ -175,6 +181,41 @@ const lstAdminThongKeThangResponses = ref([]);
 const lstAdminThongKeThuongHieuResponses = ref([]);
 const lstAdminThongKeThangNamResponses = ref([]);
 
+
+const schema = yup.object().shape({
+    startDate: yup.string().required('vui lòng chọn ngày bắt đầu'),
+    endDate: yup.string().required('vui lòng chọn chọn ngày kết thúc')
+});
+
+const { handleSubmit, resetForm } = useForm({
+    validationSchema: schema
+});
+const { value: startDate, errorMessage: startDateError } = useField('startDate');
+const { value: endDate, errorMessage: endDateError } = useField('endDate');
+
+const onSubmit = handleSubmit(async (values) => {
+    await thongKeStore.fetchAllByMonth(values.startDate, values.endDate);
+    tongDoanhThu.value = thongKeStore.tongDoanhThu;
+    lstAdminThongKeLoaiResponses.value = thongKeStore.lstAdminThongKeLoaiResponses;
+    lstAdminThongKeSanPhamCaoResponses.value = thongKeStore.lstAdminThongKeSanPhamCaoResponses;
+    lstAdminThongKeSanPhamThapResponses.value = thongKeStore.lstAdminThongKeSanPhamThapResponses;
+    lstAdminThongKeThangResponses.value = thongKeStore.lstAdminThongKeThangResponses;
+    lstAdminThongKeThuongHieuResponses.value = thongKeStore.lstAdminThongKeThuongHieuResponses;
+    lstAdminThongKeThangNamResponses.value = thongKeStore.lstAdminThongKeThangNamResponses;
+
+    chartData.value = setChartData();
+    chartOptions.value = setChartOptions();
+    chartLoai.value = setChartLoai();
+    chartOptionsLoai.value = setChartOptionsLoai();
+    chartThuongHieu.value = setChartThuongHieu();
+    chartOptionsThuongHieu.value = setChartOptionsThuongHieu();
+    chartDataSPCao.value = setChartDataSpCao();
+    chartOptionsSPCao.value = setChartOptionsSpCao();
+    chartDataSPThap.value = setChartDataSpThap();
+    chartOptionsSPThap.value = setChartOptionsSpThap();
+});
+
+const vNam = ref(null);
 const op = ref();
 const toggle = (event) => {
     op.value.toggle(event);
@@ -200,7 +241,6 @@ const loadData = async () => {
     lstAdminThongKeThangResponses.value = thongKeStore.lstAdminThongKeThangResponses;
     lstAdminThongKeThuongHieuResponses.value = thongKeStore.lstAdminThongKeThuongHieuResponses;
     lstAdminThongKeThangNamResponses.value = thongKeStore.lstAdminThongKeThangNamResponses;
-    //console.log(lstAdminThongKeLoaiResponses.value)
 
     chartData.value = setChartData();
     chartOptions.value = setChartOptions();
@@ -217,9 +257,11 @@ const loadData = async () => {
 
 const load = () => {
     loadData();
+    resetForm();
     selectedLoai.value = null;
     selectedCity.value = null;
     selectedProduct.value = null;
+    vNam.value = null;
 }
 
 
@@ -245,8 +287,8 @@ const loadProducts = async () => {
     products.value = productStore.products;
 };
 
-const onloaiChangeLoai = async (id) => {
-    await thongKeStore.fetchAllByLoai(id);
+const onloaiChangeLoai = async (id, year) => {
+    await thongKeStore.fetchAllByLoai(id, year);
     tongDoanhThu.value = thongKeStore.tongDoanhThu;
     lstAdminThongKeLoaiResponses.value = thongKeStore.lstAdminThongKeLoaiResponses;
     lstAdminThongKeSanPhamCaoResponses.value = thongKeStore.lstAdminThongKeSanPhamCaoResponses;
@@ -256,7 +298,11 @@ const onloaiChangeLoai = async (id) => {
     lstAdminThongKeThangNamResponses.value = thongKeStore.lstAdminThongKeThangNamResponses;
 };
 watch(selectedLoai, async (newVal) => {
-    await onloaiChangeLoai(selectedLoai.value.id);
+    if (vNam.value === null) {
+        vNam.value = new Date().getFullYear();
+    }
+
+    await onloaiChangeLoai(selectedLoai.value.id, vNam.value);
     chartData.value = setChartData();
     chartOptions.value = setChartOptions();
     chartLoai.value = setChartLoai();
@@ -269,8 +315,8 @@ watch(selectedLoai, async (newVal) => {
     chartOptionsSPThap.value = setChartOptionsSpThap();
 });
 
-const onloaiChangeThuongHieu = async (id) => {
-    await thongKeStore.fetchAllByThuongHieu(id);
+const onloaiChangeThuongHieu = async (id, year) => {
+    await thongKeStore.fetchAllByThuongHieu(id, year);
     tongDoanhThu.value = thongKeStore.tongDoanhThu;
     lstAdminThongKeLoaiResponses.value = thongKeStore.lstAdminThongKeLoaiResponses;
     lstAdminThongKeSanPhamCaoResponses.value = thongKeStore.lstAdminThongKeSanPhamCaoResponses;
@@ -279,8 +325,12 @@ const onloaiChangeThuongHieu = async (id) => {
     lstAdminThongKeThuongHieuResponses.value = thongKeStore.lstAdminThongKeThuongHieuResponses;
     lstAdminThongKeThangNamResponses.value = thongKeStore.lstAdminThongKeThangNamResponses;
 };
+
 watch(selectedCity, async (newVal) => {
-    await onloaiChangeThuongHieu(selectedCity.value.id);
+    if (vNam.value === null) {
+        vNam.value = new Date().getFullYear();
+    }
+    await onloaiChangeThuongHieu(selectedCity.value.id, vNam.value);
     chartData.value = setChartData();
     chartOptions.value = setChartOptions();
     chartLoai.value = setChartLoai();
@@ -293,8 +343,8 @@ watch(selectedCity, async (newVal) => {
     chartOptionsSPThap.value = setChartOptionsSpThap();
 });
 
-const onloaiChangeSanPham = async (id) => {
-    await thongKeStore.fetchAllBySanPham(id);
+const onloaiChangeYear = async (year) => {
+    await thongKeStore.fetchAllByYear(year);
     tongDoanhThu.value = thongKeStore.tongDoanhThu;
     lstAdminThongKeLoaiResponses.value = thongKeStore.lstAdminThongKeLoaiResponses;
     lstAdminThongKeSanPhamCaoResponses.value = thongKeStore.lstAdminThongKeSanPhamCaoResponses;
@@ -302,9 +352,26 @@ const onloaiChangeSanPham = async (id) => {
     lstAdminThongKeThangResponses.value = thongKeStore.lstAdminThongKeThangResponses;
     lstAdminThongKeThuongHieuResponses.value = thongKeStore.lstAdminThongKeThuongHieuResponses;
     lstAdminThongKeThangNamResponses.value = thongKeStore.lstAdminThongKeThangNamResponses;
+
 };
+
+const onloaiChangeSanPham = async (id, year) => {
+    await thongKeStore.fetchAllBySanPham(id, year);
+    tongDoanhThu.value = thongKeStore.tongDoanhThu;
+    lstAdminThongKeLoaiResponses.value = thongKeStore.lstAdminThongKeLoaiResponses;
+    lstAdminThongKeSanPhamCaoResponses.value = thongKeStore.lstAdminThongKeSanPhamCaoResponses;
+    lstAdminThongKeSanPhamThapResponses.value = thongKeStore.lstAdminThongKeSanPhamThapResponses;
+    lstAdminThongKeThangResponses.value = thongKeStore.lstAdminThongKeThangResponses;
+    lstAdminThongKeThuongHieuResponses.value = thongKeStore.lstAdminThongKeThuongHieuResponses;
+    lstAdminThongKeThangNamResponses.value = thongKeStore.lstAdminThongKeThangNamResponses;
+
+};
+
 watch(selectedProduct, async (newVal) => {
-    await onloaiChangeSanPham(selectedProduct.value.id);
+    if (vNam.value === null) {
+        vNam.value = new Date().getFullYear();
+    }
+    await onloaiChangeSanPham(selectedProduct.value.id, vNam.value);
     chartData.value = setChartData();
     chartOptions.value = setChartOptions();
     chartLoai.value = setChartLoai();
@@ -316,6 +383,63 @@ watch(selectedProduct, async (newVal) => {
     chartDataSPThap.value = setChartDataSpThap();
     chartOptionsSPThap.value = setChartOptionsSpThap();
 });
+
+watch(vNam, async (newVal) => {
+    if (selectedProduct.value === null || selectedCity.value === null || selectedLoai.value === null) {
+        await onloaiChangeYear(vNam.value);
+        chartData.value = setChartData();
+        chartOptions.value = setChartOptions();
+        chartLoai.value = setChartLoai();
+        chartOptionsLoai.value = setChartOptionsLoai();
+        chartThuongHieu.value = setChartThuongHieu();
+        chartOptionsThuongHieu.value = setChartOptionsThuongHieu();
+        chartDataSPCao.value = setChartDataSpCao();
+        chartOptionsSPCao.value = setChartOptionsSpCao();
+        chartDataSPThap.value = setChartDataSpThap();
+        chartOptionsSPThap.value = setChartOptionsSpThap();
+    }
+    if (selectedCity.value !== null) {
+        await onloaiChangeThuongHieu(selectedCity.value.id, vNam.value);
+        chartData.value = setChartData();
+        chartOptions.value = setChartOptions();
+        chartLoai.value = setChartLoai();
+        chartOptionsLoai.value = setChartOptionsLoai();
+        chartThuongHieu.value = setChartThuongHieu();
+        chartOptionsThuongHieu.value = setChartOptionsThuongHieu();
+        chartDataSPCao.value = setChartDataSpCao();
+        chartOptionsSPCao.value = setChartOptionsSpCao();
+        chartDataSPThap.value = setChartDataSpThap();
+        chartOptionsSPThap.value = setChartOptionsSpThap();
+    }
+    if (selectedLoai.value !== null) {
+        await onloaiChangeLoai(selectedLoai.value.id, vNam.value);
+        chartData.value = setChartData();
+        chartOptions.value = setChartOptions();
+        chartLoai.value = setChartLoai();
+        chartOptionsLoai.value = setChartOptionsLoai();
+        chartThuongHieu.value = setChartThuongHieu();
+        chartOptionsThuongHieu.value = setChartOptionsThuongHieu();
+        chartDataSPCao.value = setChartDataSpCao();
+        chartOptionsSPCao.value = setChartOptionsSpCao();
+        chartDataSPThap.value = setChartDataSpThap();
+        chartOptionsSPThap.value = setChartOptionsSpThap();
+    }
+    if (selectedProduct.value !== null) {
+        await onloaiChangeSanPham(selectedProduct.value.id, vNam.value);
+        chartData.value = setChartData();
+        chartOptions.value = setChartOptions();
+        chartLoai.value = setChartLoai();
+        chartOptionsLoai.value = setChartOptionsLoai();
+        chartThuongHieu.value = setChartThuongHieu();
+        chartOptionsThuongHieu.value = setChartOptionsThuongHieu();
+        chartDataSPCao.value = setChartDataSpCao();
+        chartOptionsSPCao.value = setChartOptionsSpCao();
+        chartDataSPThap.value = setChartDataSpThap();
+        chartOptionsSPThap.value = setChartOptionsSpThap();
+    }
+
+});
+
 
 onMounted(async () => {
     loadDataLoai();
@@ -345,7 +469,7 @@ const nam = Array.from({ length: currentYear - startYear + 1 }, (_, i) => ({ nam
 
 const loadThang = ref([]);
 const thang = [{ name: '01' }, { name: '02' }, { name: '03' }, { name: '04' }, { name: '05' }, { name: '06' }, { name: '07' }, { name: '08' }, { name: '09' }, { name: '10' }, { name: '11' }, { name: '12' }];
-const vNam = ref();
+
 const vThang = ref();
 
 const chartLoai = ref();
@@ -364,24 +488,30 @@ const chartOptionsSPThap = ref();
 
 const setChartData = () => {
     const documentStyle = getComputedStyle(document.documentElement);
-    const tongTien = {};
+    const tongTienThang = {};
     const tongTienNam = {};
     const namHienTai = [];
     const namTruoc = [];
-    for (const o of lstAdminThongKeThangNamResponses.value) {
-        tongTienNam[o.thang] = o.tongTien;
-        namTruoc.push(o.nam);
 
+    if (lstAdminThongKeThangNamResponses.value !== null) {
+        for (const o of lstAdminThongKeThangNamResponses.value) {
+            tongTienNam[o.thang] = o.tongTien;
+            namTruoc.push(o.nam);
+        }
     }
     for (const o of lstAdminThongKeThangResponses.value) {
-        tongTien[o.thang] = o.tongTien;
+        tongTienThang[o.thang] = o.tongTien;
         namHienTai.push(o.nam);
     }
 
     const thang = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-    const dataTongTien = thang.map(t => tongTien[t] || 0);
-    const dataTongTienNam = thang.map(t => tongTienNam[t] || 0)
+    const dataTongTienThang = thang.map(t => tongTienThang[t] || 0);
+    const dataTongTienNam = thang.map(t => tongTienNam[t] || 0);
 
+    const viTri = [];
+    for (let i = 0; i < dataTongTienThang.length; i++) {
+        viTri.push(i);
+    }
     return {
         labels: thang,
         datasets: [
@@ -394,7 +524,7 @@ const setChartData = () => {
             },
             {
                 label: namHienTai[0] ? namHienTai[0] : '',
-                data: dataTongTien,
+                data: dataTongTienThang,
                 fill: false,
                 borderColor: documentStyle.getPropertyValue('--pink-500'),
                 tension: 0.4
@@ -402,6 +532,8 @@ const setChartData = () => {
         ]
     };
 };
+
+
 const setChartOptions = () => {
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue('--text-color');
@@ -491,7 +623,6 @@ const setChartThuongHieu = () => {
     const documentStyle = getComputedStyle(document.documentElement);
     const ten = [];
     const tongTien = [];
-    // console.log(lstAdminThongKeThuongHieuResponses.value)
     for (const o of lstAdminThongKeThuongHieuResponses.value) {
         ten.push(o.ten);
         tongTien.push(o.tongTien);

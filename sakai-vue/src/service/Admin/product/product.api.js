@@ -156,14 +156,6 @@ export const ProductStore = defineStore('product', {
       }
     },
 
-    async deleteSize(productId, SizeId) {
-      try {
-        await axios.delete(`/api/products/deleteSize?idSP=${productId}&idSize=${SizeId}`); // Thay đổi URL tùy theo API của bạn
-      } catch (error) {
-        console.error('Lỗi khi xóa sản phẩm:', error);
-      }
-    },
-
     async deleteImg(productId, img) {
       try {
         await axios.delete(`/api/products/deleteImg?idSP=${productId}&img=${img}`); // Thay đổi URL tùy theo API của bạn
@@ -178,6 +170,92 @@ export const ProductStore = defineStore('product', {
       } catch (error) {
         console.error('Lỗi khi xóa sản phẩm:', error);
       }
+    },
+
+
+    async addSize(newSize) {
+      try {
+        const response = await axios.post('/api/products/add-size-chi-tiet', newSize); // Thay đổi URL và dữ liệu newProduct tùy theo API của bạn
+        this.sizes.unshift(response.data);
+      } catch (error) {
+        console.error('Lỗi khi thêm size:', error);
+      }
+    },
+
+    async checkSize(idSP, idSize) {
+      try {
+        // Gửi yêu cầu GET để kiểm tra tên sản phẩm
+        const response = await axios.get(`/api/products/checkSize?idSize=${idSize}&idSP=${idSP}`); // Thay đổi URL dựa trên API của bạn
+        const isDuplicate = response.data; // API trả về một giá trị boolean cho trùng lặp
+        return !isDuplicate; // Trả về true nếu không trùng lặp, ngược lại trả về false
+
+      } catch (error) {
+        console.error('Lỗi khi kiểm tra trùng lặp tên sản phẩm:', error);
+        throw error; // Nếu có lỗi, ném ngoại lệ để xử lý ở một nơi khác
+      }
+    },
+    async editSize(newSize, id) {
+      try {
+        const response = await axios.put(`/api/products/update-size-chi-tiet/${id}`, newSize); // Thay đổi URL và dữ liệu updatedProduct tùy theo API của bạn
+        const index = this.sizes.findIndex(product => product.id === id);
+        if (index !== -1) {
+          let newProductData = this.sizes[index];
+          newProductData = response.data;
+          this.sizes[index] = newProductData;
+        }
+      } catch (error) {
+        console.error('Lỗi khi sửa sản phẩm:', error);
+      }
+    },
+    async deleteSize(id) {
+    
+        // Xóa sản phẩm khỏi danh sách
+       await axios.delete(`/api/products/delete-size-chi-tiet/${id}`);
+        this.sizes.unshift(this.sizes.filter(size => size.id !== id));
+      
+    },
+
+    async addMauSac(newMauSac) {
+      try {
+        const response = await axios.post('/api/products/add-mau-sac-chi-tiet', newMauSac); // Thay đổi URL và dữ liệu newProduct tùy theo API của bạn
+        this.mauSacs.unshift(response.data);
+        console.log(this.mauSacs);
+      } catch (error) {
+        console.error('Lỗi khi thêm size:', error);
+      }
+    },
+
+    async checkMauSac(idSP, idSizeCT, idMau) {
+      try {
+        // Gửi yêu cầu GET để kiểm tra tên sản phẩm
+        const response = await axios.get(`/api/products/checkMauSac?idMauSac=${idMau}&idSP=${idSP}&idSP=${idSizeCT}`); // Thay đổi URL dựa trên API của bạn
+        const isDuplicate = response.data; // API trả về một giá trị boolean cho trùng lặp
+        return !isDuplicate; // Trả về true nếu không trùng lặp, ngược lại trả về false
+
+      } catch (error) {
+        console.error('Lỗi khi kiểm tra trùng lặp tên sản phẩm:', error);
+        throw error; // Nếu có lỗi, ném ngoại lệ để xử lý ở một nơi khác
+      }
+    },
+    async editMauSac(newSize, id) {
+      try {
+        const response = await axios.put(`/api/products/update-mau-sac-chi-tiet/${id}`, newSize); // Thay đổi URL và dữ liệu updatedProduct tùy theo API của bạn
+        const index = this.mauSacs.findIndex(product => product.id === id);
+        if (index !== -1) {
+          let newProductData = this.mauSacs[index];
+          newProductData = response.data;
+          this.mauSacs[index] = newProductData;
+        }
+      } catch (error) {
+        console.error('Lỗi khi sửa sản phẩm:', error);
+      }
+    },
+    async deleteMauSac(id) {
+    
+        // Xóa sản phẩm khỏi danh sách
+       await axios.delete(`/api/products/delete-mau-sac-chi-tiet/${id}`);
+        //this.mauSacs.unshift(this.sizes.filter(size => size.id !== id));
+      
     },
   },
 });

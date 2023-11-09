@@ -148,7 +148,7 @@ const editProduct = () => {
     imagesChinh.value = props.myProp.anh;
     selectedLoai.value = props.myProp.loai;
 
-    const selectedThuongHieu = dataThuongHieu.value.find(item => item.ten === props.myProp.thuongHieu);
+    const selectedThuongHieu = dataThuongHieu.value.find((item) => item.ten === props.myProp.thuongHieu);
     selectedCity.value = selectedThuongHieu;
     if (selectedCity.value) {
         //   console.log(selectedCity.value)
@@ -157,7 +157,7 @@ const editProduct = () => {
         ThuongHieu.value = null;
     }
 
-    const selectedLoais = dataLoai.value.find(item => item.ten === props.myProp.loai);
+    const selectedLoais = dataLoai.value.find((item) => item.ten === props.myProp.loai);
     selectedLoai.value = selectedLoais;
     if (selectedLoai.value) {
         //    console.log(selectedLoai.value)
@@ -166,15 +166,15 @@ const editProduct = () => {
         Loai.value = null;
     }
 
-    const selectedVatLieus = dataVatLieu.value.find(item => item.ten === props.myProp.vatLieu);
+    const selectedVatLieus = dataVatLieu.value.find((item) => item.ten === props.myProp.vatLieu);
     selectedvatLieu.value = selectedVatLieus;
     if (selectedvatLieu.value) {
         vatLieu.value = selectedvatLieu.value.id;
     } else {
         vatLieu.value = null;
     }
-
-    const selectedTrongLuongs = dataTrongLuong.value.find(item => item.value === parseInt(props.myProp.trongLuong, 10));
+    //   console.log(dataTrongLuong.value)
+    const selectedTrongLuongs = dataTrongLuong.value.find((item) => item.value === parseInt(props.myProp.trongLuong, 10));
     selectedTrongLuong.value = selectedTrongLuongs;
     if (selectedTrongLuong.value) {
         TrongLuong.value = selectedTrongLuong.value.id;
@@ -182,88 +182,96 @@ const editProduct = () => {
         TrongLuong.value = null;
     }
 
-    const tenSize = props.myProp.size.map(size => size.size.ten);
-    const soLuongSize = props.myProp.size.map(size => size.soLuong);
+    const tenSize = props.myProp.size.map((size) => size.size.ten);
+    const soLuongSize = props.myProp.size.map((size) => size.soLuong);
 
     //size và số lượng size
-    const selectedSizeIds = [];
-    for (const ten of tenSize) {
-        const selectedSizeId = dataSize.value.find(i => i.ten === ten);
-        if (selectedSizeId) {
-            selectedSizeIds.push(selectedSizeId);
-        }
-    }
-    selectedSizes.value = selectedSizeIds;
-    if (selectedSizes.value.length > 0) {
-        const selectedIds = selectedSizes.value.map(item => item.id);
-        Size.value = selectedIds.join(',').split(',').map(Number);
-    } else {
-        Size.value = null;
-    }
-    for (let i = 0; i < selectedSizes.value.length; i++) {
-        const size = selectedSizes.value[i].id;
-        const soLuong = soLuongSize[i];
-        array.value[i] = soLuong;
-        //   console.log(`Size: ${size}, Số lượng: ${soLuong}`);
-    }
-    if (array.value.length > 0) {
-        SoLuongSize.value = array.value.join(',').replace(/^,/, '').split(',').map(Number);
-    } else {
-        SoLuongSize.value = null;
-    }
+    // const selectedSizeIds = [];
+    // for (const ten of tenSize) {
+    //     const selectedSizeId = dataSize.value.find((i) => i.ten === ten);
+    //     if (selectedSizeId) {
+    //         selectedSizeIds.push(selectedSizeId);
+    //     }
+    // }
+    // selectedSizes.value = selectedSizeIds;
+    // if (selectedSizes.value.length > 0) {
+    //     const selectedIds = selectedSizes.value.map((item) => item.id);
+    //     Size.value = selectedIds.join(',').split(',').map(Number);
+    // } else {
+    //     Size.value = null;
+    // }
 
     //màu sắc và ảnh màu sắc
-    const tenMauSac = props.myProp.mauSac.map(s => s.mauSac.ten);
-    const anhMauSac = props.myProp.mauSac.map(s => s.anh);
-    const soLuongMauSac = props.myProp.mauSac.map(s => s.soLuong);
+    const tenMauSac = props.myProp.mauSac.map((s) => s.mauSac.ten);
+    const anhMauSac = props.myProp.mauSac.map((s) => s.anh);
+    const SizeMauSac = props.myProp.mauSac.map((s) => s.sizeChiTiet?.size?.ten);
+    const IdMauSacChiTiet = props.myProp.mauSac.map((s) => s.id);
+    const soLuongMauSacs = props.myProp.mauSac.map(s => s.soLuong);
     const selectedMauSacTen = [];
     for (const ten of tenMauSac) {
-        const selected = dataMauSac.value.find(i => i.ten === ten);
+        const selected = dataMauSac.value.find((i) => i.ten === ten);
         if (selected) {
             selectedMauSacTen.push(selected);
         }
     }
     selectedMauSac.value = selectedMauSacTen;
+
     if (selectedMauSac.value.length > 0) {
-        const selectedIds = selectedMauSac.value.map(item => item.id);
-        idMauSac.value = selectedIds.join(',').split(',').map(Number);
+        const selectedIds = selectedMauSac.value.map((item) => item.id);
+        //    idMauSac.value = selectedIds.join(',').split(',').map(Number);
         //  console.log(idMauSac.value);
     } else {
-        idMauSac.value = null;
+        //    idMauSac.value = null;
     }
-    for (let i = 0; i < selectedMauSac.value.length; i++) {
-        const mauSac = selectedMauSac.value[i].ten;
+
+    const selectedMauSacCopy = selectedMauSac.value.map(item => ({ ...item }));
+
+
+    for (let i = 0; i < selectedMauSacCopy.length; i++) {
+        const mauSac = selectedMauSacCopy[i].ten;
         const anh = anhMauSac[i];
         arrayImageMauSac.value[i] = anh;
-        selectedMauSac.value[i].anh = anh;
-        const soLuong = soLuongMauSac[i];
-        arrayMauSac.value[i] = soLuong;
+        selectedMauSacCopy[i].anh = anh;
+        const soLuong = soLuongMauSacs[i];
+        array.value[i] = soLuong;
+        const tenSize = SizeMauSac[i];
+        selectedMauSacCopy[i].tenSize = tenSize;
+        const idMauSacChiTiet = IdMauSacChiTiet[i];
+        selectedMauSacCopy[i].idMauSacChiTiet = idMauSacChiTiet;
+    }
+    selectedMauSacCopy.sort((a, b) => {
+        if (a.sizeChiTiet && a.sizeChiTiet.id && b.sizeChiTiet && b.sizeChiTiet.id) {
+            return a.sizeChiTiet.id - b.sizeChiTiet.id;
+        }
+        return 0;
+    });
+
+    selectedMauSac.value = selectedMauSacCopy;
+
+    if (array.value.length > 0) {
+        //  SoLuongSize.value = array.value.join(',').replace(/^,/, '').split(',').map(Number);
+    } else {
+        //   SoLuongSize.value = null;
     }
 
     for (const img of selectedMauSac.value) {
         arrayImgMauSac.value.push(img.anh);
-        imgMauSac.value = arrayImgMauSac.value.join(",").replace(/^,/, '').split(',');
+        //    imgMauSac.value = arrayImgMauSac.value.join(',').replace(/^,/, '').split(',');
     }
 
 
     // ảnh của sản phẩm
     arrayImage.value = props.myProp.img;
     for (const img of arrayImage.value) {
-        //  console.log(img.anh);
         ImagesProduct.value.push(img.anh);
-        imagesProduct.value = ImagesProduct.value.join(",").replace(/^,/, '').split(',');
-        //  console.log(imagesProduct.value)
-    }
-    if (arrayMauSac.value.length > 0) {
-        soLuongMauSac.value = arrayMauSac.value.join(',').replace(/^,/, '').split(',').map(Number);
-    } else {
-        soLuongMauSac.value = null;
+        imagesProduct.value = ImagesProduct.value.join(',').replace(/^,/, '').split(',');
     }
 
+    //  console.log(selectedMauSac.value)
     product.value = { ...editProduct };
+
     productDialog.value = true;
 };
-
 
 
 </script>
@@ -458,34 +466,22 @@ const editProduct = () => {
                             <small class="p-error">{{ thuongHieuError }}</small>
                         </div>
                         <div class="Field col-12 md:col-12" style="margin-bottom: 30px">
-                            <div style="display: flex;">
-                                <div style="width: 150px;">
-                                    <p>nhập số lượng size: </p>
-                                </div>
-                                <div style="display: flex; flex-wrap: wrap;">
-                                    <Div v-for="(size, index) in selectedSizes" :key="index" style="margin-top: 10px;">
-                                        <label :for="`input-${size.id}`" style="margin-right: 10px; margin-left: 10px;  ">{{
-                                            size.ten }}</label>
-                                        <input type="number" :id="`input-${size.id}`" v-model="array[index]"
-                                            @change="handleInputChange()" :class="{ 'p-invalid': soLuongSizeError }"
-                                            style="height: 20px; width: 60px; " disabled />
-                                    </Div>
-                                </div>
-                            </div>
-                            <small class="p-error">{{ soLuongSizeError }}</small>
+
+
                             <div style="display: flex">
                                 <div style="width: 150px">
                                     <p>Số lượng màu sắc :</p>
                                 </div>
                                 <div style="display: flex; flex-wrap: wrap">
-                                    <div v-for="(mau, index) in selectedMauSac" :key="index" style="margin-top: 10px">
-                                        <label :for="`input-${mau.id}`" style="margin-right: 10px; margin-left: 10px">{{
-                                            mau.ten }}</label>
-                                        <input type="number" :id="`input-${mau.id}`" v-model="arrayMauSac[index]"
-                                            @change="handleInputChangeMau(mau.id)" :class="{ 'p-invalid': soLuongMauError }"
-                                            style="height: 20px; width: 60px" disabled>
-                                    </div>
-
+                                    <Div v-for="(size, index) in selectedMauSac" :key="index" style="margin-top: 10px">
+                                        <label :for="`input-${size.id}`" style="margin-right: 10px; margin-left: 10px">{{
+                                            size.ten }}</label>
+                                        <label :for="`input-${size.id}`" style="margin-right: 10px; "
+                                            v-if="size.tenSize !== null"> - {{ size.tenSize }}</label>
+                                        <input type="number" :id="`input-${size.id}`" v-model="array[index]"
+                                            @change="handleInputChange()" :class="{ 'p-invalid': soLuongSizeError }"
+                                            style="height: 20px; width: 60px" disabled />
+                                    </Div>
                                 </div>
 
                             </div>
@@ -533,9 +529,11 @@ const editProduct = () => {
                                 <div>
                                     Màu :
                                     <span class="product-name">{{ color.ten }}</span>
-                                    <img :src="color.anh" alt=""
-                                        style="width: 50px; height: 50px; top: 50%; left: 50%;  transform: translate(4%, 2%); margin: 10px 0px 15px 0px;">
+                                    <span class="product-name" v-if="color.tenSize !== null"> - {{ color.tenSize
+                                    }}</span>
 
+                                    <img :src="color.anh" alt=""
+                                        style="width: 50px; height: 50px; top: 50%; left: 50%; transform: translate(4%, 2%); margin: 10px 0px 15px 0px" />
                                 </div>
 
 
