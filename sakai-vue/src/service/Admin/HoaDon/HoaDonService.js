@@ -122,47 +122,52 @@ export const HDStore = defineStore('hoaDon', {
             const danhSachItem = [];
             for (let i = 0; i < danhSachSP.length; i++) {
                 const form2 = {
-                    name: danhSachSP[i].sanPhamChiTiet.sanPham.ten,
-                    code: danhSachSP[i].sanPhamChiTiet.sanPham.ma,
+                    name: danhSachSP[i].tenSP,
+                    code: danhSachSP[i].maSP,
                     quantity: danhSachSP[i].soLuong,
-                    price: danhSachSP[i].donGia,
+                    price: parseInt(danhSachSP[i].donGia),
                     length: 12,
                     width: 12,
                     height: 12,
-                    weight: danhSachSP[i].sanPhamChiTiet.trongLuong.value,
+                    weight: danhSachSP[i].trongLuong,
                     category: {
                         level1: 'Mũ'
                     }
                 };
+                console.log(form2);
                 danhSachItem.push(form2);
             }
-            const form = {
+            const form1 = {
                 payment_type_id: 2,
-                note: 'Giao lúc 5h chiều hằng ngày', //note của khách hàng cho bên giao hàng
-                required_note: 'KHONGCHOXEMHANG', //note của người gửi cho giao hàng
+                note: 'Giao lúc 5h chiều hằng ngày',
+                required_note: 'KHONGCHOXEMHANG',
                 return_phone: '0339927992',
-                return_address: 'Số 29 ngõ 143', //địa chỉ cụ thể nơi gửi
-                return_district_id: 3440, //huyệN cụ thể nơi gửi
-                return_ward_code: '13010', //phường/xã cụ thể nơi gửi
+                return_address: 'Số 29 ngõ 143',
+                return_district_id: 3440,
+                return_ward_code: '13010',
                 client_order_code: '',
-                to_name: hoaDon.tenNguoiNhan, //tên người nhận
-                to_phone: hoaDon.sdt, //sdt người nhận
-                to_address: hoaDon.diaChiCuThe, //địa chỉ cụ thể
-                to_ward_code: hoaDon.idPhuongXa, //xã
-                to_district_id: parseInt(hoaDon.idQuanHuyen), //huyện
-                cod_amount: parseInt(hoaDon.tongTien), //tổng tiền
-                content: 'Áo gì gì đấy', //nội dung hoá đơn
+                to_name: hoaDon.tenNguoiNhan,
+                to_phone: hoaDon.sdt,
+                to_address: hoaDon.diaChiCuThe,
+                to_ward_code: hoaDon.idPhuongXa,
+                to_district_id: parseInt(hoaDon.idQuanHuyen),
+                cod_amount: parseInt(hoaDon.tongTien),
+                content: 'Mũ bảo hiểm',
                 weight: 200,
-                length: 1,
-                width: 19,
-                height: 10,
-                service_id: 100039,
-                service_type_id: 5,
+                length: 15,
+                width: 15,
+                height: 15,
+                pick_station_id: 0,
+                insurance_value: 500000,
+                service_id: 0,
+                service_type_id: 2,
+                coupon: null,
                 pick_shift: [2],
                 items: danhSachItem
             };
+
             try {
-                const response = await axios.post('https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/preview', form, {
+                const response = await axios.post('https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/preview', form1, {
                     headers: {
                         // Thêm headers vào yêu cầu POST ở đây
                         token: '62a3cbdc-4e13-11ee-96dc-de6f804954c9',

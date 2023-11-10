@@ -29,7 +29,6 @@ const editProduct = () => {
 const loadDataHDCT = async (idHD) => {
     const respone = await useHD.findHdctByIdHd(idHD);
     dataHDCT.value = respone;
-    console.log(dataHDCT.value);
 };
 
 const tinhTongTien = (tienShip, tongTien) => {
@@ -80,7 +79,7 @@ const exportToPDF = () => {
                                 <td style="width: 30px">{{ index + 1 }}</td>
                                 <td style="width: 20%"><img :src="item.anh" style="width: 50%" alt="HoaDon Image" /></td>
                                 <td>{{ item.tenSP }}</td>
-                                <td>{{ item.tenMS }}</td>
+                                <td>{{ item.tenMauSac }}</td>
                                 <td>{{ item.tenSize == null ? 'Không có' : item.tenSize }}</td>
                                 <td>{{ item.soLuong }}</td>
                                 <td>{{ formatCurrency(item.donGia) }}</td>

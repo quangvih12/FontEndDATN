@@ -18,7 +18,7 @@ const products = ref(null);
 const data = ref([]);
 
 const loadData = async () => {
-    await useDoiTra.fetchData(7);
+    // await useDoiTra.fetchData(7);
     data.value = useDoiTra.dataHoanTraHoanTien;
 };
 //chạy cái hiện data luôn

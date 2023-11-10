@@ -15,8 +15,6 @@ const productStore = useDetailProductStore();
 const route = useRoute();
 const idProduct = parseInt(route.params.id);
 
-
-
 const dataSanPham = ref({});
 
 const dataMauSac = ref([]);
@@ -74,6 +72,7 @@ watch([getSize, idMau], async ([newGetSize, newIdMau]) => {
 
 let isFirstRun = true;
 
+
 watch([dataSize, dataMauSac], async ([newDataSize, newDataMau]) => {
     if (newDataSize.length !== prevDataSizeLength.value || newDataMau.length !== prevDataMauLength.value) {
 
@@ -100,6 +99,7 @@ const loaddataListSPCT = async () => {
     dataListSPCT.value = productStore.products;
     //  console.log(dataListSPCT.value);
 }
+
 const getSLTonTong = async (idctsp) => {
     await productStore.getAllSLTon(idctsp);
     slTon.value = productStore.slTon;
@@ -113,12 +113,12 @@ const loadData = async () => {
     // console.log(dataSanPham.value);
 };
 
-const loadProducts = async () => {
-    await productStore.fetchAll();
-    products.value = productStore.products;
-    // console.log(productStore.products);
-    soLuongTon.value = productStore.slTon;
-};
+// const loadProducts = async () => {
+//     await productStore.fetchAll();
+//     products.value = productStore.products;
+//     // console.log(productStore.products);
+//     soLuongTon.value = productStore.slTon;
+// };
 
 
 
@@ -158,7 +158,6 @@ const formatCurrency = (value) => {
     if (!value) return '';
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
 };
-
 
 const hasTenKH = ref(dataSanPham.value.tenKH !== null && dataSanPham.value.tenKH !== undefined);
 
@@ -214,7 +213,6 @@ const getMauSacBySize = async (idsizect) => {
     dataMauSac.value = productStore.mauSacs;
    // console.log(dataMauSac.value)
 };
-
 
 const check = ref(false);
 </script>
@@ -273,10 +271,12 @@ const check = ref(false);
                             <label class="ms">Màu sắc</label>
                             <br />
                             <div class="rounded-content-list">
+
                         
                                 <div v-for="(mauSacs, index) in dataMauSac" :key="index" class="rounded-content"
                                     @click="selectMauSac(mauSacs)"
                                     :class="{ selected: isMauSacSelected(mauSacs), disabled:  isMauSacDisbled(mauSacs) }">
+
 
                                     <img class="rounded-image" :src="mauSacs.anh" alt="Hình ảnh" />
                                     <a class="rounded-text">{{ mauSacs.ten }}</a>
@@ -474,7 +474,6 @@ const check = ref(false);
 <style scoped>
 div.selected {
     border: 2px solid red;
-
 }
 .strikethrough {
     text-decoration: line-through;

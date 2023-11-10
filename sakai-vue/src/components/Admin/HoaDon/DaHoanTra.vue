@@ -18,7 +18,7 @@ const products = ref(null);
 const data = ref([]);
 
 const loadData = async () => {
-    await useDoiTra.fetchData(8);
+    // await useDoiTra.fetchData(8);
     data.value = useDoiTra.dataDaHoanTra;
 };
 //chạy cái hiện data luôn
@@ -83,7 +83,7 @@ const searchDate = async () => {
     }
 };
 
-const selectedColumns = ref(columns.value);
+const selectedColumns = ref(null);
 
 const onToggle = (val) => {
     selectedColumns.value = columns.value.filter((col) => val.includes(col));

@@ -183,8 +183,8 @@ const banner9 =
                 </div>
             </div>
             <!-- SP mới -->
-            <div><img :src="banner4" alt="Thumbnail" class="banner2" /></div>
-            <div><img :src="banner5" alt="Thumbnail" class="banner3" /></div>
+            <div><img src="../../images/HANG-MOI.jpg" alt="Thumbnail" class="banner2" /></div>
+            <div><img src="../../images/hangMoi.png" alt="Thumbnail" class="banner3" /></div>
             <div class="flex-container">
                 <div class="flex-item" v-for="(spct, index) in dataHangMoi" :key="index">
                     <div class="product-top">
@@ -196,14 +196,17 @@ const banner9 =
                     <p class="ten-sp">{{ spct.tenSP }}</p>
                     <br />
                     <p class="gia-sp" style="color: black; text-align: center" v-if="spct.giaBanMin == spct.giaBanMax">{{ formatCurrency(spct.giaBanMax) }}</p>
+                    <p class="gia-sp" style="color: black; text-align: center" v-else-if="spct.giaSauGiamMax != null && spct.giaSauGiamMin != null && spct.giaSauGiamMax != spct.giaSauGiamMin">
+                        {{ formatCurrency(spct.giaSauGiamMin) }} - {{ formatCurrency(spct.giaSauGiamMax) }}
+                    </p>
                     <p class="gia-sp" style="color: black; text-align: center" v-else-if="spct.giaSauGiamMax == null && spct.giaSauGiamMin == null">{{ formatCurrency(spct.giaBanMin) }} - {{ formatCurrency(spct.giaBanMax) }}</p>
                     <p class="gia-sp" style="color: black; text-align: center" v-else-if="spct.giaSauGiamMax == spct.giaSauGiamMin">{{ formatCurrency(spct.giaSauGiamMax) }}</p>
-                    <p class="gia-sp" style="color: black; text-align: center" v-else>{{ formatCurrency(spct.giaSauGiamMin) }} - {{ formatCurrency(spct.giaSauGiamMax) }}</p>
+                    <p class="gia-sp" style="color: black; text-align: center" v-else>{{ formatCurrency(spct.giaBanMin) }} - {{ formatCurrency(spct.giaBanMax) }}</p>
                 </div>
             </div>
             <!-- Nón full -->
-            <div><img :src="banner6" alt="Thumbnail" class="banner2" /></div>
-            <div><img :src="banner7" alt="Thumbnail" class="banner3" /></div>
+            <div><img src="../../images/fullFace.jpg" alt="Thumbnail" class="banner2" /></div>
+            <div><img src="../../images/full.png" alt="Thumbnail" class="banner3" /></div>
             <div class="flex-container">
                 <div class="flex-item" v-for="(spct, index) in dataFullrace" :key="index">
                     <div class="product-top">
@@ -215,15 +218,18 @@ const banner9 =
                     <p class="ten-sp">{{ spct.tenSP }}</p>
                     <br />
                     <p class="gia-sp" style="color: black; text-align: center" v-if="spct.giaBanMin == spct.giaBanMax">{{ formatCurrency(spct.giaBanMax) }}</p>
-                    <p class="gia-sp" style="color: black; text-align: center" v-else-if="spct.giaSauGiamMax == spct.giaSauGiamMin">{{ formatCurrency(spct.giaSauGiamMax) }}</p>
+                    <p class="gia-sp" style="color: black; text-align: center" v-else-if="spct.giaSauGiamMax != null && spct.giaSauGiamMin != null && spct.giaSauGiamMax != spct.giaSauGiamMin">
+                        {{ formatCurrency(spct.giaSauGiamMin) }} - {{ formatCurrency(spct.giaSauGiamMax) }}
+                    </p>
                     <p class="gia-sp" style="color: black; text-align: center" v-else-if="spct.giaSauGiamMax == null && spct.giaSauGiamMin == null">{{ formatCurrency(spct.giaBanMin) }} - {{ formatCurrency(spct.giaBanMax) }}</p>
-                    <p class="gia-sp" style="color: black; text-align: center" v-else>{{ formatCurrency(spct.giaSauGiamMin) }} - {{ formatCurrency(spct.giaSauGiamMax) }}</p>
+                    <p class="gia-sp" style="color: black; text-align: center" v-else-if="spct.giaSauGiamMax == spct.giaSauGiamMin">{{ formatCurrency(spct.giaSauGiamMax) }}</p>
+                    <p class="gia-sp" style="color: black; text-align: center" v-else>{{ formatCurrency(spct.giaBanMin) }} - {{ formatCurrency(spct.giaBanMax) }}</p>
                 </div>
             </div>
 
             <!-- Nón trẻ em -->
-            <div><img :src="banner8" alt="Thumbnail" class="banner2" /></div>
-            <div><img :src="banner9" alt="Thumbnail" class="banner3" /></div>
+            <div><img src="../../images/non-tre-em-scaled.jpg" alt="Thumbnail" class="banner2" /></div>
+            <div><img src="../../images/Banner-non-tre-em.png" alt="Thumbnail" class="banner3" /></div>
             <div class="flex-container">
                 <div class="flex-item" v-for="(spct, index) in dataTreEm" :key="index">
                     <div class="product-top">
@@ -237,10 +243,12 @@ const banner9 =
                     <br />
 
                     <p class="gia-sp" style="color: black; text-align: center" v-if="spct.giaBanMin == spct.giaBanMax">{{ formatCurrency(spct.giaBanMax) }}</p>
-                    <p class="gia-sp" style="color: black; text-align: center" v-else-if="spct.giaSauGiamMax == spct.giaSauGiamMin">{{ formatCurrency(spct.giaSauGiamMax) }}</p>
+                    <p class="gia-sp" style="color: black; text-align: center" v-else-if="spct.giaSauGiamMax != null && spct.giaSauGiamMin != null && spct.giaSauGiamMax != spct.giaSauGiamMin">
+                        {{ formatCurrency(spct.giaSauGiamMin) }} - {{ formatCurrency(spct.giaSauGiamMax) }}
+                    </p>
                     <p class="gia-sp" style="color: black; text-align: center" v-else-if="spct.giaSauGiamMax == null && spct.giaSauGiamMin == null">{{ formatCurrency(spct.giaBanMin) }} - {{ formatCurrency(spct.giaBanMax) }}</p>
-                    <p class="gia-sp" style="color: black; text-align: center" v-else>{{ formatCurrency(spct.giaSauGiamMin) }} - {{ formatCurrency(spct.giaSauGiamMax) }}</p>
-
+                    <p class="gia-sp" style="color: black; text-align: center" v-else-if="spct.giaSauGiamMax == spct.giaSauGiamMin">{{ formatCurrency(spct.giaSauGiamMax) }}</p>
+                    <p class="gia-sp" style="color: black; text-align: center" v-else>{{ formatCurrency(spct.giaBanMin) }} - {{ formatCurrency(spct.giaBanMax) }}</p>
                 </div>
             </div>
             <div class="thong-tin">
