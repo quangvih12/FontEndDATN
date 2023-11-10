@@ -52,6 +52,7 @@ export const HDStore = defineStore('hoaDon', {
                     }
                 }
             });
+            console.log('OK');
             return this.dataDangGiao[0];
         },
 
@@ -179,7 +180,6 @@ export const HDStore = defineStore('hoaDon', {
                     }
                 ]
             };
-            console.log(form2);
             try {
                 const response = await axios.post('https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/preview', form2, {
                     headers: {
@@ -188,6 +188,7 @@ export const HDStore = defineStore('hoaDon', {
                         ShopId: '4523827'
                     }
                 });
+                console.log(response);
             } catch (error) {
                 console.error('Error fetching users:', error);
             }
