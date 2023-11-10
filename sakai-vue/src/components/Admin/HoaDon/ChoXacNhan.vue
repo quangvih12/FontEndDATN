@@ -85,7 +85,6 @@ const hienThiTrangThai = (trangThai) => {
     }
 };
 
-
 const btnXacNhan = () => {
     useHD.choXacNhan(idHD.value);
     toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Xác nhận thành công', life: 3000 });
@@ -114,13 +113,10 @@ const btnXacNhanHuy = () => {
 };
 
 const columns = ref([
-    { field: 'maHD', header: 'Mã hoá đơn' },
     { field: 'nguoiTao', header: 'Người tạo' },
     { field: 'ngayTao', header: 'Ngày tạo' },
     { field: 'ngaySua', header: 'Ngày sửa' },
-    { field: 'tenNguoiNhan', header: 'Tên người nhận' },
     { field: 'tienShip', header: 'Tiền ship' },
-    { field: 'tongTien', header: 'Tổng tiền' },
     { field: 'tienSauKhiGiam', header: 'Tiền sau giảm' },
     { field: 'tenPTTT', header: 'Phương thức thanh toán' },
     { field: 'ngayThanhToan', header: 'Ngày thanh toán' },
@@ -148,7 +144,7 @@ const searchDate = async () => {
     }
 };
 
-const selectedColumns = ref(columns.value);
+const selectedColumns = ref(null);
 
 const onToggle = (val) => {
     selectedColumns.value = columns.value.filter((col) => val.includes(col));
@@ -178,7 +174,7 @@ const initFilters1 = () => {
 };
 
 const formatCurrency = (value) => {
-    return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+    return parseInt(value).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
 };
 
 const formatDate = (value) => {
@@ -233,6 +229,24 @@ const formatDate = (value) => {
             <template #body="slotProps">
                 <span class="p-column-title">stt</span>
                 {{ slotProps.data.stt }}
+            </template>
+        </Column>
+        <Column field="maHD" header="Mã hoá đơn" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+            <template #body="slotProps">
+                <span class="p-column-title">maHD</span>
+                {{ slotProps.data.maHD }}
+            </template>
+        </Column>
+        <Column field="tenNguoiNhan" header="Người nhận" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+            <template #body="slotProps">
+                <span class="p-column-title">tenNguoiNhan</span>
+                {{ slotProps.data.tenNguoiNhan }}
+            </template>
+        </Column>
+        <Column field="tongTien" header="Tổng tiền" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+            <template #body="slotProps">
+                <span class="p-column-title">tongTien</span>
+                {{ formatCurrency(slotProps.data.tongTien) }}
             </template>
         </Column>
         <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column>
