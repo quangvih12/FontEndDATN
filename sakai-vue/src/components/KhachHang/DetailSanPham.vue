@@ -15,7 +15,6 @@ const productStore = useDetailProductStore();
 const route = useRoute();
 const idProduct = parseInt(route.params.id);
 
-
 const dataSanPham = ref({});
 
 const dataMauSac = ref([]);
@@ -28,7 +27,6 @@ const dataListSPCT = ref([]);
 const dataSanPhamSelected = ref([]);
 const soLuongTon = ref('');
 
-
 onMounted(() => {
     loadData();
     // loadImg();
@@ -38,11 +36,11 @@ onMounted(() => {
     loaddataListSPCT();
 });
 
-
 const loaddataListSPCT = async () => {
     await productStore.fetchSPCTByIdSP(idProduct);
     dataListSPCT.value = productStore.products;
     console.log(dataListSPCT.value);
+};
 
 const getSLTonTong = async (idctsp) => {
     await productStore.getAllSLTon(idctsp);
@@ -62,12 +60,12 @@ const loadData = async () => {
     console.log(dataSanPham.value);
 };
 
-const loadProducts = async () => {
-    await productStore.fetchAll();
-    products.value = productStore.products;
-    // console.log(productStore.products);
-    soLuongTon.value = productStore.slTon;
-};
+// const loadProducts = async () => {
+//     await productStore.fetchAll();
+//     products.value = productStore.products;
+//     // console.log(productStore.products);
+//     soLuongTon.value = productStore.slTon;
+// };
 
 const loadImg = async () => {
     await productStore.fetchAllImage(idProduct);
@@ -119,7 +117,6 @@ const formatCurrency = (value) => {
     if (!value) return '';
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
 };
-
 
 const hasTenKH = ref(dataSanPham.value.tenKH !== null && dataSanPham.value.tenKH !== undefined);
 
@@ -200,7 +197,6 @@ const getSizeByMauSac = async (idms) => {
     await productStore.getSizeByMauSac(idProduct, idms);
     dataSize.value = productStore.sizes;
 };
-
 </script>
 
 <template>
@@ -250,9 +246,7 @@ const getSizeByMauSac = async (idms) => {
                             <label class="ms">Màu sắc</label>
                             <br />
                             <div class="rounded-content-list">
-
                                 <div v-for="(mauSacs, index) in dataMauSac" :key="index" class="rounded-content" @click="selectMauSac(mauSacs)" :class="{ selected: isMauSacSelected(mauSacs) }">
-
                                     <img class="rounded-image" :src="mauSacs.anh" alt="Hình ảnh" />
                                     <a class="rounded-text">{{ mauSacs.ten }}</a>
                                 </div>
@@ -440,10 +434,8 @@ const getSizeByMauSac = async (idms) => {
 </template>
 
 <style scoped>
-
 div.selected {
     border: 2px solid red;
-
 }
 .grid {
     margin-top: 45px;
