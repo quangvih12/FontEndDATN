@@ -27,15 +27,25 @@ onMounted(async () => {
 
 const loadDataGioHang = async () => {
     const token = localStorage.getItem('token');
-    await gioHangService.getAllGHCT(token);
-    dataGHCT.value = gioHangService.data;
+    if (token == '' || token == null) {
+        dataGHCT.value = JSON.parse(localStorage.getItem('cart'));
+    } else {
+        await gioHangService.getAllGHCT(token);
+        dataGHCT.value = gioHangService.data;
+    }
 
 };
 
 const loadDataVoucher = async () => {
     const token = localStorage.getItem('token');
-    await gioHangService.getListVoucher(token);
-    dataVoucher.value = gioHangService.voucher;
+    if (token == '' || token == null) {
+        dataVoucher.value = [{ ten: 'bạn cần đăng nhập' }];
+    } else {
+
+        await gioHangService.getListVoucher(token);
+        dataVoucher.value = gioHangService.voucher;
+    }
+
 
 };
 
@@ -47,29 +57,7 @@ const updateSoLuong = (product, event) => {
 };
 
 const fakedata = ref(null);
-const increment = async (idGHCT) => {
-    const token = localStorage.getItem('token');
-    await gioHangService.congSL(idGHCT, token);
-    fakedata.value = gioHangService.fakedata;
-    if (fakedata.value !== '') {
 
-        dataGHCT.value = gioHangService.data;
-        return;
-    } else {
-        toast.add({ severity: 'warn', summary: '', detail: 'Số lượng nhiều hơn số lượng tồn', life: 3000 });
-        return;
-    }
-
-};
-
-
-
-const decrement = async (idGHCT) => {
-    const token = localStorage.getItem('token');
-    await gioHangService.truSL(idGHCT, token);
-    dataGHCT.value = gioHangService.data; // Tăng giá trị soLuong lên 1 đơn vị
-    //  loadDataGioHang();
-};
 
 const selectedGHCT = ref();
 
@@ -81,8 +69,12 @@ const dataSize = ref([]);
 const ghct = ref({});
 const getSize = ref(null);
 const idMau = ref(null);
+const tenMauSacLocal = ref(null);
+const tenSizeLocal = ref(null);
 const idSanPhamChiTiet = ref(null);
 const editProduct = async (data) => {
+    getSize.value == '';
+    idMau.value == '';
     ghct.value = { ...data };
     await loadDataSize(ghct.value.idSP)
     await loadDataMauSac(ghct.value.idSP);
@@ -90,36 +82,35 @@ const editProduct = async (data) => {
     selectedSizeMauSac.value = true;
 };
 
+
+
+let isFirstRun = true;
+
+watch([dataSize, dataMauSac], ([newDataSize, newDataMau]) => {
+    if (newDataSize.length > 0 && newDataMau.length > 0) {
+
+        selectedMauSac.value = newDataMau[0];
+        idMau.value = selectedMauSac.value.id;
+        getSize.value = newDataSize[0].id;
+        isFirstRun = false;
+    }
+    else if (newDataSize.length === 0 && newDataMau.length > 0) {
+        selectedMauSac.value = newDataMau[0];
+        idMau.value = selectedMauSac.value.id;
+        console.log(idMau.value);
+    }
+    prevDataSizeLength.value = newDataSize.length;
+    prevDataMauLength.value = newDataMau.length;
+
+});
+
 const datagh = ref(null);
 watch([getSize, idMau], async ([newGetSize, newIdMau]) => {
     await productStore.fetchIdSPCT(ghct.value.idSP, getSize.value, idMau.value);
     datagh.value = productStore.products;
-    console.log(datagh.value)
     idSanPhamChiTiet.value = datagh.value.id;
-});
-
-let isFirstRun = true;
-
-watch([dataSize, dataMauSac], async ([newDataSize, newDataMau]) => {
-    if (newDataSize.length !== prevDataSizeLength.value || newDataMau.length !== prevDataMauLength.value) {
-
-        if (isFirstRun && newDataSize.length > 0 && newDataMau.length > 0) {
-
-            selectedMauSac.value = newDataMau[0];
-            idMau.value = selectedMauSac.value.id;
-            getSize.value = newDataSize[0].id;
-            isFirstRun = false;
-        }
-        else if (newDataSize.length === 0 && newDataMau.length > 0) {
-            selectedMauSac.value = newDataMau[0];
-            idMau.value = selectedMauSac.value.id;
-        }else{
-            selectedMauSac.value = newDataMau[0];
-            idMau.value = selectedMauSac.value.id;
-        }
-        prevDataSizeLength.value = newDataSize.length;
-        prevDataMauLength.value = newDataMau.length;
-    }
+    tenMauSacLocal.value = datagh.value.tenMauSac;
+    tenSizeLocal.value = datagh.value.tenSize;
 });
 
 const loadDataMauSac = async (idProduct) => {
@@ -134,20 +125,69 @@ const loadDataSize = async (idProduct) => {
 };
 
 const deleteGioHang = async (idghct) => {
-    await gioHangService.xoaGHCT(idghct);
-    dataGHCT.value = gioHangService.data;
-    toast.add({ severity: 'warn', summary: '', detail: 'Xoá thành công', life: 3000 });
-    loadDataGioHang();
+    const token = localStorage.getItem('token');
+
+    if (token == '' || token == null) {
+        let array = JSON.parse(localStorage.getItem('cart')); // Phân tích chuỗi JSON thành mảng
+
+        let found = false;
+        for (let i = 0; i < array.length; i++) {
+            if (array[i].idGHCT == idghct) {
+                // Cập nhật phần tử trong mảng
+                array.splice(i, 1);
+                found = true;
+                break;
+            }
+        }
+
+        // Nếu không tìm thấy phần tử trong mảng, thêm phần tử mới
+        if (!found) {
+            toast.add({ severity: 'warn', summary: '', detail: 'không tìm thấy sản phẩm ', life: 3000 });
+        }
+        localStorage.setItem('cart', JSON.stringify(array));
+        loadDataGioHang();
+        toast.add({ severity: 'warn', summary: '', detail: 'Xoá thành công', life: 3000 });
+    } else {
+        await gioHangService.xoaGHCT(idghct, token);
+        // dataGHCT.value = gioHangService.data;
+        toast.add({ severity: 'warn', summary: '', detail: 'Xoá thành công', life: 3000 });
+        loadDataGioHang();
+    }
+
 };
 
 const updateMauSacSize = async (idghct) => {
-    //  console.log(idSanPhamChiTiet.value)
-    await gioHangService.updateMauSacSize(idghct, idSanPhamChiTiet.value);
- ///   dataGHCT.value = gioHangService.data;
-   loadDataGioHang();
-    toast.add({ severity: 'success', summary: '', detail: 'Cập nhật thành công', life: 3000 });
+    const token = localStorage.getItem('token');
+    if (token == '' || token == null) {
+        let array = JSON.parse(localStorage.getItem('cart')); // Phân tích chuỗi JSON thành mảng
 
-    selectedSizeMauSac.value = false;
+        let found = false;
+        for (let i = 0; i < array.length; i++) {
+            if (array[i].idGHCT == idghct) {
+                // Cập nhật phần tử trong mảng
+                array[i].idCTSP = idSanPhamChiTiet.value;
+                array[i].tenMauSac = tenSizeLocal.value;
+                array[i].tenSize = tenMauSacLocal.value;
+                found = true;
+                break;
+            }
+        }
+
+        // Nếu không tìm thấy phần tử trong mảng, thêm phần tử mới
+        if (!found) {
+            toast.add({ severity: 'warn', summary: '', detail: 'không tìm thấy sản phẩm ', life: 3000 });
+        }
+        localStorage.setItem('cart', JSON.stringify(array));
+        loadDataGioHang();
+        selectedSizeMauSac.value = false;
+    } else {
+        await gioHangService.updateMauSacSize(idghct, idSanPhamChiTiet.value, token);
+        ///   dataGHCT.value = gioHangService.data;
+        loadDataGioHang();
+        toast.add({ severity: 'success', summary: '', detail: 'Cập nhật thành công', life: 3000 });
+
+        selectedSizeMauSac.value = false;
+    }
 };
 
 
@@ -205,50 +245,175 @@ const checked = ref([]);
 let checkedValues = []; // Mảng để lưu giá trị đã chọn
 const TongTien = ref(0);
 const TongSoLuong = ref(0);
+const ischeckeds = ref(false);
 const onSizeChange = (id, isChecked) => {
     if (isChecked) {
         // Nếu checkbox được chọn, thêm giá trị vào mảng
         checkedValues.push(id);
+        tongTienKhiTruCongSoLuong(checkedValues);
+        ischeckeds.value = isChecked;
     } else {
         // Nếu checkbox bị bỏ chọn, xóa giá trị khỏi mảng
-        checkedValues = checkedValues.filter(value => value !== id);
+        checkedValues = checkedValues.filter(value => value.idGHCT !== id.idGHCT);
+        TongTien.value = 0;
+        TongSoLuong.value = 0;
+        ischeckeds.value = isChecked;
     }
-    let tong = 0;
-    let tongSoLuong = 0;
-      for (const check of checkedValues){
-           tong += check.giaBan * check.soLuong;
-           tongSoLuong += check.soLuong;
-      }
-      TongTien.value = tong;
-      TongSoLuong.value = tongSoLuong;
+
 };
 
 const dieuKien = ref(0);
 const tienGiam = ref(0);
 const TongTienCu = ref(0);
 
+const increment = async (idGHCT) => {
+    const token = localStorage.getItem('token');
+    if (token == '' || token == null) {
+        let array = JSON.parse(localStorage.getItem('cart')); // Phân tích chuỗi JSON thành mảng
+
+        let found = false;
+        for (let i = 0; i < array.length; i++) {
+            if (array[i].idGHCT == idGHCT) {
+                // Cập nhật phần tử trong mảng
+                let so = array[i].soLuong + 1;
+                if (so > array[i].soLuongTon) {
+                    toast.add({ severity: 'warn', summary: '', detail: 'Số lượng nhiều hơn số lượng tồn', life: 3000 });
+                    return;
+                } else {
+                    array[i].soLuong = so;
+                    found = true;
+                    break;
+                }
+
+            }
+        }
+        // Nếu không tìm thấy phần tử trong mảng, thêm phần tử mới
+        if (!found) {
+            toast.add({ severity: 'warn', summary: '', detail: 'không tìm thấy sản phẩm ', life: 3000 });
+        }
+        localStorage.setItem('cart', JSON.stringify(array));
+        loadDataGioHang();
+        if (ischeckeds.value === true) {
+            tongTienKhiTruCongSoLuong(dataGHCT.value);
+        }
+        //  selectedSizeMauSac.value = false;
+    } else {
+        await gioHangService.congSL(idGHCT, token);
+        fakedata.value = gioHangService.fakedata;
+        if (fakedata.value !== '') {
+            dataGHCT.value = gioHangService.data;
+            if (ischeckeds.value === true) {
+                tongTienKhiTruCongSoLuong(dataGHCT.value);
+            }
+            return;
+        } else {
+            toast.add({ severity: 'warn', summary: '', detail: 'Số lượng nhiều hơn số lượng tồn', life: 3000 });
+            return;
+        }
+    }
+
+};
+
+
+
+const decrement = async (idGHCT) => {
+    const token = localStorage.getItem('token');
+    if (token == '' || token == null) {
+        let array = JSON.parse(localStorage.getItem('cart')); // Phân tích chuỗi JSON thành mảng
+
+        let found = false;
+        for (let i = 0; i < array.length; i++) {
+            if (array[i].idGHCT == idGHCT) {
+                // Cập nhật phần tử trong mảng
+                let so = array[i].soLuong - 1;
+                console.log(so);
+                if (so <= 0) {
+                    array.splice(i, 1);
+                    loadDataGioHang();
+                    found = true;
+                    break;
+                } else {
+                    array[i].soLuong = so;
+                    found = true;
+                    break;
+                }
+
+            }
+        }
+        // Nếu không tìm thấy phần tử trong mảng, thêm phần tử mới
+        if (!found) {
+            toast.add({ severity: 'warn', summary: '', detail: 'không tìm thấy sản phẩm ', life: 3000 });
+        }
+        localStorage.setItem('cart', JSON.stringify(array));
+        loadDataGioHang();
+        if (ischeckeds.value === true) {
+            tongTienKhiTruCongSoLuong(dataGHCT.value);
+        }
+        //    selectedSizeMauSac.value = false;
+    } else {
+        await gioHangService.truSL(idGHCT, token);
+        dataGHCT.value = gioHangService.data; // Tăng giá trị soLuong lên 1 đơn vị
+        if (ischeckeds.value === true) {
+            tongTienKhiTruCongSoLuong(dataGHCT.value);
+        }
+
+    }
+};
+const tongTienKhiTruCongSoLuong = (array) => {
+    let tong = 0;
+    let tongSoLuong = 0;
+    for (const check of array) {
+        if (check.giaSPSauGiam === '' || check.giaSPSauGiam === null) {
+            tong += check.giaBan * check.soLuong;
+            tongSoLuong += check.soLuong;
+        } else {
+            tong += check.giaSPSauGiam * check.soLuong;
+            tongSoLuong += check.soLuong;
+        }
+
+    }
+    TongTien.value = tong;
+    TongSoLuong.value = tongSoLuong;
+};
+
 const onloaiChange = () => {
     if (selectVoucher.value) {
-        dieuKien.value = selectVoucher.value.dieuKien;  
+        dieuKien.value = selectVoucher.value.dieuKien;
     } else {
         dieuKien.value = 0;
     }
-    
+
 };
 const ThanhToan = () => {
     //console.log( checkedValues) 
 };
-const apDung = () =>{
-   // TongTienCu.value =  TongTien.value;
-    tienGiam.value = TongTien.value / dieuKien.value;
-    TongTienCu.value  =TongTien.value  - TongTien.value / dieuKien.value;
+const apDung = () => {
+    const token = localStorage.getItem('token');
+    if (token == '' || token == null) {
+        toast.add({ severity: 'warn', summary: '', detail: 'bạn cần đăng nhập  ', life: 3000 });
+    } else {
+        console.log(dieuKien.value);
+        if (checkedValues.length == 0 || dieuKien.value == null || dieuKien.value == 0) {
+            toast.add({ severity: 'warn', summary: '', detail: 'bạn cần chọn sản phẩm hoặc voucher', life: 3000 });
+        } else {
+            tienGiam.value = TongTien.value / dieuKien.value;
+            TongTienCu.value = TongTien.value - TongTien.value / dieuKien.value;
+        }
+    }
 }
 
-const reset = ()=>{
+const reset = () => {
     selectVoucher.value = null;
-     dieuKien.value = 0;
- tienGiam.value = 0;
- TongTienCu.value =0;
+    dieuKien.value = 0;
+    tienGiam.value = 0;
+    TongTienCu.value = 0;
+}
+const tinhTongTienChoTungSanPham = (soLuong, giaSauGiam, giaBan) => {
+    if (giaSauGiam === '' || giaSauGiam === null) {
+        return soLuong * giaBan;
+    } else {
+        return soLuong * giaSauGiam;
+    }
 }
 
 </script>
@@ -267,7 +432,8 @@ const reset = ()=>{
                             <Column headerStyle="width: 1rem">
                                 <template #body="slotProps">
                                     <Checkbox v-model="checked[dataGHCT.indexOf(slotProps.data)]" :binary="true"
-                                        @change="onSizeChange(slotProps.data, checked[dataGHCT.indexOf(slotProps.data)])"   :disabled ="slotProps.data.soLuongTon == 0"/>
+                                        @change="onSizeChange(slotProps.data, checked[dataGHCT.indexOf(slotProps.data)])"
+                                        :disabled="slotProps.data.soLuongTon == 0" />
                                 </template>
                             </Column>
 
@@ -286,11 +452,14 @@ const reset = ()=>{
 
                             <Column field="code" header="" headerStyle="width:10%; min-width:5rem;">
                                 <template #body="slotProps">
-                                    <div @click="  slotProps.data.soLuongTon != 0 && editProduct(slotProps.data)" style="width: 100px;">
-                                        <p v-if ="slotProps.data.soLuongTon != 0">Phân loại hàng:</p>  
-                                        <p style="font-size: 13px; margin-top: -10px;"   v-if ="slotProps.data.soLuongTon != 0">{{ slotProps.data.tenMauSac }}, {{ slotProps.data.tenSize
-                                        }}</p>
-                                        <p   v-if ="slotProps.data.soLuongTon == 0">Hết sản phẩm</p>
+                                    <div @click="  slotProps.data.soLuongTon != 0 && editProduct(slotProps.data)"
+                                        style="width: 100px;">
+                                        <p v-if="slotProps.data.soLuongTon != 0">Phân loại hàng:</p>
+                                        <p style="font-size: 13px; margin-top: -10px;"
+                                            v-if="slotProps.data.soLuongTon != 0">{{ slotProps.data.tenMauSac }}, {{
+                                                slotProps.data.tenSize
+                                            }}</p>
+                                        <p v-if="slotProps.data.soLuongTon == 0">Hết sản phẩm</p>
                                     </div>
                                 </template>
                             </Column>
@@ -299,12 +468,15 @@ const reset = ()=>{
                                 <template #body="slotProps">
                                     <span class="p-column-title">Code</span>
 
-                                    <span v-if="slotProps.data.giaSPSauGiam === null">{{
-                                        formatCurrency(slotProps.data.giaBan) }}</span>
+                                    <div v-if="slotProps.data.giaSPSauGiam === null">{{
+                                        formatCurrency(slotProps.data.giaBan) }}</div>
                                     <div v-else>
-                                        <span :class="{ strikethrough: true }">{{ formatCurrency(slotProps.data.giaBan)
-                                        }}</span>
-                                        <span>{{ formatCurrency(slotProps.data.giaSPSauGiam) }}</span>
+                                        <div style="display: block;">
+                                            <div :class="{ strikethrough: true }">{{ formatCurrency(slotProps.data.giaBan)
+                                            }}</div>
+                                            <div>{{ formatCurrency(slotProps.data.giaSPSauGiam) }}</div>
+                                        </div>
+
                                     </div>
                                 </template>
                             </Column>
@@ -314,13 +486,16 @@ const reset = ()=>{
 
                                     <div class="quantity">
                                         <button @click="decrement(slotProps.data.idGHCT)" class="pi pi-minus"
-                                        :disabled ="slotProps.data.soLuongTon == 0"   style="width: 30px ; height: 30px; border-radius: 10px 0px 0px 10px; border: 1px solid rgb(177, 173, 173); ">
+                                            :disabled="slotProps.data.soLuongTon == 0"
+                                            style="width: 30px ; height: 30px; border-radius: 10px 0px 0px 10px; border: 1px solid rgb(177, 173, 173); ">
                                         </button>
                                         <input :value="slotProps.data.soLuong"
                                             @input="updateSoLuong(slotProps.data, $event)" class="input-soluong"
-                                            style="width: 30px ; height: 30px;"   :disabled ="slotProps.data.soLuongTon == 0" />
+                                            style="width: 30px ; height: 30px;"
+                                            :disabled="slotProps.data.soLuongTon == 0" />
                                         <button @click="increment(slotProps.data.idGHCT)" class="pi pi-plus"
-                                            style="width: 30px ; height: 30px; border-radius: 0px 10px 10px 0px; border: 1px solid rgb(177, 173, 173); "   :disabled ="slotProps.data.soLuongTon == 0">
+                                            style="width: 30px ; height: 30px; border-radius: 0px 10px 10px 0px; border: 1px solid rgb(177, 173, 173); "
+                                            :disabled="slotProps.data.soLuongTon == 0">
 
                                         </button>
                                     </div>
@@ -329,8 +504,10 @@ const reset = ()=>{
                             <Column field="giaBan" header="" headerStyle="min-width:5rem;">
                                 <template #body="slotProps">
                                     <span class="p-column-title">Code</span>
-                                    <p style="font-size: 15px ;color: red;">{{ formatCurrency(slotProps.data.soLuong *
-                                        slotProps.data.giaBan) }}</p>
+                                    <p style="font-size: 15px ;color: red;">
+                                        {{ formatCurrency(tinhTongTienChoTungSanPham(slotProps.data.soLuong,
+                                            slotProps.data.giaSPSauGiam, slotProps.data.giaBan
+                                        )) }}</p>
                                 </template>
                             </Column>
                             <Column headerStyle="min-width:2rem;">
@@ -370,10 +547,11 @@ const reset = ()=>{
                             </div>
 
                             <template #footer>
-                           
+
                                 <Button label="Trở lại" icon="pi pi-times" class="p-button-text" @click="hideDialog" />
                                 <Button type="Xác nhận" label="Save" icon="pi pi-check" class="p-button-text"
-                                    @click="updateMauSacSize(ghct.idGHCT)"  :disabled="datagh == ''"  />
+                                    @click="updateMauSacSize(ghct.idGHCT)"
+                                    :disabled="datagh == '' || idMau == '' || idMau == null" />
                             </template>
                         </Dialog>
                     </div>
@@ -383,16 +561,20 @@ const reset = ()=>{
                     <div class="phai">
                         <p class="TieuDePhai">CỘNG GIỎ HÀNG</p>
                         <hr class="gach-ngang" />
-                        <p class="content" style="font-size: 13px;">Tổng số lượng sản phẩm: <span style="font-size: 16px;">{{ TongSoLuong }}</span></p>
-                        <p class="content"  style="font-size: 13px;">
-                            Tổng tiền: <span style="text-align: right" class="gia">{{ formatCurrency(TongTien) ==''?0:formatCurrency(TongTien) }}</span>
+                        <p class="content" style="font-size: 13px;">Tổng số lượng sản phẩm: <span
+                                style="font-size: 16px;">{{ TongSoLuong }}</span></p>
+                        <p class="content" style="font-size: 13px;">
+                            Tổng tiền: <span style="text-align: right" class="gia">{{ formatCurrency(TongTien)
+                                == '' ? 0 : formatCurrency(TongTien) }}</span>
                         </p>
-                        <p class="content" v-if="tienGiam !== 0" style="font-size: 13px;">số tiền giảm: <span style="color: red; font-size: 15px;">{{ formatCurrency(tienGiam) }}</span></p>
+                        <p class="content" v-if="tienGiam !== 0" style="font-size: 13px;">số tiền giảm: <span
+                                style="color: red; font-size: 15px;">- {{ formatCurrency(tienGiam) }}</span></p>
                         <p class="content" v-if="tienGiam !== 0" style="font-size: 13px;">
-                            Tổng tiền giảm: <span style="text-align: right;font-size: 19px;" class="gia">{{ formatCurrency(TongTienCu) == ''?0:formatCurrency(TongTienCu) }}</span>
+                            Tổng tiền giảm: <span style="text-align: right;font-size: 19px;" class="gia">{{
+                                formatCurrency(TongTienCu) == '' ? 0 : formatCurrency(TongTienCu) }}</span>
                         </p>
-                      
-                        
+
+
                         <Button label="thanh toán" severity="danger" class="btn-thanh-toan"
                             style="width: 130px; height: 40px; margin-left:30px; " @click="ThanhToan" />
                         <div class="phieu-uu-dai">
@@ -400,15 +582,16 @@ const reset = ()=>{
                             <hr class="gach-ngang" />
                             <div style="display: flex;">
                                 <span class="p-float-label" style="width: 140px; margin-top: 20px;">
-                                                <Dropdown id="dropdown" :options="dataVoucher" v-model="selectVoucher"
-                                                    optionLabel="ten" :class="{ 'p-invalid': loaiError }"
-                                                    @change="onloaiChange"> </Dropdown>
-                                                <label for="dropdown">voucher</label>
-                                            </span>
-                                            <Button  class="pi pi-refresh" style="width: 50px; height: 40px; margin-top: 20px; margin-left: 10px;" @click="reset"/>
+                                    <Dropdown id="dropdown" :options="dataVoucher" v-model="selectVoucher" optionLabel="ten"
+                                        :class="{ 'p-invalid': loaiError }" @change="onloaiChange"> </Dropdown>
+                                    <label for="dropdown">voucher</label>
+                                </span>
+                                <Button class="pi pi-refresh"
+                                    style="width: 50px; height: 40px; margin-top: 20px; margin-left: 10px;"
+                                    @click="reset" />
                             </div>
-                           
-                            <Button label="Áp dụng" severity="success" class="btn-ap-dung"  @click="apDung"/>
+
+                            <Button label="Áp dụng" severity="success" class="btn-ap-dung" @click="apDung" />
                         </div>
                     </div>
                 </div>
