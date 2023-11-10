@@ -7,20 +7,29 @@ const apiGiohang = 'http://localhost:8080/api/khach-hang/giohang';
 export const gioHangStore = defineStore('gioHang', {
     state: () => ({
         data: [],
-        soLuong: ''
+        voucher:[],
+        soLuong: '',
+        fakedata : 'check'
     }),
     // this.data.unshift(response.data.data);
-    actions: {     
-        async addToCart(form,token) {
-            const response = await axios.post(`http://localhost:8080/api/khach-hang/giohang/addGiohang?token=${token}`,form)            
-                return response.data
-            
+    actions: {
+        async addToCart(form, token) {
+            const response = await axios.post(`http://localhost:8080/api/khach-hang/giohang/addGiohang?token=${token}`, form)
+            return response.data
+
         },
 
-        async getAllGHCT() {
+        async getAllGHCT(token) {
             try {
-                const response = await axios.get(apiGiohang + '/getListGioHang');
+                const response = await axios.get(apiGiohang + `/getListGioHang?token=${token}`);
                 this.data = response.data;
+            } catch (error) {
+            }
+        },
+        async getListVoucher(token) {
+            try {
+                const response = await axios.get(apiGiohang + `/get-voucher?token=${token}`);
+                this.voucher = response.data;
             } catch (error) {
             }
         },
@@ -38,62 +47,62 @@ export const gioHangStore = defineStore('gioHang', {
             } catch (error) {
             }
         },
-        async getGHCT(idGHCT){
+        async getGHCT(idGHCT, token) {
             try {
-                const response = await axios.get(apiGiohang+'/'+ +idGHCT);
+                const response = await axios.get(apiGiohang + '/' + idGHCT + `?token=${token}`);
                 this.data = response.data;
             } catch (error) {
             }
         },
 
-        async congSL(idGHCT){
+        async congSL(idGHCT, token) {
             try {
-                const response = await axios.post(apiGiohang + '/congSL/'+idGHCT);
-                this.data = response.data;
+                const response = await axios.put(apiGiohang + '/congSL/' + idGHCT + `?token=${token}`);
+                const index = this.data.findIndex(hoadon => hoadon.idGHCT === idGHCT);
+                if(response.data === ''){
+                    this.fakedata = response.data;
+                }else{
+                    if (index !== -1) {
+                       this.data[index] = response.data;
+                    }
+                }
+                
+                
             } catch (error) {
             }
         },
-      
-        async truSL(idGHCT){
+
+        async truSL(idGHCT, token) {
             try {
-                const response = await axios.post(apiGiohang + '/truSL/'+idGHCT);
-                this.data = response.data;
+              
+                const response = await axios.put(apiGiohang + '/truSL/' + idGHCT + `?token=${token}`);
+                const index = this.data.findIndex(hoadon => hoadon.idGHCT === idGHCT);
+                
+                if( response.data === null){
+                    
+                    if (index !== -1) {
+                        console.log(response.value);
+                        this.data[index] = response.data;
+                        this.fakedata = 'check';
+                    }
+                }else{
+                    await this.getAllGHCT(token);
+                }
+            
             } catch (error) {
             }
         },
-        async xoaGHCT(idGHCT){
+        async xoaGHCT(idGHCT) {
             try {
-                const response = await axios.delete(apiGiohang + '/'+idGHCT);
+                const response = await axios.delete(apiGiohang + '/' + idGHCT);
                 this.data = response.data;
             } catch (error) {
             }
         },
 
-        async updateMauSacSize( idGHCT,tenMauSac, tenSize){
+        async updateMauSacSize(idGHCT, idSPCT) {
             try {
-                const response = await axios.post(`http://localhost:8080/api/khach-hang/giohang/updateMauSacSize/${idGHCT}?tenMauSac=${tenMauSac}&tenSize=${tenSize}`);
-                this.data = response.data;
-            } catch (error) {
-            }
-        },
-        async getMauSacByID( idmsct){
-            try {
-                const response = await axios.get(apiGiohang + '/msct/'+idmsct);
-                this.data = response.data;
-            } catch (error) {
-            }
-        },
-        async getSizeByID( idsizect){
-            try {
-                const response = await axios.get(apiGiohang + '/sizect/'+idsizect);
-                this.data = response.data;
-            } catch (error) {
-            }
-        },
-
-        async getTenMS() {
-            try {
-                const response = await axios.get(apiGiohang + '/ms');
+                const response = await axios.post(`http://localhost:8080/api/khach-hang/giohang/updateMauSacSize/${idGHCT}?idSPCT=${idSPCT}`);
                 this.data = response.data;
             } catch (error) {
             }
@@ -107,6 +116,6 @@ export const gioHangStore = defineStore('gioHang', {
             }
         },
 
-    
+
     }
 });

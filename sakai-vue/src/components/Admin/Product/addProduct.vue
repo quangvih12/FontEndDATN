@@ -32,7 +32,7 @@ const schema = yup.object().shape({
         .required('Tên sản phẩm không được để trống')
         .min(4, 'Tên sản phẩm phải có ít nhất 4 ký tự')
         .matches(/^[a-zA-Z0-9đĐáÁàÀảẢãÃạẠăĂắẮằẰẳẲẵẴặẶâÂấẤầẦẩẨẫẪậẬêÊếẾềỀểỂễỄệỆôÔốỐồỒổỔỗỖộỘơƠớỚờỜởỞỡỠợỢùÙúÚụỤủỦũŨưỨỨửỬữỮựỰýÝỳỲỷỶỹỸỵỴ\s]*$/, 'Tên không được chứa kí tự đặc biệt!'),
-    soLuongTon: yup.number().required('số lượng không được để trống').typeError('Số lượng tồn phải là một số').min(1, 'Số lượng phải lớn hơn hoặc bằng 1').max(1000, 'số lượng quá lớn').nullable(),
+    //  soLuongTon: yup.number().required('số lượng không được để trống').typeError('Số lượng tồn phải là một số').min(1, 'Số lượng phải lớn hơn hoặc bằng 1').max(1000, 'số lượng quá lớn').nullable(),
     giaBan: yup
         .number()
         .required('Giá bán không được để trống')
@@ -63,7 +63,7 @@ const schema = yup.object().shape({
     imgMauSac: yup.array().required('vui lòng chọn ảnh màu sắc sản phẩm'),
     trangThai: yup.number().required('vui lòng chọn trạng thái của sản phẩm'),
     moTa: yup.string().required('Vui lòng điền mô tả sản phẩm').min(10, 'Mô tả sản phẩm phải có ít nhất 10 ký tự'),
-    imagesProduct: yup.array().required('Vui lòng chọn ảnh cho sản phẩm'),
+ //   imagesProduct: yup.array().required('Vui lòng chọn ảnh cho sản phẩm'),
     anh: yup.string().required('vui lòng chọn ảnh chính cho sản phẩm')
 });
 
@@ -72,7 +72,6 @@ const { handleSubmit, resetForm } = useForm({
 });
 
 const { value: name, errorMessage: nameError } = useField('ten');
-const { value: soluong, errorMessage: soLuongError } = useField('soLuongTon');
 const { value: GiaBan, errorMessage: giaBanError } = useField('giaBan');
 const { value: GiaNhap, errorMessage: giaNhapError } = useField('giaNhap');
 const { value: QuaiDeo, errorMessage: quaiDeoError } = useField('quaiDeo');
@@ -95,26 +94,19 @@ const isOpen = ref(true);
 
 const onSubmit = handleSubmit(async (values) => {
     try {
-        //   console.log(values)
         // Kiểm tra trùng lặp trước khi thêm sản phẩm
-        const isDuplicate = await productStore.checkDuplicateName(values.name); // Sử dụng `values.name` thay vì `name.value`
-
+        const isDuplicate = await productStore.checkDuplicateName(values.ten); // Sử dụng `values.name` thay vì `name.value`
         if (isDuplicate) {
             // Hiển thị thông báo lỗi hoặc xử lý theo nhu cầu của bạn
             toast.add({ severity: 'error', summary: 'Error', detail: 'Tên sản phẩm đã tồn tại', life: 3000 });
         } else {
-            // const tong = values.soLuongMauSac.reduce((acc, so) => acc + so, 0);
-            const tong2 = values.soLuongSize ? values.soLuongSize.reduce((acc, so) => acc + so, 0) : 0;
-            if (tong2 > values.soLuongTon) {
-                toast.add({ severity: 'error', summary: 'Error', detail: 'Số lượng màu sắc hoặc size lớn hơn số lượng tồn', life: 3000 });
-            } else {
-                // Nếu không trùng lặp và tổng không lớn hơn số lượng tồn, thêm sản phẩm vào store
-          //      console.log(values)
-                await productStore.add(values);
-                toast.add({ severity: 'success', summary: 'Success Message', detail: 'Thêm thành công', life: 3000 });
-                productDialog.value = false;
-                reset();
-            }
+
+            // Nếu không trùng lặp và tổng không lớn hơn số lượng tồn, thêm sản phẩm vào store
+            //    console.log(values)
+          await productStore.add(values);
+            toast.add({ severity: 'success', summary: 'Success Message', detail: 'Thêm thành công', life: 3000 });
+            productDialog.value = false;
+            reset();
         }
     } catch (error) {
         console.error('Lỗi xử lý dữ liệu:', error);
@@ -136,6 +128,8 @@ const selectedTrongLuong = ref(null);
 const selectedSizes = ref(null);
 
 const array = ref([]);
+const arrayGiaNhap = ref([]);
+const arrayGiaBan = ref([]);
 const arrayMauSac = ref([]);
 
 const dataThuongHieu = ref([]);
@@ -192,6 +186,8 @@ const reset = () => {
     resetForm();
     imagesProduct.value = [];
     array.value = [];
+    arrayGiaBan.value = [];
+    arrayGiaNhap.value = [];
     arrayMauSac.value = [];
     selectedSizes.value = null;
     selectedMauSac.value = null;
@@ -213,13 +209,24 @@ const handleInputChange = (sizeId) => {
     }
 };
 
-// const handleInputChangeMau = (sizeId) => {
-//     if (arrayMauSac.value.length > 0) {
-//         soLuongMauSac.value = arrayMauSac.value.join(',').replace(/^,/, '').split(',').map(Number);
-//     } else {
-//         soLuongMauSac.value = null;
-//     }
-// };
+const handleInputChangeGiaBan = (sizeId) => {
+    if (arrayGiaBan.value.length > 0) {
+        GiaBan.value = arrayGiaBan.value.join(',').replace(/^,/, '').split(',').map(Number);
+        console.log(GiaBan.value);
+    } else {
+        GiaBan.value = null;
+    }
+};
+
+const handleInputChangeGiaNhap = (sizeId) => {
+    if (arrayGiaNhap.value.length > 0) {
+        GiaNhap.value = arrayGiaNhap.value.join(',').replace(/^,/, '').split(',').map(Number);
+        console.log(GiaNhap.value);
+    } else {
+        GiaNhap.value = null;
+    }
+};
+
 
 const onCityChange = () => {
     if (selectedCity.value) {
@@ -360,8 +367,168 @@ const openNew = () => {
                                     </span>
                                     <small class="p-error">{{ nameError }}</small>
                                 </div>
+                                <div class="Field col-12 md:col-12" style="margin-bottom: 30px">
+                                    <label for="address">Quai Đeo</label>
+                                    <div class="flex flex-wrap gap-3">
+                                        <div class="flex align-items-center">
+                                            <RadioButton v-model="QuaiDeo" type="radio" inputId="ingredient1" name="QuaiDeo"
+                                                value="Quai đeo cố định" :class="{ 'p-invalid': quaiDeoError }" checked />
+                                            <label for="ingredient1" class="ml-2">Quai đeo cố định</label>
+                                        </div>
+                                        <div class="flex align-items-center">
+                                            <RadioButton v-model="QuaiDeo" type="radio" inputId="ingredient2" name="QuaiDeo"
+                                                value="Quai đeo dạng Y" :class="{ 'p-invalid': quaiDeoError }" />
+                                            <label for="ingredient2" class="ml-2">Quai đeo dạng Y</label>
+                                        </div>
+                                        <div class="flex align-items-center">
+                                            <RadioButton v-model="QuaiDeo" type="radio" inputId="ingredient3" name="QuaiDeo"
+                                                value="Quai đeo đặc biệt" :class="{ 'p-invalid': quaiDeoError }" />
+                                            <label for="ingredient3" class="ml-2"
+                                                :class="{ 'p-invalid': equaiDeoError }">Quai
+                                                đeo đặc biệt</label>
+                                        </div>
+                                    </div>
+                                    <small class="p-error">{{ quaiDeoError }}</small>
+                                </div>
 
                                 <div class="Field col-12 md:col-12" style="margin-bottom: 30px">
+                                    <label for="address">Đệm lót</label>
+                                    <div class="flex flex-wrap gap-3">
+                                        <div class="flex align-items-center">
+                                            <RadioButton v-model="DemLot" inputId="ingredient1" name="pizza"
+                                                value="Bọt biển " :class="{ 'p-invalid': demLotError }" checked />
+                                            <label for="ingredient1" class="ml-2">Bọt biển </label>
+                                        </div>
+                                        <div class="flex align-items-center">
+                                            <RadioButton v-model="DemLot" inputId="ingredient2" name="pizza"
+                                                value="Vật liệu mềm" :class="{ 'p-invalid': demLotError }" />
+                                            <label for="ingredient2" class="ml-2">Vật liệu mềm</label>
+                                        </div>
+                                        <div class="flex align-items-center">
+                                            <RadioButton v-model="DemLot" inputId="ingredient4" name="pizza"
+                                                value="Đệm lót chống xốp nhiễu" :class="{ 'p-invalid': demLotError }" />
+                                            <label for="ingredient4" class="ml-2">Đệm lót chống xốp nhiễu</label>
+                                        </div>
+                                    </div>
+                                    <small class="p-error">{{ demLotError }}</small>
+                                </div>
+                                <div class="field col-12 md:col-12" style="margin-bottom: 30px">
+                                    <label for="address">Trạng thái</label>
+                                    <div class="flex flex-wrap gap-3">
+                                        <div class="flex align-items-center">
+                                            <RadioButton v-model="TrangThai" inputId="ingredient1" name="pizza" value="1"
+                                                :class="{ 'p-invalid': TrangThaiSacError }" />
+                                            <label for="ingredient1" class="ml-2">Sẵn sàng để bán</label>
+                                        </div>
+                                        <div class="flex align-items-center">
+                                            <RadioButton v-model="TrangThai" inputId="ingredient2" name="pizza" value="3"
+                                                :class="{ 'p-invalid': TrangThaiSacError }" />
+                                            <label for="ingredient2" class="ml-2">tồn kho</label>
+                                        </div>
+                                    </div>
+                                    <small class="p-error">{{ TrangThaiSacError }}</small>
+                                </div>
+                                <div class="p-fluid formgrid grid">
+                                    <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
+                                        <div style="display: flex">
+                                            <span class="p-float-label" style="width: 239px">
+                                                <Dropdown id="dropdown" :options="dataLoai" v-model="selectedLoai"
+                                                    optionLabel="ten" :class="{ 'p-invalid': loaiError }"
+                                                    @change="onloaiChange"> </Dropdown>
+                                                <label for="dropdown">Loại</label>
+                                            </span>
+                                            <TableLoai :tableId="'tableLoai'" :rightGhId="'right_ghLoai'"
+                                                :tableClass="'tableLoai'" :rightGhClass="'right_ghLoai'" />
+                                        </div>
+
+                                        <small class="p-error">{{ loaiError }}</small>
+                                    </div>
+                                    <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
+                                        <div style="display: flex">
+                                            <span class="p-float-label" style="width: 239px">
+                                                <Dropdown id="dropdown" :options="dataThuongHieu" v-model="selectedCity"
+                                                    optionLabel="ten" @change="onCityChange"
+                                                    :class="{ 'p-invalid': thuongHieuError }"></Dropdown>
+                                                <label for="dropdown">Thương Hiệu</label>
+                                            </span>
+                                            <TableThuongHieu :tableId="'TableThuongHieu'" :rightGhId="'right_ghThuongHieu'"
+                                                :tableClass="'TableThuongHieu'" :rightGhClass="'right_ghThuongHieu'" />
+                                        </div>
+
+                                        <small class="p-error">{{ thuongHieuError }}</small>
+                                    </div>
+                                    <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
+                                        <div style="display: flex">
+                                            <span class="p-float-label" style="width: 239px">
+                                                <MultiSelect v-model="selectedMauSac" :options="dataMauSac"
+                                                    optionLabel="ten" :filter="false" :maxSelectedLabels="3"
+                                                    :class="{ 'p-invalid': mauSacError }" @change="onMauSacChange">
+                                                </MultiSelect>
+                                                <label for="multiselect">Màu sắc</label>
+                                            </span>
+
+                                            <TableMauSac :tableId="'TableMauSac'" :rightGhId="'right_ghMauSac'"
+                                                :tableClass="'TableMauSac'" :rightGhClass="'right_ghMauSac'" />
+                                        </div>
+                                        <small class="p-error">{{ mauSacError }}</small>
+                                    </div>
+                                    <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
+                                        <div style="display: flex">
+                                            <span class="p-float-label" style="width: 239px">
+                                                <Dropdown id="dropdown" :options="dataVatLieu" v-model="selectedvatLieu"
+                                                    :class="{ 'p-invalid': vatLieuError }" optionLabel="ten"
+                                                    @change="onvatLieuChange"> </Dropdown>
+                                                <label for="dropdown">Vật liệu</label>
+                                            </span>
+                                            <TablevatLieu :tableId="'TablevatLieu'" :rightGhId="'right_ghvatLieu'"
+                                                :tableClass="'TablevatLieu'" :rightGhClass="'right_ghvatLieu'" />
+                                        </div>
+                                        <small class="p-error">{{ vatLieuError }}</small>
+                                    </div>
+
+
+                                    <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
+                                        <div style="display: flex">
+                                            <span class="p-float-label" style="width: 239px">
+                                                <Dropdown id="dropdown" :options="dataTrongLuong"
+                                                    v-model="selectedTrongLuong" optionLabel="value"
+                                                    :class="{ 'p-invalid': trongLuongError }" @change="onTrongLuongChange">
+                                                </Dropdown>
+                                                <label for="dropdown">Trọng Lượng</label>
+                                            </span>
+                                            <TableTrongLuong :tableId="'TableTrongLuong'" :rightGhId="'right_ghTrongLuong'"
+                                                :tableClass="'TableTrongLuong'" :rightGhClass="'right_ghTrongLuong'" />
+                                        </div>
+                                        <small class="p-error">{{ trongLuongError }}</small>
+                                    </div>
+                                    <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
+                                        <div style="display: flex">
+                                            <span class="p-float-label" style="width: 150px">
+                                                <MultiSelect v-model="selectedSizes" :options="dataSize" optionLabel="ten"
+                                                    :filter="false" :maxSelectedLabels="3"
+                                                    :class="{ 'p-invalid': SizeError }" @change="onSizeChange">
+                                                </MultiSelect>
+                                                <label for="multiselect">Size</label>
+                                            </span>
+                                            <TableSize :tableId="'TableMauSac'" :rightGhId="'right_ghMauSac'"
+                                                :tableClass="'TableMauSac'" :rightGhClass="'right_ghMauSac'" />
+                                        </div>
+                                        <small class="p-error">{{ SizeError }}</small>
+                                    </div>
+                                </div>
+                                <div class="field col-12 md:col-12" style="margin-bottom: 30px">
+                                    <label for="address">Mô tả</label>
+                                    <Textarea id="address" rows="4" v-model="MoTa"
+                                        :class="{ 'p-invalid': MoTaSacError }"></Textarea>
+                                    <small class="p-error">{{ MoTaSacError }}</small>
+                                </div>
+                                <div class="field col-12 md:col-12">
+                                    <file-upload :upload-url="uploadUrl" :multiple="true" :maxFileSize="2000000"
+                                        @input="onFileInputImageProduct"
+                                        :class="{ 'p-invalid': imagesProductError }"></file-upload>
+                                    <small class="p-error">{{ imagesProductError }}</small>
+                                </div>
+                                <!-- <div class="Field col-12 md:col-12" style="margin-bottom: 30px">
                                     <span class="p-float-label">
                                         <InputNumber id="soluong" v-model="soluong" :class="{ 'p-invalid': soLuongError }">
                                         </InputNumber>
@@ -385,11 +552,11 @@ const openNew = () => {
                                         <label for="Field">Giá bán</label>
                                     </span>
                                     <small class="p-error">{{ giaBanError }}</small>
-                                </div>
+                                </div> -->
                             </div>
-                            <div class="Field col-12 md:col-6"
-                                style="margin-bottom: 30px; height: 300px; margin-top: 10px; display: inline-flex; justify-content: center; align-items: center">
-                                <div style="display: block">
+                            <div class="Field col-12 md:col-6">
+                                <div class="Field col-12 md:col-12"
+                                    style="margin-bottom: 30px;margin-left: 60px; height: 300px; margin-top: 60px; display: inline-flex; justify-content: center; align-items: center;display: block">
                                     <div class="t"
                                         style="border: 1px solid black; border-radius: 10px; width: 300px; height: 240px; margin-top: -60px">
                                         <img :src="anh" alt=""
@@ -397,215 +564,102 @@ const openNew = () => {
                                     </div>
                                     <div class="buton" style="margin-top: 10px">
                                         <FileUpload mode="basic" name="demo[]" accept="image/*" :maxFileSize="1000000"
-                                            @input="onFileInputImage" style="display: flex" />
+                                            @input="onFileInputImage"
+                                            style="display: flex; width: 200px; margin-left: 50px;" />
                                     </div>
                                     <small class="p-error">{{ imagestError }}</small>
                                 </div>
-                            </div>
-                            <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
-                                <label for="address">Quai Đeo</label>
-                                <div class="flex flex-wrap gap-3">
-                                    <div class="flex align-items-center">
-                                        <RadioButton v-model="QuaiDeo" type="radio" inputId="ingredient1" name="QuaiDeo"
-                                            value="Quai đeo cố định" :class="{ 'p-invalid': quaiDeoError }" checked />
-                                        <label for="ingredient1" class="ml-2">Quai đeo cố định</label>
-                                    </div>
-                                    <div class="flex align-items-center">
-                                        <RadioButton v-model="QuaiDeo" type="radio" inputId="ingredient2" name="QuaiDeo"
-                                            value="Quai đeo dạng Y" :class="{ 'p-invalid': quaiDeoError }" />
-                                        <label for="ingredient2" class="ml-2">Quai đeo dạng Y</label>
-                                    </div>
-                                    <div class="flex align-items-center">
-                                        <RadioButton v-model="QuaiDeo" type="radio" inputId="ingredient3" name="QuaiDeo"
-                                            value="Quai đeo đặc biệt" :class="{ 'p-invalid': quaiDeoError }" />
-                                        <label for="ingredient3" class="ml-2" :class="{ 'p-invalid': equaiDeoError }">Quai
-                                            đeo đặc biệt</label>
-                                    </div>
-                                </div>
-                                <small class="p-error">{{ quaiDeoError }}</small>
-                            </div>
-                            <div class="Field col-12 md:col-3" style="margin-bottom: 30px">
-                                <div style="display: flex">
-                                    <span class="p-float-label" style="width: 239px">
-                                        <Dropdown id="dropdown" :options="dataLoai" v-model="selectedLoai" optionLabel="ten"
-                                            :class="{ 'p-invalid': loaiError }" @change="onloaiChange"> </Dropdown>
-                                        <label for="dropdown">Loại</label>
-                                    </span>
-                                    <TableLoai :tableId="'tableLoai'" :rightGhId="'right_ghLoai'" :tableClass="'tableLoai'"
-                                        :rightGhClass="'right_ghLoai'" />
-                                </div>
-
-                                <small class="p-error">{{ loaiError }}</small>
-                            </div>
-                            <div class="Field col-12 md:col-3" style="margin-bottom: 30px">
-                                <div style="display: flex">
-                                    <span class="p-float-label" style="width: 239px">
-                                        <Dropdown id="dropdown" :options="dataThuongHieu" v-model="selectedCity"
-                                            optionLabel="ten" @change="onCityChange"
-                                            :class="{ 'p-invalid': thuongHieuError }"></Dropdown>
-                                        <label for="dropdown">Thương Hiệu</label>
-                                    </span>
-                                    <TableThuongHieu :tableId="'TableThuongHieu'" :rightGhId="'right_ghThuongHieu'"
-                                        :tableClass="'TableThuongHieu'" :rightGhClass="'right_ghThuongHieu'" />
-                                </div>
-
-                                <small class="p-error">{{ thuongHieuError }}</small>
-                            </div>
-                            <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
-                                <label for="address">Đệm lót</label>
-                                <div class="flex flex-wrap gap-3">
-                                    <div class="flex align-items-center">
-                                        <RadioButton v-model="DemLot" inputId="ingredient1" name="pizza" value="Bọt biển "
-                                            :class="{ 'p-invalid': demLotError }" checked />
-                                        <label for="ingredient1" class="ml-2">Bọt biển </label>
-                                    </div>
-                                    <div class="flex align-items-center">
-                                        <RadioButton v-model="DemLot" inputId="ingredient2" name="pizza"
-                                            value="Vật liệu mềm" :class="{ 'p-invalid': demLotError }" />
-                                        <label for="ingredient2" class="ml-2">Vật liệu mềm</label>
-                                    </div>
-                                    <div class="flex align-items-center">
-                                        <RadioButton v-model="DemLot" inputId="ingredient4" name="pizza"
-                                            value="Đệm lót chống xốp nhiễu" :class="{ 'p-invalid': demLotError }" />
-                                        <label for="ingredient4" class="ml-2">Đệm lót chống xốp nhiễu</label>
-                                    </div>
-                                </div>
-                                <small class="p-error">{{ demLotError }}</small>
-                            </div>
-                            <div class="Field col-12 md:col-3" style="margin-bottom: 30px">
-                                <div style="display: flex">
-                                    <span class="p-float-label" style="width: 239px">
-                                        <MultiSelect v-model="selectedMauSac" :options="dataMauSac" optionLabel="ten"
-                                            :filter="false" :maxSelectedLabels="3" :class="{ 'p-invalid': mauSacError }"
-                                            @change="onMauSacChange"> </MultiSelect>
-                                        <label for="multiselect">Màu sắc</label>
-                                    </span>
-
-                                    <TableMauSac :tableId="'TableMauSac'" :rightGhId="'right_ghMauSac'"
-                                        :tableClass="'TableMauSac'" :rightGhClass="'right_ghMauSac'" />
-                                </div>
-                                <small class="p-error">{{ mauSacError }}</small>
-                            </div>
-                            <div class="Field col-12 md:col-3" style="margin-bottom: 30px">
-                                <div style="display: flex">
-                                    <span class="p-float-label" style="width: 239px">
-                                        <Dropdown id="dropdown" :options="dataVatLieu" v-model="selectedvatLieu"
-                                            :class="{ 'p-invalid': vatLieuError }" optionLabel="ten"
-                                            @change="onvatLieuChange"> </Dropdown>
-                                        <label for="dropdown">Vật liệu</label>
-                                    </span>
-                                    <TablevatLieu :tableId="'TablevatLieu'" :rightGhId="'right_ghvatLieu'"
-                                        :tableClass="'TablevatLieu'" :rightGhClass="'right_ghvatLieu'" />
-                                </div>
-                                <small class="p-error">{{ vatLieuError }}</small>
-                            </div>
-                            <div class="field col-12 md:col-6" style="margin-bottom: 30px">
-                                <label for="address">Trạng thái</label>
-                                <div class="flex flex-wrap gap-3">
-                                    <div class="flex align-items-center">
-                                        <RadioButton v-model="TrangThai" inputId="ingredient1" name="pizza" value="1"
-                                            :class="{ 'p-invalid': TrangThaiSacError }" />
-                                        <label for="ingredient1" class="ml-2">Sẵn sàng để bán</label>
-                                    </div>
-                                    <div class="flex align-items-center">
-                                        <RadioButton v-model="TrangThai" inputId="ingredient2" name="pizza" value="3"
-                                            :class="{ 'p-invalid': TrangThaiSacError }" />
-                                        <label for="ingredient2" class="ml-2">tồn kho</label>
-                                    </div>
-                                </div>
-                                <small class="p-error">{{ TrangThaiSacError }}</small>
-                            </div>
-
-                            <div class="Field col-12 md:col-3" style="margin-bottom: 30px">
-                                <div style="display: flex">
-                                    <span class="p-float-label" style="width: 239px">
-                                        <Dropdown id="dropdown" :options="dataTrongLuong" v-model="selectedTrongLuong"
-                                            optionLabel="value" :class="{ 'p-invalid': trongLuongError }"
-                                            @change="onTrongLuongChange"></Dropdown>
-                                        <label for="dropdown">Trọng Lượng</label>
-                                    </span>
-                                    <TableTrongLuong :tableId="'TableTrongLuong'" :rightGhId="'right_ghTrongLuong'"
-                                        :tableClass="'TableTrongLuong'" :rightGhClass="'right_ghTrongLuong'" />
-                                </div>
-                                <small class="p-error">{{ trongLuongError }}</small>
-                            </div>
-                            <div class="Field col-12 md:col-3" style="margin-bottom: 30px">
-                                <div style="display: flex">
-                                    <span class="p-float-label" style="width: 150px">
-                                        <MultiSelect v-model="selectedSizes" :options="dataSize" optionLabel="ten"
-                                            :filter="false" :maxSelectedLabels="3" :class="{ 'p-invalid': SizeError }"
-                                            @change="onSizeChange"> </MultiSelect>
-                                        <label for="multiselect">Size</label>
-                                    </span>
-                                    <TableSize :tableId="'TableMauSac'" :rightGhId="'right_ghMauSac'"
-                                        :tableClass="'TableMauSac'" :rightGhClass="'right_ghMauSac'" />
-                                </div>
-                                <small class="p-error">{{ SizeError }}</small>
-                            </div>
-                            <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
-                                <!-- <div style="display: flex">
-                                    <div style="width: 150px">
-                                        <p>Số lượng size:</p>
-                                    </div>
-                                    <div style="display: flex; flex-wrap: wrap">
-                                        <div v-for="(size, index) in selectedSizes" :key="index" style="margin-top: 10px">
-                                            <label :for="`input-${size.id}`"
-                                                style="margin-right: 10px; margin-left: 10px">{{ size.ten }}</label>
-                                            <input type="number" :id="`input-${size.id}`" v-model="array[index]"
-                                                @change="handleInputChange(size.id)"
-                                                :class="{ 'p-invalid': soLuongSizeError }"
-                                                style="height: 20px; width: 60px" />
+                                <div class="field col-12 md:col-12">
+                                    <div v-for="(color, index) in selectedMauSac" :key="index" class="mausac-container"
+                                        style="display: inline-block; margin-left: 30px; margin-bottom: 15px; height: 90x; width: 150px">
+                                        <div>
+                                            Màu :
+                                            <span class="product-name">{{ color.ten }}</span>
                                         </div>
+                                        <FileUpload mode="basic" name="demo[]" accept="image/*" :maxFileSize="1000000"
+                                            @input="onFileInputImageMauSac" />
                                     </div>
+                                    <br />
+                                    <small class="p-error">{{ ImgMauSacError }}</small>
                                 </div>
-                                <small class="p-error">{{ soLuongSizeError }}</small> -->
-                                <div style="display: flex">
-                                    <div style="width: 150px">
-                                        <p>Số lượng màu sắc :</p>
-                                    </div>
-                                    <div style="display: flex; flex-wrap: wrap">
-                                        <div v-for="(mau, index) in selectedMauSac" :key="index" style="margin-top: 10px">
-                                            <label :for="`input-${mau.id}`" style="margin-right: 10px; margin-left: 10px">{{
-                                                mau.ten }}</label>
-                                            <input type="number" :id="`input-${mau.id}`" v-model="array[index]"
-                                                @change="handleInputChange(mau.id)"
-                                                :class="{ 'p-invalid': soLuongSizeError }"
-                                                style="height: 20px; width: 60px" />
+                                <div class="Field col-12 md:col-12" style="margin-bottom: 30px">
+                                    <div style="display: flex">
+                                        <div style="width: 150px">
+                                            <p>Số lượng :</p>
+                                        </div>
+                                        <div style="display: flex; flex-wrap: wrap">
+                                            <div v-for="(mau, index) in selectedMauSac" :key="index"
+                                                style="margin-top: 10px">
+                                                <label :for="`input-${mau.id}`"
+                                                    style="margin-right: 10px; margin-left: 10px">{{
+                                                        mau.ten }}</label>
+                                                <input type="number" :id="`input-${mau.id}`" v-model="array[index]"
+                                                    @change="handleInputChange(mau.id)"
+                                                    :class="{ 'p-invalid': soLuongSizeError }"
+                                                    style="height: 20px; width: 60px;border-radius: 5px ; border: 1px solid;" />
+
+                                            </div>
+
                                         </div>
 
                                     </div>
-
+                                    <small class="p-error">{{ soLuongSizeError }}</small>
                                 </div>
-                                <small class="p-error">{{ soLuongSizeError }}</small>
-                            </div>
+                                <div class="Field col-12 md:col-12" style="margin-bottom: 30px">
+                                    <div style="display: flex">
+                                        <div style="width: 150px">
+                                            <p>Giá Nhập:</p>
+                                        </div>
+                                        <div style="display: flex; flex-wrap: wrap">
+                                            <div v-for="(mau, index) in selectedMauSac" :key="index"
+                                                style="margin-top: 10px">
+                                                <label :for="`input-${mau.id}`"
+                                                    style="margin-right: 10px; margin-left: 10px">{{
+                                                        mau.ten }}</label>
+                                                <input type="number" :id="`input-${mau.id}`" v-model="arrayGiaNhap[index]"
+                                                    @change="handleInputChangeGiaNhap(mau.id)"
+                                                    :class="{ 'p-invalid': giaNhapError }"
+                                                    style="height: 20px; width: 80px; border-radius: 5px ; border: 1px solid;" />
 
-                            <div class="field col-12 md:col-6">
-                                <div v-for="(color, index) in selectedMauSac" :key="index" class="mausac-container"
-                                    style="display: inline-block; margin-left: 30px; margin-bottom: 15px; height: 90x; width: 150px">
-                                    <div>
-                                        Màu :
-                                        <span class="product-name">{{ color.ten }}</span>
+                                            </div>
+
+                                        </div>
+
                                     </div>
-                                    <FileUpload mode="basic" name="demo[]" accept="image/*" :maxFileSize="1000000"
-                                        @input="onFileInputImageMauSac" />
+                                    <small class="p-error">{{ giaNhapError }}</small>
                                 </div>
-                                <br />
-                                <small class="p-error">{{ ImgMauSacError }}</small>
+
+                                <div class="Field col-12 md:col-12" style="margin-bottom: 30px">
+                                    <div style="display: flex">
+                                        <div style="width: 150px">
+                                            <p>Giá Bán:</p>
+                                        </div>
+                                        <div style="display: flex; flex-wrap: wrap">
+                                            <div v-for="(mau, index) in selectedMauSac" :key="index"
+                                                style="margin-top: 10px">
+                                                <label :for="`input-${mau.id}`"
+                                                    style="margin-right: 10px; margin-left: 10px">{{
+                                                        mau.ten }}</label>
+                                                <input type="number" :id="`input-${mau.id}`" v-model="arrayGiaBan[index]"
+                                                    @change="handleInputChangeGiaBan(mau.id)"
+                                                    :class="{ 'p-invalid': giaBanError }"
+                                                    style="height: 20px; width: 80px;border-radius: 5px ; border: 1px solid;" />
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                    <small class="p-error">{{ giaBanError }}</small>
+                                </div>
+
                             </div>
 
 
-                            <div class="field col-12 md:col-6" style="margin-bottom: 30px">
-                                <label for="address">Mô tả</label>
-                                <Textarea id="address" rows="4" v-model="MoTa"
-                                    :class="{ 'p-invalid': MoTaSacError }"></Textarea>
-                                <small class="p-error">{{ MoTaSacError }}</small>
-                            </div>
-                            <div class="field col-12 md:col-6">
-                                <file-upload :upload-url="uploadUrl" :multiple="true" :maxFileSize="2000000"
-                                    @input="onFileInputImageProduct"
-                                    :class="{ 'p-invalid': imagesProductError }"></file-upload>
-                                <small class="p-error">{{ imagesProductError }}</small>
-                            </div>
+
+
+
+
                             <div style="width: 1000px; text-align: center">
                                 <Button type="submit" class="p-button-outlined"
                                     style="width: 200px; height: auto; margin: 10px" label="Lưu"></Button>

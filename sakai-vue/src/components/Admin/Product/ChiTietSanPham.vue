@@ -70,6 +70,7 @@ const toast = useToast();
 
 const productDialog = ref(false);
 const deleteProductDialog = ref(false);
+const khoiPhucProductDialog = ref(false);
 const deleteProductsDialog = ref(false);
 const product = ref({});
 const selectedProducts = ref(null);
@@ -101,41 +102,31 @@ const loadProducts = async () => {
     const productList = productStore.products; // Lấy dữ liệu từ Store và gán vào biến products
 
     for (const [key, product] of productList.entries()) {
-        // productList[key]['img'] = null;
-        productList[key]['size'] = null;
-        productList[key]['mauSac'] = null;
         productList[key]['img'] = null;
-        const mau = await loadmau(product.id);
-        productList[key]['mauSac'] = mau;
-        const img_d = await loadSizeo(product.id);
-        productList[key]['size'] = img_d;
+        productList[key]['sanPhamChiTiet'] = null;
+        const mau = await fetchAllSpCt(product.id);
+        productList[key]['sanPhamChiTiet'] = mau;
         const img = await loadImg(product.id);
         productList[key]['img'] = img;
     }
 
     products.value = productList;
-    for (let i = 0; i < 1; i++) {
-        soLuongSP.value = products.value[i].soLuongSanPham;
-    }
+    console.log(products.value);
+    // for (let i = 0; i < 1; i++) {
+    //     soLuongSP.value = products.value[i].soLuongSanPham;
+    // }
     showSpinner.value = false;
     visibledatatable.value = true;
 };
 
 
-const loadSize = ref([]);
 
-const loadSizeo = async (idProduct) => {
-    await productStore.fetchAllSize(idProduct); // Gọi hàm fetchAll từ Store
-    loadSize.value = productStore.sizes;
-    return loadSize.value;
-};
+const lstSanPhamCT = ref([]);
 
-const loadMau = ref([]);
-
-const loadmau = async (idProduct) => {
-    await productStore.fetchAllMauSac(idProduct); // Gọi hàm fetchAll từ Store
-    loadMau.value = productStore.mauSacs;
-    return loadMau.value;
+const fetchAllSpCt = async (idProduct) => {
+    await productStore.fetchAllSpCT(idProduct); // Gọi hàm fetchAll từ Store
+    lstSanPhamCT.value = productStore.sanPhamCT;
+    return lstSanPhamCT.value;
 };
 
 const loadImage = ref([]);
@@ -158,17 +149,10 @@ const formatCurrency = (value) => {
     return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
 };
 
-const hideDialog = () => {
-    productDialog.value = false;
-    submitted.value = false;
-};
 
 const selectedCheckboxes = ref([]);
 
 
-const onUpload = () => {
-    toast.add({ severity: 'info', summary: 'Success', detail: 'File Uploaded', life: 3000 });
-};
 
 const initFilters = () => {
     filters.value = {
@@ -176,40 +160,24 @@ const initFilters = () => {
     };
 };
 
-const chuyenPhanTu = (id) => {
-    myDiv.value.style.display = 'block';
-    div.value.style.display = 'none';
-    var element = document.getElementById(id);
-    element.scrollIntoView({ behavior: 'smooth' });
-};
-
-const vePhanTu = (id) => {
-    myDiv.value.style.display = 'none';
-    div.value.style.display = 'block';
-    var element = document.getElementById(id);
-    element.scrollIntoView({ behavior: 'smooth' });
-};
 
 
-const isSelectedIndex = (index) => {
-    return selectedIndices.value.includes(index);
-};
+
+
 
 const columns = ref([
-    { field: 'ma', header: 'Mã' },
-    { field: 'thuongHieu', header: 'Thương Hiệu' },
     { field: 'quaiDeo', header: 'Quai đeo' },
     { field: 'demLot', header: 'Đệm lót' },
-    { field: 'soLuongTon', header: 'Số lượng' },
-    { field: 'trongLuong', header: 'Trọng Lượng' },
-    { field: 'vatLieu', header: 'Vật liệu' },
-    { field: 'loai', header: 'Loại' },
+    { field: 'ngaySua', header: 'Ngày sửa' },
+    { field: 'ngayTao', header: 'Ngày tạo' },
     { field: 'moTa', header: 'Mô Tả' },
-    { field: 'giaSauGiam', header: 'Giá giảm giá' },
-    { field: 'tenKM', header: 'Tên Khuyến Mãi' },
-    { field: 'thoiGianBatDau', header: 'Thời gian bắt đầu' },
-    { field: 'thoiGianKetThuc', header: 'Thời gian kết thúc' },
-    { field: 'giaTriGiam', header: 'Giá Trị (%)' },
+    // { field: 'soLuongTon', header: 'Số lượng' },
+    // { field: 'trongLuong', header: 'Trọng Lượng' },
+    // { field: 'giaSauGiam', header: 'Giá giảm giá' },
+    // { field: 'tenKM', header: 'Tên Khuyến Mãi' },
+    // { field: 'thoiGianBatDau', header: 'Thời gian bắt đầu' },
+    // { field: 'thoiGianKetThuc', header: 'Thời gian kết thúc' },
+    // { field: 'giaTriGiam', header: 'Giá Trị (%)' },
 ]);
 
 // hàm để tắt/mở cột
@@ -219,18 +187,14 @@ const onToggle = (val) => {
     selectedColumns.value = columns.value.filter(col => val.includes(col));
 };
 
-const statuses = ref([
-    { label: 'Còn hạn', value: 0 },
-    { label: 'Hết hạn', value: 1 },
 
-]);
 
 const getStatusLabel = (trangThai) => {
     switch (trangThai) {
         case 1:
             return { text: 'Còn Hàng', severity: 'success' };
 
-        case 2:
+        case 0:
             return { text: 'hết Hàng', severity: 'danger' };
 
         case 3:
@@ -247,11 +211,25 @@ const confirmDeleteProduct = (id) => {
     deleteProductDialog.value = true;
 };
 
+const idKhoiPhuc = ref();
+const confirmKhoiPhucProduct = (id) => {
+    idKhoiPhuc.value = id;
+    khoiPhucProductDialog.value = true;
+};
+
 const deleteProduct = (id) => {
     productStore.delete(idDelete.value);
     products.value = productStore.products;
     toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Xoá thành công', life: 3000 });
     deleteProductDialog.value = false;
+
+};
+
+const khoiPhucProduct = (id) => {
+    productStore.khoiPhuc(idKhoiPhuc.value);
+    products.value = productStore.products;
+    toast.add({ severity: 'success', summary: 'Thông báo', detail: 'khôi phục thành công', life: 3000 });
+    khoiPhucProductDialog.value = false;
 
 };
 const position = ref('center');
@@ -373,26 +351,16 @@ const loadDataByTrangThai = async () => {
     const productList = productStore.products; // Lấy dữ liệu từ Store và gán vào biến products
 
     for (const [key, product] of productList.entries()) {
-        // productList[key]['img'] = null;
-        productList[key]['size'] = null;
-        productList[key]['mauSac'] = null;
         productList[key]['img'] = null;
-        const mau = await loadmau(product.id);
-        productList[key]['mauSac'] = mau;
-        const img_d = await loadSizeo(product.id);
-        productList[key]['size'] = img_d;
+        productList[key]['sanPhamChiTiet'] = null;
+        const mau = await fetchAllSpCt(product.id);
+        productList[key]['sanPhamChiTiet'] = mau;
         const img = await loadImg(product.id);
         productList[key]['img'] = img;
     }
 
     products.value = productList;
-    if (products.value.length === 0) {
-        soLuongSP.value = 0;
-    } else {
-        for (let i = 0; i < 1; i++) {
-            soLuongSP.value = products.value[i].soLuongSanPham;
-        }
-    }
+
     showSpinner.value = false;
     visibledatatable.value = true;
 };
@@ -445,10 +413,7 @@ watch(trangThai, (newVal) => {
                                         placeholder="Select Columns" />
                                 </div>
                                 <div style="display: flex;">
-                                    <h5 class="m-0" style="margin-right: 20px;"> Products </h5>
-                                    <div
-                                        style="margin-bottom:10px ;margin-left: 10px;border-radius: 50%; width: 30px ;height: 30px; background: rgb(76, 71, 83); color: white; text-align: center;font-size: 20px;">
-                                        {{ soLuongSP }}</div>
+                                    <h5 class="m-0" style="margin-right: 20px;"> Sản Phẩm </h5>
                                 </div>
 
                                 <span class="block mt-2 md:mt-0 p-input-icon-left">
@@ -464,7 +429,13 @@ watch(trangThai, (newVal) => {
                         <Column field="code" header="STT" :sortable="true" style="width: 1px; padding: 5px;">
                             <template #body="slotProps">
                                 <span class="p-column-title">STT</span>
-                                {{ slotProps.data.stt }}
+                                {{ products.indexOf(slotProps.data) + 1 }}
+                            </template>
+                        </Column>
+                        <Column field="ten" header="Tên" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+                            <template #body="slotProps">
+                                <span class="p-column-title">Tên</span>
+                                {{ slotProps.data.ma }}
                             </template>
                         </Column>
                         <Column header="Image" headerStyle="width:8%; min-width:5rem;">
@@ -480,22 +451,29 @@ watch(trangThai, (newVal) => {
                                 {{ slotProps.data.ten }}
                             </template>
                         </Column>
-                        <Column field="giaBan" header="Giá Bán" :sortable="true" headerStyle="width:8%; min-width:5rem;">
+                        <Column field="giaBan" header="Loại" :sortable="true" headerStyle="width:8%; min-width:5rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">Tên</span>
-                                {{ formatCurrency(slotProps.data.giaBan) }}
+                                {{ slotProps.data.loai }}
                             </template>
                         </Column>
-                        <Column field="giaNhap" header="Giá nhập" :sortable="true" headerStyle="width:8%; min-width:5rem;">
+                        <Column field="giaNhap" header="Thương Hiệu" :sortable="true"
+                            headerStyle="width:8%; min-width:5rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">Tên</span>
-                                {{ formatCurrency(slotProps.data.giaNhap) }}
+                                {{ slotProps.data.thuongHieu }}
+                            </template>
+                        </Column>
+                        <Column field="giaNhap" header="Vật Liệu" :sortable="true" headerStyle="width:8%; min-width:5rem;">
+                            <template #body="slotProps">
+                                <span class="p-column-title">Tên</span>
+                                {{ slotProps.data.vatLieu }}
                             </template>
                         </Column>
                         <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header"
                             :key="col.field + '_' + index" :sortable="true" headerStyle="width:8%; min-width:5rem;">
                         </Column>
-                        <Column header="Màu Sắc " headerStyle="width:8%; min-width:5rem;">
+                        <!-- <Column header="Màu Sắc " headerStyle="width:8%; min-width:5rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">size</span>
                                 <div v-for="(i, index) in slotProps.data.mauSac">
@@ -520,7 +498,7 @@ watch(trangThai, (newVal) => {
                                     Ẩn
                                 </div>
                             </template>
-                        </Column>
+                        </Column> -->
 
                         <Column field="trangThai" header="Trạng Thái" sortable headerStyle="width: 5%; min-width: 8rem;">
                             <template #body="slotProps">
@@ -535,12 +513,28 @@ watch(trangThai, (newVal) => {
                                 <Detail :my-prop="slotProps.data"></Detail>
                                 <UpdateProduct :my-prop="slotProps.data"></UpdateProduct>
                                 <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2"
-                                    @click="confirmDeleteProduct(slotProps.data.id)" />
+                                    @click="confirmDeleteProduct(slotProps.data.id)"  v-if="slotProps.data.trangThai != 0" />
+                                    <Button icon="pi pi-refresh" class="p-button-rounded p-button-warning mt-2"
+                                    @click="confirmKhoiPhucProduct(slotProps.data.id)"  v-if="slotProps.data.trangThai == 0" />
                             </template>
                         </Column>
 
                     </DataTable>
 
+
+                    <Dialog v-model:visible="khoiPhucProductDialog" :style="{ width: '450px' }" header="Khôi phục Sản phẩm"
+                        :modal="true">
+                        <div class="flex align-items-center justify-content-center">
+                            <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+                            <span v-if="product">Bạn có chắc chắn khôi phục   <b>{{ product.ten }}</b> không ?</span>
+                        </div>
+                        <template #footer>
+                            <Button label="Không" icon="pi pi-times" class="p-button-text"
+                                @click="deleteProductDialog = false" />
+                            <Button label="Có" icon="pi pi-check" class="p-button-text"
+                                @click="khoiPhucProduct(product.id)"/>
+                        </template>
+                    </Dialog>
 
                     <Dialog v-model:visible="deleteProductDialog" :style="{ width: '450px' }" header="Xóa Sản phẩm"
                         :modal="true">
@@ -552,7 +546,7 @@ watch(trangThai, (newVal) => {
                             <Button label="Không" icon="pi pi-times" class="p-button-text"
                                 @click="deleteProductDialog = false" />
                             <Button label="Có" icon="pi pi-check" class="p-button-text"
-                                @click="deleteProduct(product.id)" />
+                                @click="deleteProduct(product.id)"/>
                         </template>
                     </Dialog>
 

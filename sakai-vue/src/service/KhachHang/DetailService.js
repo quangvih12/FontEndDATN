@@ -41,10 +41,19 @@ export const useDetailProductStore = defineStore('detail', {
             }
         },
 
+        async fetchIdSPCT(idProduct,idSize,idMau) {
+          try {
+              const response = await axios.get(apiDetail + `/find-spct-id?idSize=${idSize}&idMau=${idMau}&idSP=${idProduct}` ); // Thay đổi URL dựa trên API của bạn
+              this.products = response.data;
+          } catch (error) {
+              console.error('Lỗi khi lấy danh sách sản phẩm:', error);
+          }
+      },
+
 
         async fetchAllSize(idProduct) {
             try {
-                const response = await axios.get(apiDetail + `/findBySize/` + idProduct); // Thay đổi URL dựa trên API của bạn
+                const response = await axios.get(apiDetail + `/find-size/` + idProduct); // Thay đổi URL dựa trên API của bạn
                 this.sizes = response.data;
                 // console.log(response.data);
             } catch (error) {
@@ -55,7 +64,7 @@ export const useDetailProductStore = defineStore('detail', {
 
     async fetchAllMauSac(idProduct) {
       try {
-        const response = await axios.get(apiDetail + `/findByMauSac/`+idProduct); // Thay đổi URL dựa trên API của bạn
+        const response = await axios.get(apiDetail + `/find-Mau-Sac/`+idProduct); // Thay đổi URL dựa trên API của bạn
         this.mauSacs = response.data;
         //  console.log('mau: ',   this.mauSacs  );
       } catch (error) {

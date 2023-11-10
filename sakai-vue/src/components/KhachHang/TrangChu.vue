@@ -235,11 +235,13 @@ const banner9 =
                     <div class="product-top">
                         <a href="" class="product-thumb">
                             <img :src="spct.anh" alt="Thumbnail" class="product-image" />
+
                         </a>
                         <a class="xct" @click="goToProductDetail(spct.idSP)">Xem chi tiết</a>
                     </div>
                     <p class="ten-sp">{{ spct.tenSP }}</p>
                     <br />
+
                     <p class="gia-sp" style="color: black; text-align: center" v-if="spct.giaBanMin == spct.giaBanMax">{{ formatCurrency(spct.giaBanMax) }}</p>
                     <p class="gia-sp" style="color: black; text-align: center" v-else-if="spct.giaSauGiamMax != null && spct.giaSauGiamMin != null && spct.giaSauGiamMax != spct.giaSauGiamMin">
                         {{ formatCurrency(spct.giaSauGiamMin) }} - {{ formatCurrency(spct.giaSauGiamMax) }}
@@ -254,21 +256,25 @@ const banner9 =
                 <div class="flex col-12">
                     <div class="colum-gioi-thieu cot1">
                         <p class="tieu-de">SẢN PHẨM CHÍNH HÃNG</p>
-                        <p class="content">100% sản phẩm bán tại Nón Trùm chính hãng và đạt chuẩn. Sản phẩm đa dạng và đầy đủ để khách hàng lựa chọn.</p>
+                        <p class="content">100% sản phẩm bán tại Nón Trùm chính hãng và đạt chuẩn. Sản phẩm đa dạng và đầy
+                            đủ để khách hàng lựa chọn.</p>
                     </div>
                     <div class="colum-gioi-thieu cot2">
                         <p class="tieu-de">GIẶT NÓN MIỄN PHÍ</p>
-                        <p class="content">Tặng 6 tháng giặt nón miễn phí trị giá đến 420,000đ bằng máy chuyên dụng do Nón Trùm nghiên cứu và phát triển đầu tiên và duy nhất Việt Nam.</p>
+                        <p class="content">Tặng 6 tháng giặt nón miễn phí trị giá đến 420,000đ bằng máy chuyên dụng do Nón
+                            Trùm nghiên cứu và phát triển đầu tiên và duy nhất Việt Nam.</p>
                     </div>
                     <div class="colum-gioi-thieu cot3">
                         <p class="tieu-de">GIAO HÀNG MIỄN PHÍ</p>
-                        <p class="content">Với đơn hàng từ 450,000đ trở lên, Nón Trùm giao hàng tận nơi toàn quốc miễn phí. Ngoài ra, Nón Trùm có giao nhanh trong 2-3 giờ nội thành phố Hà Nội.</p>
+                        <p class="content">Với đơn hàng từ 450,000đ trở lên, Nón Trùm giao hàng tận nơi toàn quốc miễn phí.
+                            Ngoài ra, Nón Trùm có giao nhanh trong 2-3 giờ nội thành phố Hà Nội.</p>
                     </div>
                 </div>
                 <div class="flex col-12">
                     <div class="colum-gioi-thieu cot1">
                         <p class="tieu-de">MUA NHIỀU GIẢM SÂU</p>
-                        <p class="content">Với đơn hàng từ 450,000đ trở lên, Nón Trùm giao hàng tận nơi toàn quốc miễn phí. Ngoài ra, Nón Trùm có giao nhanh trong 2-3 giờ nội thành phố Hà Nội.</p>
+                        <p class="content">Với đơn hàng từ 450,000đ trở lên, Nón Trùm giao hàng tận nơi toàn quốc miễn phí.
+                            Ngoài ra, Nón Trùm có giao nhanh trong 2-3 giờ nội thành phố Hà Nội.</p>
                     </div>
                     <div class="colum-gioi-thieu cot2">
                         <p class="tieu-de">BẢO HÀNH 365 NGÀY</p>
@@ -276,7 +282,8 @@ const banner9 =
                     </div>
                     <div class="colum-gioi-thieu cot3">
                         <p class="tieu-de">ĐỔI MỚI 7 NGÀY</p>
-                        <p class="content">Đổi ngay nón mới trong vòng 7 ngày nếu có lỗi kỹ thuật. Ngoài ra, Nón Trùm hỗ trợ đổi size nón nếu bạn đội không vừa.</p>
+                        <p class="content">Đổi ngay nón mới trong vòng 7 ngày nếu có lỗi kỹ thuật. Ngoài ra, Nón Trùm hỗ trợ
+                            đổi size nón nếu bạn đội không vừa.</p>
                     </div>
                 </div>
             </div>
@@ -346,9 +353,11 @@ const banner9 =
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-direction: column; /* Để căn giữa theo chiều dọc */
+    flex-direction: column;
+    /* Để căn giữa theo chiều dọc */
     width: 1200px;
 }
+
 .thumbnail {
     margin-top: 50px;
     /* margin-left: 50px;
@@ -362,10 +371,12 @@ const banner9 =
     height: 200px;
     object-fit: cover;
 }
+
 .banner2 {
     width: 100%;
     max-width: 1100px;
 }
+
 .banner3 {
     width: 100%;
     max-width: 1100px;
@@ -401,6 +412,7 @@ const banner9 =
     flex-wrap: wrap;
     padding: 0 40px 0 40px;
 }
+
 .ten-sp {
     text-align: left;
     font-size: 17px;
@@ -410,6 +422,7 @@ const banner9 =
     color: black;
     height: 35px;
 }
+
 .gia-sp {
     text-align: left;
     font-size: 13px;
@@ -427,32 +440,38 @@ const banner9 =
     max-width: 1100px;
     background: rgb(74, 83, 74);
 }
+
 .tieu-de {
     font-weight: bold;
     font-size: 18px;
 }
+
 .content {
     font-size: 16px;
 }
+
 .colum-gioi-thieu {
     width: 33.3%;
     padding: 0 10px 0 10px;
 }
+
 .tieu-de-to {
     margin-top: 20px;
     font-size: 22px;
     font-weight: bold;
 }
+
 .cot1 {
     /* margin-right: 50px; */
     border-right: 1px solid white;
 }
+
 .cot2 {
     /* margin-right: 50; */
     border-right: 1px solid white;
 }
-.cot3 {
-}
+
+.cot3 {}
 
 .flex-container {
     display: flex;
@@ -462,11 +481,14 @@ const banner9 =
 }
 
 .flex-item {
-    flex: 0 0 calc(20% - 10px); /* 20% độ rộng cho mỗi cột và 10px là khoảng cách giữa các cột */
+    flex: 0 0 calc(20% - 10px);
+    /* 20% độ rộng cho mỗi cột và 10px là khoảng cách giữa các cột */
     border: 1px solid #ccc;
     padding: 10px;
-    box-sizing: border-box; /* Đảm bảo rằng padding và border không làm tăng kích thước của các cột */
-    margin-bottom: 20px; /* Khoảng cách giữa các dòng */
+    box-sizing: border-box;
+    /* Đảm bảo rằng padding và border không làm tăng kích thước của các cột */
+    margin-bottom: 20px;
+    /* Khoảng cách giữa các dòng */
     margin-right: 12px;
 }
 
@@ -476,9 +498,12 @@ const banner9 =
 }
 
 .flex-item img {
-    max-width: 100%; /* Đảm bảo ảnh không vượt quá kích thước của .flex-item */
-    height: auto; /* Đảm bảo tỷ lệ hình ảnh được giữ nguyên khi giảm kích thước theo chiều rộng */
-    display: block; /* Loại bỏ khoảng trắng dư thừa dưới ảnh */
+    max-width: 100%;
+    /* Đảm bảo ảnh không vượt quá kích thước của .flex-item */
+    height: auto;
+    /* Đảm bảo tỷ lệ hình ảnh được giữ nguyên khi giảm kích thước theo chiều rộng */
+    display: block;
+    /* Loại bỏ khoảng trắng dư thừa dưới ảnh */
 }
 
 .xct {
@@ -508,6 +533,6 @@ const banner9 =
 }
 
 .flex-item:hover .xct {
-    bottom: 0px;
-}
+    bottom: 0px;}
 </style>
+
