@@ -31,6 +31,8 @@ const selectedMauSac = ref('');
 let prevDataSizeLength = ref(null);
 let prevDataMauLength = ref(null);
 
+
+let expiryTime = 60 * 60 * 1000; // 1 giờ
 onMounted(async () => {
     await loadData();
     await loaddataListSPCT();
@@ -41,8 +43,10 @@ onMounted(async () => {
     prevDataSizeLength.value = dataSize.value.length;
     prevDataMauLength.value = dataMauSac.value.length;
 
-  
-    
+    setTimeout(function () {
+        localStorage.removeItem('cart');
+    }, expiryTime);
+
 });
 
 if (!localStorage.getItem('cart')) {
@@ -50,10 +54,6 @@ if (!localStorage.getItem('cart')) {
     localStorage.setItem('cart', JSON.stringify(array));
 }
 
-let expiryTime = 60 * 60 * 1000; // 1 giờ
-setTimeout(function () {
-    localStorage.removeItem('cart');
-}, expiryTime);
 
 const loadImg = async () => {
     await productStore.fetchAllImage(idProduct);
@@ -215,7 +215,7 @@ const addToCart = async () => {
         // Lưu lại mảng vào sessionStorage
         localStorage.setItem('cart', JSON.stringify(array));
         toast.add({ severity: 'success', summary: 'Successful', detail: 'Thêm vào giỏ hàng thành công', life: 3000 });
-          router.push({ name: 'gio-hang' });
+        router.push({ name: 'gio-hang' });
     } else {
         await gioHangService.addToCart(cartItem, token);
         toast.add({ severity: 'success', summary: 'Successful', detail: 'Thêm vào giỏ hàng thành công', life: 3000 });

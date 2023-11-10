@@ -24,6 +24,11 @@ export const gioHangStore = defineStore('gioHang', {
             this.dataSessions = response.data;
         },
 
+        async addToCartWhenLogin(form, token) {
+            const response = await axios.post(`http://localhost:8080/api/khach-hang/giohang/addGiohang-when-login?token=${token}`, form)
+            this.dataSessions = response.data;
+        },
+
         async getAllGHCT(token) {
             try {
                 const response = await axios.get(apiGiohang + `/getListGioHang?token=${token}`);

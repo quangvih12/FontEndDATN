@@ -245,12 +245,16 @@ const checked = ref([]);
 let checkedValues = []; // Mảng để lưu giá trị đã chọn
 const TongTien = ref(0);
 const TongSoLuong = ref(0);
+const dem = ref(0);
 const ischeckeds = ref(false);
+const idSpWhenCheckBox = ref(null);
 const onSizeChange = (id, isChecked) => {
     if (isChecked) {
         // Nếu checkbox được chọn, thêm giá trị vào mảng
         checkedValues.push(id);
         tongTienKhiTruCongSoLuong(checkedValues);
+        dem.value = dem.value + 1;
+        idSpWhenCheckBox.value = id.idGHCT;
         ischeckeds.value = isChecked;
     } else {
         // Nếu checkbox bị bỏ chọn, xóa giá trị khỏi mảng
@@ -293,18 +297,14 @@ const increment = async (idGHCT) => {
         }
         localStorage.setItem('cart', JSON.stringify(array));
         loadDataGioHang();
-        if (ischeckeds.value === true) {
-            tongTienKhiTruCongSoLuong(dataGHCT.value);
-        }
+        tinhTienKhiCongTru(dataGHCT.value);
         //  selectedSizeMauSac.value = false;
     } else {
         await gioHangService.congSL(idGHCT, token);
         fakedata.value = gioHangService.fakedata;
         if (fakedata.value !== '') {
             dataGHCT.value = gioHangService.data;
-            if (ischeckeds.value === true) {
-                tongTienKhiTruCongSoLuong(dataGHCT.value);
-            }
+            tinhTienKhiCongTru(dataGHCT.value);
             return;
         } else {
             toast.add({ severity: 'warn', summary: '', detail: 'Số lượng nhiều hơn số lượng tồn', life: 3000 });
@@ -346,34 +346,57 @@ const decrement = async (idGHCT) => {
         }
         localStorage.setItem('cart', JSON.stringify(array));
         loadDataGioHang();
-        if (ischeckeds.value === true) {
-            tongTienKhiTruCongSoLuong(dataGHCT.value);
-        }
-        //    selectedSizeMauSac.value = false;
+        tinhTienKhiCongTru(dataGHCT.value);
     } else {
         await gioHangService.truSL(idGHCT, token);
         dataGHCT.value = gioHangService.data; // Tăng giá trị soLuong lên 1 đơn vị
-        if (ischeckeds.value === true) {
-            tongTienKhiTruCongSoLuong(dataGHCT.value);
-        }
+        tinhTienKhiCongTru(dataGHCT.value);
 
     }
 };
-const tongTienKhiTruCongSoLuong = (array) => {
-    let tong = 0;
-    let tongSoLuong = 0;
-    for (const check of array) {
-        if (check.giaSPSauGiam === '' || check.giaSPSauGiam === null) {
-            tong += check.giaBan * check.soLuong;
-            tongSoLuong += check.soLuong;
+
+const tinhTienKhiCongTru = (data) => {
+    if (ischeckeds.value === true) {
+        if (dem.value > 1) {
+            tongTienKhiTruCongSoLuong(data);
         } else {
-            tong += check.giaSPSauGiam * check.soLuong;
-            tongSoLuong += check.soLuong;
+            let array = dataGHCT.value.find(o => o.idGHCT == idSpWhenCheckBox.value);
+            tongTienKhiTruCongSoLuong(array);
         }
 
     }
-    TongTien.value = tong;
-    TongSoLuong.value = tongSoLuong;
+}
+
+const tongTienKhiTruCongSoLuong = (array) => {
+    let tong = 0;
+    let tongSoLuong = 0;
+    console.log(array);
+    if (Array.isArray(array)) {
+        for (const check of array) {
+            if (check.giaSPSauGiam === '' || check.giaSPSauGiam === null) {
+                tong += check.giaBan * check.soLuong;
+                tongSoLuong += check.soLuong;
+            } else {
+                tong += check.giaSPSauGiam * check.soLuong;
+                tongSoLuong += check.soLuong;
+            }
+
+        }
+        TongTien.value = tong;
+        TongSoLuong.value = tongSoLuong;
+
+    } else {
+        if (array.giaSPSauGiam === '' || array.giaSPSauGiam === null) {
+            tong += array.giaBan * array.soLuong;
+            tongSoLuong += array.soLuong;
+        } else {
+            tong += array.giaSPSauGiam * array.soLuong;
+            tongSoLuong += array.soLuong;
+        }
+        TongTien.value = tong;
+        TongSoLuong.value = tongSoLuong;
+    }
+
 };
 
 const onloaiChange = () => {
