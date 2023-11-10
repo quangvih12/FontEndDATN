@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import Divider from 'primevue/divider';
 import { da } from 'date-fns/locale';
 import { HDStore } from '../../../service/Admin/HoaDon/HoaDonService';
@@ -26,6 +26,26 @@ const editProduct = () => {
     loadDataHDCT(props.myProp.idHD);
 };
 
+const ngayDat = ref('');
+const ngayThanhToan = ref('');
+const ngayGiao = ref('');
+const ngayNhan = ref('');
+
+onMounted(() => {
+    ngayDat.value = props.myProp.ngayTao;
+    ngayThanhToan.value = props.myProp.ngayThanhToan;
+    ngayGiao.value = props.myProp.ngayShip;
+    ngayNhan.value = props.myProp.ngayNhan;
+});
+
+const events = ref([
+    { status: 'Ngày đã đặt', date: ngayDat, icon: 'pi pi-wallet', color: '#9C27B0' },
+    { status: 'Ngày đã thanh toán', date: ngayThanhToan, icon: 'pi pi-money-bill', color: '#673AB7' },
+    { status: 'Đã giao cho ĐVVC', date: ngayGiao, icon: 'pi pi-car', color: '#FF9800' },
+    { status: 'Đã nhận được hàng', date: ngayNhan, icon: 'pi pi-box', color: '#607D8B' },
+    { status: 'Đánh giá', date: '17/10/2020', icon: 'pi pi-star', color: '#F55C3B' }
+]);
+
 const loadDataHDCT = async (idHD) => {
     const respone = await useHD.findHdctByIdHd(idHD);
     dataHDCT.value = respone;
@@ -36,6 +56,14 @@ const tinhTongTien = (tienShip, tongTien) => {
 };
 const formatCurrency = (value) => {
     return parseInt(value).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+};
+
+const hienTimeLine = (value) => {
+    if (parseInt(value) == 0 || parseInt(value) == 5 || parseInt(value) == 3) {
+        return true;
+    } else {
+        return false;
+    }
 };
 
 const exportToPDF = () => {
@@ -61,6 +89,21 @@ const exportToPDF = () => {
                             <h3>Shop...</h3>
                             <label>139 Cầu Giấy, Phường Quan Hoa, Hà Nội</label>
                             <h5>Hóa đơn thanh toán</h5>
+                        </div>
+                        <div v-if="hienTimeLine(props.myProp.trangThai)">
+                            <Timeline :value="events" layout="horizontal" align="bottom" class="customized-timeline">
+                                <template #marker="slotProps">
+                                    <span class="flex w-2rem h-2rem align-items-center justify-content-center text-white border-circle z-1 shadow-1" :style="{ backgroundColor: slotProps.item.color }">
+                                        <i :class="slotProps.item.icon"></i>
+                                    </span>
+                                </template>
+                                <template #opposite="slotProps">
+                                    <small class="p-text-secondary">{{ slotProps.item.date }}</small>
+                                </template>
+                                <template #content="slotProps">
+                                    {{ slotProps.item.status }}
+                                </template>
+                            </Timeline>
                         </div>
                         <hr />
                         <table>

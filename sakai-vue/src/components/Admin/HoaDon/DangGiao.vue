@@ -63,7 +63,7 @@ const hienThiTrangThai = (trangThai) => {
     } else if (trangThai == 4) {
         return { text: 'Đang chuẩn bị hàng', severity: 'success' };
     } else if (trangThai == 5) {
-        return { text: 'Giao cho đơn vị vận chuyển', severity: 'help' };
+        return { text: 'Đang giao', severity: 'help' };
     } else if (trangThai == 6) {
         return { text: 'Yêu cầu đổi trả', severity: 'warning' };
     } else {
@@ -78,7 +78,7 @@ const btnXacNhan = () => {
 };
 
 const btnXacNhanHuy = () => {
-    useHD.huyHoaDon(idHD.value, 'Người dùng không nhận hàng');
+    useHD.huyHoaDon(idHD.value, 'Người dùng không nhận hàng', 5);
     toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Xác nhận giao thất bại thành công', life: 3000 });
     huyDialog.value = false;
 };
@@ -210,7 +210,7 @@ const formatDate = (value) => {
         <Column field="tongTien" header="Tổng tiền" :sortable="true" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
                 <span class="p-column-title">tongTien</span>
-               {{ formatCurrency(slotProps.data.tongTien) }}
+                {{ formatCurrency(slotProps.data.tongTien) }}
             </template>
         </Column>
         <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column>
