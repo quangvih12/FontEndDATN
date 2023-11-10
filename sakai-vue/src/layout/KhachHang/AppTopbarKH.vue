@@ -120,6 +120,7 @@ const isTokenValid = async (token) => {
 
 // hàm gọi sự thay đổi thông tin của khách hàng khi click vào CBB
 const soLuong = ref(null);
+
 const displayKH = async () => {
  //   const token = localStorage.getItem('token');
     
@@ -137,7 +138,8 @@ const displayKH = async () => {
         const tokens = await tokenService.gentoken(selectedCustomer.value.userName);
         localStorage.setItem('token', tokens);
    // }
-
+   let array = JSON.parse(localStorage.getItem('cart'));
+   await gioHangService.addToCartWhenLogin(array,tokens);
 };
 
 const menu = ref();

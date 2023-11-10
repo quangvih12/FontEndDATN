@@ -29,6 +29,8 @@ const selectedMauSac = ref('');
 let prevDataSizeLength = ref(null);
 let prevDataMauLength = ref(null);
 
+
+let expiryTime = 60 * 60 * 1000; // 1 giờ
 onMounted(async () => {
     await loadData();
     await loaddataListSPCT();
@@ -38,7 +40,19 @@ onMounted(async () => {
 
     prevDataSizeLength.value = dataSize.value.length;
     prevDataMauLength.value = dataMauSac.value.length;
+
+    setTimeout(function () {
+        localStorage.removeItem('cart');
+    }, expiryTime);
+
 });
+
+if (!localStorage.getItem('cart')) {
+    let array = [];
+    localStorage.setItem('cart', JSON.stringify(array));
+}
+
+
 const loadImg = async () => {
     await productStore.fetchAllImage(idProduct);
     loadImage.value = productStore.images;
@@ -55,7 +69,7 @@ const loadDataSize = async () => {
 
 const idSanPhamChiTiet = ref(null);
 watch([getSize, idMau], async ([newGetSize, newIdMau]) => {
-    
+
     if (getSize.value == null) {
         await productStore.fetchIdSPCT(idProduct, getSize.value, idMau.value);
         dataListSPCT.value = productStore.products;
@@ -77,7 +91,7 @@ watch([dataSize, dataMauSac], async ([newDataSize, newDataMau]) => {
     if (newDataSize.length !== prevDataSizeLength.value || newDataMau.length !== prevDataMauLength.value) {
 
         if (isFirstRun && newDataSize.length > 0 && newDataMau.length > 0) {
-           
+
             selectedMauSac.value = newDataMau[0];
             idMau.value = selectedMauSac.value.id;
             getSize.value = newDataSize[0].id;
@@ -163,21 +177,51 @@ const hasTenKH = ref(dataSanPham.value.tenKH !== null && dataSanPham.value.tenKH
 
 
 const toast = useToast();
+const dataSessoin = ref([]);
 const addToCart = async () => {
     const cartItem = {
         soLuong: quantity.value,
         sanPhamChiTiet: idSanPhamChiTiet.value
     };
     const token = localStorage.getItem('token');
-  //  console.log(token)
+    //  console.log(token)
     if (quantity.value > dataListSPCT.value.soLuongTon) {
         toast.add({ severity: 'warn', summary: '', detail: 'Số lượng tồn không đủ', life: 5000 });
         return;
     }
-   
-    await gioHangService.addToCart(cartItem, token);
-    toast.add({ severity: 'success', summary: 'Successful', detail: 'Thêm vào giỏ hàng thành công', life: 3000 });
-    router.push({ name: 'gio-hang' });
+
+    if (token == '' || token == null) {
+
+        await gioHangService.addToCartSesion(cartItem, token);
+        dataSessoin.value = gioHangService.dataSessions;
+        // Lấy mảng từ sessionStorage và chuyển đổi nó trở lại thành mảng
+
+        let array = JSON.parse(localStorage.getItem('cart')); // Phân tích chuỗi JSON thành mảng
+
+        let found = false;
+        for (let i = 0; i < array.length; i++) {
+            if (array[i].idCTSP == dataSessoin.value.idCTSP) {
+                // Cập nhật phần tử trong mảng
+                array[i].soLuong = array[i].soLuong + dataSessoin.value.soLuong;
+                found = true;
+                break;
+            }
+        }
+        // Nếu không tìm thấy phần tử trong mảng, thêm phần tử mới
+        if (!found) {
+            array.push(dataSessoin.value);
+        }
+        // Lưu lại mảng vào sessionStorage
+        localStorage.setItem('cart', JSON.stringify(array));
+        toast.add({ severity: 'success', summary: 'Successful', detail: 'Thêm vào giỏ hàng thành công', life: 3000 });
+        router.push({ name: 'gio-hang' });
+    } else {
+        await gioHangService.addToCart(cartItem, token);
+        toast.add({ severity: 'success', summary: 'Successful', detail: 'Thêm vào giỏ hàng thành công', life: 3000 });
+        router.push({ name: 'gio-hang' });
+    }
+
+
 };
 
 const selectMauSac = async (mauSacs) => {
@@ -211,7 +255,7 @@ const isMauSacDisbled = (size) => {
 const getMauSacBySize = async (idsizect) => {
     await productStore.getMauSacBySize(idProduct, idsizect);
     dataMauSac.value = productStore.mauSacs;
-   // console.log(dataMauSac.value)
+    // console.log(dataMauSac.value)
 };
 
 const check = ref(false);
@@ -243,16 +287,21 @@ const check = ref(false);
                             <label for="" style="margin-left: 20px">Loại: <span style="color: red">{{ dataSanPham.loai
                             }}</span></label>
                             <div class="gb" style="display:  flex;">
-                                <h2 s v-if="dataListSPCT.soLuongTon !== 0 ">
-                                  <span    tyle="color: rgb(0, 0, 0)" > {{formatCurrency(dataListSPCT.giaBan) !== '' ? formatCurrency(dataListSPCT.giaBan) : 'Hết hàng' }}</span> 
+                                <h2 s v-if="dataListSPCT.soLuongTon !== 0">
+                                    <span tyle="color: rgb(0, 0, 0)"> {{ formatCurrency(dataListSPCT.giaBan) !== '' ?
+                                        formatCurrency(dataListSPCT.giaBan) : 'Hết hàng' }}</span>
                                 </h2>
-                                <p style="color: red"  v-else> Hết hàng</p>
-                                <div >
-                                    <h2 style="color: red; margin-left: 20px;" v-if="dataListSPCT.tenKM !== null && dataListSPCT.tenKM !== undefined">{{ formatCurrency(dataListSPCT.giaSauGiam) }}</h2>
-                                <Tag v-if="dataListSPCT.tenKM !== null && dataListSPCT.tenKM !== undefined" severity="danger" 
-                                style="width: 60px ; height: 20px;  margin-left: 5px; margin-bottom: 10px;">Giảm {{ dataListSPCT.giaTriGiam }}%</Tag>
+                                <p style="color: red" v-else> Hết hàng</p>
+                                <div>
+                                    <h2 style="color: red; margin-left: 20px;"
+                                        v-if="dataListSPCT.tenKM !== null && dataListSPCT.tenKM !== undefined">{{
+                                            formatCurrency(dataListSPCT.giaSauGiam) }}</h2>
+                                    <Tag v-if="dataListSPCT.tenKM !== null && dataListSPCT.tenKM !== undefined"
+                                        severity="danger"
+                                        style="width: 60px ; height: 20px;  margin-left: 5px; margin-bottom: 10px;">Giảm {{
+                                            dataListSPCT.giaTriGiam }}%</Tag>
                                 </div>
-                             
+
                             </div>
                             <label for="">- Trọng lượng: {{ dataListSPCT.trongLuong }} ({{ dataListSPCT.donVi }})
                             </label>
@@ -272,10 +321,10 @@ const check = ref(false);
                             <br />
                             <div class="rounded-content-list">
 
-                        
+
                                 <div v-for="(mauSacs, index) in dataMauSac" :key="index" class="rounded-content"
                                     @click="selectMauSac(mauSacs)"
-                                    :class="{ selected: isMauSacSelected(mauSacs), disabled:  isMauSacDisbled(mauSacs) }">
+                                    :class="{ selected: isMauSacSelected(mauSacs), disabled: isMauSacDisbled(mauSacs) }">
 
 
                                     <img class="rounded-image" :src="mauSacs.anh" alt="Hình ảnh" />
@@ -304,19 +353,22 @@ const check = ref(false);
                                 <label for="quantity">Số lượng</label>
                                 <br />
                                 <div class="quantity">
-                                    <button @click="decrement" class="minus p-button-secondary p-button-outlined"   :disabled="dataListSPCT.giaBan == null || dataListSPCT.soLuongTon == 0 ">
+                                    <button @click="decrement" class="minus p-button-secondary p-button-outlined"
+                                        :disabled="dataListSPCT.giaBan == null || dataListSPCT.soLuongTon == 0">
                                         <i class="pi pi-minus"></i>
                                     </button>
                                     <input v-model="quantity" class="input-soluong" style="width: 35px" disabled />
-                                    <button @click="increment" class="plus-phai p-button-secondary p-button-outlined"   :disabled="dataListSPCT.giaBan == null || dataListSPCT.soLuongTon == 0 ">
+                                    <button @click="increment" class="plus-phai p-button-secondary p-button-outlined"
+                                        :disabled="dataListSPCT.giaBan == null || dataListSPCT.soLuongTon == 0">
                                         <i class="pi pi-plus"></i>
                                     </button>
                                 </div>
                                 <Button label="Thêm vào giỏ hàng" @click="addToCart" icon="pi pi-shopping-cart"
                                     class="p-button-rounded p-button-warning mr-2 mb-2" style="background: #e8bd72"
-                                    :disabled="dataListSPCT.giaBan == null || dataListSPCT.soLuongTon == 0 " />
+                                    :disabled="dataListSPCT.giaBan == null || dataListSPCT.soLuongTon == 0" />
                                 <Button label="Mua ngay" class="p-button-rounded p-button-warning mr-2 mb-2"
-                                    style="background: #e8bd72"   :disabled="dataListSPCT.giaBan == null || dataListSPCT.soLuongTon == 0 " />
+                                    style="background: #e8bd72"
+                                    :disabled="dataListSPCT.giaBan == null || dataListSPCT.soLuongTon == 0" />
                             </div>
                         </div>
                     </div>
@@ -475,10 +527,13 @@ const check = ref(false);
 div.selected {
     border: 2px solid red;
 }
+
 .strikethrough {
     text-decoration: line-through;
-    color: rgb(5, 5, 5); /* Màu chữ cho giá bán gạch ngang (tuỳ chọn) */
+    color: rgb(5, 5, 5);
+    /* Màu chữ cho giá bán gạch ngang (tuỳ chọn) */
 }
+
 .grid {
     margin-top: 45px;
     display: flex;
