@@ -7,13 +7,20 @@ const headers = {
     Token: 'fc6bed6e-7bd8-11ee-af43-6ead57e9219a'
 };
 export const useDiaChi = defineStore('diaChi',{
-    id: 'diaChi',
     state: () => ({
         user: [],
         diaChi: [],
         data: [],
     }),
     actions: {
+        async fetchData(id) {
+            try {
+                const response = await axios.get(api + '/find-all?token=' + id);
+                this.diaChi = response.data;
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        },
         async fetchAllDiaChi(idUser) {
             try {
                 const response = await axios.get(api + `/${idUser}`); // Thay đổi URL dựa trên API của bạn

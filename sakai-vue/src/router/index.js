@@ -55,7 +55,7 @@ const router = createRouter({
                 },
                 {
 
-                    path: '/dia-chi/:id',
+                    path: '/dia-chi',
                     name: 'dia-chi',
                     component: () => import('@/components/KhachHang/DiaChiKhachHang/Index.vue')
              },{
