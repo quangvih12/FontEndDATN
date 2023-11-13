@@ -128,7 +128,7 @@ const getStatusLabel = (trangThai) => {
 
         </div>
         <div class="Field col-12 md:col-2" style="margin-right: 10px;height: 30px;">
-                <Panel header="Tổng đơn hoàn thành" style=" width: 200px">
+                <Panel header="Đơn hoàn thành" style=" width: 150px">
                     <div>
                         <p class="m-0" style="text-align: center; font-weight: 900; font-size: 1.4rem;">{{
                             tongDonhangHoanThanh }}</p>
@@ -136,13 +136,13 @@ const getStatusLabel = (trangThai) => {
                 </Panel>
             </div>
             <div class="Field col-12 md:col-2" style="margin-right: 20px;">
-                <Panel header="Tổng đơn đang giao" style=" width: 200px; height: 50px;">
+                <Panel header="Đơn đang giao" style=" width: 150px; height: 50px;">
                     <p class="m-0" style="text-align: center; font-weight: 900; font-size: 1.4rem;">{{
                            tongDonhangDangGiao }}</p>
                 </Panel>
             </div>
             <div class="Field col-12 md:col-2" style="margin-right: 20px;">
-                <Panel header="Tổng đơn hủy" style=" width: 160px; height: 30px;">
+                <Panel header="Đơn hủy" style=" width: 160px; height: 30px;">
                     <p class="m-0" style="text-align: center; font-weight: 900; font-size: 1.4rem;">{{
                             tongDonhangHuy }}</p>
                 </Panel>
@@ -168,8 +168,8 @@ const getStatusLabel = (trangThai) => {
                     <Button type="button" label="Tháng" @click="toggle1"
                         style="width: 80px; height: 40px;background: none;   color: black;" />
                     <Button type="button" label="Tháng" @click="load()"
-                        style="width: 70px; height: 40px;background: none;    color: black;"> <i class="pi pi-replay"
-                            style="font-size: 1.8rem; margin-right: 200px;"></i></Button>
+                        style="width: 50px; height: 40px;background: none;    color: black;"> <i class="pi pi-replay"
+                            style="font-size: 1.3rem; margin-left: -5px;"></i></Button>
 
                     <OverlayPanel ref="op1" style="height: 100px;">
                         <form @submit="onSubmit">

@@ -8,6 +8,10 @@ const router = createRouter({
     history: createWebHashHistory(),
     routes: [
         {
+            path: '/:pathMatch(.*)*',
+            component: () => import('@/views/pages/auth/Login.vue')
+        }
+        ,   {
             path: '/',
             component: AppLayoutKH,
             children: [
@@ -62,8 +66,8 @@ const router = createRouter({
                     path: '/dia-chi',
                     name: 'dia-chi',
                     component: () => import('@/components/KhachHang/DiaChiKhachHang/Index.vue')
-                },
-                {
+
+                }, {
                     path: '/lich-su-sp',
                     name: 'lich-su-sp',
                     component: () => import('@/components/KhachHang/LichSuSP/LichSuSP.vue')

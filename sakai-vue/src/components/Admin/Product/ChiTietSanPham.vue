@@ -99,22 +99,6 @@ const loadProducts = async () => {
     visibledatatable.value = false;
     await productStore.fetchAll(); // Gọi hàm fetchAll từ Store
     products.value = productStore.products;
-    const productList = productStore.products; // Lấy dữ liệu từ Store và gán vào biến products
-
-    for (const [key, product] of productList.entries()) {
-        productList[key]['img'] = null;
-        productList[key]['sanPhamChiTiet'] = null;
-        const mau = await fetchAllSpCt(product.id);
-        productList[key]['sanPhamChiTiet'] = mau;
-        const img = await loadImg(product.id);
-        productList[key]['img'] = img;
-    }
-
-    products.value = productList;
-    console.log(products.value);
-    // for (let i = 0; i < 1; i++) {
-    //     soLuongSP.value = products.value[i].soLuongSanPham;
-    // }
     showSpinner.value = false;
     visibledatatable.value = true;
 };
@@ -187,23 +171,18 @@ const onToggle = (val) => {
     selectedColumns.value = columns.value.filter(col => val.includes(col));
 };
 
+const getStatusLabel = (soLuong, trangThai) => {
+    if (soLuong > 0 && trangThai == 1) {
+        return { text: 'Còn Hàng', severity: 'success' };
+    } else if (soLuong <= 0 || trangThai == 0) {
+        return { text: 'hết Hàng', severity: 'danger' };
 
-
-const getStatusLabel = (trangThai) => {
-    switch (trangThai) {
-        case 1:
-            return { text: 'Còn Hàng', severity: 'success' };
-
-        case 0:
-            return { text: 'hết Hàng', severity: 'danger' };
-
-        case 3:
-            return { text: 'tồn kho', severity: 'danger' };;
-
-        default:
-            return { text: 'Trạng thái không xác định', severity: 'info' };
+    } else {
+        return { text: 'tồn kho', severity: 'info' };;
     }
+
 };
+
 
 const idDelete = ref();
 const confirmDeleteProduct = (id) => {
@@ -251,6 +230,7 @@ const closePosition = () => {
 const setNameFile = ref('');
 const handRemovefile = () => {
     setNameFile.value = '';
+
 };
 
 
@@ -262,77 +242,127 @@ const handImportExcel = async (event) => {
     setNameFile.value = event.target.files[0].name;
     const formData = new FormData();
     formData.append("file", selectedFile);
-    await productStore.uploadFile(formData);
-    excel.value = productStore.excels;
-    for (const o of excel.value) {
-        for (const data of o.responseList) {
-            if (data.importMessageGiaBan !== null && data.importMessageGiaBan !== "SUCCESS") {
-                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageGiaBan, life: 30000 });
-
+    try {
+        await productStore.uploadFile(formData);
+        excel.value = productStore.excels;
+        let hasError = false;
+        for (const o of excel.value) {
+            for (const data of o.responseList) {
+                if (data.importMessageGiaBan !== null && data.importMessageGiaBan !== "SUCCESS") {
+                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageGiaBan, life: 30000 });
+                    hasError = true;
+                    showProgressSpinner.value = false;
+                    dis.value = true;
+                    break;
+                }
+                else if (data.importMessageDemLot !== null && data.importMessageDemLot !== "SUCCESS") {
+                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageDemLot, life: 30000 });
+                    hasError = true;
+                    showProgressSpinner.value = false;
+                    dis.value = true;
+                    break;
+                }
+                else if (data.importMessageGiaNhap !== null && data.importMessageGiaNhap !== "SUCCESS") {
+                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageGiaNhap, life: 30000 });
+                    hasError = true;
+                    showProgressSpinner.value = false;
+                    dis.value = true;
+                    break;
+                }
+                else if (data.importMessageSanPham !== null && data.importMessageSanPham !== "SUCCESS") {
+                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSanPham, life: 30000 });
+                    hasError = true;
+                    showProgressSpinner.value = false;
+                    dis.value = true;
+                    break;
+                }
+                else if (data.importMessageTrongLuong !== null && data.importMessageTrongLuong !== "SUCCESS") {
+                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageTrongLuong, life: 30000 });
+                    hasError = true;
+                    showProgressSpinner.value = false;
+                    dis.value = true;
+                    break;
+                }
+                else if (data.importMessageVatLieu !== null && data.importMessageVatLieu !== "SUCCESS") {
+                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageVatLieu, life: 30000 });
+                    hasError = true;
+                    showProgressSpinner.value = false;
+                    dis.value = true;
+                    break;
+                }
+                else if (data.importMessageThuongHieu !== null && data.importMessageThuongHieu !== "SUCCESS") {
+                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageThuongHieu, life: 30000 });
+                    hasError = true;
+                    showProgressSpinner.value = false;
+                    dis.value = true;
+                    break;
+                }
+                else if (data.importMessageSize !== null && data.importMessageSize !== "SUCCESS") {
+                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSize, life: 30000 });
+                    hasError = true;
+                    showProgressSpinner.value = false;
+                    dis.value = true;
+                    break;
+                }
+                else if (data.importMessageMauSac !== null && data.importMessageMauSac !== "SUCCESS") {
+                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageMauSac, life: 30000 });
+                    hasError = true;
+                    showProgressSpinner.value = false;
+                    dis.value = true;
+                    break;
+                }
+                else if (data.importMessageLoai !== null && data.importMessageLoai !== "SUCCESS") {
+                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageLoai, life: 30000 });
+                    hasError = true;
+                    showProgressSpinner.value = false;
+                    dis.value = true;
+                    break;
+                }
+                else if (data.importMessageImageMau !== null && data.importMessageImageMau !== "SUCCESS") {
+                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageImageMau, life: 30000 });
+                    hasError = true;
+                    showProgressSpinner.value = false;
+                    dis.value = true;
+                    break;
+                }
+                else if (data.importMessageQuaiDeo !== null && data.importMessageQuaiDeo !== "SUCCESS") {
+                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageQuaiDeo, life: 30000 });
+                    hasError = true;
+                    showProgressSpinner.value = false;
+                    dis.value = true;
+                    break;
+                }
+                else if (data.importMessageSoLuongSize !== null && data.importMessageSoLuongSize !== "SUCCESS") {
+                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSoLuongSize, life: 30000 });
+                    hasError = true;
+                    showProgressSpinner.value = false;
+                    dis.value = true;
+                    break;
+                }
+                else if (data.importMessageSoLuongMau !== null && data.importMessageSoLuongMau !== "SUCCESS") {
+                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSoLuongMau, life: 30000 });
+                    hasError = true;
+                    showProgressSpinner.value = false;
+                    dis.value = true;
+                    break;
+                }
             }
-            else if (data.importMessageDemLot !== null && data.importMessageDemLot !== "SUCCESS") {
-                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageDemLot, life: 30000 });
-
-            }
-            else if (data.importMessageGiaNhap !== null && data.importMessageGiaNhap !== "SUCCESS") {
-                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageGiaNhap, life: 30000 });
-
-            }
-            else if (data.importMessageSanPham !== null && data.importMessageSanPham !== "SUCCESS") {
-                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSanPham, life: 30000 });
-
-            }
-            else if (data.importMessageTrongLuong !== null && data.importMessageTrongLuong !== "SUCCESS") {
-                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageTrongLuong, life: 30000 });
-
-            }
-            else if (data.importMessageVatLieu !== null && data.importMessageVatLieu !== "SUCCESS") {
-                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageVatLieu, life: 30000 });
-
-            }
-            else if (data.importMessageThuongHieu !== null && data.importMessageThuongHieu !== "SUCCESS") {
-                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageThuongHieu, life: 30000 });
-
-            }
-            else if (data.importMessageSize !== null && data.importMessageSize !== "SUCCESS") {
-                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSize, life: 30000 });
-
-            }
-            else if (data.importMessageMauSac !== null && data.importMessageMauSac !== "SUCCESS") {
-                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageMauSac, life: 30000 });
-
-            }
-            else if (data.importMessageLoai !== null && data.importMessageLoai !== "SUCCESS") {
-                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageLoai, life: 30000 });
-
-            }
-            else if (data.importMessageSoLuong !== null && data.importMessageSoLuong !== "SUCCESS") {
-                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSoLuong, life: 30000 });
-
-            }
-            else if (data.importMessageQuaiDeo !== null && data.importMessageQuaiDeo !== "SUCCESS") {
-                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageQuaiDeo, life: 30000 });
-
-            }
-            else if (data.importMessageSoLuongSize !== null && data.importMessageSoLuongSize !== "SUCCESS") {
-                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSoLuongSize, life: 30000 });
-
-            }
-            else if (data.importMessageSoLuongMau !== null && data.importMessageSoLuongMau !== "SUCCESS") {
-                toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageSoLuongMau, life: 30000 });
-            }
-            else {
-                toast.add({ severity: 'success', summary: 'Success Message', detail: 'Import excel thành công', life: 3000 });
+            if (hasError) {
                 break;
             }
-
         }
-        break;
-        //   }
+        if (!hasError) {
+            showProgressSpinner.value = false;
+            dis.value = true;
+            loadProducts();
+        }
+    } catch (error) {
+        toast.add({ severity: 'error', summary: 'Error', detail: 'lỗi ', life: 10000 });
+        showProgressSpinner.value = false;
+        dis.value = true;
     }
-    showProgressSpinner.value = false;
-    dis.value = true;
-    loadProducts();
+
+
 };
 const trangThai = ref();
 const dataTrangThai = ref([
@@ -340,7 +370,7 @@ const dataTrangThai = ref([
     { label: 'Còn Hàng', value: 'conHang' },
     { label: 'hết hàng', value: 'hetHang' },
     { label: 'Tồn kho', value: 'tonKho' },
-    { label: 'Đang khuyến mãi', value: 'dangKhuyenMai' }
+    { label: 'Đang khuyến mại', value: 'dangKhuyenMai' }
 ]);
 
 const loadDataByTrangThai = async () => {
@@ -432,9 +462,9 @@ watch(trangThai, (newVal) => {
                                 {{ products.indexOf(slotProps.data) + 1 }}
                             </template>
                         </Column>
-                        <Column field="ten" header="Tên" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+                        <Column field="ma" header="Mã" :sortable="true" headerStyle="width:14%; min-width:5rem;">
                             <template #body="slotProps">
-                                <span class="p-column-title">Tên</span>
+                                <span class="p-column-title">ma</span>
                                 {{ slotProps.data.ma }}
                             </template>
                         </Column>
@@ -451,59 +481,41 @@ watch(trangThai, (newVal) => {
                                 {{ slotProps.data.ten }}
                             </template>
                         </Column>
-                        <Column field="giaBan" header="Loại" :sortable="true" headerStyle="width:8%; min-width:5rem;">
+                        <Column field="loai" header="Loại" :sortable="true" headerStyle="width:8%; min-width:5rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">Tên</span>
                                 {{ slotProps.data.loai }}
                             </template>
                         </Column>
-                        <Column field="giaNhap" header="Thương Hiệu" :sortable="true"
+                        <Column field="thuongHieu" header="Thương Hiệu" :sortable="true"
                             headerStyle="width:8%; min-width:5rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">Tên</span>
                                 {{ slotProps.data.thuongHieu }}
                             </template>
                         </Column>
-                        <Column field="giaNhap" header="Vật Liệu" :sortable="true" headerStyle="width:8%; min-width:5rem;">
+                        <Column field="vatLieu" header="Vật Liệu" :sortable="true" headerStyle="width:8%; min-width:5rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">Tên</span>
                                 {{ slotProps.data.vatLieu }}
                             </template>
                         </Column>
+                        <Column field="soLuongTon" header="Số Lượng tồn" :sortable="true"
+                            headerStyle="width:8%; min-width:5rem;">
+                            <template #body="slotProps">
+                                <span class="p-column-title">Tên</span>
+                                {{ slotProps.data.soLuongTon }}
+                            </template>
+                        </Column>
                         <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header"
                             :key="col.field + '_' + index" :sortable="true" headerStyle="width:8%; min-width:5rem;">
                         </Column>
-                        <!-- <Column header="Màu Sắc " headerStyle="width:8%; min-width:5rem;">
-                            <template #body="slotProps">
-                                <span class="p-column-title">size</span>
-                                <div v-for="(i, index) in slotProps.data.mauSac">
-                                    <div v-if="index < 2 || slotProps.data.showMore" class="col-6"
-                                        style="width: 170px;background-color: aliceblue; height: 90px; display: flex;margin-bottom: 5px; border: 1px solid aliceblue; border-radius: 10px;">
-                                        <div>
-                                            <p style="margin: auto;">{{ i.ten }}</p>
-                                            <p style="margin: auto;" v-if="i.tenSize !== null">size: {{
-                                                i.tenSize }}</p>
-                                            <p style="margin: auto;">số lượng: {{ i.soLuong }}</p>
-                                        </div>
-                                        <img :src="i.anh" class="shadow-2" width="100"
-                                            style="margin-bottom: 30px; height: 50px; width: 50px; margin-left: 10px;" />
-                                    </div>
-                                </div>
-                                <div v-if="!slotProps.data.showMore && slotProps.data.mauSac.length > 3"
-                                    @click="slotProps.data.showMore = !slotProps.data.showMore">
-                                    Xem thêm...
-                                </div>
-                                <div v-if="slotProps.data.showMore"
-                                    @click="slotProps.data.showMore = !slotProps.data.showMore">
-                                    Ẩn
-                                </div>
-                            </template>
-                        </Column> -->
+
 
                         <Column field="trangThai" header="Trạng Thái" sortable headerStyle="width: 5%; min-width: 8rem;">
                             <template #body="slotProps">
-                                <Tag :value="getStatusLabel(slotProps.data.trangThai).text"
-                                    :severity="getStatusLabel(slotProps.data.trangThai).severity" />
+                                <Tag :value="getStatusLabel(slotProps.data.soLuongTon, slotProps.data.trangThai).text"
+                                    :severity="getStatusLabel(slotProps.data.soLuongTon, slotProps.data.trangThai).severity" />
                             </template>
                         </Column>
 
@@ -513,9 +525,11 @@ watch(trangThai, (newVal) => {
                                 <Detail :my-prop="slotProps.data"></Detail>
                                 <UpdateProduct :my-prop="slotProps.data"></UpdateProduct>
                                 <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2"
-                                    @click="confirmDeleteProduct(slotProps.data.id)"  v-if="slotProps.data.trangThai != 0" />
-                                    <Button icon="pi pi-refresh" class="p-button-rounded p-button-warning mt-2"
-                                    @click="confirmKhoiPhucProduct(slotProps.data.id)"  v-if="slotProps.data.trangThai == 0" />
+                                    @click="confirmDeleteProduct(slotProps.data.id)"
+                                    v-if="slotProps.data.trangThai != 0 && slotProps.data.soLuongTon > 0" />
+                                <Button icon="pi pi-refresh" class="p-button-rounded p-button-warning mt-2"
+                                    @click="confirmKhoiPhucProduct(slotProps.data.id)"
+                                    v-if="slotProps.data.trangThai == 0 && slotProps.data.soLuongTon > 0" />
                             </template>
                         </Column>
 
@@ -526,13 +540,13 @@ watch(trangThai, (newVal) => {
                         :modal="true">
                         <div class="flex align-items-center justify-content-center">
                             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-                            <span v-if="product">Bạn có chắc chắn khôi phục   <b>{{ product.ten }}</b> không ?</span>
+                            <span v-if="product">Bạn có chắc chắn khôi phục <b>{{ product.ten }}</b> không ?</span>
                         </div>
                         <template #footer>
                             <Button label="Không" icon="pi pi-times" class="p-button-text"
                                 @click="deleteProductDialog = false" />
                             <Button label="Có" icon="pi pi-check" class="p-button-text"
-                                @click="khoiPhucProduct(product.id)"/>
+                                @click="khoiPhucProduct(product.id)" />
                         </template>
                     </Dialog>
 
@@ -546,7 +560,7 @@ watch(trangThai, (newVal) => {
                             <Button label="Không" icon="pi pi-times" class="p-button-text"
                                 @click="deleteProductDialog = false" />
                             <Button label="Có" icon="pi pi-check" class="p-button-text"
-                                @click="deleteProduct(product.id)"/>
+                                @click="deleteProduct(product.id)" />
                         </template>
                     </Dialog>
 

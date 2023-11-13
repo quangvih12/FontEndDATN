@@ -2,7 +2,7 @@
 import ProductService from '@/service/ProductService';
 import { ref, defineProps, onMounted } from 'vue';
 
-import Index from '../MauSac/Index.vue';
+import Index from '../../Admin/KhuyenMai/KhuyenMai.vue';
 
 import { useMauSacService } from '../../../service/Admin/MauSac/MauSacService';
 import { useToast } from 'primevue/usetoast';
