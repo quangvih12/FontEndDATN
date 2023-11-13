@@ -27,8 +27,11 @@ const productService = new ProductService();
 const data = ref([]);
 
 const loadData = async () => {
-    await useHD.fetchData(1);
-    data.value = useHD.dataAll;
+    const token = localStorage.getItem('token');
+    if (token.length > 0 || token != null) {
+        await useHD.fetchData(token);
+        data.value = useHD.dataAll;
+    }
 };
 
 //chạy cái hiện data luôn

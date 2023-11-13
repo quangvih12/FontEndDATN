@@ -25,8 +25,11 @@ const products = ref(null);
 const data = ref([]);
 
 const loadData = async () => {
-    await useHD.fetchDataByStatus(1, 0);
-    data.value = useHD.dataDaHuy;
+    const token = localStorage.getItem('token');
+    if (token.length > 0 || token != null) {
+        await useHD.fetchDataByStatus(token, 0);
+        data.value = useHD.dataDaHuy;
+    }
 };
 //chạy cái hiện data luôn
 onMounted(() => {

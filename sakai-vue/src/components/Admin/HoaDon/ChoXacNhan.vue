@@ -104,7 +104,7 @@ const btnXacNhanHuy = () => {
         lyDo.value = '';
         huyDialog.value = false;
     } else {
-        useHD.huyHoaDon(idHD.value, lyDo.value);
+        useHD.huyHoaDon(idHD.value, lyDo.value, 2);
         toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Huỷ thành công', life: 3000 });
         lyDo.value = '';
         huyDialog.value = false;
