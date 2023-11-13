@@ -300,7 +300,7 @@ const check = ref(false);
                                             formatCurrency(dataListSPCT.giaSauGiam) }}</h2>
                                     <Tag v-if="dataListSPCT.tenKM !== null && dataListSPCT.tenKM !== undefined"
                                         severity="danger"
-                                        style="width: 60px ; height: 20px;  margin-left: 5px; margin-bottom: 10px;">Giảm {{
+                                        style="width: 70px ; height: 20px;  margin-left: 5px; margin-bottom: 10px;">Giảm {{
                                             dataListSPCT.giaTriGiam }}%</Tag>
                                 </div>
 
@@ -575,7 +575,7 @@ div.disabled {
     margin: 4px;
     flex-basis: calc(25% - 8px);
     /* Đặt kích thước ban đầu của mỗi ô, chừa khoảng cách 8px giữa các ô */
-    max-width: calc(25% - 8px);
+    max-width: calc(20% - 8px);
     /* Đặt giới hạn kích thước tối đa của mỗi ô */
     box-sizing: border-box;
 }

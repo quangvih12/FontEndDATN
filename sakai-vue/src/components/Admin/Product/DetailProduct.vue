@@ -1,7 +1,8 @@
 <script setup>
+import { FilterMatchMode } from 'primevue/api';
 import { useForm, useField, defineRule } from 'vee-validate';
 import * as yup from 'yup';
-import { reactive, ref, computed, onMounted } from 'vue';
+import { reactive, ref, computed, onMounted, onBeforeMount } from 'vue';
 import TableLoai from './DataTableLoai.vue';
 import TableThuongHieu from './DataTableThuongHieu.vue';
 import TableMauSac from './DataTableMauSac.vue';
@@ -186,32 +187,77 @@ const editProduct = () => {
         ImagesProduct.value.push(img.anh);
         imagesProduct.value = ImagesProduct.value.join(',').replace(/^,/, '').split(',');
     }
-    
+
     lstChiTietSP.value = props.myProp.sanPhamChiTiet;
-    console.log(props.myProp)
+    // console.log(props.myProp)
     product.value = { ...editProduct };
 
     productDialog.value = true;
 };
 
 const getStatusLabel = (soLuong) => {
-    if (soLuong <= 0) {
+    if (soLuong == 0) {
         return { text: 'hết Hàng', severity: 'danger' };
-    } else {
+    } else if (soLuong == 1) {
         return { text: 'Còn hàng', severity: 'success' };
+    } else {
+        return { text: 'Tồn kho', severity: 'war' };
     }
 
+};
+
+const getStatusLabelKhuyenMai = (khuyenMai) => {
+    return { text: 'Khuyễn Mại', severity: 'warn' };
 };
 
 const formatCurrency = (value) => {
     return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
 };
+
+const filters = ref({});
+
+onBeforeMount(() => {
+    initFilters();
+});
+
+
+const initFilters = () => {
+    filters.value = {
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS }
+    };
+};
+
+
+
+const dataTrangThai = ref([
+    { label: 'Tất cả', value: 'tatCa' },
+    { label: 'Còn Hàng', value: 'conHang' },
+    { label: 'hết hàng', value: 'hetHang' },
+    { label: 'Tồn kho', value: 'tonKho' },
+
+]);
+
+const columns = ref([
+    { field: 'giaSauGiam', header: 'Giá giảm giá' },
+    { field: 'tenKM', header: 'Tên Khuyến Mãi' },
+    { field: 'thoiGianBatDau', header: 'Thời gian bắt đầu' },
+    { field: 'thoiGianKetThuc', header: 'Thời gian kết thúc' },
+    { field: 'giaTriGiam', header: 'Giá Trị (%)' },
+]);
+
+// hàm để tắt/mở cột
+const selectedColumns = ref(columns.value.soLuongTon);
+
+const onToggle = (val) => {
+    selectedColumns.value = columns.value.filter(col => val.includes(col));
+};
+
 </script>
 
 
 <template>
     <Button icon="pi pi-eye" class="p-button-rounded p-button-success mr-2" @click="editProduct()" />
-    <Dialog v-model:visible="productDialog" :style="{ width: '1050px' }" header="Product Details" :modal="true"
+    <Dialog v-model:visible="productDialog" :style="{ width: '1050px' }" header="Xem Chi Tiết Sản Phẩm" :modal="true"
         class="p-fluid">
         <form @submit="onSubmit" style="margin-top: 30px;">
             <div class="p-fluid formgrid grid">
@@ -318,7 +364,7 @@ const formatCurrency = (value) => {
                             </div>
                             <small class="p-error">{{ vatLieuError }}</small>
                         </div>
-                    
+
                         <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
                             <div style="display: flex">
                                 <span class="p-float-label" style="width: 239px">
@@ -334,7 +380,7 @@ const formatCurrency = (value) => {
                         </div>
 
 
-                    
+
                     </div>
                 </div>
                 <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
@@ -342,24 +388,25 @@ const formatCurrency = (value) => {
                         <div class="Field col-12 md:col-6"
                             style="margin-bottom: 30px; height: 300px;margin-top: -30px; margin-left: 100px;display: inline-flex; justify-content: center; align-items: center;">
                             <Galleria :value="arrayImage" :responsiveOptions="responsiveOptions" :numVisible="5"
-                                containerStyle="max-width: 340px"  style="">
+                                containerStyle="max-width: 340px" style="">
                                 <template #item="slotProps">
                                     <img :src="imagesChinh" :alt="slotProps.item.alt" style="width: 70%; height: ;" />
                                 </template>
                                 <template #thumbnail="slotProps">
-                                    <img :src="slotProps.item.anh" :alt="slotProps.item.alt" style="width: 80px; height:80px ;"  />
-                               
+                                    <img :src="slotProps.item.anh" :alt="slotProps.item.alt"
+                                        style="width: 80px; height:80px ;" />
+
                                 </template>
-                            </Galleria>       
+                            </Galleria>
                         </div>
                     </div>
-                  
-                    <div class="field col-12 md:col-12" style="margin-bottom: 30px; margin-top: 20px;" >
-                            <label for="address">Mô tả</label>
-                            <Textarea id="address" rows="4" v-model="MoTa" :class="{ 'p-invalid': MoTaSacError }"
-                                disabled></Textarea>
-                            <small class="p-error">{{ MoTaSacError }}</small>
-                        </div>
+
+                    <div class="field col-12 md:col-12" style="margin-bottom: 30px; margin-top: 20px;">
+                        <label for="address">Mô tả</label>
+                        <Textarea id="address" rows="4" v-model="MoTa" :class="{ 'p-invalid': MoTaSacError }"
+                            disabled></Textarea>
+                        <small class="p-error">{{ MoTaSacError }}</small>
+                    </div>
                 </div>
 
                 <div class="Field col-12 md:col-12" style="margin-bottom: 30px">
@@ -372,59 +419,77 @@ const formatCurrency = (value) => {
                         <template #header>
 
                             <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-                                <div style="display: flex;">
-                                    <h5 class="m-0" style="margin-right: 20px;">Chi Tiết Sản Phẩm </h5>
+                                <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                                    <MultiSelect icon="pi pi-plus" :modelValue="selectedColumns" :options="columns"
+                                        optionLabel="header" @update:modelValue="onToggle" display="chip"
+                                        placeholder="Select Columns" />
                                 </div>
-                                <AddMauSacChiTiet :my-prop="lstMauSac" :idProduct="idProduct" :soLuongTong="soluong">
-                                </AddMauSacChiTiet>
+                                <div style="display: flex;">
+                                    <h5 class="m-0" style="margin-right: 0px;">Chi Tiết Sản Phẩm </h5>
+                                </div>
+
+                                <span class="block mt-2 md:mt-0 p-input-icon-left" style="width: 200px; left: 50px;">
+                                    <i class="pi pi-search" />
+                                    <InputText v-model="filters['global'].value" placeholder="Search..." />
+
+                                </span>
+                                <Dropdown v-model="trangThai" :options="dataTrangThai" optionLabel="label"
+                                    :optionLabel="(option) => option.label" placeholder="Tất cả" class="w-full md:w-14rem"
+                                    style="margin-left: 20px" />
                             </div>
+
                         </template>
 
 
-                        <Column field="code" header="STT" :sortable="true" style="width: 1px; padding: 5px;">
+                        <Column field="stt" header="STT" :sortable="true" style="width: 1px; padding: 5px;">
                             <template #body="slotProps">
                                 <span class="p-column-title">STT</span>
                                 {{ lstChiTietSP.indexOf(slotProps.data) + 1 }}
                             </template>
                         </Column>
-                        <Column field="code" header="Ảnh" :sortable="true" headerStyle="width:14%; min-width:5rem;">
+                        <Column field="anh" header="Ảnh" :sortable="true" headerStyle="width:14%; min-width:5rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">Ảnh</span>
                                 <img :src="slotProps.data.anh" :alt="i" class="shadow-2" width="50" />
                             </template>
                         </Column>
-                        <Column field="code" header="Tên Màu Sắc" :sortable="true"
+                        <Column field="tenMauSac" header="Tên Màu Sắc" :sortable="true"
                             headerStyle="width:14%; min-width:10rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">Tên Màu Sắc</span>
                                 {{ slotProps.data.tenMauSac }}
                             </template>
                         </Column>
-                        <Column field="code" header="Tên Size" :sortable="true" headerStyle="width:14%; min-width:8rem;">
+                        <Column field="tenSize" header="Tên Size" :sortable="true" headerStyle="width:14%; min-width:8rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">Size</span>
                                 {{ slotProps.data.tenSize === null ? "chưa có" : slotProps.data.tenSize }}
                             </template>
                         </Column>
-                        <Column field="code" header="Số Lượng" :sortable="true" headerStyle="width:14%; min-width:8rem;">
+                        <Column field="soLuongTon" header="Số Lượng" :sortable="true"
+                            headerStyle="width:14%; min-width:8rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">Số Lượng</span>
                                 {{ slotProps.data.soLuongTon }}
                             </template>
                         </Column>
-                        <Column field="code" header="Giá Nhập" :sortable="true" headerStyle="width:14%; min-width:8rem;">
+                        <Column field="giaNhap" header="Giá Nhập" :sortable="true" headerStyle="width:14%; min-width:8rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">Số Lượng</span>
                                 {{ formatCurrency(slotProps.data.giaNhap) }}
                             </template>
                         </Column>
-                        <Column field="code" header="Giá Bán" :sortable="true" headerStyle="width:14%; min-width:8rem;">
+                        <Column field="giaBan" header="Giá Bán" :sortable="true" headerStyle="width:14%; min-width:8rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">Số Lượng</span>
                                 {{ formatCurrency(slotProps.data.giaBan) }}
                             </template>
                         </Column>
-                        <Column field="code" header="Trọng Lượng" :sortable="true" headerStyle="width:14%; min-width:8rem;">
+                        <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header"
+                            :key="col.field + '_' + index" :sortable="true" headerStyle="width:8%; min-width:5rem;">
+                        </Column>
+                        <Column field="trongLuong" header="Trọng Lượng" :sortable="true"
+                            headerStyle="width:14%; min-width:8rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">Số Lượng</span>
                                 {{ slotProps.data.trongLuong }}
@@ -433,8 +498,14 @@ const formatCurrency = (value) => {
                         <Column field="trangThai" header="Trạng Thái" sortable headerStyle="width: 4%; min-width: 5rem;">
                             <template #body="slotProps">
                                 <!-- {{ slotProps.data.soLuong <= 0 ? "Hết":"còn hàng" }} -->
-                                <Tag :value="getStatusLabel(slotProps.data.soLuongTon).text"
-                                    :severity="getStatusLabel(slotProps.data.soLuongTon).severity" />
+                                <Tag :value="getStatusLabel(slotProps.data.trangThai).text"
+                                    v-if="slotProps.data.tenKM === null || slotProps.data.tenKM == ''"
+                                    :severity="getStatusLabel(slotProps.data.trangThai).severity" />
+                                <div v-else>
+                                    <Tag :value="getStatusLabelKhuyenMai(slotProps.data.tenKM).text"
+                                        :severity="getStatusLabelKhuyenMai(slotProps.data.tenKM).severity" />
+                                </div>
+
                             </template>
                         </Column>
                         <!-- <Column header="Action" headerStyle="min-width:10rem;">
