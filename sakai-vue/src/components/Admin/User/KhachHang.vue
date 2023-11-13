@@ -1,8 +1,8 @@
 <script setup>
 import { FilterMatchMode } from 'primevue/api';
-import { ref, onMounted, onBeforeMount } from 'vue';
+import { ref, onMounted, onBeforeMount, watch } from 'vue';
 import { useToast } from 'primevue/usetoast';
-import ThemUser from './ThemUser.vue';
+import ThemUser from './ThemAdmin.vue';
 import UpdateUser from './UpdateUser.vue';
 import DetailUser from './DetailUser.vue';
 import { userStore } from '../../../service/Admin/User/UserService';
@@ -16,6 +16,18 @@ const filters = ref({});
 const dataUser = ref([]);
 const userService = userStore();
 const idDelete = ref();
+const dataTrangThai = ref([
+    { label: 'Tất cả', value: 'Tất cả' },
+    { label: 'Đang sử dụng', value: '0' },
+    { label: 'Tài khoản bị khóa', value: '1' }
+]);
+const trangThai = ref();
+
+const loadDataByTrangThai = async () => {
+    await userService.fetchDataByStatus(trangThai.value.value);
+    const productList = userService.data.filter((user) => user.role === 'USER');
+    dataUser.value = productList;
+};
 onBeforeMount(() => {
     initFilters();
 });
@@ -38,6 +50,15 @@ const loadData = async () => {
     dataUser.value = productList;
     // console.log(dataUser.value);
 };
+
+//thay đổi cbb
+watch(trangThai, (newVal) => {
+    if (trangThai.value.value != 'Tất cả') {
+        loadDataByTrangThai();
+    } else {
+        loadData();
+    }
+});
 
 const diaChi = ref([]);
 
@@ -65,6 +86,22 @@ const deleteProduct = (id) => {
     toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Xoá thành công', life: 3000 });
     deleteProductDialog.value = false;
 };
+
+const columns = ref([
+    { field: 'ngaySinh', header: 'Ngày sinh' },
+    { field: 'email', header: 'Email' },
+    { field: 'userName', header: 'User name' },
+    { field: 'soLuongHoaDon', header: 'Số lượng đơn' },
+    { field: 'role', header: 'Role' },
+    { field: 'sdt', header: 'SĐT' }
+]);
+
+// hàm để tắt/mở cột
+const selectedColumns = ref(null);
+
+const onToggle = (val) => {
+    selectedColumns.value = columns.value.filter((col) => val.includes(col));
+};
 </script>
 <template>
     <div class="grid">
@@ -84,9 +121,13 @@ const deleteProduct = (id) => {
             >
                 <template #header>
                     <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                        <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center" style="width: 50px">
+                            <MultiSelect icon="pi pi-plus" :modelValue="selectedColumns" :options="columns" optionLabel="header" @update:modelValue="onToggle" display="chip" placeholder="Select Columns" />
+                        </div>
                         <span class="block mt-2 md:mt-0 p-input-icon-left">
                             <i class="pi pi-search" />
                             <InputText v-model="filters['global'].value" placeholder="Search..." />
+                            <Dropdown v-model="trangThai" :options="dataTrangThai" optionLabel="label" placeholder="Tất cả" class="w-full md:w-14rem" style="margin-left: 20px" />
                         </span>
                     </div>
                 </template>
@@ -114,26 +155,25 @@ const deleteProduct = (id) => {
                         {{ slotProps.data.ten }}
                     </template>
                 </Column>
-
                 <Column field="gioiTinh" header="Giới tính" headerStyle="width:14%; min-width:8rem;">
                     <template #body="slotProps">
                         <span class="p-column-title">gioiTinh</span>
                         {{ slotProps.data.gioiTinh == 1 ? 'Nam' : 'Nữ' }}
                     </template>
                 </Column>
-                <Column field="ngaySinh" header="Ngày sinh" headerStyle="width:14%; min-width:10rem;">
+                <!-- <Column field="ngaySinh" header="Ngày sinh" headerStyle="width:14%; min-width:10rem;">
                     <template #body="slotProps">
                         <span class="p-column-title">ngaySinh</span>
                         {{ slotProps.data.ngaySinh }}
                     </template>
-                </Column>
-                <Column field="sdt" header="Sdt" headerStyle="width:14%; min-width:10rem;">
+                </Column> -->
+                <!-- <Column field="sdt" header="Sdt" headerStyle="width:14%; min-width:10rem;">
                     <template #body="slotProps">
                         <span class="p-column-title">sdt</span>
                         {{ slotProps.data.sdt }}
                     </template>
-                </Column>
-                <Column field="email" header="Email" headerStyle="width:14%; min-width:10rem;">
+                </Column> -->
+                <!-- <Column field="email" header="Email" headerStyle="width:14%; min-width:10rem;">
                     <template #body="slotProps">
                         <span class="p-column-title">email</span>
                         {{ slotProps.data.email }}
@@ -156,16 +196,17 @@ const deleteProduct = (id) => {
                         <span class="p-column-title">role</span>
                         {{ slotProps.data.role }}
                     </template>
-                </Column>
+                </Column>-->
                 <Column field="diaChi" header="Địa chỉ" headerStyle="width:14%; min-width:10rem;">
                     <template #body="slotProps">
-                        <div v-for="i in slotProps.data.diaChi">
+                        <div v-for="i in slotProps.data.diaChi" :key="i.id">
                             <div class="col-6" style="width: 100%">
                                 <p>{{ i.diaChi }}</p>
                             </div>
                         </div>
                     </template>
                 </Column>
+                <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:8%; min-width:5rem;"> </Column>
                 <Column field="trangThai" header="Trạng thái" headerStyle="width:14%; min-width:10rem;">
                     <template #body="slotProps">
                         <span class="p-column-title">trangThai</span>
@@ -185,7 +226,7 @@ const deleteProduct = (id) => {
                 <div class="flex align-items-center justify-content-center">
                     <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
                     <span v-if="product"
-                        >Are you sure you want to delete <b>{{ dataUser.ten }}</b
+                        >Bạn có muốn vô hiệu hóa tài khoản <b>{{ dataUser.ten }}</b
                         >?</span
                     >
                 </div>
@@ -198,7 +239,7 @@ const deleteProduct = (id) => {
             <Dialog v-model:visible="deleteProductsDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
                 <div class="flex align-items-center justify-content-center">
                     <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-                    <span v-if="product">Are you sure you want to delete the selected products?</span>
+                    <span v-if="product">Bạn có muốn vô hiệu hóa tài khoản?</span>
                 </div>
                 <template #footer>
                     <Button label="No" icon="pi pi-times" class="p-button-text" @click="deleteProductsDialog = false" />
