@@ -37,6 +37,7 @@ onMounted(async () => {
     await loadImg();
     await loadDataSize();
     await loadDataMauSac();
+    
 
     prevDataSizeLength.value = dataSize.value.length;
     prevDataMauLength.value = dataMauSac.value.length;
@@ -56,6 +57,7 @@ if (!localStorage.getItem('cart')) {
 const loadImg = async () => {
     await productStore.fetchAllImage(idProduct);
     loadImage.value = productStore.images;
+
 };
 const loadDataMauSac = async () => {
     await productStore.fetchAllMauSac(idProduct);
@@ -122,7 +124,7 @@ const getSLTonTong = async (idctsp) => {
 const loadData = async () => {
     await productStore.fetchProductById(idProduct);
     dataSanPham.value = productStore.product;
-
+  
     // loadImage.value = dataSanPham.value.images;
     // console.log(dataSanPham.value);
 };
