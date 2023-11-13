@@ -17,6 +17,11 @@ const router = createRouter({
                     component: () => import('@/components/KhachHang/TrangChu.vue')
                 },
                 {
+                    path: '/login',
+                    name: 'login',
+                    component: () => import('@/views/pages/auth/Login.vue')
+                },
+                {
                     path: '/gioi-thieu',
                     name: 'gioi-thieu',
                     component: () => import('@/components/KhachHang/GioiThieu.vue')
@@ -54,11 +59,11 @@ const router = createRouter({
                     component: () => import('@/components/KhachHang/LichSuSP/TrangThaiDonHang.vue')
                 },
                 {
-
                     path: '/dia-chi',
                     name: 'dia-chi',
                     component: () => import('@/components/KhachHang/DiaChiKhachHang/Index.vue')
-             },{
+                },
+                {
                     path: '/lich-su-sp',
                     name: 'lich-su-sp',
                     component: () => import('@/components/KhachHang/LichSuSP/LichSuSP.vue')
@@ -82,7 +87,7 @@ const router = createRouter({
             children: [
                 {
                     path: '/thong-ke',
-                    name: 'Thống kê',
+                    name: 'thongKe',
                     component: () => import('@/components/Admin/ThongKe/index.vue'),
                     beforeEnter: authMiddleware
                 },

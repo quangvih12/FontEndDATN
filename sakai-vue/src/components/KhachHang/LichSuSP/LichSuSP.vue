@@ -16,7 +16,7 @@ import HoanTra from './TraHangHoanTien.vue';
                         <TatCa></TatCa>
                     </TabPanel>
 
-                    <TabPanel header="Đã thanh toán">
+                    <TabPanel header="Đang chuẩn bị">
                         <VanChuyen></VanChuyen>
                     </TabPanel>
                     <TabPanel header="Đang giao">
