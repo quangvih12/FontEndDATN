@@ -11,15 +11,15 @@ export const DoiTraStore = defineStore('doiTra', {
     }),
     actions: {
         //load data yeu cau tra hang
-        async fetchData(trangThai) {
-            try {
-                const response = await axios.get(apiHDCT + '/find-by-trang-thai/' + trangThai);
-                if (trangThai == 7) this.dataHoanTraHoanTien = response.data;
-                if (trangThai == 8) this.dataDaHoanTra = response.data;
-            } catch (error) {
-                console.error('Error fetching users:', error);
-            }
-        }
+        // async fetchData(trangThai) {
+        //     try {
+        //         const response = await axios.get(apiHDCT + '/find-by-trang-thai/' + trangThai);
+        //         if (trangThai == 7) this.dataHoanTraHoanTien = response.data;
+        //         if (trangThai == 8) this.dataDaHoanTra = response.data;
+        //     } catch (error) {
+        //         console.error('Error fetching users:', error);
+        //     }
+        // }
         //load data hd theo trạng thái
         // async fetchDataByStatus(status) {
         //     this.check = 1;

@@ -19,7 +19,6 @@ const loadData = async () => {
 
 const loadDataHD = async () => {
     dataHD.value = await useHD.findHdByIdHd(idHD);
-    console.log(dataHD.value);
 };
 
 const ngayDat = ref('');
@@ -126,7 +125,7 @@ const hienThiTrangThai = (trangThai) => {
                                         Size: <span>{{ hdct.tenSize }}</span>
                                     </p>
                                     <p>
-                                        Màu sắc: <span>{{ hdct.tenMS }}</span>
+                                        Màu sắc: <span>{{ hdct.tenMauSac }}</span>
                                     </p>
                                     <p>
                                         Số lượng: x<span>{{ hdct.soLuong }}</span>
