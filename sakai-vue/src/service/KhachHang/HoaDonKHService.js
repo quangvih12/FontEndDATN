@@ -20,20 +20,20 @@ export const HDKHStore = defineStore('hoaDonKH', {
     }),
     actions: {
         //load tất cả data
-        async fetchData(id) {
+        async fetchData(token) {
             this.check = 0;
             try {
-                const response = await axios.get(apiHD + '/find-all/' + id);
+                const response = await axios.get(apiHD + '/find-all?token=' + token);
                 this.dataAll = response.data;
             } catch (error) {
                 console.error('Error fetching users:', error);
             }
         },
         //load data hd theo trạng thái
-        async fetchDataByStatus(id, status) {
+        async fetchDataByStatus(token, status) {
             this.check = 1;
             try {
-                const response = await axios.get(apiHD + '/find-all-by-trang-thai/' + id + '?trangThai=' + status);
+                const response = await axios.get(apiHD + '/find-all-by-trang-thai?token=' + token + '&trangThai=' + status);
                 if (status == 1) this.dataChoThanhToan = response.data;
                 if (status == 4) this.dataDangChuanBi = response.data;
                 if (status == 5) this.dataDangGiao = response.data;

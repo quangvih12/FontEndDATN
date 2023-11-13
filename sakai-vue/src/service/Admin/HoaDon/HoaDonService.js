@@ -52,6 +52,7 @@ export const HDStore = defineStore('hoaDon', {
                     }
                 }
             });
+            console.log('OK');
             return this.dataDangGiao[0];
         },
 
@@ -74,10 +75,10 @@ export const HDStore = defineStore('hoaDon', {
         },
 
         //huỷ hoá đơn
-        huyHoaDon(id, lyDo) {
+        huyHoaDon(id, lyDo, man) {
             axios.put(apiHD + '/huyXacNhan/' + id + '?lyDo=' + lyDo).then((response) => {
                 if (this.check == 1) {
-                    if (this.dataChoXacNhan.length > 0) {
+                    if (this.dataChoXacNhan.length > 0 && man == 2) {
                         if (this.dataChoXacNhan[0].trangThai == '2') {
                             let index = -1;
                             for (let i = 0; i < this.dataChoXacNhan.length; i++) {
@@ -89,7 +90,7 @@ export const HDStore = defineStore('hoaDon', {
                             this.dataChoXacNhan.splice(index, 1);
                         }
                     }
-                    if (this.dataDangChuanBi.length > 0) {
+                    if (this.dataDangChuanBi.length > 0 && man == 4) {
                         if (this.dataDangChuanBi[0].trangThai == '4') {
                             let index = -1;
                             for (let i = 0; i < this.dataDangChuanBi.length; i++) {
@@ -101,7 +102,7 @@ export const HDStore = defineStore('hoaDon', {
                             this.dataDangChuanBi.splice(index, 1);
                         }
                     }
-                    if (this.dataDangGiao.length > 0) {
+                    if (this.dataDangGiao.length > 0 && man == 5) {
                         if (this.dataDangGiao[0].trangThai == '5') {
                             let index = -1;
                             for (let i = 0; i < this.dataDangGiao.length; i++) {
@@ -137,23 +138,24 @@ export const HDStore = defineStore('hoaDon', {
                 console.log(form2);
                 danhSachItem.push(form2);
             }
-            const form1 = {
+
+            const form2 = {
                 payment_type_id: 2,
-                note: 'Giao lúc 5h chiều hằng ngày',
+                note: 'Tintest 123',
                 required_note: 'KHONGCHOXEMHANG',
-                return_phone: '0339927992',
-                return_address: 'Số 29 ngõ 143',
-                return_district_id: 3440,
-                return_ward_code: '13010',
+                return_phone: '0332190458',
+                return_address: '39 NTT',
+                return_district_id: null,
+                return_ward_code: '',
                 client_order_code: '',
-                to_name: hoaDon.tenNguoiNhan,
-                to_phone: hoaDon.sdt,
-                to_address: hoaDon.diaChiCuThe,
-                to_ward_code: hoaDon.idPhuongXa,
-                to_district_id: parseInt(hoaDon.idQuanHuyen),
-                cod_amount: parseInt(hoaDon.tongTien),
-                content: 'Mũ bảo hiểm',
-                weight: 200,
+                to_name: 'TinTest124',
+                to_phone: '0987654321',
+                to_address: '72 Thành Thái, Phường 14, Quận 10, Hồ Chí Minh, Vietnam',
+                to_ward_code: '20107',
+                to_district_id: 1442,
+                cod_amount: 200000,
+                content: 'ABCDEF',
+                weight: 400,
                 length: 15,
                 width: 15,
                 height: 15,
@@ -163,17 +165,30 @@ export const HDStore = defineStore('hoaDon', {
                 service_type_id: 2,
                 coupon: null,
                 pick_shift: [2],
-                items: danhSachItem
+                items: [
+                    {
+                        name: 'Áo Polo',
+                        code: 'Polo123',
+                        quantity: 1,
+                        price: 200000,
+                        length: 12,
+                        width: 12,
+                        height: 12,
+                        category: {
+                            level1: 'Áo'
+                        }
+                    }
+                ]
             };
-
             try {
-                const response = await axios.post('https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/preview', form1, {
+                const response = await axios.post('https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/preview', form2, {
                     headers: {
                         // Thêm headers vào yêu cầu POST ở đây
                         token: '62a3cbdc-4e13-11ee-96dc-de6f804954c9',
                         ShopId: '4523827'
                     }
                 });
+                console.log(response);
             } catch (error) {
                 console.error('Error fetching users:', error);
             }

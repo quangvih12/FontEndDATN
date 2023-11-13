@@ -47,7 +47,7 @@ const onSettingsClick = (event) => {
     } else if (event.item.label === 'Lịch sử mua hàng') {
         router.push('/lich-su-sp');
     } else if (event.item.label === 'Địa chỉ' && selectedUserId.value) {
-        router.push(`/dia-chi/${selectedUserId.value}`);
+        router.push(`/dia-chi`);
     } else {
         // Xử lý trường hợp khác nếu cần
     }
@@ -178,10 +178,10 @@ const toggle = (event) => {
             <router-link to="/" class="layout-topbar-logo" style="width: 13%; margin-left: 10px">
                 <p style="font-size: 19px">Home</p>
             </router-link>
-            <router-link to="/" class="layout-topbar-logo" style="width: 22%; margin-left: 10px">
+            <router-link to="/san-pham" class="layout-topbar-logo" style="width: 22%; margin-left: 10px">
                 <p style="font-size: 19px">Sản phẩm</p>
             </router-link>
-            <router-link to="/" class="layout-topbar-logo" style="width: 28%; margin-left: 10px">
+            <router-link to="/gioi-thieu" class="layout-topbar-logo" style="width: 28%; margin-left: 10px">
                 <p style="font-size: 19px">Về chúng tôi</p>
             </router-link>
             <router-link to="/pages/size" class="layout-topbar-logo" style="width: 16%; margin-left: 10px; margin-right: 15px">

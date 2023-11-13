@@ -104,11 +104,17 @@ import CodeHighlight from '@/components/CodeHighlight.vue';
 import BlockViewer from '@/components/BlockViewer.vue';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
-
+import vue3GoogleLogin from 'vue3-google-login';
 import '@/assets/styles.scss';
 
 const app = createApp(App);
 const pinia = createPinia();
+
+let idGG = '267136886669-i8612hdfmltt70f0i27avrefk82rjt7t.apps.googleusercontent.com';
+
+app.use(vue3GoogleLogin, {
+    clientId: idGG
+});
 
 app.use(pinia);
 app.use(router);

@@ -24,8 +24,13 @@ const idDelete = ref();
 const diaChi = ref([]);
 
 const loadDiaChi = async () => {
-    await diaChiService.fetchAllDiaChi(idProduct); // Gọi hàm fetchAll từ Store
-    diaChi.value = diaChiService.diaChi;
+    const token = localStorage.getItem('token');
+    if (token.length > 0 || token != null) {
+        await diaChiService.fetchData(token);
+        diaChi.value = diaChiService.diaChi;
+    }
+    // await diaChiService.fetchAllDiaChi(idProduct); // Gọi hàm fetchAll từ Store
+    // diaChi.value = diaChiService.diaChi;
     // console.log(diaChiService.diaChi);
     // console.log('mau: ',  loadMau.value );
     // return diaChi.value;

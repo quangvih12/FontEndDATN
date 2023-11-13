@@ -41,8 +41,11 @@ watch(addProductDialog, (newVal) => {
     }
 });
 const loadData = async () => {
-    await useHD.fetchDataByStatus(1, 5);
-    data.value = useHD.dataDangGiao;
+    const token = localStorage.getItem('token');
+    if (token.length > 0 || token != null) {
+        await useHD.fetchDataByStatus(token, 5);
+        data.value = useHD.dataDangGiao;
+    }
 };
 //chạy cái hiện data luôn
 onMounted(() => {
