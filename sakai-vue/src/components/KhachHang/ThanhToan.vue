@@ -73,6 +73,7 @@ const calculateTotalAmount = () => {
 // Theo dõi thay đổi trong dataGHCT và tính tổng lại khi có sự thay đổi
 watchEffect(() => {
     calculateTotalAmount();
+    tongThanhToan.value = tongTien.value+ phiShip.value;
 });
 
 const formatCurrency = (value) => {
@@ -106,12 +107,15 @@ const saveDiaChi = () => {
 };
 
 const dataHoaDon = ref([]);
+
+
 const thanhtoan = async () => {
     const token = localStorage.getItem('token');
     const userName = await tokenService.getUserNameByToken(token);
 
     const user = await userKHService.getUserByUsername(userName);
-
+    
+  
     const forms = dataGHCT.value.map((item) => {
         return {
             idCTSP: item.idCTSP,
@@ -140,8 +144,12 @@ const selectVoucher = () => {
 };
 
 const loadDataVoucher = async () => {
-    await voucherService.getListVoucher();
+    const token = localStorage.getItem('token');
+    const userName = await tokenService.getUserNameByToken(token);
+    const user = await userKHService.getUserByUsername(userName);
+    await voucherService.getListVoucher(user.id);
     dataVoucher.value = voucherService.data;
+   // console.log(dataVoucher.value);
 };
 
 const formatDate = (dateTime) => {
