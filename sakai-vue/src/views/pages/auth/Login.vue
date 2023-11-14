@@ -22,7 +22,7 @@ const gotoTrangChu = () => {
 
 const callback = async (response) => {
     const userData = decodeCredential(response.credential);
-    const user = await tokenService.checkGoogle(userData.email, userData.name);
+    const user = await tokenService.checkGoogle(userData.email, userData.name, userData.picture);
     const token = await tokenService.gentoken(user.ten);
     localStorage.setItem('token', token);
     gotoTrangChu();

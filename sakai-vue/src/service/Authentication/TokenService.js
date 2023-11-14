@@ -16,8 +16,8 @@ class TokenService {
         return response.data;
     }
 
-    async checkGoogle(email, name) {
-        const response = await axios.get(`http://localhost:8080/api/khach-hang/user/find-user-by-email/` + email + '?username=' + name);
+    async checkGoogle(email, name, anh) {
+        const response = await axios.get(`http://localhost:8080/api/khach-hang/user/find-user-by-email/` + email + '?username=' + name + '&anh=' + anh);
         return response.data;
     }
 }
