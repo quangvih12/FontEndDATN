@@ -37,22 +37,21 @@ export const HDStore = defineStore('hoaDon', {
             });
         },
         //từ chờ đang chuẩn bị -> đang giao
-        dangChuanBi(id) {
-            axios.put(apiHD + '/XacNhanGiaoHang/' + id).then((response) => {
+        dangChuanBi(id, ngayShip) {
+            axios.put(apiHD + '/XacNhanGiaoHang/' + id + '?ngayShip=' + ngayShip).then((response) => {
                 if (this.check == 1) {
-                    if (this.dataDangChuanBi[0].trangThai == '4') {
+                    if (this.dataChoXacNhan[0].trangThai == '2') {
                         let index = -1;
-                        for (let i = 0; i < this.dataDangChuanBi.length; i++) {
-                            if (id == this.dataDangChuanBi[i].idHD) {
+                        for (let i = 0; i < this.dataChoXacNhan.length; i++) {
+                            if (id == this.dataChoXacNhan[i].idHD) {
                                 index = i;
                             }
                         }
-                        this.dataDangGiao.unshift(this.dataDangChuanBi[index]);
-                        this.dataDangChuanBi.splice(index, 1);
+                        this.dataDangGiao.unshift(this.dataChoXacNhan[index]);
+                        this.dataChoXacNhan.splice(index, 1);
                     }
                 }
             });
-            console.log('OK');
             return this.dataDangGiao[0];
         },
 
@@ -119,13 +118,13 @@ export const HDStore = defineStore('hoaDon', {
         },
 
         //gửi cho giao hàng nhanh
-        async giaoHangNhanh(danhSachSP, hoaDon) {
+        async giaoHangNhanh(danhSachSP, hoaDon, formGHN) {
             const danhSachItem = [];
             for (let i = 0; i < danhSachSP.length; i++) {
                 const form2 = {
                     name: danhSachSP[i].tenSP,
                     code: danhSachSP[i].maSP,
-                    quantity: danhSachSP[i].soLuong,
+                    quantity: parseInt(danhSachSP[i].soLuong),
                     price: parseInt(danhSachSP[i].donGia),
                     length: 12,
                     width: 12,
@@ -135,11 +134,10 @@ export const HDStore = defineStore('hoaDon', {
                         level1: 'Mũ'
                     }
                 };
-                console.log(form2);
                 danhSachItem.push(form2);
             }
-
-            const form2 = {
+            console.log(danhSachItem);
+            const form1 = {
                 payment_type_id: 2,
                 note: 'Tintest 123',
                 required_note: 'KHONGCHOXEMHANG',
@@ -179,6 +177,34 @@ export const HDStore = defineStore('hoaDon', {
                         }
                     }
                 ]
+            };
+            const form2 = {
+                payment_type_id: 2,
+                note: 'Tintest 123',
+                required_note: 'KHONGCHOXEMHANG',
+                return_phone: '0339927992',
+                return_address: '39 NTT',
+                return_district_id: null,
+                return_ward_code: '',
+                client_order_code: '',
+                to_name: hoaDon.tenNguoiNhan,
+                to_phone: hoaDon.sdt,
+                to_address: hoaDon.diaChiCuThe,
+                to_ward_code: hoaDon.idPhuongXa,
+                to_district_id: parseInt(hoaDon.idQuanHuyen),
+                cod_amount: 300000,
+                content: hoaDon.maHD,
+                weight: parseInt(formGHN.trongLuong),
+                length: parseInt(formGHN.cao),
+                width: parseInt(formGHN.dai),
+                height: parseInt(formGHN.rong),
+                pick_station_id: 0,
+                insurance_value: parseInt(formGHN.tongTien),
+                service_id: 0,
+                service_type_id: 2,
+                coupon: null,
+                pick_shift: [2],
+                items: danhSachItem
             };
             try {
                 const response = await axios.post('https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/preview', form2, {

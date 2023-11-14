@@ -7,7 +7,7 @@ import CustomerService from '@/service/CustomerService';
 import ProductService from '@/service/ProductService';
 import { ref, onBeforeMount, onMounted, watch } from 'vue';
 import { useToast } from 'primevue/usetoast';
-import DetailHoaDon from './DetailHoaDon.vue';
+import DetailHoaDonChoXacNhan from './DetailHoaDonChoXacNhan.vue';
 import { HDStore } from '../../../service/Admin/HoaDon/HoaDonService';
 
 const toast = useToast();
@@ -264,8 +264,8 @@ const formatDate = (value) => {
         </Column>
         <Column header="Hành động" headerStyle="min-width:10rem;">
             <template #body="slotProps">
-                <DetailHoaDon :my-prop="slotProps.data"></DetailHoaDon>
-                <Button label="Nhận" class="p-button-outlined p-button-info mr-2 mb-2" @click="confirmAddProduct(slotProps.data.idHD)" />
+                <DetailHoaDonChoXacNhan :my-prop="slotProps.data"></DetailHoaDonChoXacNhan>
+                <!-- <Button label="Nhận" class="p-button-outlined p-button-info mr-2 mb-2" @click="confirmAddProduct(slotProps.data.idHD)" /> -->
                 <Button label="Hủy" class="p-button-outlined p-button-info mr-2 mb-2" @click="showDialogLyDo(slotProps.data.idHD)" />
             </template>
         </Column>
