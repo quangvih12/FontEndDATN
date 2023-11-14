@@ -35,7 +35,7 @@ export const HDKHStore = defineStore('hoaDonKH', {
             try {
                 const response = await axios.get(apiHD + '/find-all-by-trang-thai?token=' + token + '&trangThai=' + status);
                 if (status == 1) this.dataChoThanhToan = response.data;
-                if (status == 4) this.dataDangChuanBi = response.data;
+                if (status == 2) this.dataDangChuanBi = response.data;
                 if (status == 5) this.dataDangGiao = response.data;
                 if (status == 3) this.dataHoanThanh = response.data;
                 if (status == 0) this.dataDaHuy = response.data;

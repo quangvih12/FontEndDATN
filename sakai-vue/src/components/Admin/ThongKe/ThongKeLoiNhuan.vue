@@ -232,7 +232,7 @@ const getStatusLabel = (trangThai) => {
             <Column field="tenNhanVien" header="Mã" :sortable="true" headerStyle="width:14%; min-width:10rem;">
                 <template #body="slotProps">
                     <span class="p-column-title">ma</span>
-                    {{ slotProps.data.ma }}
+                    {{ slotProps.data.maHD }}
                 </template>
             </Column>
             <Column field="tenNhanVien" header="Ngày Tạo" :sortable="true" headerStyle="width:14%; min-width:10rem;">
