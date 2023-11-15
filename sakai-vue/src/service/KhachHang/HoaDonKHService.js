@@ -24,21 +24,83 @@ export const HDKHStore = defineStore('hoaDonKH', {
             this.check = 0;
             try {
                 const response = await axios.get(apiHD + '/find-all?token=' + token);
-                this.dataAll = response.data;
+                const hoaDonList = response.data;
+                for (const [key, product] of hoaDonList.entries()) {
+                    hoaDonList[key]['sanPhamChiTiet'] = null;
+                    const mau = await this.findHdctByIdHd(product.idHD);
+                    // mau.sort((a, b) => b.id - a.id);
+                    hoaDonList[key]['sanPhamChiTiet'] = mau;
+                }
+                this.dataAll = hoaDonList;
             } catch (error) {
                 console.error('Error fetching users:', error);
             }
         },
         //load data hd theo trạng thái
-        async fetchDataByStatus(token, status) {
+        async fetchDataByStatus(token, status, status2, status3) {
             this.check = 1;
             try {
-                const response = await axios.get(apiHD + '/find-all-by-trang-thai?token=' + token + '&trangThai=' + status);
-                if (status == 1) this.dataChoThanhToan = response.data;
-                if (status == 4) this.dataDangChuanBi = response.data;
-                if (status == 5) this.dataDangGiao = response.data;
-                if (status == 3) this.dataHoanThanh = response.data;
-                if (status == 0) this.dataDaHuy = response.data;
+                const response = await axios.get(apiHD + '/find-all-by-trang-thai?token=' + token + '&trangThai=' + status + '&trangThai2=' + status2 + '&trangThai3=' + status3);
+                if (status == 1) {
+                    const hoaDonList = response.data;
+                    for (const [key, product] of hoaDonList.entries()) {
+                        hoaDonList[key]['sanPhamChiTiet'] = null;
+                        const mau = await this.findHdctByIdHd(product.idHD);
+                        // mau.sort((a, b) => b.id - a.id);
+                        hoaDonList[key]['sanPhamChiTiet'] = mau;
+                    }
+                    this.dataChoThanhToan = hoaDonList;
+                }
+                if (status == 2) {
+                    const hoaDonList = response.data;
+                    for (const [key, product] of hoaDonList.entries()) {
+                        hoaDonList[key]['sanPhamChiTiet'] = null;
+                        const mau = await this.findHdctByIdHd(product.idHD);
+                        // mau.sort((a, b) => b.id - a.id);
+                        hoaDonList[key]['sanPhamChiTiet'] = mau;
+                    }
+                    this.dataDangChuanBi = hoaDonList;
+                }
+                if (status == 5) {
+                    const hoaDonList = response.data;
+                    for (const [key, product] of hoaDonList.entries()) {
+                        hoaDonList[key]['sanPhamChiTiet'] = null;
+                        const mau = await this.findHdctByIdHd(product.idHD);
+                        // mau.sort((a, b) => b.id - a.id);
+                        hoaDonList[key]['sanPhamChiTiet'] = mau;
+                    }
+                    this.dataDangGiao = hoaDonList;
+                }
+                if (status == 3) {
+                    const hoaDonList = response.data;
+                    for (const [key, product] of hoaDonList.entries()) {
+                        hoaDonList[key]['sanPhamChiTiet'] = null;
+                        const mau = await this.findHdctByIdHd(product.idHD);
+                        // mau.sort((a, b) => b.id - a.id);
+                        hoaDonList[key]['sanPhamChiTiet'] = mau;
+                    }
+                    this.dataHoanThanh = hoaDonList;
+                }
+                if (status == 7 || status2 == 8) {
+                    const hoaDonList = response.data;
+                    for (const [key, product] of hoaDonList.entries()) {
+                        hoaDonList[key]['sanPhamChiTiet'] = null;
+                        const mau = await this.findHdctByIdHd(product.idHD);
+                        // mau.sort((a, b) => b.id - a.id);
+                        hoaDonList[key]['sanPhamChiTiet'] = mau;
+                    }
+                    this.dataHoanTraHoanTien = hoaDonList;
+                }
+                if (status == 0) {
+                    const hoaDonList = response.data;
+                    for (const [key, product] of hoaDonList.entries()) {
+                        hoaDonList[key]['sanPhamChiTiet'] = null;
+                        const mau = await this.findHdctByIdHd(product.idHD);
+                        // mau.sort((a, b) => b.id - a.id);
+                        hoaDonList[key]['sanPhamChiTiet'] = mau;
+                    }
+                    this.dataDaHuy = hoaDonList;
+                }
             } catch (error) {
                 console.error('Error fetching users:', error);
             }
@@ -63,25 +125,26 @@ export const HDKHStore = defineStore('hoaDonKH', {
                 console.error('Error fetching users:', error);
             }
         },
-        //huỷ hoá đơn
-        huyHoaDon(id, lyDo) {
-            axios.put(apiHD + '/huy-hoa-don/' + id + '?lyDo=' + lyDo).then((response) => {
-                if (this.check == 1) {
-                    if (this.dataDangChuanBi.length > 0) {
-                        if (this.dataDangChuanBi[0].trangThai == '4') {
-                            let index = -1;
-                            for (let i = 0; i < this.dataDangChuanBi.length; i++) {
-                                if (id == this.dataDangChuanBi[i].idHD) {
-                                    index = i;
-                                }
-                            }
-                            this.dataDaHuy.unshift(response.data);
-                            this.dataDangChuanBi.splice(index, 1);
-                        }
-                    }
+
+        async huyHoaDons(id, lyDo) {
+            try {
+                const response = await axios.put(apiHD + '/huy-hoa-don/' + id + '?lyDo=' + lyDo); // Thay đổi URL và dữ liệu updatedProduct tùy theo API của bạn
+                const index = this.dataDangChuanBi.findIndex(product => product.idHD === id);
+                if (index !== -1) {
+                    let newProductData = this.dataDangChuanBi[index];
+                    newProductData = response.data;
+                    newProductData['sanPhamChiTiet'] = null;
+                    const mau = await this.findHdctByIdHd(id);
+                    // mau.sort((a, b) => b.id - a.id);
+                    newProductData['sanPhamChiTiet'] = mau;
+                    this.dataDaHuy.unshift(newProductData);
+                    this.dataDangChuanBi.splice(index, 1);
                 }
-            });
+            } catch (error) {
+                console.error('Lỗi khi sửa sản phẩm:', error);
+            }
         },
+
         //search date
         async searchDate(startDate, endDate, cbbValue) {
             console.log(cbbValue);
@@ -128,6 +191,15 @@ export const HDKHStore = defineStore('hoaDonKH', {
             } catch (error) {
                 console.error('Error fetching users:', error);
             }
-        }
+        },
+
+        async doiTra(token, newHoaDon) {
+            try {
+                const response = await axios.post(apiHD + `/doi-tra?token=${token}`, newHoaDon);
+                this.dataDaHoanTra.unshift(response.data);
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        },
     }
 });

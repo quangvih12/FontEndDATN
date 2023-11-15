@@ -10,9 +10,9 @@ export const voucherStore = defineStore('voucher', {
         data: []
     }),
     actions: {
-        async getListVoucher() {
+        async getListVoucher(id) {
             try {
-                const response = await axios.get(apiVoucher );
+                const response = await axios.get(apiVoucher +`/${id}`);
                 this.data = response.data;
             } catch (error) {
                 console.error('Lỗi khi lấy chi tiết sản phẩm:', error);

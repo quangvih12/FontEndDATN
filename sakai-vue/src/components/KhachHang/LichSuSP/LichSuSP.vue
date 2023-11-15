@@ -48,12 +48,13 @@ import HoanTra from './TraHangHoanTien.vue';
     margin-top: 80px;
     margin-bottom: 30px;
     width: 1100px;
-    background: white;
+    background: rgb(133, 10, 10);
     display: flex;
     justify-content: center;
 
     /* align-items: center; */
 }
+
 .tab-view {
     width: 100%;
     text-align: center;

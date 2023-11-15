@@ -66,7 +66,7 @@ watch(lyDoDialog, (newVal) => {
 const loadData = async () => {
     const token = localStorage.getItem('token');
     if (token.length > 0 || token != null) {
-        await useHD.fetchDataByStatus(token, 1);
+        await useHD.fetchDataByStatus(token, 1, "", "");
         data.value = useHD.dataChoThanhToan;
     }
 };
@@ -206,27 +206,21 @@ const formatDate = (value) => {
             <Button label="Seach" @click="searchDate()" icon="pi pi-search" class="p-button-rounded p-button-primary mr-2 mb-2" />
         </div>
     </div> -->
-    <DataTable
-        ref="dt"
-        :value="data"
-        v-model:selection="selectedProducts"
-        dataKey="id"
-        :paginator="true"
-        :rows="5"
+    <DataTable ref="dt" :value="data" v-model:selection="selectedProducts" dataKey="id" :paginator="true" :rows="5"
         :filters="filters1"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-        :rowsPerPageOptions="[5, 10, 25]"
-        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
-        responsiveLayout="scroll"
-    >
+        :rowsPerPageOptions="[5, 10, 25]" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
+        responsiveLayout="scroll">
         <template #header>
             <div class="col-12 flex">
                 <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-                    <MultiSelect icon="pi pi-plus" placeholder="Select Columns" :modelValue="selectedColumns" :options="columns" optionLabel="header" @update:modelValue="onToggle" display="tag" />
+                    <MultiSelect icon="pi pi-plus" placeholder="Select Columns" :modelValue="selectedColumns"
+                        :options="columns" optionLabel="header" @update:modelValue="onToggle" display="tag" />
                 </div>
                 <span class="p-input-icon-left" style="margin-left: 20px">
                     <i class="pi pi-search" />
-                    <InputText v-model="filters1['global'].value" placeholder="Keyword Search" style="min-width: 13rem; height: 40px" />
+                    <InputText v-model="filters1['global'].value" placeholder="Keyword Search"
+                        style="min-width: 13rem; height: 40px" />
                 </span>
             </div>
         </template>
@@ -236,24 +230,30 @@ const formatDate = (value) => {
                 {{ slotProps.data.stt }}
             </template>
         </Column>
-        <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column>
+        <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header"
+            :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column>
         <Column field="diaChi" header="Địa chỉ" :sortable="false" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
                 <span class="p-column-title">diaChi</span>
-                {{ slotProps.data.diaChiCuThe }}, {{ slotProps.data.tenPhuongXa }}, {{ slotProps.data.tenQuanHuyen }}, {{ slotProps.data.tenTinhThanh }}
+                {{ slotProps.data.diaChiCuThe }}, {{ slotProps.data.tenPhuongXa }}, {{ slotProps.data.tenQuanHuyen }}, {{
+                    slotProps.data.tenTinhThanh }}
             </template>
         </Column>
         <Column field="trangThai" header="Trạng thái" :sortable="false" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
                 <span class="p-column-title">trangThai</span>
-                <Tag :value="hienThiTrangThai(slotProps.data.trangThai).text" :severity="hienThiTrangThai(slotProps.data.trangThai).severity" />
+                <Tag :value="hienThiTrangThai(slotProps.data.trangThai).text"
+                    :severity="hienThiTrangThai(slotProps.data.trangThai).severity" />
             </template>
         </Column>
         <Column header="Hành động" headerStyle="min-width:10rem;">
             <template #body="slotProps">
-                <Button :my-prop="slotProps.data" @click="redirectToTrangThaiDonHang(slotProps.data.idHD)" label="Xem" class="p-button-outlined p-button-info mr-2 mb-2" />
-                <Button label="Thanh toán" class="p-button-outlined p-button-info mr-2 mb-2" @click="confirmAddProduct(slotProps.data.idHD)" />
-                <Button label="Hủy" class="p-button-outlined p-button-info mr-2 mb-2" @click="showDialogLyDo(slotProps.data.idHD)" />
+                <Button :my-prop="slotProps.data" @click="redirectToTrangThaiDonHang(slotProps.data.idHD)" label="Xem"
+                    class="p-button-outlined p-button-info mr-2 mb-2" />
+                <Button label="Thanh toán" class="p-button-outlined p-button-info mr-2 mb-2"
+                    @click="confirmAddProduct(slotProps.data.idHD)" />
+                <Button label="Hủy" class="p-button-outlined p-button-info mr-2 mb-2"
+                    @click="showDialogLyDo(slotProps.data.idHD)" />
             </template>
         </Column>
     </DataTable>
@@ -264,7 +264,8 @@ const formatDate = (value) => {
                 <div class="p-fluid formgrid grid">
                     <div class="field col-12" style="margin-bottom: 30px">
                         <label for="address">Lý do</label>
-                        <Textarea id="lyDo" rows="4" v-model.trim="lyDo" :class="{ 'p-invalid': LyDoError }" required="true" autofocus></Textarea>
+                        <Textarea id="lyDo" rows="4" v-model.trim="lyDo" :class="{ 'p-invalid': LyDoError }" required="true"
+                            autofocus></Textarea>
                         <small class="p-error">{{ LyDoError }}</small>
                     </div>
                 </div>
