@@ -4,17 +4,17 @@ import { FilterMatchMode, FilterOperator } from 'primevue/api';
 import CustomerService from '@/service/CustomerService';
 import ProductService from '@/service/ProductService';
 import { ref, onBeforeMount, onMounted } from 'vue';
-import { HDStore } from '../../../service/Admin/HoaDon/HoaDonService';
+import { HDKHStore } from '../../../service/KhachHang/HoaDonKHService';
 import DetailHoaDon from './TrangThaiDonHang.vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
-const redirectToTrangThaiDonHang = (id) => {
+const redirectToTrangThaiDonHang = (idHDA) => {
     // Chuyển hướng đến trang trang-thai-don-hang và truyền ID của hóa đơn qua URL
-    router.push({ name: 'trang-thai-don-hang', params: { id: id } });
+    router.push({ name: 'trangThaiDonHang', params: { id: idHDA } });
 };
-const useHD = HDStore();
+const useHD = HDKHStore();
 const customer1 = ref(null);
 const customer2 = ref(null);
 const customer3 = ref(null);
@@ -25,7 +25,10 @@ const products = ref(null);
 const data = ref([]);
 
 const loadData = async () => {
-    await useHD.fetchDataByStatus(7);
+    const token = localStorage.getItem('token');
+    if (token.length > 0 || token != null) {
+        await useHD.fetchDataByStatus(token, 7, 8, 9);
+    }
     data.value = useHD.dataHoanTraHoanTien;
 };
 //chạy cái hiện data luôn
@@ -46,10 +49,10 @@ const hienThiTrangThai = (trangThai) => {
         return { text: 'Đang chuẩn bị hàng', severity: 'success' };
     } else if (trangThai == 5) {
         return { text: 'Giao cho đơn vị vận chuyển', severity: 'help' };
-    } else if (trangThai == 6) {
+    } else if (trangThai == 7) {
         return { text: 'Yêu cầu đổi trả', severity: 'warning' };
     } else {
-        return { text: 'Xác nhận đổi trả', severity: 'success' };
+        return { text: 'Xác nhận đổi trả thành công', severity: 'success' };
     }
 };
 
@@ -111,7 +114,7 @@ const initFilters1 = () => {
 };
 
 const formatCurrency = (value) => {
-    return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+    return parseInt(value).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
 };
 
 const formatDate = (value) => {
@@ -123,91 +126,94 @@ const formatDate = (value) => {
 };
 </script>
 <template>
-    <!-- <div class="col-12 flex" style="margin-right: 10px; padding-left: 0">
-        <Dropdown v-model="typeSearchDate" :options="dataSearchDate" optionLabel="label" placeholder="Ngày tạo" class="w-full md:w-14rem" style="height: 40px" />
-        <div class="p-inputgroup flex-1" style="margin-left: 20px">
-            <span class="p-inputgroup-addon" style="height: 40px">Ngày bắt đầu</span>
-            <input type="datetime-local" v-model="startDate" style="min-width: 13rem; height: 40px" />
-        </div>
-        <div class="p-inputgroup flex-1">
-            <span class="p-inputgroup-addon" style="height: 40px">Ngày kết thúc</span>
-            <input type="datetime-local" v-model="endDate" style="min-width: 13rem; height: 40px" />
-        </div>
-        <div style="margin-left: 5px">
-            <Button label="Seach" @click="searchDate()" icon="pi pi-search" class="p-button-rounded p-button-primary mr-2 mb-2" />
-        </div>
-    </div> -->
-    <DataTable
-        ref="dt"
-        :value="data"
-        v-model:selection="selectedProducts"
-        dataKey="id"
-        :paginator="true"
-        :rows="5"
-        :filters="filters1"
-        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-        :rowsPerPageOptions="[5, 10, 25]"
-        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
-        responsiveLayout="scroll"
-    >
-        <template #header>
-            <div class="col-12 flex">
-                
-                <span class="p-input-icon-left" >
-                    <i class="pi pi-search" />
-                    <InputText v-model="filters1['global'].value" placeholder="Keyword Search" style="min-width: 13rem; height: 40px" />
-                </span>
+    <div v-for="(hd, index) in data" :key="index">
+        <div style="width: 1060px; background: rgb(255, 255, 255); ">
+
+            <div style="width: 1060px; background: rgb(252, 246, 246);  ">
+                <div class="flex">
+                    <div style="margin-top: 10px; display: flex;">
+                        <svg width="17" height="16" viewBox="0 0 17 16" class="_0RxYUS"
+                            style="margin-top: 2px; margin-right: 10px; margin-left: 10px;">
+                            <title>Shop Icon</title>
+                            <path
+                                d="M1.95 6.6c.156.804.7 1.867 1.357 1.867.654 0 1.43 0 1.43-.933h.932s0 .933 1.155.933c1.176 0 1.15-.933 1.15-.933h.984s-.027.933 1.148.933c1.157 0 1.15-.933 1.15-.933h.94s0 .933 1.43.933c1.368 0 1.356-1.867 1.356-1.867H1.95zm11.49-4.666H3.493L2.248 5.667h12.437L13.44 1.934zM2.853 14.066h11.22l-.01-4.782c-.148.02-.295.042-.465.042-.7 0-1.436-.324-1.866-.86-.376.53-.88.86-1.622.86-.667 0-1.255-.417-1.64-.86-.39.443-.976.86-1.643.86-.74 0-1.246-.33-1.623-.86-.43.536-1.195.86-1.895.86-.152 0-.297-.02-.436-.05l-.018 4.79zM14.996 12.2v.933L14.984 15H1.94l-.002-1.867V8.84C1.355 8.306 1.003 7.456 1 6.6L2.87 1h11.193l1.866 5.6c0 .943-.225 1.876-.934 2.39v3.21z"
+                                stroke-width=".3" stroke="#333" fill="#333" fill-rule="evenodd"></path>
+                        </svg>
+                        <h5 style="font-weight: 700;margin-top: -2px;">cửa hàng VNK</h5>
+                    </div>
+                    <div style="margin-left: 100px; font-size: 15px;margin-top: 10px; margin-right: 50px;">
+                        <label for="">Mã đơn hàng: <span>{{ hd.maHD }} </span></label>
+                        <span> | </span>
+                        <label for="" style="color: red">{{ hienThiTrangThai(hd.trangThai).text }}</label>
+                    </div>
+                    <!-- <div style="margin-left: 10px">
+                        <span> | </span>
+                        <label for="" style="color: red; margin-left: 10px">{{ hienThiTrangThai(dataHD.trangThai).text }}</label>
+                    </div> -->
+                </div>
+
             </div>
-        </template>
-        <Column field="stt" header="STT" :sortable="true" headerStyle="width:14%; min-width:1rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">stt</span>
-                {{ slotProps.data.stt }}
-            </template>
-        </Column>
-        <Column field="maHD" header="Mã hoá đơn" :sortable="true" headerStyle="width:14%; min-width:1rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">maHD</span>
-                {{ slotProps.data.maHD }}
-            </template>
-        </Column>
-        <Column field="tenNguoiNhan" header="Tên người nhận" :sortable="true" headerStyle="width:14%; min-width:1rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">tenNguoiNhan</span>
-                {{ slotProps.data.tenNguoiNhan }}
-            </template>
-        </Column>
-        <Column field="tongTien" header="Tổng tiền" :sortable="true" headerStyle="width:14%; min-width:1rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">tongTien</span>
-                {{ slotProps.data.tongTien }}
-            </template>
-        </Column>
-        <Column field="tienSauGiam" header="Tiền sau giảm" :sortable="true" headerStyle="width:14%; min-width:1rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">tienSauGiam</span>
-                {{ slotProps.data.tienSauGiam }}
-            </template>
-        </Column>
-        <!-- <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column> -->
-        <Column field="diaChi" header="Địa chỉ" :sortable="false" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">diaChi</span>
-                {{ slotProps.data.diaChiCuThe }}, {{ slotProps.data.tenPhuongXa }}, {{ slotProps.data.tenQuanHuyen }}, {{ slotProps.data.tenTinhThanh }}
-            </template>
-        </Column>
-        <Column field="trangThai" header="Trạng thái" :sortable="false" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">trangThai</span>
-                <Tag :value="hienThiTrangThai(slotProps.data.trangThai).text" :severity="hienThiTrangThai(slotProps.data.trangThai).severity" />
-            </template>
-        </Column>
-        <Column header="Hành động" headerStyle="min-width:10rem;">
-            <template #body="slotProps">
-                <Button :my-prop="slotProps.data" @click="redirectToTrangThaiDonHang(data.id)" label="Xem" class="p-button-outlined p-button-info mr-2 mb-2" />
-                <Button label="Nhận" class="p-button-outlined p-button-info mr-2 mb-2" @click="btnXacNhan(slotProps.data.idHD)" />
-                <Button label="Hủy" class="p-button-outlined p-button-info mr-2 mb-2" />
-            </template>
-        </Column>
-    </DataTable>
+            <Divider />
+            <div v-for="(sp, index) in hd.sanPhamChiTiet" :key="index">
+                <div style="width: 1060px; background: rgb(255, 255, 255); height: 120px; margin-top: 10px;">
+                    <div class="flex">
+                        <div style="margin-left: 20px; margin-top: 20px;">
+                            <Image :src="sp.anh" alt="Image" width="90" preview />
+                        </div>
+                        <div class="product-details" style="margin-top: 10px; margin-left: 20px;">
+                            <h5 class="flex details">{{ sp.tenSP }}</h5>
+                            <div class="flex details">
+                                <div>
+                                    <p>
+                                        Phân loại: <span>{{ sp.tenMauSac }}</span> <span
+                                            v-if="sp.tenSize !== '' || sp.tenSize !== null">,{{ sp.tenSize }}</span>
+                                    </p>
+                                    <p>
+                                    </p>
+                                    <p>
+                                        Số lượng: <span>{{ sp.soLuong }}</span>
+                                    </p>
+                                </div>
+                                <div class="price">
+                                    <h4 style="color: rgb(7, 6, 6); margin-left: -130px; margin-top: -20px;">{{
+                                        formatCurrency(sp.donGia) }}
+                                    </h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <Divider />
+            <div style="width: 1060px; background: rgb(29, 23, 23);">
+                <div style="display: flex; width: 100%; background: rgb(255, 255, 255);">
+                    <div style="background: rgb(255, 255, 255);width: 30%; height: 100px; margin-top: ;">
+                        <h5 style="color: rgb(253, 1, 1);margin-top: 30px;margin-left: -50px; margin-bottom: 20px;">Thành
+                            tiền: <span>{{ formatCurrency(hd.tongTien) }}</span> </h5>
+                    </div>
+
+                    <div style="display: flex;justify-content: flex-end; width: 70%;">
+
+                        <div style=" height: 100%; margin-top: 30px;">
+                            <Button severity="secondary" label="Xem chi tiết" style="width: 150px"
+                                @click="redirectToTrangThaiDonHang(hd.idHD)" />
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
+
+<style setup>
+.flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.product-details {
+    flex: 1;
+}
+</style>

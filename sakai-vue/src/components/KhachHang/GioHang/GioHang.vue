@@ -440,7 +440,7 @@ const tinhTongTienChoTungSanPham = (soLuong, giaSauGiam, giaBan) => {
                         >
                             <Column headerStyle="width: 1rem">
                                 <template #body="slotProps">
-                                    <Checkbox v-model="checked[dataGHCT.indexOf(slotProps.data)]" :binary="true" @change="onSizeChange(slotProps.data, checked[dataGHCT.indexOf(slotProps.data)])" :disabled="slotProps.data.soLuongTon == 0" />
+                                    <Checkbox v-model="checked[dataGHCT.indexOf(slotProps.data)]" :binary="true" @change="onSizeChange(slotProps.data, checked[dataGHCT.indexOf(slotProps.data)])" :disabled="slotProps.data.soLuongTon <= 0 || slotProps.data.soLuong >slotProps.data.soLuongTon" />
                                 </template>
                             </Column>
 
@@ -488,7 +488,7 @@ const tinhTongTienChoTungSanPham = (soLuong, giaSauGiam, giaBan) => {
                                         <button
                                             @click="decrement(slotProps.data.idGHCT)"
                                             class="pi pi-minus"
-                                            :disabled="slotProps.data.soLuongTon == 0"
+                                            :disabled="slotProps.data.soLuongTon <= 0"
                                             style="width: 30px; height: 30px; border-radius: 10px 0px 0px 10px; border: 1px solid rgb(177, 173, 173)"
                                         ></button>
                                         <input :value="slotProps.data.soLuong" @input="updateSoLuong(slotProps.data, $event)" class="input-soluong" style="width: 30px; height: 30px" :disabled="slotProps.data.soLuongTon == 0" />
@@ -496,7 +496,7 @@ const tinhTongTienChoTungSanPham = (soLuong, giaSauGiam, giaBan) => {
                                             @click="increment(slotProps.data.idGHCT)"
                                             class="pi pi-plus"
                                             style="width: 30px; height: 30px; border-radius: 0px 10px 10px 0px; border: 1px solid rgb(177, 173, 173)"
-                                            :disabled="slotProps.data.soLuongTon == 0"
+                                            :disabled="slotProps.data.soLuongTon <= 0 || slotProps.data.soLuong >slotProps.data.soLuongTon "
                                         ></button>
                                     </div>
                                 </template>
