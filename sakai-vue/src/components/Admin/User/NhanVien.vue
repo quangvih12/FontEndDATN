@@ -40,7 +40,7 @@ const loadData = async () => {
 };
 
 const loadDatByTrangThai = async () => {
-    await userService.fetchDataByStatus(trangThai.value.value);
+    await userService.fetchDataByStatuss(trangThai.value.value);
     const productList = userService.data.filter((user) => user.role === 'NHANVIEN');
     dataUser.value = productList;
 };

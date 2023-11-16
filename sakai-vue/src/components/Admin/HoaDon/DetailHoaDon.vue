@@ -248,9 +248,9 @@ const btnXacNhanHuyGH = () => {
 </script>
 <template>
     <Button label="Xem" class="p-button-outlined p-button-info mr-2 mb-2" @click="editProduct()" />
-    <Dialog v-model:visible="productDialog" :style="{ width: '1020px' }" :header="code" :modal="true" class="p-fluid">
+    <Dialog v-model:visible="productDialog" :style="{ width: '850px' }" :header="code" :modal="true" class="p-fluid">
         <Toast />
-        <div class="flex">
+        <div class="flex" style="margin-left: 30px;">
             <div class="p-col-12" style="text-align: center">
                 <div class="bills-col">
                     <div id="pdf-content" class="card p-fluid" style="background: #ffffff">
@@ -333,19 +333,19 @@ const btnXacNhanHuyGH = () => {
                     <!--Xác nhận đổi trả -->
                     <div class="flex" v-if="HienXNDoiTra(props.myProp.trangThai)">
                         <div class="p-col-6" style="width: 100%">
-                            <Button label="Huỷ" class="p-button-outlined p-button-info mr-2 mb-2" severity="help" @click="showDialogLyDoXNDoiTra(props.myProp.idHD)" style="width: 400px" />
+                            <Button label="Huỷ" class="p-button-outlined p-button-info mr-2 mb-2" severity="help" @click="showDialogLyDoXNDoiTra(props.myProp.idHD)" style="width: 300px" />
                         </div>
                         <div class="p-col-6" style="width: 100%">
-                            <Button label="Xác nhận" severity="danger" @click="confirmAddProductXNDoiTra(props.myProp.idHD)" style="width: 400px" />
+                            <Button label="Xác nhận" severity="danger" @click="confirmAddProductXNDoiTra(props.myProp.idHD)" style="width: 300px" />
                         </div>
                     </div>
                     <!--Giao hàng -->
                     <div class="flex" v-if="HienDangGiao(props.myProp.trangThai)">
                         <div class="p-col-6" style="width: 100%">
-                            <Button label="Thất bại" class="p-button-outlined p-button-info mr-2 mb-2" @click="confirmHuyGH(props.myProp.idHD)" style="width: 400px" />
+                            <Button label="Thất bại" class="p-button-outlined p-button-info mr-2 mb-2" @click="confirmHuyGH(props.myProp.idHD)" style="width: 300px" />
                         </div>
                         <div class="p-col-6" style="width: 100%">
-                            <Button label="Hoàn thành" severity="danger" @click="confirmAddProductGH(props.myProp.idHD)" style="width: 400px" />
+                            <Button label="Hoàn thành" severity="danger" @click="confirmAddProductGH(props.myProp.idHD)" style="width: 300px" />
                         </div>
                     </div>
                     <Button label="Xuất hóa đơn" severity="danger" @click="exportToPDF" v-if="HienXuatHoaDon(props.myProp.trangThai)" />

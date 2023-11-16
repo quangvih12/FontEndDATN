@@ -329,6 +329,8 @@ const onloaiChangeThuongHieu = async (id, year) => {
 watch(selectedCity, async (newVal) => {
     if (vNam.value === null) {
         vNam.value = new Date().getFullYear();
+    }if(selectedCity.value == null || selectedCity.value == ''){
+        return;
     }
     await onloaiChangeThuongHieu(selectedCity.value.id, vNam.value);
     chartData.value = setChartData();

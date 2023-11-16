@@ -302,7 +302,7 @@ const toggle2 = (event) => {
                     <i v-badge="dem" class="pi pi-bell p-overlay-badge" style="font-size: 1.5rem" />
                 </button>
 
-                <OverlayPanel ref="op">
+                <OverlayPanel ref="op" style="height: 300px;overflow: auto;">
 
                     <H6>Thông báo </H6>
                     <div v-for="(o, index) in data">
