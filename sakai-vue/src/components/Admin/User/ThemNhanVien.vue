@@ -118,7 +118,7 @@ const addProduct = async () => {
         productDialog.value = false;
         toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Thêm thành công', life: 3000 });
         reset();
-        window.location.reload();
+
     } catch (error) {
         // Dữ liệu không hợp lệ, hiển thị thông báo lỗi bằng Toast
         toast.add({ severity: 'error', summary: 'Lỗi', detail: error.message, life: 3000 });

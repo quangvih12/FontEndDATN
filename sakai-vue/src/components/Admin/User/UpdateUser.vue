@@ -130,7 +130,7 @@ const updateProduct = () => {
             toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Sửa thành công', life: 3000 });
             reset();
             // Reload trang web sau khi cập nhật thành công
-            window.location.reload();
+            // window.location.reload();
         })
         .catch((error) => {
             // Dữ liệu không hợp lệ, hiển thị thông báo lỗi bằng Toast

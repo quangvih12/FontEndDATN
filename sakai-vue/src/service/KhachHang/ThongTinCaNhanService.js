@@ -11,6 +11,14 @@ export const useThongTin = defineStore('thongTin',{
         data: [],
     }),
     actions: {
+        async fetchData(id) {
+            try {
+                const response = await axios.get(api + '/find-all?token=' + id);
+                this.data = response.data;
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        },
         async fetchProductById(idUser) {
             try {
                 const response = await axios.get(api + `/getOne/${idUser}`);
