@@ -6,6 +6,7 @@ import AddVoucher from './AddVoucher.vue';
 import UpdateVoucher from './UpdateVoucher.vue';
 import DeleteVoucher from './DeleteVoucher.vue';
 import { format } from 'date-fns';
+import ApplyVoucher from './ApplyVoucher.vue';
 
 const toast = useToast();
 const vouchers = ref([]);
@@ -46,7 +47,6 @@ const confirmDeleteVoucher = (editProduct) => {
     deleteVoucherDialog.value = true;
 };
 
-
 const deleteVoucher = () => {
     VoucherService.deleteVoucher(voucher.value, voucher.value.id);
     toast.add({ severity: 'warn', summary: '', detail: 'Xoá thành công', life: 3000 });
@@ -56,8 +56,6 @@ const deleteVoucher = () => {
 const exportCSV = () => {
     dt.value.exportCSV();
 };
-
-
 
 //hàm hiển thị trạng thái
 const getStatusLabel = (trangThai) => {
@@ -90,7 +88,7 @@ const filteredVoucher = computed(() => {
 });
 
 const formatDate = (dateTime) => {
-  return format(new Date(dateTime), 'yyyy/MM/dd');
+    return format(new Date(dateTime), 'yyyy/MM/dd');
 };
 </script>
 
@@ -153,25 +151,21 @@ const formatDate = (dateTime) => {
                     </Column>
                     <Column header="Ngày Bắt Đầu" filterField="date" dataType="date" style="min-width: 10rem">
                         <template #body="{ data }">
-                           
                             {{ formatDate(data.thoiGianBatDau) }}
                         </template>
                         <template #filter="{ filterModel }">
                             <Calendar v-model="filterModel.value" dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" />
                         </template>
-                    </Column> 
-                   
+                    </Column>
+
                     <Column header="Ngày Kết Thúc" filterField="date" dataType="date" style="min-width: 10rem">
                         <template #body="{ data }">
-                           
                             {{ formatDate(data.thoiGianKetThuc) }}
                         </template>
                         <template #filter="{ filterModel }">
                             <Calendar v-model="filterModel.value" dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" />
                         </template>
-                    </Column> 
-
-
+                    </Column>
 
                     <Column field="giamToiDa" header="Giảm Tối Đa" :sortable="true" headerStyle="width:14%; min-width:8rem;">
                         <template #body="slotProps">
@@ -204,6 +198,7 @@ const formatDate = (dateTime) => {
                         <template #body="slotProps">
                             <UpdateVoucher :my-prop="slotProps.data" />
                             <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2" @click="confirmDeleteVoucher(slotProps.data)" />
+                            <ApplyVoucher :my-prop="slotProps.data" />
                         </template>
                     </Column>
                 </DataTable>

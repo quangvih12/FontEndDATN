@@ -35,7 +35,7 @@ const addProduct = async () => {
         user: idUser
     };
         await diaChiService.createDiaChi(form);
-        window.location.reload();
+        // window.location.reload();
         productDialog.value = false;
         toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Thêm địa chỉ thành công', life: 3000 });
         clearForm();

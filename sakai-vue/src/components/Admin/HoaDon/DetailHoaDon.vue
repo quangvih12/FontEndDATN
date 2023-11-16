@@ -25,9 +25,14 @@ const props = defineProps({
 // });
 // mở form
 const editProduct = () => {
+    console.log(props.myProp);
     code.value = 'Hoá đơn: ' + props.myProp.maHD;
     productDialog.value = true;
     loadDataHDCT(props.myProp.idHD);
+    ngayDat.value = props.myProp.ngayTao;
+    ngayThanhToan.value = props.myProp.ngayThanhToan;
+    ngayGiao.value = props.myProp.ngayShip;
+    ngayNhan.value = props.myProp.ngayNhan;
 };
 
 const ngayDat = ref('');
@@ -35,12 +40,7 @@ const ngayThanhToan = ref('');
 const ngayGiao = ref('');
 const ngayNhan = ref('');
 
-onMounted(() => {
-    ngayDat.value = props.myProp.ngayTao;
-    ngayThanhToan.value = props.myProp.ngayThanhToan;
-    ngayGiao.value = props.myProp.ngayShip;
-    ngayNhan.value = props.myProp.ngayNhan;
-});
+onMounted(() => {});
 
 const events = ref([
     { status: 'Ngày đã đặt', date: ngayDat, icon: 'pi pi-wallet', color: '#9C27B0' },
@@ -81,6 +81,22 @@ const exportToPDF = () => {
         pdf.save('hoa-don.pdf');
     });
 };
+const HienLyDoHuy = (value) => {
+    if (parseInt(value) == 0) {
+        return true;
+    } else {
+        return false;
+    }
+};
+
+const HienLyDoHuyDoiTra = (value) => {
+    if (parseInt(value) == 9 || parseInt(value) == 7 || parseInt(value) == 8 || parseInt(value) == 10) {
+        return true;
+    } else {
+        return false;
+    }
+};
+
 const HienDoiTra = (value) => {
     if (parseInt(value) == 7) {
         return true;
@@ -302,10 +318,17 @@ const btnXacNhanHuyGH = () => {
                         <div class="flex">
                             <div class="p-col-6" style="width: 100%">
                                 <div class="row flex">
-                                   
                                     <div class="flex" style="min-width: 200px">
                                         <p>Địa chỉ:</p>
                                         <p style="margin-left: 10px">{{ props.myProp.diaChiCuThe }}, {{ props.myProp.tenPhuongXa }}, {{ props.myProp.tenQuanHuyen }}, {{ props.myProp.tenTinhThanh }}</p>
+                                    </div>
+                                    <div class="flex" style="min-width: 200px" v-if="HienLyDoHuy(props.myProp.trangThai)">
+                                        <p style="margin-top: 3px">Lý do:</p>
+                                        <p style="margin-left: 10px; color: #ff3333; font-weight: bold; font-size: 18px">{{ props.myProp.lyDo }}</p>
+                                    </div>
+                                    <div class="flex" style="min-width: 200px" v-if="HienLyDoHuyDoiTra(props.myProp.trangThai)">
+                                        <p style="margin-top: 3px">Lý do:</p>
+                                        <p style="margin-left: 10px; color: #ff3333; font-weight: bold; font-size: 18px">{{ props.myProp.moTa }}</p>
                                     </div>
                                 </div>
                             </div>

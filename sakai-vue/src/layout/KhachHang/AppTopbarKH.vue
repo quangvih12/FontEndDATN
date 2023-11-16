@@ -83,11 +83,11 @@ const selectedUserId = computed(() => {
 
 const onSettingsClick = (event) => {
     topbarMenuActive.value = false;
-    if (event.item.label === 'Hồ sơ cá nhân' && selectedUserId.value) {
-        router.push(`/thong-tin-ca-nhan/${selectedUserId.value}`);
+    if (event.item.label === 'Hồ sơ cá nhân') {
+        router.push(`/thong-tin-ca-nhan`);
     } else if (event.item.label === 'Lịch sử mua hàng') {
         router.push('/lich-su-sp');
-    } else if (event.item.label === 'Địa chỉ' && selectedUserId.value) {
+    } else if (event.item.label === 'Địa chỉ') {
         router.push(`/dia-chi`);
     } else {
         // Xử lý trường hợp khác nếu cần
