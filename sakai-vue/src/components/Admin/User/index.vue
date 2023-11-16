@@ -2,7 +2,7 @@
 import { FilterMatchMode } from 'primevue/api';
 import { ref, onMounted, onBeforeMount } from 'vue';
 import { useToast } from 'primevue/usetoast';
-import ThemUser from './ThemUser.vue';
+import ThemUser from './ThemAdmin.vue';
 import TatCaVue from './TatCa.vue';
 import NhanVien from './NhanVien.vue';
 import KhachHang from './KhachHang.vue';

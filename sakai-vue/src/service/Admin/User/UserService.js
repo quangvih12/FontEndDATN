@@ -10,26 +10,19 @@ export const userStore = defineStore('user', {
         dataAdmin: [],
         dataNhanVien: [],
         dataUser: [],
+        dataByStatus1: [],
         //nếu đang ở load tất cả thì là 0
-        check: 1
+        check: 1,
     }),
     actions: {
-        async getAllUser() {
+        async fetchDataByStatus(status) {
             this.check = 0;
             try {
-                const response = await axios.get(apiUser + 'getAllUser');
-                this.data = response.data;
-            } catch (error) {
-               
-            }
-        },
-         //load data User theo Role
-         async fetchDataByStatus() {
-            this.check = 1;
-            try {
-                const response = await axios.get(apiUser + 'getAllUserByRole?role=ADMIN' );
-                this.data = response.data;
-                
+                const response = await axios.get(apiUser + 'trang-thai?trangThai=' + status);
+                if (status === 0) {
+                    this.dataByStatus1 = response.data.data;
+                }
+                this.data = response.data.data;
             } catch (error) {
                 console.error('Error fetching users:', error);
             }
@@ -188,6 +181,15 @@ export const userStore = defineStore('user', {
                     }
                 }
             });
+        },
+        async sendMail(form) {
+            try {
+                const response = await axios.post('http://localhost:8080/mail/send', form);
+                return response.data;
+            } catch (error) {
+                console.error('Error sending mail:', error);
+                throw error; // You can handle the error in the component that calls this action
+            }
         },
     }
 });
