@@ -205,7 +205,7 @@ const onToggle = (val) => {
                         {{ slotProps.data.role }}
                     </template>
                 </Column>-->
-                <Column field="diaChi" header="Địa chỉ" headerStyle="width:14%; min-width:10rem;">
+                <!-- <Column field="diaChi" header="Địa chỉ" headerStyle="width:14%; min-width:10rem;">
                     <template #body="slotProps">
                         <div v-for="i in slotProps.data.diaChi" :key="i.id">
                             <div class="col-6" style="width: 100%">
@@ -213,7 +213,7 @@ const onToggle = (val) => {
                             </div>
                         </div>
                     </template>
-                </Column>
+                </Column> -->
                 <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:8%; min-width:5rem;"> </Column>
                 <Column field="trangThai" header="Trạng thái" headerStyle="width:14%; min-width:10rem;">
                     <template #body="slotProps">

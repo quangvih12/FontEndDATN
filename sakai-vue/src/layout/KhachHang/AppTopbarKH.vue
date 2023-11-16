@@ -42,11 +42,11 @@ const selectedUserId = computed(() => {
 
 const onSettingsClick = (event) => {
     topbarMenuActive.value = false;
-    if (event.item.label === 'Hồ sơ cá nhân' && selectedUserId.value) {
-        router.push(`/thong-tin-ca-nhan/${selectedUserId.value}`);
+    if (event.item.label === 'Hồ sơ cá nhân') {
+        router.push(`/thong-tin-ca-nhan`);
     } else if (event.item.label === 'Lịch sử mua hàng') {
         router.push('/lich-su-sp');
-    } else if (event.item.label === 'Địa chỉ' && selectedUserId.value) {
+    } else if (event.item.label === 'Địa chỉ') {
         router.push(`/dia-chi`);
     } else {
         // Xử lý trường hợp khác nếu cần
@@ -137,6 +137,7 @@ const displayKH = async () => {
         selectedCustomer.value = khachHang.value.find((kh) => kh.ten === selectedKH.value.ten);
         const tokens = await tokenService.gentoken(selectedCustomer.value.userName);
         localStorage.setItem('token', tokens);
+        console.log(selectedCustomer.value);
    // }
    let array = JSON.parse(localStorage.getItem('cart'));
    await gioHangService.addToCartWhenLogin(array,tokens);
