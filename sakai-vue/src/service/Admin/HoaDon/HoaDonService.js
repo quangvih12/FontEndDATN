@@ -54,6 +54,7 @@ export const HDStore = defineStore('hoaDon', {
                         this.dataChoXacNhan[index].trangThai = 5;
                         this.dataDangGiao.unshift(response.data);
                         this.dataChoXacNhan.splice(index, 1);
+                        return response.data;
                     }
                 }
             });
@@ -73,7 +74,6 @@ export const HDStore = defineStore('hoaDon', {
                         }
                         // this.dataDangGiao[index].trangThai = 3;
                         this.dataHoanThanh.unshift(response.data);
-                        console.log(response.data);
                         this.dataDangGiao.splice(index, 1);
                     }
                 }
@@ -330,7 +330,6 @@ export const HDStore = defineStore('hoaDon', {
         },
         //search date
         async searchDate(startDate, endDate, cbbValue) {
-            console.log(cbbValue);
             try {
                 const response = await axios.get(apiHD + '/search-date?startDate=' + startDate + '&endDate=' + endDate + '&comboBoxValue=' + cbbValue);
                 this.dataAll = response.data;

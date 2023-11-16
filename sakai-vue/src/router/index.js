@@ -41,8 +41,8 @@ const router = createRouter({
                     component: () => import('@/components/KhachHang/PaymentFailled.vue')
                 },
                 {
-                    path: '/thong-tin-khach-hang/:id',
-                    name: 'thong-tin-khach-hang',
+                    path: '/thong-tin-ca-nhan',
+                    name: 'thong-tin-ca-nhan',
                     component: () => import('@/components/KhachHang/ThongTinKhachHang.vue')
                 },
                 {

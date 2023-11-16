@@ -22,14 +22,19 @@ onMounted(() => {
 const diaChiSelected = ref([]);
 
 const loadData = async () => {
-    await userService.fetchProductById(idUser);
-    dataUser.value = userService.user;
-    ten.value = dataUser.value.ten;
-    email.value = dataUser.value.email;
-    sdt.value = dataUser.value.sdt;
-    ngaySinh.value = dataUser.value.ngaySinh;
-    gioiTinh.value = dataUser.value.gioiTinh.toString();
-    image.value = dataUser.value.anh;
+    const token = localStorage.getItem('token');
+    // console.log(token);
+    if (token && token.length > 0) {
+        await userService.fetchData(token);
+        dataUser.value = userService.data;
+        ten.value = dataUser.value.ten;
+        email.value = dataUser.value.email;
+        sdt.value = dataUser.value.sdt;
+        ngaySinh.value = dataUser.value.ngaySinh;
+        gioiTinh.value = dataUser.value.gioiTinh.toString();
+        image.value = dataUser.value.anh;
+        // console.log(userService.data);
+    }
 };
 
 const schema = yup.object().shape({
@@ -96,7 +101,7 @@ const updateProduct = () => {
         .validate(form)
         .then(() => {
             // Dữ liệu hợp lệ, thực hiện thêm sản phẩm
-            const update = userService.updateUser(idUser, form);
+            const update = userService.updateUser(dataUser.value.id, form);
             productDialog.value = false;
             toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Sửa thành công', life: 3000 });
             reset();
@@ -116,27 +121,27 @@ const updateProduct = () => {
 };
 
 // Hàm chuyển đổi tệp thành dạng Base64
-function convertFileToBase64(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            resolve(reader.result);
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-    });
-}
+// function convertFileToBase64(file) {
+//     return new Promise((resolve, reject) => {
+//         const reader = new FileReader();
+//         reader.onloadend = () => {
+//             resolve(reader.result);
+//         };
+//         reader.onerror = reject;
+//         reader.readAsDataURL(file);
+//     });
+// }
 
-async function onFileInputImage(event) {
+function onFileInputImage(event) {
     const files = event.target.files;
     // Lặp qua từng tệp trong mảng files
     for (const file of files) {
-        // Chuyển đổi ảnh thành Base64
-        const base64Image = await convertFileToBase64(file);
-        // Lưu giá trị Base64 vào localStorage
-        localStorage.setItem('imageBase64', base64Image);
-        // Gán giá trị cho biến image để hiển thị
-        image.value = base64Image;
+        const objectURL = URL.createObjectURL(file);
+        image.value = objectURL;
+        // Gán giá trị cho phần tử có id là 'imagesChinh' (thay đổi id nếu cần)
+        const basePath = 'D:\\imgDATN\\'; // Đường dẫn cố định
+        const fileName = basePath + file.name;
+        image.value = fileName;
     }
 }
 
@@ -144,7 +149,7 @@ async function onFileInputImage(event) {
 
 <template>
     <div class="container">
-        <div class="card" style="width: 1100px">
+        <div class="card" style="width: 1100px; margin-left: 100px">
             <h1 style="color: #e8db72">Hồ sơ của tôi</h1>
             <label for="">Quản lý thông tin hồ sơ để bảo mật tài khoản</label>
             <Divider />
