@@ -93,13 +93,13 @@ export const gioHangStore = defineStore('gioHang', {
                 const index = this.data.findIndex(hoadon => hoadon.idGHCT === idGHCT);
 
                 if (response.data === null) {
-
+                  
                     if (index !== -1) {
-                        console.log(response.value);
                         this.data[index] = response.data;
-                        this.fakedata = 'check';
+                        // this.fakedata = 'check';
                     }
                 } else {
+                    this.fakedata = response.data;
                     await this.getAllGHCT(token);
                   await this.countGHCT(token);
                 }

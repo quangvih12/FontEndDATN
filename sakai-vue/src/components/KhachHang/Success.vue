@@ -27,7 +27,7 @@ const dataHoaDon = ref([]);
 onMounted(async () => {
     const storedFormString = localStorage.getItem('myForm');
     const storedForm = JSON.parse(storedFormString);
-    console.log()
+    localStorage.removeItem('gioHang');
     await checkoutService.checkout(storedForm);
      dataHoaDon.value = checkoutService.checkOut;
  

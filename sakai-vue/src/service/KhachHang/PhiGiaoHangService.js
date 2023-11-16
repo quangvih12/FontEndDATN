@@ -5,17 +5,17 @@ const api = 'http://localhost:8080/api/khach-hang/dia-chi';
 
 export const phiShipStore = defineStore('phiShip', {
     state: () => ({
-        phiShip : 0
+        money : 0
     }),
     actions: {
             //gửi cho giao hàng nhanh
         async phiShip(diaChi) {
             const form = {
-                "from_district_id":1454,
-                "from_ward_code":"21211",
+                "from_district_id":1768,
+                "from_ward_code":"190211",
                 "service_type_id":2,
-                "to_district_id":2264,
-                "to_ward_code":"90816",
+                "to_district_id":diaChi.idQuanHuyen,
+                "to_ward_code": diaChi.idphuongXa,
                 "height":50,
                 "length":20,
                 "weight":200,
@@ -34,11 +34,11 @@ export const phiShipStore = defineStore('phiShip', {
                         }
                     });
                   
-                    this.phiShip = response.data.data.total;
+                    this.money = response.data.data.total;
                 } catch (error) {
                     console.error('Error fetching users:', error);
                 }
 
-        }
+        },
     }
 })

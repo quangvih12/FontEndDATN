@@ -25,7 +25,7 @@ const gotoTrangChu = () => {
 const callback = async (response) => {
     const userData = decodeCredential(response.credential);
     const user = await tokenService.checkGoogle(userData.email, userData.name);
-    const token = await tokenService.gentoken(user.ten);
+    const token = await tokenService.gentoken(user.userName);
     localStorage.setItem('token', token);
     gotoTrangChu();
 };
@@ -40,9 +40,12 @@ const dangNhapa = async () => {
     gotoTrangChu();
 
     // khi dang nhap thanh cong thi add sp gio hang vao db 
-    let array = JSON.parse(localStorage.getItem('cart'));
+    if(localStorage.getItem('cart')){
+        let array = JSON.parse(localStorage.getItem('cart'));
     await gioHangService.addToCartWhenLogin(array, token);
     localStorage.removeItem('cart');
+    }
+   
 };
 
 const logoUrl = computed(() => {

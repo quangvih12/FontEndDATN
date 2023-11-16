@@ -33,6 +33,7 @@ const loadData = async () => {
     if (token.length > 0 || token != null) {
         await useHD.fetchData(token);
         data.value = useHD.dataAll;
+        // console.log(data.value);
     }
 };
 
@@ -169,10 +170,14 @@ const addCart = async (soLuong, idCTSP) => {
     router.push({ name: 'gio-hang' });
 
 };
+const tinhTongTien = (tienShip, tongTien) => {
+    return parseInt(tongTien) + parseInt(tienShip);
+};
 
 </script>
 
 <template>
+      <div style="height: 500px; font-size: 24px;" v-if="!data || data.length === 0"> Chưa có Đơn hàng !</div>
     <div v-for="(hd, index) in data" :key="index">
         <div style="width: 1060px; background: rgb(255, 255, 255); ">
 
@@ -236,7 +241,7 @@ const addCart = async (soLuong, idCTSP) => {
                 <div style="display: flex; width: 100%; background: rgb(255, 255, 255);">
                     <div style="background: rgb(255, 255, 255);width: 30%; height: 100px; margin-top: ;">
                         <h5 style="color: rgb(253, 1, 1);margin-top: 30px;margin-left: -50px; margin-bottom: 20px;">Thành
-                            tiền: <span>{{ formatCurrency(hd.tongTien) }}</span> </h5>
+                            tiền: <span>{{ formatCurrency(tinhTongTien(hd.tongTien,hd.tienShip)) }}</span> </h5>
                     </div>
 
                     <div style="display: flex;justify-content: flex-end; width: 70%;">

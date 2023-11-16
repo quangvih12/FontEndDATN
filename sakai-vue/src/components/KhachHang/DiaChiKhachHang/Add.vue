@@ -19,7 +19,12 @@ const addProductDialog = ref(false);
 const diaChi = ref('');
 const addProduct = async () => {
     submitted.value = true;
-    const form = {
+   
+    if (!selectedTinhThanh.value || !selectedQuanHuyen.value || !selectedPhuongXa.value || !diaChi.value) {
+        toast.add({ severity: 'error', summary: 'Thông báo', detail: 'Vui lòng nhập đầy đủ thông tin', life: 3000 });
+        return;
+    } else {
+        const form = {
         idTinhThanh: selectedTinhThanh.value.ProvinceID,
         tinhThanh: selectedTinhThanh.value.ProvinceName,
         idQuanHuyen: selectedQuanHuyen.value.DistrictID,
@@ -29,10 +34,6 @@ const addProduct = async () => {
         diaChi: diaChi.value,
         user: idUser
     };
-    if (!selectedTinhThanh.value || !selectedQuanHuyen.value || !selectedPhuongXa.value || !diaChi.value) {
-        toast.add({ severity: 'error', summary: 'Thông báo', detail: 'Vui lòng nhập đầy đủ thông tin', life: 3000 });
-        return;
-    } else {
         await diaChiService.createDiaChi(form);
         window.location.reload();
         productDialog.value = false;

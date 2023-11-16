@@ -37,16 +37,15 @@ onMounted(() => {
 const tongTienHang = ref();
 const loadData = async () => {
     dataSP.value = await useHD.findHdctByIdHd(idHD);
-    let sum = 0;
-    for (const key of dataSP.value) {
-        sum += parseInt(key.giaBan);
-    }
-    tongTienHang.value = sum;
+    // let sum = 0;
+    // for (const key of dataSP.value) {
+    //     sum += parseInt(key.giaBan);
+    // }
+    // tongTienHang.value = sum;
 };
 
 const loadDataHD = async () => {
     dataHD.value = await useHD.findHdByIdHd(idHD);
-    // console.log(dataHD.value);
 };
 
 const ngayDat = ref('');
@@ -262,10 +261,10 @@ const addCart = async (soLuong, idCTSP) => {
                         <p>Thành tiền</p>
                     </div>
                     <div class="c2">
-                        <p>{{ formatCurrency(tongTienHang) }}</p>
+                        <p>{{ formatCurrency(dataHD.tongTien) }}</p>
                         <p>{{ formatCurrency(dataHD.tienShip) }}</p>
 
-                        <p style="font-weight: bold; color: red">{{ formatCurrency(tinhTongTien(tongTienHang,
+                        <p style="font-weight: bold; color: red">{{ formatCurrency(tinhTongTien(dataHD.tongTien,
                             dataHD.tienShip)) }}</p>
                     </div>
                 </div>
