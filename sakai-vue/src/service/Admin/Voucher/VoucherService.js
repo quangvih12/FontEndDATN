@@ -1,12 +1,14 @@
-
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
 const apiVoucher = 'http://localhost:8080/api/voucher';
+const apiUserVoucher = 'http://localhost:8080/api/user-voucher';
+const apiUser = 'http://localhost:8080/api/user';
 
 export const voucherStore = defineStore('voucher', {
     state: () => ({
-        data: []
+        data: [],
+        dataUser: []
     }),
     actions: {
         async getVoucher() {
@@ -14,13 +16,23 @@ export const voucherStore = defineStore('voucher', {
             try {
                 const response = await axios.get(apiVoucher + '/getAllVoucher');
                 this.data = response.data;
-            } catch (error) {
-               
-            }
+            } catch (error) {}
+        },
+        async getUserByTongTien(valueCbb) {
+            this.check = 0;
+            try {
+                const response = await axios.get(apiUser + '/get-user-by-tong-tien?cbbValue=' + valueCbb);
+                this.dataUser = response.data;
+            } catch (error) {}
         },
         createVoucher(form) {
             axios.post(apiVoucher + '/add', form).then((response) => {
                 this.data.unshift(response.data.data);
+            });
+        },
+        addUserWithVoucher(form) {
+            axios.post(apiUserVoucher + '/add', form).then((response) => {
+                // this.data.unshift(response.data.data);
             });
         },
         updateVoucher(form, id) {

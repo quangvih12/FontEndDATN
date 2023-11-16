@@ -72,7 +72,7 @@ const deleteKhuyenMai = () => {
 
 initFilters1();
 
-// dùng để lọc khuyến mại theo trạng thái trên CBB 
+// dùng để lọc khuyến mại theo trạng thái trên CBB
 const filteredVoucher = computed(() => {
     if (!selectedStatus.value) {
         return khuyenmais.value; // Trả về dữ liệu ban đầu nếu không có trạng thái nào được chọn
@@ -98,7 +98,6 @@ const getStatusLabel = (trangThai) => {
             return null;
     }
 };
-
 </script>
 <template>
     <div class="grid">
@@ -136,7 +135,7 @@ const getStatusLabel = (trangThai) => {
                 >
                     <template #header>
                         <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-                            <MultiSelect icon="pi pi-plus" placeholder="Select Columns" :modelValue="selectedColumns" :options="columns" optionLabel="header" @update:modelValue="onToggle" display="tag"  />
+                            <MultiSelect icon="pi pi-plus" placeholder="Select Columns" :modelValue="selectedColumns" :options="columns" optionLabel="header" @update:modelValue="onToggle" display="tag" />
                             <Dropdown v-model="selectedStatus" :options="statuses" :optionLabel="(option) => option.label" placeholder="Trạng thái" class="p-column-filter" style="min-width: 12rem" :showClear="true">
                                 <template #option="slotProps">
                                     <Tag :value="getStatusLabel(slotProps.option.value).text" :severity="getStatusLabel(slotProps.option.value).severity" />
@@ -152,7 +151,6 @@ const getStatusLabel = (trangThai) => {
                     <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
 
                     <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column>
-                    
 
                     <Column field="trangThai" header="Trạng Thái" sortable style="min-width: 12rem">
                         <template #body="slotProps">
