@@ -8,6 +8,9 @@ import { checkoutStore } from '@/service/KhachHang/HoaDonService.js';
 import { voucherStore } from '@/service/KhachHang/KHVoucherService.js';
 import tokenService from '@/service/Authentication/TokenService.js';
 import userKHService from '@/service/KhachHang/UserService.js';
+import AddDiaChi from '@/components/KhachHang/DiaChiKhachHang/Add.vue';
+import UpdateDiaChi from '@/components/KhachHang/DiaChiKhachHang/Update.vue';
+import { vnpayStore } from '@/service/KhachHang/PaymentService.js';
 import { useToast } from 'primevue/usetoast';
 import { format } from 'date-fns';
 // import {userStore} from '@/service/KhachHang/UserService.js';
@@ -19,9 +22,11 @@ const store = useCartStore();
 const voucherService = voucherStore();
 const diaChiService = useDiaChi();
 const phiGiaoHangService = phiShipStore();
+const vnpayService = vnpayStore();
 const selectedVoucher = ref([]);
 const giamGia = ref();
 const tongThanhToan = ref();
+const tienSauGiam = ref();
 // const userKHService = userStore();
 const selectedCity = ref();
 const diaChi = ref();
@@ -44,13 +49,11 @@ const selectedProducts = store.selectedProducts;
 const dataGHCT = ref([]);
 const loaddataGHCT = () => {
     dataGHCT.value = selectedProducts;
-    
 };
 onMounted(async () => {
     await loadUser();
     loaddataGHCT();
     loadDataVoucher();
-   
 });
 
 const tinhTongTienChoTungSanPham = (soLuong, giaSauGiam, giaBan) => {
@@ -73,7 +76,7 @@ const calculateTotalAmount = () => {
 // Theo dõi thay đổi trong dataGHCT và tính tổng lại khi có sự thay đổi
 watchEffect(() => {
     calculateTotalAmount();
-    tongThanhToan.value = tongTien.value+ phiShip.value;
+    tongThanhToan.value = tongTien.value + phiShip.value;
 });
 
 const formatCurrency = (value) => {
@@ -107,15 +110,13 @@ const saveDiaChi = () => {
 };
 
 const dataHoaDon = ref([]);
-
-
+const stringVNpay = ref();
 const thanhtoan = async () => {
     const token = localStorage.getItem('token');
     const userName = await tokenService.getUserNameByToken(token);
 
     const user = await userKHService.getUserByUsername(userName);
-    
-  
+
     const forms = dataGHCT.value.map((item) => {
         return {
             idCTSP: item.idCTSP,
@@ -128,13 +129,43 @@ const thanhtoan = async () => {
         tienShip: phiShip.value,
         idPayMethod: parseInt(phuongThucThanhToan.value),
         idUser: user.id,
+        tienSauGiam: tienSauGiam.value,
         listHDCT: forms
     };
 
-    await checkoutService.checkout(form);
-    dataHoaDon.value = checkoutService.checkOut;
-    toast.add({ severity: 'success', summary: '', detail: 'Thanh toán thành công', life: 3000 });
-    router.push('/gio-hang');
+    const formString = JSON.stringify(form);
+
+   
+    if (parseInt(phuongThucThanhToan.value) == 1) {
+        const data = {
+            vnp_Ammount: tongThanhToan.value,
+            vnp_OrderInfo: 'Thanh toan hoa don',
+            vnp_OrderType: 'Thanh toan hoa don',
+            vnp_TxnRef: '123456',
+            hdct: forms
+        };
+       
+        localStorage.setItem('myForm', formString);
+
+        await vnpayService.thanhToanVnPay(data);
+        stringVNpay.value = vnpayService.vnpay;
+
+        // Kiểm tra xem API có trả về URL redirect hay không
+        if (stringVNpay.value) {
+            // Chuyển hướng người dùng đến trang thanh toán của VnPay
+          
+            window.location.href = stringVNpay.value;
+        } else {
+            console.log('Failed to get redirect URL from VnPay API');
+        }
+
+        // const idAccount = sessionStorage.getItem('idAccount');
+    }
+
+    // await checkoutService.checkout(form);
+    // dataHoaDon.value = checkoutService.checkOut;
+    // toast.add({ severity: 'success', summary: '', detail: 'Thanh toán thành công', life: 3000 });
+    // router.push('/gio-hang');
 };
 
 const selectedVoucherDialog = ref(false);
@@ -149,7 +180,7 @@ const loadDataVoucher = async () => {
     const user = await userKHService.getUserByUsername(userName);
     await voucherService.getListVoucher(user.id);
     dataVoucher.value = voucherService.data;
-   // console.log(dataVoucher.value);
+    // console.log(dataVoucher.value);
 };
 
 const formatDate = (dateTime) => {
@@ -157,17 +188,22 @@ const formatDate = (dateTime) => {
 };
 
 const applyVoucher = () => {
-
     giamGia.value = selectedVoucher.value.giamToiDa;
-    tongThanhToan.value = tongTien.value+phiShip.value-giamGia.value;
+    tongThanhToan.value = tongTien.value + phiShip.value - giamGia.value;
+
+    if (selectedVoucher.value == null) {
+        tienSauGiam.value = tongThanhToan.value;
+      
+    } else {
+        tienSauGiam.value = tongThanhToan.value - giamGia.value;
+    }
     toast.add({ severity: 'success', summary: '', detail: 'Áp dụng voucher thành công', life: 3000 });
     selectedVoucherDialog.value = false;
-
 };
 
 const hideDialog = () => {
     selectedVoucherDialog.value = false;
-}
+};
 </script>
 <template>
     <div class="card">
@@ -181,28 +217,60 @@ const hideDialog = () => {
                         <h4 style="color: red"><i class="pi pi-user" style="margin-right: 15px"></i> Địa chỉ nhận hàng</h4>
 
                         <p style="font-weight: bold">{{ diaChi?.user?.ten }} - {{ diaChi?.user?.sdt }}</p>
-                        <p>
+                        <p style="margin-left: 5px">
                             {{ diaChi?.diaChi }}, {{ diaChi?.tenphuongXa }}, {{ diaChi?.tenQuanHuyen }}, {{ diaChi?.tenTinhThanh }}
 
-                            <label style="color: blue; margin-left: 50px; font-size: 15px; font-weight: bold" @click="editDiaChi">Thay đổi</label>
+                    
+
+                            <UpdateDiaChi :my-prop="diaChi"></UpdateDiaChi>
+
+                            <!-- <label style="color: blue; margin-left: 50px; font-size: 15px; font-weight: bold" @click="editDiaChi">Thay đổi</label> -->
                         </p>
 
-                        <Dialog v-model:visible="diaChiDialog" modal header="Header" :style="{ width: '50rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
-                            <template #header>
-                                <div class="inline-flex align-items-center justify-content-center gap-2">
-                                    <Avatar image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png" shape="circle" />
-                                    <span class="font-bold white-space-nowrap">Amy Elsner</span>
+                        <!-- <Dialog v-model:visible="diaChiDialog" :style="{ width: '600px' }" header="Cập nhật" :modal="true" class="p-fluid">
+                            <div class="card">
+                                <form @submit="onSubmit">
+                                    <div class="p-fluid formgrid grid">
+                                        <div class="field col-12" style="margin-bottom: 30px">
+                                            <label for="tinhThanh">Tỉnh/Thành phố</label>
+                                            <Dropdown v-model="selectedTinhThanh" :options="tinhThanhList" optionLabel="ProvinceName" placeholder="Chọn tỉnh/thành phố" @change="onTinhThanhChange"></Dropdown>
+                                        </div>
+
+                                       Quận/Huyện combobox -->
+                                        <!-- <div class="field col-12" style="margin-bottom: 30px">
+                                            <label for="quanHuyen">Quận/Huyện</label>
+                                            <Dropdown v-model="selectedQuanHuyen" :options="quanHuyenList" optionLabel="DistrictName" placeholder="Chọn quận/huyện" @change="onQuanHuyenChange"></Dropdown>
+                                        </div> -->
+
+                                        <!-- Phường/Xã combobox -->
+                                        <!-- <div class="field col-12" style="margin-bottom: 30px">
+                                            <label for="phuongXa">Phường/Xã</label>
+                                            <Dropdown v-model="selectedPhuongXa" :options="phuongXaList" optionLabel="WardName" placeholder="Chọn phường/xã"></Dropdown>
+                                        </div>
+                                        <div class="field col-12" style="margin-bottom: 30px">
+                                            <label for="address">Địa chỉ cụ thể</label>
+                                            <InputText id="diaChi" rows="4" v-model.trim="diaChi" :class="{ 'p-invalid': MoTaSacError }" required="false" autofocus></InputText>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <Dialog v-model:visible="updateProductDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
+                                <div class="flex align-items-center justify-content-center">
+                                    <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+                                    <span v-if="product">Bạn có chắc chắn muốn sửa không ?</span>
                                 </div>
-                            </template>
-                            <p class="m-0">
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-                                commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim
-                                id est laborum.
-                            </p>
+                                <template #footer>
+                                    <Button label="No" icon="pi pi-times" class="p-button-text" @click="updateProductDialog = false" />
+                                    <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="updateProduct" />
+                                </template>
+                            </Dialog>
                             <template #footer>
                                 <Button label="Xác nhận" icon="pi pi-check" @click="saveDiaChi" autofocus />
                             </template>
-                        </Dialog>
+                        </Dialog> --> 
+                        <AddDiaChi></AddDiaChi>
+
+                        <!-- <Button label="Thêm mới địa chỉ" icon="pi pi-plus" class="p-button-success mr-2" @click="openNew" /> -->
 
                         <Textarea v-model="value" rows="4" cols="87" style="margin-top: 25px" placeholder="Ghi chú về đơn hàng, ví dụ: thời gian hay địa điểm giao hàng chi tiết hơn" />
                     </div>
@@ -360,8 +428,6 @@ const hideDialog = () => {
                                     <h6 style="height: 20px; width: 80px">{{ formatCurrency(giamGia) }} <span></span></h6>
                                 </div>
                             </div>
-
-
 
                             <div class="flex">
                                 <div class="p-col-6">

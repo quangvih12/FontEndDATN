@@ -73,6 +73,7 @@ const openNew = () => {
     product.value = {};
     submitted.value = false;
     productDialog.value = true;
+    images.value = 'https://cdn-icons-png.flaticon.com/512/2956/2956744.png';
 };
 
 //đóng form
@@ -145,33 +146,34 @@ const onError = (error) => {
 };
 
 // Hàm chuyển đổi tệp thành dạng Base64
-function convertFileToBase64(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            resolve(reader.result);
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-    });
-}
+// function convertFileToBase64(file) {
+//     return new Promise((resolve, reject) => {
+//         const reader = new FileReader();
+//         reader.onloadend = () => {
+//             resolve(reader.result);
+//         };
+//         reader.onerror = reject;
+//         reader.readAsDataURL(file);
+//     });
+// }
 
-async function onFileInputImage(event) {
+const images = ref(null);
+function onFileInputImage(event) {
     const files = event.target.files;
     // Lặp qua từng tệp trong mảng files
     for (const file of files) {
-        // Chuyển đổi ảnh thành Base64
-        const base64Image = await convertFileToBase64(file);
-        // Lưu giá trị Base64 vào localStorage
-        localStorage.setItem('imageBase64', base64Image);
-        // Gán giá trị cho biến image để hiển thị
-        image.value = base64Image;
+        const objectURL = URL.createObjectURL(file);
+        images.value = objectURL;
+        // Gán giá trị cho phần tử có id là 'imagesChinh' (thay đổi id nếu cần)
+        const basePath = 'D:\\imgDATN\\'; // Đường dẫn cố định
+        const fileName = basePath + file.name;
+        image.value = fileName;
     }
 }
 </script>
 <template>
     <Button label="New" icon="pi pi-plus" class="p-button-success mr-2" @click="openNew" />
-    <Dialog v-model:visible="productDialog" :style="{ width: '800px' }" header="Thêm user" :modal="true" class="p-fluid">
+    <Dialog v-model:visible="productDialog" :style="{ width: '800px' }" header="Thêm Admin" :modal="true" class="p-fluid">
         <div class="card">
             <!-- <Button label="Toggle Camera" icon="pi pi-camera" class="p-button-success" @click="toggleCamera" /> -->
             <div class="flex">
@@ -239,10 +241,10 @@ async function onFileInputImage(event) {
                     </div>
                     <div style="display: block; margin-top: 100px">
                         <div class="t" style="border: 1px solid black; border-radius: 10px; width: 200px; height: 180px; margin-top: -60px">
-                            <img :src="image" alt="image" style="width: 180px; height: 170px; top: 50%; left: 50%; transform: translate(4%, 2%)" />
+                            <img :src="images" alt="images" style="width: 180px; height: 170px; top: 50%; left: 50%; transform: translate(4%, 2%)" />
                         </div>
                         <div class="buton" style="margin-top: 10px">
-                            <FileUpload mode="basic" name="demo[]" accept="image/*" :maxFileSize="1000000" @input="onFileInputImage" style="display: flex" />
+                            <FileUpload mode="basic" name="demo[]" accept="image/*" :maxFileSize="1000000" @input="onFileInputImage" style="display: flex; width: 200px; margin-right: 5px" />
                         </div>
                         <small class="p-error">{{ imageError }}</small>
                     </div>
