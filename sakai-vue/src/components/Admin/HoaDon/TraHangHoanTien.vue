@@ -5,9 +5,9 @@ import CustomerService from '@/service/CustomerService';
 import ProductService from '@/service/ProductService';
 import { ref, onBeforeMount, onMounted } from 'vue';
 import DetailHoaDon from './DetailHoaDon.vue';
-import { DoiTraStore } from '../../../service/Admin/HoaDon/DoiTra';
+import { HDStore } from '../../../service/Admin/HoaDon/HoaDonService';
 
-const useDoiTra = DoiTraStore();
+const useHD = HDStore();
 const customer1 = ref(null);
 const customer2 = ref(null);
 const customer3 = ref(null);
@@ -18,8 +18,8 @@ const products = ref(null);
 const data = ref([]);
 
 const loadData = async () => {
-    // await useDoiTra.fetchData(7);
-    data.value = useDoiTra.dataHoanTraHoanTien;
+    await useHD.fetchDataByStatus(7);
+    data.value = useHD.dataHoanTraHoanTien;
 };
 //chạy cái hiện data luôn
 onMounted(() => {
@@ -47,13 +47,10 @@ const hienThiTrangThai = (trangThai) => {
 };
 
 const columns = ref([
-    { field: 'maHD', header: 'Mã hoá đơn' },
     { field: 'nguoiTao', header: 'Người tạo' },
     { field: 'ngayTao', header: 'Ngày tạo' },
     { field: 'ngaySua', header: 'Ngày sửa' },
-    { field: 'tenNguoiNhan', header: 'Tên người nhận' },
     { field: 'tienShip', header: 'Tiền ship' },
-    { field: 'tongTien', header: 'Tổng tiền' },
     { field: 'tienSauKhiGiam', header: 'Tiền sau giảm' },
     { field: 'tenPTTT', header: 'Phương thức thanh toán' },
     { field: 'ngayThanhToan', header: 'Ngày thanh toán' },
@@ -74,7 +71,7 @@ const searchDate = async () => {
     }
 };
 
-const selectedColumns = ref(columns.value);
+const selectedColumns = ref(null);
 
 const onToggle = (val) => {
     selectedColumns.value = columns.value.filter((col) => val.includes(col));
@@ -170,55 +167,25 @@ const tinhThanhTien = (soLuong, donGia) => {
                 {{ slotProps.data.maHD }}
             </template>
         </Column>
-        <Column field="tenSP" header="Tên sản phẩm" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+        <Column field="tenNguoiNhan" header="Người nhận" :sortable="true" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
-                <span class="p-column-title">tenSPdonGia</span>
-                {{ slotProps.data.tenSP }}
+                <span class="p-column-title">tenNguoiNhan</span>
+                {{ slotProps.data.tenNguoiNhan }}
             </template>
         </Column>
-        <Column field="mauSac" header="Màu sắc" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+        <Column field="tongTien" header="Tổng tiền" :sortable="true" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
-                <span class="p-column-title">mauSac</span>
-                {{ slotProps.data.mauSac }}
+                <span class="p-column-title">tongTien</span>
+                {{ formatCurrency(slotProps.data.tongTien) }}
             </template>
         </Column>
-        <Column field="size" header="Size" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">size</span>
-                {{ slotProps.data.size }}
-            </template>
-        </Column>
-        <Column field="donGia" header="Đơn giá" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">donGia</span>
-                {{ slotProps.data.donGia }}
-            </template>
-        </Column>
-        <Column field="soLuong" header="Số lượng" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">soLuong</span>
-                {{ slotProps.data.soLuong }}
-            </template>
-        </Column>
-        <Column field="thanhTien" header="Thành tiền" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">thanhTien</span>
-                {{ tinhThanhTien(slotProps.data.soLuong, slotProps.data.donGia) }}
-            </template>
-        </Column>
-        <Column field="lyDo" header="Lý do" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">lyDo</span>
-                {{ slotProps.data.lyDo }}
-            </template>
-        </Column>
-        <!-- <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column>
         <Column field="diaChi" header="Địa chỉ" :sortable="false" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
                 <span class="p-column-title">diaChi</span>
                 {{ slotProps.data.diaChiCuThe }}, {{ slotProps.data.tenPhuongXa }}, {{ slotProps.data.tenQuanHuyen }}, {{ slotProps.data.tenTinhThanh }}
             </template>
-        </Column> -->
+        </Column>
+        <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column>
         <Column field="trangThai" header="Trạng thái" :sortable="false" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
                 <span class="p-column-title">trangThai</span>
@@ -228,8 +195,8 @@ const tinhThanhTien = (soLuong, donGia) => {
         <Column header="Hành động" headerStyle="min-width:10rem;">
             <template #body="slotProps">
                 <DetailHoaDon :my-prop="slotProps.data"></DetailHoaDon>
-                <Button label="Xác nhận" class="p-button-outlined p-button-info mr-2 mb-2" @click="btnXacNhan(slotProps.data.idHD)" />
-                <Button label="Hủy" class="p-button-outlined p-button-info mr-2 mb-2" />
+                <!-- <Button label="Xác nhận" class="p-button-outlined p-button-info mr-2 mb-2" @click="btnXacNhan(slotProps.data.idHD)" />
+                <Button label="Hủy" class="p-button-outlined p-button-info mr-2 mb-2" /> -->
             </template>
         </Column>
     </DataTable>

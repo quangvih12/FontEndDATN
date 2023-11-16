@@ -266,7 +266,7 @@ const formatDate = (value) => {
             <template #body="slotProps">
                 <DetailHoaDonChoXacNhan :my-prop="slotProps.data"></DetailHoaDonChoXacNhan>
                 <!-- <Button label="Nhận" class="p-button-outlined p-button-info mr-2 mb-2" @click="confirmAddProduct(slotProps.data.idHD)" /> -->
-                <Button label="Hủy" class="p-button-outlined p-button-info mr-2 mb-2" @click="showDialogLyDo(slotProps.data.idHD)" />
+                <!-- <Button label="Hủy" class="p-button-outlined p-button-info mr-2 mb-2" @click="showDialogLyDo(slotProps.data.idHD)" /> -->
             </template>
         </Column>
     </DataTable>

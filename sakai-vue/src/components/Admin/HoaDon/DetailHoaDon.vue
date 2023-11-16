@@ -1,15 +1,19 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
+import { useForm, useField } from 'vee-validate';
 import Divider from 'primevue/divider';
 import { da } from 'date-fns/locale';
 import { HDStore } from '../../../service/Admin/HoaDon/HoaDonService';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { useToast } from 'primevue/usetoast';
 
+const toast = useToast();
 const useHD = HDStore();
 const productDialog = ref(false);
 const code = ref('');
 const dataHDCT = ref([]);
+const idHD = ref(null);
 
 //nhận dữ liệu từ cha
 const props = defineProps({
@@ -77,10 +81,175 @@ const exportToPDF = () => {
         pdf.save('hoa-don.pdf');
     });
 };
+const HienDoiTra = (value) => {
+    if (parseInt(value) == 7) {
+        return true;
+    } else {
+        return false;
+    }
+};
+
+const HienXNDoiTra = (value) => {
+    if (parseInt(value) == 8) {
+        return true;
+    } else {
+        return false;
+    }
+};
+
+const HienXuatHoaDon = (value) => {
+    if (parseInt(value) == 3 || parseInt(value) == 10) {
+        return true;
+    } else {
+        return false;
+    }
+};
+
+const HienDangGiao = (value) => {
+    if (parseInt(value) == 5) {
+        return true;
+    } else {
+        return false;
+    }
+};
+
+const HienMaGHN = (value) => {
+    if (parseInt(value) == 5 || parseInt(value) == 3) {
+        return true;
+    } else {
+        return false;
+    }
+};
+
+// màn đổi trả
+//show dialog lý do đổi trả
+const lyDoDialogDoiTra = ref(false);
+// confirm xác nhận đổi trả
+const addProductDialogDoiTra = ref(false);
+// confirm huy
+const huyDialogDoiTra = ref(false);
+
+//hiện dialog lý do đổi trả
+const showDialogLyDoDoiTra = (id) => {
+    idHD.value = id;
+    lyDoDialogDoiTra.value = true;
+};
+
+//hiện confirm đổi trả
+const confirmAddProductDoiTra = (id) => {
+    idHD.value = id;
+    addProductDialogDoiTra.value = true;
+};
+
+//hiện confirm huy đổi trả
+const confirmHuyDoiTra = () => {
+    huyDialogDoiTra.value = true;
+};
+const { value: lyDoDoiTra, errorMessage: LyDoDoiTraError } = useField('lyDo');
+const btnXacNhanHuyDoiTra = () => {
+    if (lyDoDoiTra.value == null || lyDoDoiTra.value.length <= 0) {
+        toast.add({ severity: 'error', summary: 'Thông báo', detail: 'Lý do không được trống', life: 3000 });
+        lyDoDoiTra.value = '';
+        huyDialogDoiTra.value = false;
+    } else {
+        useHD.huyHoaDonDoiTra(idHD.value, lyDoDoiTra.value, 7);
+        toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Huỷ thành công', life: 3000 });
+        lyDoDoiTra.value = '';
+        huyDialogDoiTra.value = false;
+        lyDoDialogDoiTra.value = false;
+        productDialog.value = false;
+    }
+};
+const btnXacNhanDoiTra = () => {
+    useHD.traHang(idHD.value);
+    toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Xác nhận thành công', life: 3000 });
+    addProductDialogDoiTra.value = false;
+    productDialog.value = false;
+};
+
+// màn xác nhận đổi trả
+//show dialog lý do đổi trả
+const lyDoDialogXNDoiTra = ref(false);
+// confirm xác nhận đổi trả
+const addProductDialogXNDoiTra = ref(false);
+// confirm huy
+const huyDialogXNDoiTra = ref(false);
+
+//hiện dialog lý do đổi trả
+const showDialogLyDoXNDoiTra = (id) => {
+    idHD.value = id;
+    lyDoDialogXNDoiTra.value = true;
+};
+
+//hiện confirm đổi trả
+const confirmAddProductXNDoiTra = (id) => {
+    idHD.value = id;
+    addProductDialogXNDoiTra.value = true;
+};
+
+//hiện confirm huy đổi trả
+const confirmHuyXNDoiTra = () => {
+    huyDialogXNDoiTra.value = true;
+};
+const { value: lyDoXNDoiTra, errorMessage: LyDoXNDoiTraError } = useField('lyDo');
+const btnXacNhanHuyXNDoiTra = () => {
+    if (lyDoXNDoiTra.value == null || lyDoXNDoiTra.value.length <= 0) {
+        toast.add({ severity: 'error', summary: 'Thông báo', detail: 'Lý do không được trống', life: 3000 });
+        lyDoXNDoiTra.value = '';
+        huyDialogXNDoiTra.value = false;
+    } else {
+        useHD.huyHoaDonDoiTra(idHD.value, lyDoXNDoiTra.value, 8);
+        toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Huỷ thành công', life: 3000 });
+        lyDoXNDoiTra.value = '';
+        huyDialogXNDoiTra.value = false;
+        lyDoDialogXNDoiTra.value = false;
+        productDialog.value = false;
+    }
+};
+const btnXacNhanXNDoiTra = () => {
+    useHD.hoanThanhDoiTra(idHD.value);
+    toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Xác nhận thành công', life: 3000 });
+    addProductDialogXNDoiTra.value = false;
+    productDialog.value = false;
+};
+
+//Màn giao hàng
+// confirm xác nhận
+const addProductDialogGH = ref(false);
+
+// confirm huy
+const huyDialogGH = ref(false);
+
+//hiện confirm
+const confirmAddProductGH = (id) => {
+    idHD.value = id;
+    addProductDialogGH.value = true;
+};
+
+//hiện confirm huy
+const confirmHuyGH = (id) => {
+    huyDialogGH.value = true;
+    idHD.value = id;
+};
+
+const btnXacNhanGH = () => {
+    useHD.hoanThanh(idHD.value);
+    toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Xác nhận thành công', life: 3000 });
+    addProductDialogGH.value = false;
+    productDialog.value = false;
+};
+
+const btnXacNhanHuyGH = () => {
+    useHD.huyHoaDon(idHD.value, 'Người dùng không nhận hàng', 5);
+    toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Xác nhận giao thất bại thành công', life: 3000 });
+    huyDialogGH.value = false;
+    productDialog.value = false;
+};
 </script>
 <template>
     <Button label="Xem" class="p-button-outlined p-button-info mr-2 mb-2" @click="editProduct()" />
     <Dialog v-model:visible="productDialog" :style="{ width: '1020px' }" :header="code" :modal="true" class="p-fluid">
+        <Toast />
         <div class="flex">
             <div class="p-col-12" style="text-align: center">
                 <div class="bills-col">
@@ -133,9 +302,10 @@ const exportToPDF = () => {
                         <div class="flex">
                             <div class="p-col-6" style="width: 100%">
                                 <div class="row flex">
+                                   
                                     <div class="flex" style="min-width: 200px">
                                         <p>Địa chỉ:</p>
-                                        <p>{{ props.myProp.diaChiCuThe }}, {{ props.myProp.tenPhuongXa }}, {{ props.myProp.tenQuanHuyen }}, {{ props.myProp.tenTinhThanh }}</p>
+                                        <p style="margin-left: 10px">{{ props.myProp.diaChiCuThe }}, {{ props.myProp.tenPhuongXa }}, {{ props.myProp.tenQuanHuyen }}, {{ props.myProp.tenTinhThanh }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -149,13 +319,140 @@ const exportToPDF = () => {
                                 </div>
                             </div>
                         </div>
-                        <hr />
-                        <label>Chúc quý khách vui vẻ! Hẹn gặp lại!</label>
+                        <label v-if="HienXuatHoaDon(props.myProp.trangThai)">Chúc quý khách vui vẻ! Hẹn gặp lại!</label>
                     </div>
-                    <Button label="Xuất hóa đơn" severity="danger" @click="exportToPDF" />
+                    <!-- đổi trả -->
+                    <div class="flex" v-if="HienDoiTra(props.myProp.trangThai)">
+                        <div class="p-col-6" style="width: 100%">
+                            <Button label="Huỷ" class="p-button-outlined p-button-info mr-2 mb-2" severity="help" @click="showDialogLyDoDoiTra(props.myProp.idHD)" style="width: 400px" />
+                        </div>
+                        <div class="p-col-6" style="width: 100%">
+                            <Button label="Xác nhận" severity="danger" @click="confirmAddProductDoiTra(props.myProp.idHD)" style="width: 400px" />
+                        </div>
+                    </div>
+                    <!--Xác nhận đổi trả -->
+                    <div class="flex" v-if="HienXNDoiTra(props.myProp.trangThai)">
+                        <div class="p-col-6" style="width: 100%">
+                            <Button label="Huỷ" class="p-button-outlined p-button-info mr-2 mb-2" severity="help" @click="showDialogLyDoXNDoiTra(props.myProp.idHD)" style="width: 400px" />
+                        </div>
+                        <div class="p-col-6" style="width: 100%">
+                            <Button label="Xác nhận" severity="danger" @click="confirmAddProductXNDoiTra(props.myProp.idHD)" style="width: 400px" />
+                        </div>
+                    </div>
+                    <!--Giao hàng -->
+                    <div class="flex" v-if="HienDangGiao(props.myProp.trangThai)">
+                        <div class="p-col-6" style="width: 100%">
+                            <Button label="Thất bại" class="p-button-outlined p-button-info mr-2 mb-2" @click="confirmHuyGH(props.myProp.idHD)" style="width: 400px" />
+                        </div>
+                        <div class="p-col-6" style="width: 100%">
+                            <Button label="Hoàn thành" severity="danger" @click="confirmAddProductGH(props.myProp.idHD)" style="width: 400px" />
+                        </div>
+                    </div>
+                    <Button label="Xuất hóa đơn" severity="danger" @click="exportToPDF" v-if="HienXuatHoaDon(props.myProp.trangThai)" />
                 </div>
             </div>
         </div>
+    </Dialog>
+    <!-- đổi trả -->
+    <Dialog v-model:visible="addProductDialogDoiTra" :style="{ width: '450px' }" header="Confirm" :modal="true">
+        <div class="flex align-items-center justify-content-center">
+            <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+            <span>Bạn có chắc chắn muốn xác nhận không ?</span>
+        </div>
+        <template #footer>
+            <Button label="No" icon="pi pi-times" class="p-button-text" @click="addProductDialogDoiTra = false" />
+            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhanDoiTra()" />
+        </template>
+    </Dialog>
+    <Dialog v-model:visible="lyDoDialogDoiTra" :style="{ width: '450px' }" header="Huỷ hoá đơn" :modal="true">
+        <div class="card">
+            <form @submit="onSubmit">
+                <div class="p-fluid formgrid grid">
+                    <div class="field col-12" style="margin-bottom: 30px">
+                        <label for="address">Lý do</label>
+                        <Textarea id="lyDo" rows="4" v-model.trim="lyDoDoiTra" :class="{ 'p-invalid': LyDoDoiTraError }" required="true" autofocus></Textarea>
+                        <small class="p-error">{{ LyDoDoiTraError }}</small>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <template #footer>
+            <Button label="No" icon="pi pi-times" class="p-button-text" @click="lyDoDialogDoiTra = false" />
+            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="confirmHuyDoiTra" />
+        </template>
+    </Dialog>
+    <!-- comfirm huỷ -->
+    <Dialog v-model:visible="huyDialogDoiTra" :style="{ width: '450px' }" header="Confirm" :modal="true">
+        <div class="flex align-items-center justify-content-center">
+            <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+            <span>Bạn có chắc chắn muốn huỷ không ?</span>
+        </div>
+        <template #footer>
+            <Button label="No" icon="pi pi-times" class="p-button-text" @click="huyDialogDoiTra = false" />
+            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhanHuyDoiTra()" />
+        </template>
+    </Dialog>
+
+    <!-- xác nhận đổi trả -->
+    <Dialog v-model:visible="addProductDialogXNDoiTra" :style="{ width: '450px' }" header="Confirm" :modal="true">
+        <div class="flex align-items-center justify-content-center">
+            <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+            <span>Bạn có chắc chắn muốn xác nhận không ?</span>
+        </div>
+        <template #footer>
+            <Button label="No" icon="pi pi-times" class="p-button-text" @click="addProductDialogXNDoiTra = false" />
+            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhanXNDoiTra()" />
+        </template>
+    </Dialog>
+    <Dialog v-model:visible="lyDoDialogXNDoiTra" :style="{ width: '450px' }" header="Huỷ hoá đơn" :modal="true">
+        <div class="card">
+            <form @submit="onSubmit">
+                <div class="p-fluid formgrid grid">
+                    <div class="field col-12" style="margin-bottom: 30px">
+                        <label for="address">Lý do</label>
+                        <Textarea id="lyDo" rows="4" v-model.trim="lyDoXNDoiTra" :class="{ 'p-invalid': LyDoXNDoiTraError }" required="true" autofocus></Textarea>
+                        <small class="p-error">{{ LyDoXNDoiTraError }}</small>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <template #footer>
+            <Button label="No" icon="pi pi-times" class="p-button-text" @click="lyDoDialogXNDoiTra = false" />
+            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="confirmHuyXNDoiTra" />
+        </template>
+    </Dialog>
+    <!-- comfirm huỷ -->
+    <Dialog v-model:visible="huyDialogXNDoiTra" :style="{ width: '450px' }" header="Confirm" :modal="true">
+        <div class="flex align-items-center justify-content-center">
+            <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+            <span>Bạn có chắc chắn muốn huỷ không ?</span>
+        </div>
+        <template #footer>
+            <Button label="No" icon="pi pi-times" class="p-button-text" @click="huyDialogXNDoiTra = false" />
+            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhanHuyXNDoiTra()" />
+        </template>
+    </Dialog>
+    <!-- màn giao hàng -->
+    <Dialog v-model:visible="addProductDialogGH" :style="{ width: '450px' }" header="Confirm" :modal="true">
+        <div class="flex align-items-center justify-content-center">
+            <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+            <span>Bạn có chắc chắn muốn hoàn thành không ?</span>
+        </div>
+        <template #footer>
+            <Button label="No" icon="pi pi-times" class="p-button-text" @click="addProductDialogGH = false" />
+            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhanGH()" />
+        </template>
+    </Dialog>
+    <!-- comfirm huỷ -->
+    <Dialog v-model:visible="huyDialogGH" :style="{ width: '450px' }" header="Confirm" :modal="true">
+        <div class="flex align-items-center justify-content-center">
+            <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+            <span>Bạn có chắc chắn đơn hàng đã giao thất bại không ?</span>
+        </div>
+        <template #footer>
+            <Button label="No" icon="pi pi-times" class="p-button-text" @click="huyDialogGH = false" />
+            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhanHuyGH()" />
+        </template>
     </Dialog>
 </template>
 

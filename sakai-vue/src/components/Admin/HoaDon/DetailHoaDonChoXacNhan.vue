@@ -2,6 +2,7 @@
 import { ref, onMounted, watch } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import Divider from 'primevue/divider';
+import { useForm, useField } from 'vee-validate';
 import { da } from 'date-fns/locale';
 import { HDStore } from '../../../service/Admin/HoaDon/HoaDonService';
 import jsPDF from 'jspdf';
@@ -149,6 +150,36 @@ const exportToPDF = () => {
         pdf.save('hoa-don.pdf');
     });
 };
+
+//show dialog lý do
+const lyDoDialog = ref(false);
+// confirm huy
+const huyDialog = ref(false);
+//hiện dialog lý do
+const showDialogLyDo = (id) => {
+    idHD.value = id;
+    lyDoDialog.value = true;
+};
+//hiện confirm huy
+const confirmHuy = () => {
+    huyDialog.value = true;
+};
+
+const { value: lyDo, errorMessage: LyDoError } = useField('lyDo');
+const btnXacNhanHuy = () => {
+    if (lyDo.value == null || lyDo.value.length <= 0) {
+        toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Huỷ thất bại', life: 3000 });
+        lyDo.value = '';
+        huyDialog.value = false;
+    } else {
+        useHD.huyHoaDon(idHD.value, lyDo.value, 2);
+        toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Huỷ thành công', life: 3000 });
+        lyDo.value = '';
+        huyDialog.value = false;
+        lyDoDialog.value = false;
+        productDialog.value = false;
+    }
+};
 </script>
 <template>
     <Toast />
@@ -272,6 +303,7 @@ const exportToPDF = () => {
                                 Tổng tiền: <span style="color: #ff3333; font-size: 20px; font-weight: bold">{{ formatCurrency(tongTienThanhToan) }}</span>
                             </p>
                             <Button label="Giao Hàng" severity="success" class="btn-ap-dung" @click="confirmAddProduct(props.myProp.idHD)" style="margin-bottom: 20px" />
+                            <Button label="Hủy" class="p-button-outlined p-button-info mr-2 mb-2" @click="showDialogLyDo(props.myProp.idHD)" />
                         </div>
                     </div>
                 </div>
@@ -285,6 +317,34 @@ const exportToPDF = () => {
             <template #footer>
                 <Button label="No" icon="pi pi-times" class="p-button-text" @click="addProductDialog = false" />
                 <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhan()" />
+            </template>
+        </Dialog>
+        <Dialog v-model:visible="lyDoDialog" :style="{ width: '450px' }" header="Huỷ hoá đơn" :modal="true">
+            <div class="card">
+                <form @submit="onSubmit">
+                    <div class="p-fluid formgrid grid">
+                        <div class="field col-12" style="margin-bottom: 30px">
+                            <label for="address">Lý do</label>
+                            <Textarea id="lyDo" rows="4" v-model.trim="lyDo" :class="{ 'p-invalid': LyDoError }" required="true" autofocus></Textarea>
+                            <small class="p-error">{{ LyDoError }}</small>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <template #footer>
+                <Button label="No" icon="pi pi-times" class="p-button-text" @click="lyDoDialog = false" />
+                <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="confirmHuy" />
+            </template>
+        </Dialog>
+        <!-- comfirm huỷ -->
+        <Dialog v-model:visible="huyDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
+            <div class="flex align-items-center justify-content-center">
+                <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+                <span>Bạn có chắc chắn muốn huỷ không ?</span>
+            </div>
+            <template #footer>
+                <Button label="No" icon="pi pi-times" class="p-button-text" @click="huyDialog = false" />
+                <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhanHuy()" />
             </template>
         </Dialog>
     </Dialog>

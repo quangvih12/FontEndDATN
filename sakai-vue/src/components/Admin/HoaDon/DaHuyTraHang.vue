@@ -18,8 +18,8 @@ const products = ref(null);
 const data = ref([]);
 
 const loadData = async () => {
-    await useHD.fetchDataByStatus(10);
-    data.value = useHD.dataDaHoanTra;
+    await useHD.fetchDataByStatus(9);
+    data.value = useHD.dataDaHuyDoiTra;
 };
 //chạy cái hiện data luôn
 onMounted(() => {
@@ -39,10 +39,10 @@ const hienThiTrangThai = (trangThai) => {
         return { text: 'Đang chuẩn bị hàng', severity: 'success' };
     } else if (trangThai == 5) {
         return { text: 'Giao cho đơn vị vận chuyển', severity: 'help' };
-    } else if (trangThai == 7) {
-        return { text: 'Yêu cầu trả hàng', severity: 'warning' };
-    } else if (trangThai == 8) {
-        return { text: 'Đã trả hàng', severity: 'warning' };
+    } else if (trangThai == 6) {
+        return { text: 'Yêu cầu đổi trả', severity: 'warning' };
+    } else if (trangThai == 9) {
+        return { text: 'Đã huỷ đổi trả', severity: 'warning' };
     } else {
         return { text: 'Xác nhận đổi trả', severity: 'success' };
     }
@@ -72,10 +72,10 @@ const typeSearchDate = ref(null);
 
 const searchDate = async () => {
     if (typeSearchDate.value == null) {
-        const respone = await useHD.searchDateByTrangThai(startDate.value, endDate.value, 'ngayTao', 8);
+        const respone = await useHD.searchDateByTrangThai(startDate.value, endDate.value, 'ngayTao', 0);
         data.value = respone;
     } else {
-        const respone = await useHD.searchDateByTrangThai(startDate.value, endDate.value, typeSearchDate.value.value, 8);
+        const respone = await useHD.searchDateByTrangThai(startDate.value, endDate.value, typeSearchDate.value.value, 0);
         data.value = respone;
     }
 };
@@ -110,7 +110,7 @@ const initFilters1 = () => {
 };
 
 const formatCurrency = (value) => {
-    return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+    return parseInt(value).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
 };
 
 const formatDate = (value) => {
@@ -119,10 +119,6 @@ const formatDate = (value) => {
         month: '2-digit',
         year: 'numeric'
     });
-};
-
-const tinhThanhTien = (soLuong, donGia) => {
-    return parseInt(soLuong) * parseInt(donGia);
 };
 </script>
 <template>
@@ -188,20 +184,13 @@ const tinhThanhTien = (soLuong, donGia) => {
                 {{ formatCurrency(slotProps.data.tongTien) }}
             </template>
         </Column>
+        <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column>
         <Column field="diaChi" header="Địa chỉ" :sortable="false" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
                 <span class="p-column-title">diaChi</span>
                 {{ slotProps.data.diaChiCuThe }}, {{ slotProps.data.tenPhuongXa }}, {{ slotProps.data.tenQuanHuyen }}, {{ slotProps.data.tenTinhThanh }}
             </template>
         </Column>
-        <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column>
-        <!-- <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column>
-        <Column field="diaChi" header="Địa chỉ" :sortable="false" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">diaChi</span>
-                {{ slotProps.data.diaChiCuThe }}, {{ slotProps.data.tenPhuongXa }}, {{ slotProps.data.tenQuanHuyen }}, {{ slotProps.data.tenTinhThanh }}
-            </template>
-        </Column> -->
         <Column field="trangThai" header="Trạng thái" :sortable="false" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
                 <span class="p-column-title">trangThai</span>
