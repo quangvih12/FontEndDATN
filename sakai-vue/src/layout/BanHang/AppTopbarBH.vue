@@ -17,7 +17,6 @@ const logoUrl = computed(() => {
     return `https://nontrum.vn/wp-content/uploads/2021/12/NonTrum-logo-2022png.png`;
 });
 
-
 const onTopBarMenuButton = () => {
     topbarMenuActive.value = !topbarMenuActive.value;
 };
@@ -57,8 +56,8 @@ const isOutsideClicked = (event) => {
 
 <template>
     <div class="layout-topbar">
-        <router-link to="/trang-chu" class="layout-topbar-logo">
-            <img :src="logoUrl" alt="logo" />
+        <router-link to="/" class="layout-topbar-logo" style="height: 60px; width: 120px">
+            <img src="../../images/logo.png" alt="logo" style="height: 70px" />
         </router-link>
         <!-- <span class="p-input-icon-left">
             <i class="pi pi-search" />
@@ -73,4 +72,3 @@ const isOutsideClicked = (event) => {
 </template>
 
 <style lang="scss" scoped></style>
-

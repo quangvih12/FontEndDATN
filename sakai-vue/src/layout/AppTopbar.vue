@@ -98,12 +98,18 @@ const fetchData = async () => {
 };
 
 
+onMounted(() => {
+    fetchData();
+});
+
+
 // dùng để lưu thông tin khách hàng khi được chọn CBB.
 // nếu muốn dùng thông tin khách hàng khi đặt hàng thì dùng selectedCustomer.value
 const selectedCustomer = ref(null);
 
 // hàm gọi sự thay đổi thông tin của khách hàng khi click vào CBB
 const displayKH = async () => {
+
     selectedCustomer.value = khachHang.value.find(kh => kh.ten === selectedKH.value.ten);
     const token = await tokenService.gentoken(selectedCustomer.value.username)
     localStorage.setItem('token', token);
@@ -119,9 +125,12 @@ const toggle2 = (event) => {
 
 <template>
     <div class="layout-topbar">
-        <router-link to="/" class="layout-topbar-logo">
+        <!-- <router-link to="/" class="layout-topbar-logo">
             <img :src="logoUrl" alt="logo" />
             <span>SAKAI</span>
+        </router-link> -->
+        <router-link to="/" class="layout-topbar-logo" style="height: 60px; width: 120px">
+            <img src="../images/logo.png" alt="logo" style="height: 70px" />
         </router-link>
 
         <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">
@@ -132,6 +141,13 @@ const toggle2 = (event) => {
             <i class="pi pi-ellipsis-v"></i>
         </button>
 
+        <div class="layout-topbar-menu" style="display: inline-block">
+            <div v-if="selectedCustomer === null">
+                <Dropdown v-model="selectedKH" :options="khachHang" optionLabel="ten" placeholder="Chọn KH" class="w-full md:w-8rem" style="margin-top: 5px; max-height: 100px; overflow-y: auto" @change="displayKH" />
+            </div>
+
+            <div v-else class="layout-topbar-logo" style="display: inline-block">
+
         <div class="layout-topbar-menu" style=" display: inline-block; ">
             <div v-if="selectedCustomer === null">
                 <Dropdown v-model="selectedKH" :options="khachHang" optionLabel="ten" placeholder="Chọn KH"
@@ -140,6 +156,7 @@ const toggle2 = (event) => {
             </div>
 
             <div v-else class="layout-topbar-logo" style=" display: inline-block;">
+
                 <div style="font-size: 10px">
                     <div>Tên: {{ selectedCustomer.ten }}</div>
                     <div>Role: {{ selectedCustomer.role }}</div>

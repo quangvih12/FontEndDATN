@@ -9,6 +9,7 @@ import tokenService from '@/service/Authentication/TokenService.js';
 import userKHService from '@/service/KhachHang/UserService.js';
 import { KHThongBaoStore } from '../../service/KhachHang/ThongBaoService'
 
+
 const thongBaoStore = KHThongBaoStore();
 
 const userService = userStore();
@@ -148,6 +149,7 @@ const isOutsideClicked = (event) => {
 const selectedKH = ref(null);
 const khachHang = ref([]);
 
+
 // const fetchData = async () => {
 //     try {
 //         if(token !== null || token !== "undefined"){
@@ -160,6 +162,7 @@ const khachHang = ref([]);
 //         // Xử lý lỗi ở đây nếu cần
 //     }
 // };
+
 
 const isTokenValid = async (token) => {
     if (token) {
@@ -176,13 +179,13 @@ const isTokenValid = async (token) => {
             console.error('Error while validating token:', error);
         }
     }
-
 };
 
 // dùng để lưu thông tin khách hàng khi được chọn CBB.
 // nếu muốn dùng thông tin khách hàng khi đặt hàng thì dùng selectedCustomer.value
 
 // hàm gọi sự thay đổi thông tin của khách hàng khi click vào CBB
+
 const soLuong = ref(0);
 
 const soLuongGH = async () => {
@@ -194,7 +197,6 @@ const soLuongGH = async () => {
     soLuong.value = gioHangService.soLuong;
     }
 }
-
 
 
 const menu = ref();
@@ -210,7 +212,7 @@ const items = ref([
     {
         label: 'Lịch sử mua hàng',
         command: onSettingsClick
-    },
+    }
 ]);
 
 const op2 = ref();
@@ -227,8 +229,8 @@ const toggle2 = (event) => {
 
 <template>
     <div class="layout-topbar">
-        <router-link to="/" class="layout-topbar-logo">
-            <img :src="logoUrl" alt="logo" />
+        <router-link to="/" class="layout-topbar-logo" style="height: 60px; width: 120px">
+            <img src="../../images/logo.png" alt="logo" style="height: 70px" />
         </router-link>
 
         <button class="p-link layout-topbar-menu-button layout-topbar-button" @click="onTopBarMenuButton()">
