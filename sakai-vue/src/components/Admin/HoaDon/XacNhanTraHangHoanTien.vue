@@ -18,9 +18,10 @@ const products = ref(null);
 const data = ref([]);
 
 const loadData = async () => {
-    await useHD.fetchDataByStatus(10);
-    data.value = useHD.dataDaHoanTra;
+    await useHD.fetchDataByStatus(8);
+    data.value = useHD.dataXacNhanHoanTraHoanTien;
 };
+
 //chạy cái hiện data luôn
 onMounted(() => {
     loadData();
@@ -41,8 +42,6 @@ const hienThiTrangThai = (trangThai) => {
         return { text: 'Giao cho đơn vị vận chuyển', severity: 'help' };
     } else if (trangThai == 7) {
         return { text: 'Yêu cầu trả hàng', severity: 'warning' };
-    } else if (trangThai == 8) {
-        return { text: 'Đã trả hàng', severity: 'warning' };
     } else {
         return { text: 'Xác nhận đổi trả', severity: 'success' };
     }
@@ -59,23 +58,16 @@ const columns = ref([
     { field: 'ngayShip', header: 'Ngày ship' },
     { field: 'ngayNhan', header: 'Ngày nhận' }
 ]);
-const dataSearchDate = ref([
-    { label: 'Ngày tạo', value: 'ngayTao' },
-    { label: 'Ngày sửa', value: 'ngaySua' },
-    { label: 'Ngày thanh toán', value: 'ngayThanhToan' },
-    { label: 'Ngày ship', value: 'ngayShip' },
-    { label: 'Ngày nhận', value: 'ngayNhan' }
-]);
 const startDate = ref(null);
 const endDate = ref([null]);
 const typeSearchDate = ref(null);
 
 const searchDate = async () => {
     if (typeSearchDate.value == null) {
-        const respone = await useHD.searchDateByTrangThai(startDate.value, endDate.value, 'ngayTao', 8);
+        const respone = await useHD.searchDateByTrangThai(startDate.value, endDate.value, 'ngayTao', 7);
         data.value = respone;
     } else {
-        const respone = await useHD.searchDateByTrangThai(startDate.value, endDate.value, typeSearchDate.value.value, 8);
+        const respone = await useHD.searchDateByTrangThai(startDate.value, endDate.value, typeSearchDate.value.value, 7);
         data.value = respone;
     }
 };
@@ -195,13 +187,6 @@ const tinhThanhTien = (soLuong, donGia) => {
             </template>
         </Column>
         <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column>
-        <!-- <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column>
-        <Column field="diaChi" header="Địa chỉ" :sortable="false" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">diaChi</span>
-                {{ slotProps.data.diaChiCuThe }}, {{ slotProps.data.tenPhuongXa }}, {{ slotProps.data.tenQuanHuyen }}, {{ slotProps.data.tenTinhThanh }}
-            </template>
-        </Column> -->
         <Column field="trangThai" header="Trạng thái" :sortable="false" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
                 <span class="p-column-title">trangThai</span>

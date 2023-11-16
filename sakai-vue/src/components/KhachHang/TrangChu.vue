@@ -8,6 +8,7 @@ const useTrangChuService = TrangChuStore();
 const dataHangMoi = ref([]);
 const dataFullrace = ref([]);
 const dataTreEm = ref([]);
+const dataSPBanChay = ref([]);
 
 const goToProductDetail = (productId) => {
     router.push({ name: 'ProductDetail', params: { id: productId } });
@@ -23,7 +24,12 @@ const loadData = async () => {
 const loadDataHangMoi = async () => {
     await useTrangChuService.fetchDataHangMoi();
     dataHangMoi.value = useTrangChuService.dataHangMoi;
+};
 
+//load data sp bán chạy
+const loadDataSPBanChay = async () => {
+    await useTrangChuService.fetchDataBanChay();
+    dataSPBanChay.value = useTrangChuService.dataSPBanChay;
 };
 
 //load data hang moi
@@ -53,6 +59,7 @@ const hienGiaGiam = (value) => {
 
 onMounted(() => {
     loadData();
+    loadDataSPBanChay();
     loadDataHangMoi();
     loadDataTreEm();
 });
@@ -170,16 +177,25 @@ const banner9 =
                 </div>
             </div>
             <!-- SP hot -->
-            <div><img :src="banner2" alt="Thumbnail" class="banner2" /></div>
-            <div><img :src="banner3" alt="Thumbnail" class="banner3" /></div>
+            <div><img src="../../images/bannerSPBC.jpg" alt="Thumbnail" class="banner2" /></div>
+            <div><img src="../../images/tenSP_BanChay.png" alt="Thumbnail" class="banner3" /></div>
             <div class="flex-container">
-                <div class="flex-item" v-for="(thumbnail, index) in thumbnailsSP" :key="index">
-                    <a href="http://localhost:5173/#/trang-chu">
-                        <img :src="thumbnail.imageUrl" alt="Thumbnail" />
-                        <p class="ten-sp">{{ thumbnail.name }}</p>
-                        <br />
-                        <p class="gia-sp">{{ formatCurrency(thumbnail.price) }}</p>
-                    </a>
+                <div class="flex-item" v-for="(spct, index) in dataSPBanChay" :key="index">
+                    <div class="product-top">
+                        <a href="" class="product-thumb">
+                            <img :src="spct.anh" alt="Thumbnail" class="product-image" />
+                        </a>
+                        <a class="xct" @click="goToProductDetail(spct.idSP)">Xem chi tiết</a>
+                    </div>
+                    <p class="ten-sp">{{ spct.tenSP }}</p>
+                    <br />
+                    <p class="gia-sp" style="color: black; text-align: center" v-if="spct.giaBanMin == spct.giaBanMax">{{ formatCurrency(spct.giaBanMax) }}</p>
+                    <p class="gia-sp" style="color: black; text-align: center" v-else-if="spct.giaSauGiamMax != null && spct.giaSauGiamMin != null && spct.giaSauGiamMax != spct.giaSauGiamMin">
+                        {{ formatCurrency(spct.giaSauGiamMin) }} - {{ formatCurrency(spct.giaSauGiamMax) }}
+                    </p>
+                    <p class="gia-sp" style="color: black; text-align: center" v-else-if="spct.giaSauGiamMax == null && spct.giaSauGiamMin == null">{{ formatCurrency(spct.giaBanMin) }} - {{ formatCurrency(spct.giaBanMax) }}</p>
+                    <p class="gia-sp" style="color: black; text-align: center" v-else-if="spct.giaSauGiamMax == spct.giaSauGiamMin">{{ formatCurrency(spct.giaSauGiamMax) }}</p>
+                    <p class="gia-sp" style="color: black; text-align: center" v-else>{{ formatCurrency(spct.giaBanMin) }} - {{ formatCurrency(spct.giaBanMax) }}</p>
                 </div>
             </div>
             <!-- SP mới -->
@@ -235,7 +251,6 @@ const banner9 =
                     <div class="product-top">
                         <a href="" class="product-thumb">
                             <img :src="spct.anh" alt="Thumbnail" class="product-image" />
-
                         </a>
                         <a class="xct" @click="goToProductDetail(spct.idSP)">Xem chi tiết</a>
                     </div>
@@ -256,25 +271,21 @@ const banner9 =
                 <div class="flex col-12">
                     <div class="colum-gioi-thieu cot1">
                         <p class="tieu-de">SẢN PHẨM CHÍNH HÃNG</p>
-                        <p class="content">100% sản phẩm bán tại Nón Trùm chính hãng và đạt chuẩn. Sản phẩm đa dạng và đầy
-                            đủ để khách hàng lựa chọn.</p>
+                        <p class="content">100% sản phẩm bán tại Nón Trùm chính hãng và đạt chuẩn. Sản phẩm đa dạng và đầy đủ để khách hàng lựa chọn.</p>
                     </div>
                     <div class="colum-gioi-thieu cot2">
                         <p class="tieu-de">GIẶT NÓN MIỄN PHÍ</p>
-                        <p class="content">Tặng 6 tháng giặt nón miễn phí trị giá đến 420,000đ bằng máy chuyên dụng do Nón
-                            Trùm nghiên cứu và phát triển đầu tiên và duy nhất Việt Nam.</p>
+                        <p class="content">Tặng 6 tháng giặt nón miễn phí trị giá đến 420,000đ bằng máy chuyên dụng do Nón Trùm nghiên cứu và phát triển đầu tiên và duy nhất Việt Nam.</p>
                     </div>
                     <div class="colum-gioi-thieu cot3">
                         <p class="tieu-de">GIAO HÀNG MIỄN PHÍ</p>
-                        <p class="content">Với đơn hàng từ 450,000đ trở lên, Nón Trùm giao hàng tận nơi toàn quốc miễn phí.
-                            Ngoài ra, Nón Trùm có giao nhanh trong 2-3 giờ nội thành phố Hà Nội.</p>
+                        <p class="content">Với đơn hàng từ 450,000đ trở lên, Nón Trùm giao hàng tận nơi toàn quốc miễn phí. Ngoài ra, Nón Trùm có giao nhanh trong 2-3 giờ nội thành phố Hà Nội.</p>
                     </div>
                 </div>
                 <div class="flex col-12">
                     <div class="colum-gioi-thieu cot1">
                         <p class="tieu-de">MUA NHIỀU GIẢM SÂU</p>
-                        <p class="content">Với đơn hàng từ 450,000đ trở lên, Nón Trùm giao hàng tận nơi toàn quốc miễn phí.
-                            Ngoài ra, Nón Trùm có giao nhanh trong 2-3 giờ nội thành phố Hà Nội.</p>
+                        <p class="content">Với đơn hàng từ 450,000đ trở lên, Nón Trùm giao hàng tận nơi toàn quốc miễn phí. Ngoài ra, Nón Trùm có giao nhanh trong 2-3 giờ nội thành phố Hà Nội.</p>
                     </div>
                     <div class="colum-gioi-thieu cot2">
                         <p class="tieu-de">BẢO HÀNH 365 NGÀY</p>
@@ -282,8 +293,7 @@ const banner9 =
                     </div>
                     <div class="colum-gioi-thieu cot3">
                         <p class="tieu-de">ĐỔI MỚI 7 NGÀY</p>
-                        <p class="content">Đổi ngay nón mới trong vòng 7 ngày nếu có lỗi kỹ thuật. Ngoài ra, Nón Trùm hỗ trợ
-                            đổi size nón nếu bạn đội không vừa.</p>
+                        <p class="content">Đổi ngay nón mới trong vòng 7 ngày nếu có lỗi kỹ thuật. Ngoài ra, Nón Trùm hỗ trợ đổi size nón nếu bạn đội không vừa.</p>
                     </div>
                 </div>
             </div>
@@ -471,7 +481,8 @@ const banner9 =
     border-right: 1px solid white;
 }
 
-.cot3 {}
+.cot3 {
+}
 
 .flex-container {
     display: flex;
@@ -533,6 +544,6 @@ const banner9 =
 }
 
 .flex-item:hover .xct {
-    bottom: 0px;}
+    bottom: 0px;
+}
 </style>
-

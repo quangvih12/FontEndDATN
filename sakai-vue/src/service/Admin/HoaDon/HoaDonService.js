@@ -8,12 +8,15 @@ export const HDStore = defineStore('hoaDon', {
     state: () => ({
         dataAll: [],
         dataChoXacNhan: [], //2
-        dataDaHoanTra: [], //8
+        dataDaHoanTra: [], //10
         dataDaHuy: [], //0
         dataDangChuanBi: [], //4
         dataDangGiao: [], //5
         dataHoanThanh: [], //3
         dataHoanTraHoanTien: [], //7
+        dataXacNhanHoanTraHoanTien: [], //8
+        dataDaHuyDoiTra: [], //9
+
         //nếu đang ở load tất cả thì là 0
         check: 0
         //theo doi xem đang ở màn nào
@@ -30,6 +33,7 @@ export const HDStore = defineStore('hoaDon', {
                                 index = i;
                             }
                         }
+                        this.dataChoXacNhan[index].trangThai = 4;
                         this.dataDangChuanBi.unshift(this.dataChoXacNhan[index]);
                         this.dataChoXacNhan.splice(index, 1);
                     }
@@ -37,22 +41,22 @@ export const HDStore = defineStore('hoaDon', {
             });
         },
         //từ chờ đang chuẩn bị -> đang giao
-        dangChuanBi(id) {
-            axios.put(apiHD + '/XacNhanGiaoHang/' + id).then((response) => {
+        dangChuanBi(id, ngayShip, maGHN) {
+            axios.put(apiHD + '/XacNhanGiaoHang/' + id + '?ngayShip=' + ngayShip + '&maGHN' + maGHN).then((response) => {
                 if (this.check == 1) {
-                    if (this.dataDangChuanBi[0].trangThai == '4') {
+                    if (this.dataChoXacNhan[0].trangThai == '2') {
                         let index = -1;
-                        for (let i = 0; i < this.dataDangChuanBi.length; i++) {
-                            if (id == this.dataDangChuanBi[i].idHD) {
+                        for (let i = 0; i < this.dataChoXacNhan.length; i++) {
+                            if (id == this.dataChoXacNhan[i].idHD) {
                                 index = i;
                             }
                         }
-                        this.dataDangGiao.unshift(this.dataDangChuanBi[index]);
-                        this.dataDangChuanBi.splice(index, 1);
+                        this.dataChoXacNhan[index].trangThai = 5;
+                        this.dataDangGiao.unshift(response.data);
+                        this.dataChoXacNhan.splice(index, 1);
                     }
                 }
             });
-            console.log('OK');
             return this.dataDangGiao[0];
         },
 
@@ -67,8 +71,48 @@ export const HDStore = defineStore('hoaDon', {
                                 index = i;
                             }
                         }
-                        this.dataHoanThanh.unshift(this.dataDangGiao[index]);
+                        // this.dataDangGiao[index].trangThai = 3;
+                        this.dataHoanThanh.unshift(response.data);
+                        console.log(response.data);
                         this.dataDangGiao.splice(index, 1);
+                    }
+                }
+            });
+        },
+
+        //từ Xác nhận đổi tra -> hoàn thành đổi trả
+        hoanThanhDoiTra(id) {
+            axios.put(apiHD + '/hoan-thanh-doi-tra/' + id).then((response) => {
+                if (this.check == 1) {
+                    if (this.dataXacNhanHoanTraHoanTien[0].trangThai == '8') {
+                        let index = -1;
+                        for (let i = 0; i < this.dataXacNhanHoanTraHoanTien.length; i++) {
+                            if (id == this.dataXacNhanHoanTraHoanTien[i].idHD) {
+                                index = i;
+                            }
+                        }
+                        this.dataXacNhanHoanTraHoanTien[index].trangThai = 10;
+                        this.dataDaHoanTra.unshift(this.dataXacNhanHoanTraHoanTien[index]);
+                        this.dataXacNhanHoanTraHoanTien.splice(index, 1);
+                    }
+                }
+            });
+        },
+
+        //từ trả hàng -> xác nhận trả hàng
+        traHang(id) {
+            axios.put(apiHD + '/xac-nhan-doi-tra/' + id).then((response) => {
+                if (this.check == 1) {
+                    if (parseInt(this.dataHoanTraHoanTien[0].trangThai) == 7) {
+                        let index = -1;
+                        for (let i = 0; i < this.dataHoanTraHoanTien.length; i++) {
+                            if (id == this.dataHoanTraHoanTien[i].idHD) {
+                                index = i;
+                            }
+                        }
+                        this.dataHoanTraHoanTien[index].trangThai = 8;
+                        this.dataXacNhanHoanTraHoanTien.push(this.dataHoanTraHoanTien[index]);
+                        this.dataHoanTraHoanTien.splice(index, 1);
                     }
                 }
             });
@@ -86,6 +130,7 @@ export const HDStore = defineStore('hoaDon', {
                                     index = i;
                                 }
                             }
+                            this.dataChoXacNhan[index].trangThai = 0;
                             this.dataDaHuy.unshift(response.data);
                             this.dataChoXacNhan.splice(index, 1);
                         }
@@ -98,6 +143,7 @@ export const HDStore = defineStore('hoaDon', {
                                     index = i;
                                 }
                             }
+                            this.dataDangChuanBi[index].trangThai = 0;
                             this.dataDaHuy.unshift(response.data);
                             this.dataDangChuanBi.splice(index, 1);
                         }
@@ -110,6 +156,7 @@ export const HDStore = defineStore('hoaDon', {
                                     index = i;
                                 }
                             }
+                            this.dataDangGiao[index].trangThai = 0;
                             this.dataDaHuy.unshift(response.data);
                             this.dataDangGiao.splice(index, 1);
                         }
@@ -118,14 +165,48 @@ export const HDStore = defineStore('hoaDon', {
             });
         },
 
+        //huỷ hoá đơn đổi trả
+        huyHoaDonDoiTra(id, lyDo, man) {
+            axios.put(apiHD + '/huy-doi-tra/' + id + '?lyDo=' + lyDo).then((response) => {
+                if (this.check == 1) {
+                    if (this.dataHoanTraHoanTien.length > 0 && man == 7) {
+                        if (this.dataHoanTraHoanTien[0].trangThai == '7') {
+                            let index = -1;
+                            for (let i = 0; i < this.dataHoanTraHoanTien.length; i++) {
+                                if (id == this.dataHoanTraHoanTien[i].idHD) {
+                                    index = i;
+                                }
+                            }
+                            this.dataHoanTraHoanTien[index].trangThai = 9;
+                            this.dataDaHuyDoiTra.unshift(response.data);
+                            this.dataHoanTraHoanTien.splice(index, 1);
+                        }
+                    }
+                    if (this.dataXacNhanHoanTraHoanTien.length > 0 && man == 8) {
+                        if (this.dataXacNhanHoanTraHoanTien[0].trangThai == '8') {
+                            let index = -1;
+                            for (let i = 0; i < this.dataXacNhanHoanTraHoanTien.length; i++) {
+                                if (id == this.dataXacNhanHoanTraHoanTien[i].idHD) {
+                                    index = i;
+                                }
+                            }
+                            this.dataXacNhanHoanTraHoanTien[index].trangThai = 9;
+                            this.dataDaHuyDoiTra.unshift(response.data);
+                            this.dataXacNhanHoanTraHoanTien.splice(index, 1);
+                        }
+                    }
+                }
+            });
+        },
+
         //gửi cho giao hàng nhanh
-        async giaoHangNhanh(danhSachSP, hoaDon) {
+        async giaoHangNhanh(danhSachSP, hoaDon, formGHN) {
             const danhSachItem = [];
             for (let i = 0; i < danhSachSP.length; i++) {
                 const form2 = {
                     name: danhSachSP[i].tenSP,
                     code: danhSachSP[i].maSP,
-                    quantity: danhSachSP[i].soLuong,
+                    quantity: parseInt(danhSachSP[i].soLuong),
                     price: parseInt(danhSachSP[i].donGia),
                     length: 12,
                     width: 12,
@@ -135,60 +216,76 @@ export const HDStore = defineStore('hoaDon', {
                         level1: 'Mũ'
                     }
                 };
-                console.log(form2);
                 danhSachItem.push(form2);
             }
-
+            //api thật
+            const form1 = {
+                payment_type_id: 2,
+                note: 'Giao lúc 5h chiều hằng ngày',
+                required_note: 'KHONGCHOXEMHANG',
+                return_phone: '0339927992',
+                return_address: 'Số 29 ngõ 143',
+                return_district_id: 3440,
+                return_ward_code: '13010',
+                client_order_code: '',
+                to_name: hoaDon.tenNguoiNhan,
+                to_phone: hoaDon.sdt,
+                to_address: hoaDon.diaChiCuThe,
+                to_ward_code: hoaDon.idPhuongXa,
+                to_district_id: parseInt(hoaDon.idQuanHuyen),
+                cod_amount: parseInt(formGHN.tongTien),
+                content: hoaDon.maHD,
+                weight: parseInt(formGHN.trongLuong),
+                length: parseInt(formGHN.cao),
+                width: parseInt(formGHN.dai),
+                height: parseInt(formGHN.rong),
+                service_id: 100039,
+                service_type_id: 5,
+                coupon: null,
+                pick_shift: [2],
+                items: danhSachItem
+            };
+            // console.log(form1);
+            // console.log(form1.tenNguoiNhan);
+            // api xem trước
             const form2 = {
                 payment_type_id: 2,
                 note: 'Tintest 123',
                 required_note: 'KHONGCHOXEMHANG',
-                return_phone: '0332190458',
+                return_phone: '0339927992',
                 return_address: '39 NTT',
                 return_district_id: null,
                 return_ward_code: '',
                 client_order_code: '',
-                to_name: 'TinTest124',
-                to_phone: '0987654321',
-                to_address: '72 Thành Thái, Phường 14, Quận 10, Hồ Chí Minh, Vietnam',
-                to_ward_code: '20107',
-                to_district_id: 1442,
-                cod_amount: 200000,
-                content: 'ABCDEF',
-                weight: 400,
-                length: 15,
-                width: 15,
-                height: 15,
+                to_name: hoaDon.tenNguoiNhan,
+                to_phone: hoaDon.sdt,
+                to_address: hoaDon.diaChiCuThe,
+                to_ward_code: hoaDon.idPhuongXa,
+                to_district_id: parseInt(hoaDon.idQuanHuyen),
+                cod_amount: 300000,
+                content: hoaDon.maHD,
+                weight: parseInt(formGHN.trongLuong),
+                length: parseInt(formGHN.cao),
+                width: parseInt(formGHN.dai),
+                height: parseInt(formGHN.rong),
                 pick_station_id: 0,
-                insurance_value: 500000,
+                insurance_value: parseInt(formGHN.tongTien),
                 service_id: 0,
                 service_type_id: 2,
                 coupon: null,
                 pick_shift: [2],
-                items: [
-                    {
-                        name: 'Áo Polo',
-                        code: 'Polo123',
-                        quantity: 1,
-                        price: 200000,
-                        length: 12,
-                        width: 12,
-                        height: 12,
-                        category: {
-                            level1: 'Áo'
-                        }
-                    }
-                ]
+                items: danhSachItem
             };
             try {
                 const response = await axios.post('https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/preview', form2, {
                     headers: {
                         // Thêm headers vào yêu cầu POST ở đây
-                        token: '62a3cbdc-4e13-11ee-96dc-de6f804954c9',
-                        ShopId: '4523827'
+                        token: '8929865c-844a-11ee-b394-8ac29577e80e',
+                        ShopId: '4701529'
                     }
                 });
-                console.log(response);
+                // console.log(response);
+                return response;
             } catch (error) {
                 console.error('Error fetching users:', error);
             }
@@ -219,12 +316,14 @@ export const HDStore = defineStore('hoaDon', {
             try {
                 const response = await axios.get(apiHD + '/hoaDonTrangThai/' + status);
                 if (status == 2) this.dataChoXacNhan = response.data;
-                if (status == 8) this.dataDaHoanTra = response.data;
+                if (status == 8) this.dataXacNhanHoanTraHoanTien = response.data;
                 if (status == 0) this.dataDaHuy = response.data;
                 if (status == 4) this.dataDangChuanBi = response.data;
                 if (status == 5) this.dataDangGiao = response.data;
                 if (status == 3) this.dataHoanThanh = response.data;
                 if (status == 7) this.dataHoanTraHoanTien = response.data;
+                if (status == 9) this.dataDaHuyDoiTra = response.data;
+                if (status == 10) this.dataDaHoanTra = response.data;
             } catch (error) {
                 console.error('Error fetching users:', error);
             }
@@ -248,7 +347,7 @@ export const HDStore = defineStore('hoaDon', {
                     this.dataChoXacNhan = response.data;
                     return this.dataChoXacNhan;
                 }
-                if (trangThai == 8) {
+                if (trangThai == 10) {
                     this.dataDaHoanTra = response.data;
                     return this.dataDaHoanTra;
                 }
