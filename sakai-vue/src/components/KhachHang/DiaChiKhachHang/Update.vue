@@ -84,7 +84,7 @@ const updateProduct = async () => {
         // Gọi hàm createDiaChi từ diaChiService để thêm địa chỉ
         await diaChiService.updateDiaChi(props.myProp.id, form);
         // console.log(form);
-        window.location.reload();
+        // window.location.reload();
         toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Sửa địa chỉ thành công', life: 3000 });
         clearForm();
         productDialog.value = false;

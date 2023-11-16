@@ -11,6 +11,8 @@ export const useDiaChi = defineStore('diaChi',{
         user: [],
         diaChi: [],
         data: [],
+        diaChiMacDinh: [],
+        diaChiThanhToan: [],
     }),
     actions: {
         async fetchData(id) {
@@ -21,6 +23,35 @@ export const useDiaChi = defineStore('diaChi',{
                 console.error('Error fetching users:', error);
             }
         },
+        async findDiaChiByIdUserAndTrangThai(token) {
+            try {
+                const response = await axios.get(api + '/find-dia-chi-mac-dinh?token=' + token);
+                this.diaChiMacDinh = response.data;
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        },
+
+        async fetchDiaChiThanhToan(id) {
+            try {
+                const response = await axios.get(api + '/thanh-toan/' + id);
+                this.diaChiThanhToan = response.data;
+                
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        },
+
+        async fetchDiaChiThanhToanModal(id,token) {
+            try {
+                const response = await axios.put(api + '/thiet-lap-mac-dinh/' + id +`?token=${token}`);
+                // this.diaChiMacDinh = response.data;
+                return response.data;
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        },
+
         async fetchAllDiaChi(idUser) {
             try {
                 const response = await axios.get(api + `/${idUser}`); // Thay đổi URL dựa trên API của bạn

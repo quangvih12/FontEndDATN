@@ -2,10 +2,11 @@
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
 import CustomerService from '@/service/CustomerService';
 import ProductService from '@/service/ProductService';
-import { ref, onBeforeMount, onMounted } from 'vue';
+import { ref, onBeforeMount, onMounted,watch } from 'vue';
 import { HDKHStore } from '../../../service/KhachHang/HoaDonKHService';
 import DetailHoaDon from './TrangThaiDonHang.vue';
 import { useRouter } from 'vue-router';
+import { gioHangStore } from '../../../service/KhachHang/Giohang/GiohangCTService';
 
 const router = useRouter();
 
@@ -13,6 +14,7 @@ const redirectToTrangThaiDonHang = (idHDA) => {
     // Chuyển hướng đến trang trang-thai-don-hang và truyền ID của hóa đơn qua URL
     router.push({ name: 'trangThaiDonHang', params: { id: idHDA } });
 };
+const gioHangService = gioHangStore();
 const useHD = HDKHStore();
 const customer1 = ref(null);
 const customer2 = ref(null);
@@ -31,6 +33,7 @@ const loadData = async () => {
     if (token.length > 0 || token != null) {
         await useHD.fetchData(token);
         data.value = useHD.dataAll;
+        // console.log(data.value);
     }
 };
 
@@ -40,24 +43,33 @@ onMounted(() => {
 });
 
 const hienThiTrangThai = (trangThai) => {
-    if (trangThai == 0) {
+    if (parseInt(trangThai) == 0) {
         return { text: 'Đã hủy', severity: 'danger' };
-    } else if (trangThai == 1) {
+    } else if (parseInt(trangThai) == 1) {
         return { text: 'Chờ thanh toán', severity: 'secondary' };
-    } else if (trangThai == 2) {
+    } else if (parseInt(trangThai) == 2) {
         return { text: 'Yêu cầu xác nhận', severity: 'success' };
-    } else if (trangThai == 3) {
+    } else if (parseInt(trangThai) == 3) {
         return { text: 'Hoàn thành', severity: 'info' };
-    } else if (trangThai == 4) {
+    } else if (parseInt(trangThai) == 4) {
         return { text: 'Đang chuẩn bị hàng', severity: 'success' };
-    } else if (trangThai == 5) {
+    } else if (parseInt(trangThai) == 5) {
         return { text: 'Đang giao', severity: 'help' };
-    } else if (trangThai == 6) {
-        return { text: 'Yêu cầu đổi trả', severity: 'warning' };
-    } else {
-        return { text: 'Xác nhận đổi trả', severity: 'success' };
+    } else if (parseInt(trangThai) == 7) {
+        return { text: 'Yêu cầu đổi trả ', severity: 'warning' };
+    } else if (parseInt(trangThai) == 8) {
+        return { text: 'Xác nhận đổi trả thành công', severity: 'success' };
+    }else if (parseInt(trangThai) == 9) {
+        return { text: 'Yêu cầu đổi trả thất bại', severity: 'success' };
+    }else  {
+        return { text: 'Đổi trả thành công', severity: 'success' };
     }
 };
+
+const goToProductDetail = (productId) => {
+    router.push({ name: 'ProductDetail', params: { id: productId } });
+};
+
 
 const getStatusLabel = (trangThai) => {
     switch (trangThai) {
@@ -129,7 +141,7 @@ const initFilters1 = () => {
 };
 
 const formatCurrency = (value) => {
-    return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+    return parseInt(value).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
 };
 
 const formatDate = (value) => {
@@ -139,108 +151,180 @@ const formatDate = (value) => {
         year: 'numeric'
     });
 };
+
+const muaLaiDialog = ref(false);
+const dataSP = ref([]);
+const showDialogMuaLai = async (idHD) => {
+    dataSP.value = await useHD.findHdctByIdHd(idHD);
+    muaLaiDialog.value = true;
+};
+
+const addCart = async (soLuong, idCTSP) => {
+    const cartItem = {
+        soLuong: soLuong,
+        sanPhamChiTiet: idCTSP
+    };
+    const token = localStorage.getItem('token');
+
+    await gioHangService.addToCart(cartItem, token);
+    router.push({ name: 'gio-hang' });
+
+};
+const tinhTongTien = (tienShip, tongTien) => {
+    return parseInt(tongTien) + parseInt(tienShip);
+};
+
 </script>
 
 <template>
-    <!-- <div class="col-12 flex" style="margin-right: 10px; padding-left: 0">
-        <Dropdown v-model="typeSearchDate" :options="dataSearchDate" optionLabel="label" placeholder="Ngày tạo" class="w-full md:w-14rem" style="height: 40px" />
-        <div class="p-inputgroup flex-1" style="margin-left: 20px">
-            <span class="p-inputgroup-addon" style="height: 40px">Ngày bắt đầu</span>
-            <input type="datetime-local" v-model="startDate" style="min-width: 13rem; height: 40px" />
-        </div>
-        <div class="p-inputgroup flex-1">
-            <span class="p-inputgroup-addon" style="height: 40px">Ngày kết thúc</span>
-            <input type="datetime-local" v-model="endDate" style="min-width: 13rem; height: 40px" />
-        </div>
-        <div style="margin-left: 5px">
-            <Button label="Seach" @click="searchDate()" icon="pi pi-search" class="p-button-rounded p-button-primary mr-2 mb-2" />
-        </div>
-    </div> -->
-    <DataTable
-        ref="dt"
-        :value="data"
-        v-model:selection="selectedProducts"
-        dataKey="id"
-        :paginator="true"
-        :rows="5"
-        :filters="filters1"
-        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-        :rowsPerPageOptions="[5, 10, 25]"
-        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
-        responsiveLayout="scroll"
-    >
-        <template #header>
-            <div class="col-12 flex">
-                <!-- <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-                    <MultiSelect icon="pi pi-plus" placeholder="Select Columns" :modelValue="selectedColumns" :options="columns" optionLabel="header" @update:modelValue="onToggle" display="tag" />
-                </div> -->
-                <span class="p-input-icon-left">
-                    <i class="pi pi-search" />
-                    <InputText v-model="filters1['global'].value" placeholder="Keyword Search" style="min-width: 13rem; height: 40px" />
-                </span>
+      <div style="height: 500px; font-size: 24px;" v-if="!data || data.length === 0"> Chưa có Đơn hàng !</div>
+    <div v-for="(hd, index) in data" :key="index">
+        <div style="width: 1060px; background: rgb(255, 255, 255); ">
+
+            <div style="width: 1060px; background: rgb(252, 246, 246);  ">
+                <div class="flex">
+                    <div style="margin-top: 10px; display: flex;">
+                        <svg width="17" height="16" viewBox="0 0 17 16" class="_0RxYUS"
+                            style="margin-top: 2px; margin-right: 10px; margin-left: 10px;">
+                            <title>Shop Icon</title>
+                            <path
+                                d="M1.95 6.6c.156.804.7 1.867 1.357 1.867.654 0 1.43 0 1.43-.933h.932s0 .933 1.155.933c1.176 0 1.15-.933 1.15-.933h.984s-.027.933 1.148.933c1.157 0 1.15-.933 1.15-.933h.94s0 .933 1.43.933c1.368 0 1.356-1.867 1.356-1.867H1.95zm11.49-4.666H3.493L2.248 5.667h12.437L13.44 1.934zM2.853 14.066h11.22l-.01-4.782c-.148.02-.295.042-.465.042-.7 0-1.436-.324-1.866-.86-.376.53-.88.86-1.622.86-.667 0-1.255-.417-1.64-.86-.39.443-.976.86-1.643.86-.74 0-1.246-.33-1.623-.86-.43.536-1.195.86-1.895.86-.152 0-.297-.02-.436-.05l-.018 4.79zM14.996 12.2v.933L14.984 15H1.94l-.002-1.867V8.84C1.355 8.306 1.003 7.456 1 6.6L2.87 1h11.193l1.866 5.6c0 .943-.225 1.876-.934 2.39v3.21z"
+                                stroke-width=".3" stroke="#333" fill="#333" fill-rule="evenodd"></path>
+                        </svg>
+                        <h5 style="font-weight: 700;margin-top: -2px;">cửa hàng VNK</h5>
+                    </div>
+                    <div style="margin-left: 100px; font-size: 15px;margin-top: 10px; margin-right: 50px;">
+                        <label for="">Mã đơn hàng: <span>{{ hd.maHD }} </span></label>
+                        <span> | </span>
+                        <label for="" style="color: red">{{ hienThiTrangThai(hd.trangThai).text }}</label>
+                    </div>
+                    <!-- <div style="margin-left: 10px">
+                        <span> | </span>
+                        <label for="" style="color: red; margin-left: 10px">{{ hienThiTrangThai(dataHD.trangThai).text }}</label>
+                    </div> -->
+                </div>
+
             </div>
+            <Divider />
+            <div v-for="(sp, index) in hd.sanPhamChiTiet" :key="index">
+                <div style="width: 1060px; background: rgb(255, 255, 255); height: 120px; margin-top: 10px;">
+                    <div class="flex">
+                        <div style="margin-left: 20px; margin-top: 20px;">
+                            <Image :src="sp.anh" alt="Image" width="90" preview />
+                        </div>
+                        <div class="product-details" style="margin-top: 10px; margin-left: 20px;">
+                            <h5 class="flex details">{{ sp.tenSP }}</h5>
+                            <div class="flex details">
+                                <div>
+                                    <p>
+                                        Phân loại: <span>{{ sp.tenMauSac }}</span> <span
+                                            v-if="sp.tenSize !== '' || sp.tenSize !== null">,{{ sp.tenSize }}</span>
+                                    </p>
+                                    <p>
+                                    </p>
+                                    <p>
+                                        Số lượng: <span>{{ sp.soLuong }}</span>
+                                    </p>
+                                </div>
+                                <div class="price">
+                                    <h4 style="color: rgb(7, 6, 6); margin-left: -130px; margin-top: -20px;">{{
+                                        formatCurrency(sp.donGia) }}
+                                    </h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <Divider />
+            <div style="width: 1060px; background: rgb(29, 23, 23);">
+                <div style="display: flex; width: 100%; background: rgb(255, 255, 255);">
+                    <div style="background: rgb(255, 255, 255);width: 30%; height: 100px; margin-top: ;">
+                        <h5 style="color: rgb(253, 1, 1);margin-top: 30px;margin-left: -50px; margin-bottom: 20px;">Thành
+                            tiền: <span>{{ formatCurrency(tinhTongTien(hd.tongTien,hd.tienShip)) }}</span> </h5>
+                    </div>
+
+                    <div style="display: flex;justify-content: flex-end; width: 70%;">
+
+                        <div style=" height: 100%; margin-top: 30px;">
+
+                            <Button type="button" :disabled="hd.trangThai == 2 || hd.trangThai == 5 || hd.trangThai == 7"
+                                label="Mua lại" style="width: 100px;margin-right: 10px; "
+                                @click="showDialogMuaLai(hd.idHD)" />
+                            <Button severity="secondary" label="Xem chi tiết" style="width: 150px"
+                                @click="redirectToTrangThaiDonHang(hd.idHD)" />
+                        </div>
+
+                    </div>
+                </div>
+
+
+
+
+            </div>
+        </div>
+    </div>
+
+    <Dialog v-model:visible="muaLaiDialog" :style="{ width: '550px' }" header="Thêm vào giỏ hàng" :modal="true">
+        <div class="card">
+
+
+            <div v-for="(sp, index) in dataSP" :key="index">
+                <div style="width: 300px; background: rgb(255, 255, 255); height: 120px; margin-top: 0px;">
+                    <div class="flex" style="width: 450px;  background: rgb(255, 255, 255);">
+                        <div style="margin-left: 20px; margin-top: 20px;">
+                            <Image :src="sp.anh" alt="Image" width="90" preview />
+                        </div>
+                        <div class="product-details"
+                            style="margin-top: 10px; margin-left: 20px; background: rgb(255, 255, 255);">
+                            <h5 class="flex details">{{ sp.tenSP }}</h5>
+                            <div class="flex details" style=" width: 250px;">
+                                <div style="display: flex;">
+                                    <p style="margin-right: 0px;">
+                                        Phân loại: <span>{{ sp.tenMauSac }}</span> <span
+                                            v-if="sp.tenSize !== '' || sp.tenSize !== null">,{{ sp.tenSize }}</span>
+                                    </p>
+                                    <p style="margin-left: 40px;" v-if="sp.soLuongTon < sp.soLuong">
+                                        Hết hàng
+                                    </p>
+                                    <p style="margin-left: 40px;" v-if="sp.soLuongTon > sp.soLuong">
+                                        x <span>{{ sp.soLuong }}</span>
+                                    </p>
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <Button icon="pi pi-shopping-cart" class="p-button-rounded p-button-warning mt-2" style=""
+                            @click="addCart(sp.soLuong, sp.idSPCT)" :disabled="sp.soLuongTon < sp.soLuong" />
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <template #footer>
+            <Button label="Đóng" icon="pi pi-times" class="p-button-text" @click="muaLaiDialog = false" />
         </template>
-        <Column field="stt" header="STT" :sortable="true" headerStyle="width:14%; min-width:1rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">stt</span>
-                {{ slotProps.data.stt }}
-            </template>
-        </Column>
-        <Column field="maHD" header="Mã hoá đơn" :sortable="true" headerStyle="width:14%; min-width:1rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">maHD</span>
-                {{ slotProps.data.maHD }}
-            </template>
-        </Column>
-        <Column field="tenNguoiNhan" header="Tên người nhận" :sortable="true" headerStyle="width:14%; min-width:1rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">tenNguoiNhan</span>
-                {{ slotProps.data.tenNguoiNhan }}
-            </template>
-        </Column>
-        <Column field="tongTien" header="Tổng tiền" :sortable="true" headerStyle="width:14%; min-width:1rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">tongTien</span>
-                {{ slotProps.data.tongTien }}
-            </template>
-        </Column>
-        <Column field="tienSauGiam" header="Tiền sau giảm" :sortable="true" headerStyle="width:14%; min-width:1rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">tienSauGiam</span>
-                {{ slotProps.data.tienSauGiam }}
-            </template>
-        </Column>
-        <!-- <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column> -->
-
-        <Column field="diaChi" header="Địa chỉ" :sortable="false" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">diaChi</span>
-                {{ slotProps.data.diaChiCuThe }}, {{ slotProps.data.tenPhuongXa }}, {{ slotProps.data.tenQuanHuyen }}, {{ slotProps.data.tenTinhThanh }}
-            </template>
-        </Column>
-        <Column field="trangThai" header="Trạng thái" :sortable="false" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">trangThai</span>
-                <Tag :value="hienThiTrangThai(slotProps.data.trangThai).text" :severity="hienThiTrangThai(slotProps.data.trangThai).severity" />
-            </template>
-        </Column>
-
-        <Column header="Hành động" headerStyle="min-width:10rem;">
-            <template #body="slotProps">
-                <!-- <DetailSize :my-prop="slotProps.data"></DetailSize>
-                <UpdateSize :my-prop="slotProps.data"></UpdateSize>
-                <Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" @click="editProduct(slotProps.data)" />
-                <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2" @click="confirmDeleteProduct(slotProps.data.id)" /> -->
-                <Button @click="redirectToTrangThaiDonHang(slotProps.data.idHD)" label="Xem" class="p-button-outlined p-button-info mr-2 mb-2" />
-            </template>
-        </Column>
-    </DataTable>
+    </Dialog>
 </template>
 
 <style scoped>
 .sreach {
     margin-bottom: 10px;
 }
+
+.flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.product-details {
+    flex: 1;
+    /* Để cho phần tử này mở rộng và lấp đầy khoảng trống trong flex container */
+}
+
+
 .rong {
     position: absolute;
     /* top: 100px; */
@@ -250,8 +334,9 @@ const formatDate = (value) => {
     width: 1100px;
     width: 100%;
     height: 20px;
-    background: rgb(239, 243, 248);
+    background: rgb(19, 111, 224);
 }
+
 .san-pham {
     margin-top: 20px;
     padding-top: 20px;
@@ -260,26 +345,34 @@ const formatDate = (value) => {
     position: relative;
     align-items: center;
 }
+
 .san-pham i.pi-truck {
     font-size: 1.5rem;
-    vertical-align: middle; /* Điều chỉnh vị trí của icon theo chiều dọc */
+    vertical-align: middle;
+    /* Điều chỉnh vị trí của icon theo chiều dọc */
 }
 
 .san-pham::after {
     content: '';
     width: 100%;
-    height: 1px; /* Độ dày của dấu gạch ngang */
-    background-color: black; /* Màu sắc của dấu gạch ngang */
+    height: 1px;
+    /* Độ dày của dấu gạch ngang */
+    background-color: black;
+    /* Màu sắc của dấu gạch ngang */
     position: absolute;
     bottom: 0;
 }
+
 .hoan-thanh {
-    color: red; /* Đặt màu cam cho chữ HOÀN THÀNH */
+    color: red;
+    /* Đặt màu cam cho chữ HOÀN THÀNH */
 }
 
 .giao-thanh-cong {
-    color: gray; /* Đặt màu ghi cho chữ Đơn hàng đã được giao thành công */
+    color: gray;
+    /* Đặt màu ghi cho chữ Đơn hàng đã được giao thành công */
 }
+
 .gach {
     font-size: 20px;
 }
@@ -291,6 +384,7 @@ const formatDate = (value) => {
     justify-content: space-between;
     align-items: center;
 }
+
 .product-container {
     display: flex;
     align-items: flex-start;
@@ -301,7 +395,8 @@ const formatDate = (value) => {
 }
 
 .thumbnail img {
-    width: 150px; /* Điều chỉnh kích thước của ảnh */
+    width: 150px;
+    /* Điều chỉnh kích thước của ảnh */
     height: auto;
 }
 

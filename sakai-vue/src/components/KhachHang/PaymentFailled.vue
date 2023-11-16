@@ -1,32 +1,36 @@
 <template>
-<div id="notfound">
-		<div class="notfound">
-			<div class="notfound-404">
-				<h1>404</h1>
-			</div>
-			<h2>Oops! This Page Could Not Be Found</h2>
-			<p>Sorry but the page you are looking for does not exist, have been removed. name changed or is temporarily unavailable</p>
-			<a href="#" @click="goHome" >Go To Homepage</a>
-		</div>
-	</div>
+  <div id="notfound">
+    <div class="notfound">
+      <div class="notfound-404">
+        <h1>404</h1>
+      </div>
+      <h2>Oops! This Page Could Not Be Found</h2>
+      <p>Sorry but the page you are looking for does not exist, have been removed. name changed or is temporarily
+        unavailable</p>
+      <a href="#" @click="goHome">Go To Homepage</a>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { useRoute } from 'vue-router';
 const router = useRoute();
+import { ref, onMounted } from 'vue';
 
+onMounted(async () => {
+  localStorage.removeItem('gioHang');
+});
 const goHome = () => {
   localStorage.removeItem("myForm");
   router.push('/gio-hang');
- 
+
 }
 </script>
 
 <style scoped>
-
 * {
   -webkit-box-sizing: border-box;
-          box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 body {
@@ -44,8 +48,8 @@ body {
   left: 50%;
   top: 50%;
   -webkit-transform: translate(-50%, -50%);
-      -ms-transform: translate(-50%, -50%);
-          transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
 }
 
 .notfound {
@@ -115,6 +119,7 @@ body {
     height: 110px;
     line-height: 110px;
   }
+
   .notfound .notfound-404 h1 {
     font-size: 120px;
   }

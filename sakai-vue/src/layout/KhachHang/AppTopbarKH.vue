@@ -7,6 +7,10 @@ import { userStore } from '@/service/Admin/User/UserService.js';
 import { gioHangStore } from '@/service/KhachHang/Giohang/GiohangCTService.js';
 import tokenService from '@/service/Authentication/TokenService.js';
 import userKHService from '@/service/KhachHang/UserService.js';
+import { KHThongBaoStore } from '../../service/KhachHang/ThongBaoService'
+
+
+const thongBaoStore = KHThongBaoStore();
 
 const userService = userStore();
 const { layoutConfig, onMenuToggle } = useLayout();
@@ -19,9 +23,47 @@ const gioHangService = gioHangStore();
 
 onMounted(() => {
     bindOutsideClickListener();
-    fetchData();
-    // displayKH();
+  //  fetchData();
+    getAllTB();
+    getDem();
+    soLuongGH();
 });
+
+
+const data = ref([]);
+const getAllTB = async () => {
+    const token = localStorage.getItem('token');
+    tokenCheck.value = token;
+    if (token == '' || token == null) {
+        return;
+    } else {
+        await thongBaoStore.fetchData(token);
+        data.value = thongBaoStore.data;
+    }
+
+}
+
+const tokenCheck = ref();
+
+const dem = ref(0);
+const getDem = async () => {
+    const token = localStorage.getItem('token');
+    if (token == '' || token == null) {
+        return;
+    } else {
+        dem.value = await thongBaoStore.fetchdem(token);
+    }
+
+}
+
+
+const daXem = async (id) => {
+    await thongBaoStore.daXem(id);
+    getAllTB();
+    getDem();
+    router.push({ name: 'lich-su-sp' });
+}
+
 
 onBeforeUnmount(() => {
     unbindOutsideClickListener();
@@ -51,6 +93,27 @@ const onSettingsClick = (event) => {
         // Xử lý trường hợp khác nếu cần
     }
 };
+
+const thongTinCaNhan = () => {
+    router.push(`/thong-tin-ca-nhan/${selectedUserId.value}`);
+}
+
+const lichSuMuaHang = () => {
+    router.push('/lich-su-sp');
+}
+
+const diaChi = () => {
+    router.push(`/dia-chi`);
+}
+
+const dangXuat = () => {
+    router.push(`/login`);
+    localStorage.removeItem('token');
+}
+
+const dangNhap = () => {
+    router.push(`/login`);
+}
 
 const topbarMenuClasses = computed(() => {
     return {
@@ -86,15 +149,20 @@ const isOutsideClicked = (event) => {
 const selectedKH = ref(null);
 const khachHang = ref([]);
 
-const fetchData = async () => {
-    try {
-        await userService.getAllUser();
-        khachHang.value = userService.data;
-        //   console.log(khachHang.value);
-    } catch (error) {
-        // Xử lý lỗi ở đây nếu cần
-    }
-};
+
+// const fetchData = async () => {
+//     try {
+//         if(token !== null || token !== "undefined"){
+//             await userService.getAllUser();
+//         khachHang.value = userService.data;
+//         }
+      
+//         //   console.log(khachHang.value);
+//     } catch (error) {
+//         // Xử lý lỗi ở đây nếu cần
+//     }
+// };
+
 
 const isTokenValid = async (token) => {
     if (token) {
@@ -117,28 +185,19 @@ const isTokenValid = async (token) => {
 // nếu muốn dùng thông tin khách hàng khi đặt hàng thì dùng selectedCustomer.value
 
 // hàm gọi sự thay đổi thông tin của khách hàng khi click vào CBB
-const soLuong = ref(null);
 
-const displayKH = async () => {
-    //   const token = localStorage.getItem('token');
+const soLuong = ref(0);
 
-    // if (isTokenValid(token)) {
-    //     const userName = await tokenService.getUserNameByToken(token);
+const soLuongGH = async () => {
+    const token = localStorage.getItem('token');
+    if (token == '' || token == null) {
+        return;
+    } else {
+    await gioHangService.countGHCT(token);
+    soLuong.value = gioHangService.soLuong;
+    }
+}
 
-    //     const user = await userKHService.getUserByUsername(userName);
-
-    //     await gioHangService.countGHCT(user.id);
-    //     soLuong.value = gioHangService.soLuong;
-
-    //     selectedCustomer.value = khachHang.value.find((kh) => kh.userName === userName);
-    // } else {
-    selectedCustomer.value = khachHang.value.find((kh) => kh.ten === selectedKH.value.ten);
-    const tokens = await tokenService.gentoken(selectedCustomer.value.userName);
-    localStorage.setItem('token', tokens);
-    // }
-    let array = JSON.parse(localStorage.getItem('cart'));
-    await gioHangService.addToCartWhenLogin(array, tokens);
-};
 
 const menu = ref();
 const items = ref([
@@ -156,9 +215,16 @@ const items = ref([
     }
 ]);
 
+const op2 = ref();
 const toggle = (event) => {
-    menu.value.toggle(event);
+    op2.value.toggle(event);
 };
+
+const op = ref();
+const toggle2 = (event) => {
+    op.value.toggle(event);
+};
+
 </script>
 
 <template>
@@ -173,42 +239,99 @@ const toggle = (event) => {
 
         <Toast />
         <div class="layout-topbar-menu">
-            <router-link to="/" class="layout-topbar-logo" style="width: 13%; margin-left: 10px">
-                <p style="font-size: 19px">Home</p>
+            <router-link to="/" class="layout-topbar-logo" style=" width: 100px; margin-left: 10px">
+                <p style="font-size: 16px">Home</p>
             </router-link>
-            <router-link to="/san-pham" class="layout-topbar-logo" style="width: 22%; margin-left: 10px">
-                <p style="font-size: 19px">Sản phẩm</p>
+            <router-link to="/san-pham" class="layout-topbar-logo" style=" width: 100%; margin-left: 10px">
+                <p style="font-size: 16px">Sản phẩm</p>
             </router-link>
-            <router-link to="/gioi-thieu" class="layout-topbar-logo" style="width: 28%; margin-left: 10px">
-                <p style="font-size: 19px">Về chúng tôi</p>
+            <router-link to="/gioi-thieu" class="layout-topbar-logo" style="width: 120%; margin-left: 10px">
+                <p style="font-size: 16px">Về chúng tôi</p>
             </router-link>
-            <router-link to="/pages/size" class="layout-topbar-logo" style="width: 16%; margin-left: 10px; margin-right: 15px">
-                <p style="font-size: 19px">Liên hệ</p>
+            <router-link to="/pages/size" class="layout-topbar-logo"
+                style="width: 90%; margin-left: 10px; margin-right: 15px">
+                <p style="font-size: 16px">Liên hệ</p>
             </router-link>
-
-            <div class="layout-topbar-logo" style="width: 16%; margin-right: 40px">
-                <div v-if="selectedCustomer === null">
-                    <Dropdown v-model="selectedKH" :options="khachHang" optionLabel="ten" placeholder="Chọn KH" class="w-full md:w-8rem" style="margin-top: 5px; max-height: 100px; overflow-y: auto" @change="displayKH" />
-                </div>
-
-                <div v-else style="display: inline-block">
-                    <div style="font-size: 10px">
-                        <div>Tên: {{ selectedCustomer.ten }}</div>
-                        <div>Role: {{ selectedCustomer.role }}</div>
-                    </div>
-                </div>
-            </div>
             <router-link to="/gio-hang" class="layout-topbar-logo" style="width: 5%; margin-right: 3px">
-                <i class="pi pi-shopping-cart p-text-secondary" style="font-size: 2rem" v-badge="soLuong"></i>
+                <i class="pi pi-shopping-cart p-text-secondary p-overlay-badge" style="font-size: 1.5rem"
+                    v-badge="soLuong"></i>
             </router-link>
-            <div class="flex justify-content-center">
-                <button class="p-link layout-topbar-button" @click="toggle" aria-haspopup="true" aria-controls="overlay_tmenu">
-                    <i class="pi pi-user"></i>
+            <div class="flex justify-content-center" style="margin-right: 10px; margin-left:20px;">
+
+                <button class="p-link " @click="toggle" aria-haspopup="true" aria-controls="overlay_tmenu">
+                    <i class="pi pi-user " style="font-size: 1.5rem" />
                 </button>
-                <TieredMenu ref="menu" id="overlay_tmenu" :model="items" popup @command="onSettingsClick" />
+                <OverlayPanel ref="op2" style="display: block; width: 150px;">
+                    <button v-if="tokenCheck != null" class="p-link a " aria-haspopup="true" aria-controls="overlay_tmenu"
+                        @click="thongTinCaNhan">
+                        <div class="flex align-items-center" style="height: 20px;margin-bottom: 10px; width: 120px;">
+                            Hồ sơ cá nhân
+                        </div>
+                    </button>
+                    <button v-if="tokenCheck != null" class="p-link a " aria-haspopup="true" aria-controls="overlay_tmenu"
+                        @click="diaChi">
+                        <div class="flex align-items-center" style="height: 20px;margin-bottom: 10px; width: 120px;">
+                            Địa chỉ
+                        </div>
+                    </button>
+                    <button v-if="tokenCheck != null" class="p-link a " aria-haspopup="true" aria-controls="overlay_tmenu"
+                        @click="lichSuMuaHang">
+                        <div class="flex align-items-center" style="height: 20px;margin-bottom: 10px; width: 120px;">
+                            Lịch sử mua hàng
+                        </div>
+                    </button>
+                    <button v-if="tokenCheck == null" class="p-link a " aria-haspopup="true" aria-controls="overlay_tmenu"
+                        @click="dangNhap">
+                        <div class="flex align-items-center" style="height: 20px;margin-bottom: 10px; width: 120px;">
+                            Đăng Nhập
+                        </div>
+                    </button>
+
+                    <button v-if="tokenCheck != null" class="p-link a " aria-haspopup="true" aria-controls="overlay_tmenu"
+                        @click="dangXuat">
+                        <div class="flex align-items-center" style="height: 20px;margin-bottom: 10px; width: 120px;  ">
+                            Đăng Xuất
+                        </div>
+                    </button>
+                </OverlayPanel>
+            </div>
+            <div class=" flex justify-content-center gap-4">
+
+
+                <button class="p-link " @click="toggle2" aria-haspopup="true" aria-controls="overlay_tmenu">
+                    <i v-badge="dem" class="pi pi-bell p-overlay-badge" style="font-size: 1.5rem" />
+                </button>
+
+                <OverlayPanel ref="op">
+
+                    <H6>Thông báo </H6>
+                    <div v-for="(o, index) in data">
+                        <button class="p-link " aria-haspopup="true" aria-controls="overlay_tmenu">
+                            <div class="flex align-items-center" style="height: 50px;margin-bottom: 10px; width: 240px;"
+                                @click="daXem(o.id)">
+                                <div style="display:  flex; ">
+                                    <div style="margin-right: 10px; width: 180px;  margin-bottom: -30px;">
+                                        <p style="margin-bottom: 30px; ">{{ o.content }}</p>
+                                    </div>
+                                    <div style=" ">
+                                        <span style="font-size: 10px; margin-top: 0px; ">{{ o.trangThai == 0 ? 'đã xem' :
+                                            'chưa xem' }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </button>
+
+                    </div>
+
+                </OverlayPanel>
             </div>
         </div>
     </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+button.p-link:hover {
+    background-color: rgb(248, 239, 239);
+    /* Thay #f00 bằng màu bạn muốn */
+}
+</style>

@@ -3,18 +3,45 @@ import { ref, onMounted, watch } from 'vue';
 import Timeline from 'primevue/timeline';
 import { useRoute } from 'vue-router';
 import { HDKHStore } from '../../../service/KhachHang/HoaDonKHService';
+import { useForm, useField, defineRule } from 'vee-validate';
+import * as yup from 'yup';
+import { gioHangStore } from '../../../service/KhachHang/Giohang/GiohangCTService';
+import { useRouter } from 'vue-router';
 
+const gioHangService = gioHangStore();
 const router = useRoute();
+const routers = useRouter();
 const useHD = HDKHStore();
 const idHD = router.params.id;
 const dataSP = ref([]);
 const dataHD = ref({});
+
+const schema = yup.object().shape({
+    lyDo: yup.string().required('Vui lòng chọn lý do'),
+    moTa: yup.string().required('Vui lòng điền mô tả ').min(10, 'Mô tả sản phẩm phải có ít nhất 10 ký tự')
+});
+const { handleSubmit, resetForm } = useForm({
+    validationSchema: schema
+});
+
+
+const { value: lyDo, errorMessage: lyDoSacError } = useField('lyDo');
+const { value: moTa, errorMessage: MoTaSacError } = useField('moTa');
+
+
+
 onMounted(() => {
     loadData();
     loadDataHD();
 });
+const tongTienHang = ref();
 const loadData = async () => {
     dataSP.value = await useHD.findHdctByIdHd(idHD);
+    // let sum = 0;
+    // for (const key of dataSP.value) {
+    //     sum += parseInt(key.giaBan);
+    // }
+    // tongTienHang.value = sum;
 };
 
 const loadDataHD = async () => {
@@ -41,13 +68,14 @@ const events = ref([
 ]);
 
 const tinhTongTien = (tienShip, tongTien) => {
-    return parseInt(tienShip) + parseInt(tongTien);
+    return parseInt(tongTien) + parseInt(tienShip);
 };
 const formatCurrency = (value) => {
     return parseInt(value).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
 };
 
 const hienThiTrangThai = (trangThai) => {
+
     if (parseInt(trangThai) == 0) {
         return { text: 'Đã hủy', severity: 'danger' };
     } else if (parseInt(trangThai) == 1) {
@@ -60,11 +88,68 @@ const hienThiTrangThai = (trangThai) => {
         return { text: 'Đang chuẩn bị hàng', severity: 'success' };
     } else if (parseInt(trangThai) == 5) {
         return { text: 'Đang giao', severity: 'help' };
-    } else if (parseInt(trangThai) == 6) {
-        return { text: 'Yêu cầu đổi trả', severity: 'warning' };
+    } else if (parseInt(trangThai) == 7) {
+        return { text: 'Yêu cầu đổi trả ', severity: 'warning' };
+    } else if (parseInt(trangThai) == 8) {
+        return { text: 'Xác nhận đổi trả thành công', severity: 'success' };
+    } else if (parseInt(trangThai) == 9) {
+        return { text: 'Yêu cầu đổi trả thất bại', severity: 'success' };
     } else {
-        return { text: 'Xác nhận đổi trả', severity: 'success' };
+        return { text: 'Đổi trả thành công', severity: 'success' };
     }
+};
+
+const doiTraDialog = ref(false);
+const idHDCT = ref(null);
+const idUser = ref(null);
+const idDiaChi = ref(null);
+const doiTra = (idhdct, userId, diaChiId) => {
+    idHDCT.value = idhdct;
+    idUser.value = userId;
+    idDiaChi.value = diaChiId;
+    doiTraDialog.value = true;
+}
+const tatDoiTra = () => {
+    doiTraDialog.value = false;
+}
+
+const onSubmit = handleSubmit(async (values) => {
+    const form = {
+        tienShip: dataHD.value.tienShip,
+        idUser: idUser.value,
+        idHDCT: idHDCT.value,
+        idDiaChi: idDiaChi.value,
+        lyDo: values.lyDo,
+        moTa: values.moTa
+    }
+    const token = localStorage.getItem('token');
+    await useHD.doiTra(token, form);
+    resetForm();
+    loadData();
+    loadDataHD();
+    doiTraDialog.value = false;
+});
+
+const dataLyDo = ref([{ value: 'Không đúng màu sắc' }, { value: 'Không đúng size' }, { value: 'Mũ bị hỏng ' }, { value: 'Mũ không giống như mô tả' }, { value: 'Khác' }]);
+const selectLyDo = ref();
+const onTrongLuongChange = () => {
+    if (selectLyDo.value) {
+        lyDo.value = selectLyDo.value.value;
+    } else {
+        lyDo.value = null;
+    }
+};
+
+
+const addCart = async (soLuong, idCTSP) => {
+    const cartItem = {
+        soLuong: soLuong,
+        sanPhamChiTiet: idCTSP
+    };
+    const token = localStorage.getItem('token');
+    await gioHangService.addToCart(cartItem, token);
+    routers.push({ name: 'gio-hang' });
+
 };
 </script>
 <template>
@@ -75,10 +160,8 @@ const hienThiTrangThai = (trangThai) => {
                     <div>
                         <h3>Trạng thái đơn hàng</h3>
                     </div>
-                    <div style="margin-left: 600px; font-size: 18px">
-                        <label for=""
-                            >Mã đơn hàng: <span> {{ dataHD.maHD }} </span></label
-                        >
+                    <div style="margin-left: 600px; font-size: 17px">
+                        <label for="">Mã đơn hàng: <span> {{ dataHD.maHD }} </span></label>
                         <span> | </span>
                         <label for="" style="color: red">{{ hienThiTrangThai(dataHD.trangThai).text }}</label>
                     </div>
@@ -90,7 +173,9 @@ const hienThiTrangThai = (trangThai) => {
                 <div>
                     <Timeline :value="events" layout="horizontal" align="bottom" class="customized-timeline">
                         <template #marker="slotProps">
-                            <span class="flex w-2rem h-2rem align-items-center justify-content-center text-white border-circle z-1 shadow-1" :style="{ backgroundColor: slotProps.item.color }">
+                            <span
+                                class="flex w-2rem h-2rem align-items-center justify-content-center text-white border-circle z-1 shadow-1"
+                                :style="{ backgroundColor: slotProps.item.color }">
                                 <i :class="slotProps.item.icon"></i>
                             </span>
                         </template>
@@ -108,7 +193,8 @@ const hienThiTrangThai = (trangThai) => {
                         <p>Cảm ơn bạn đã mua sắm tại VNK!</p>
                     </div>
                     <div style="margin-left: 600px">
-                        <Button type="button" label="Liên hệ" icon="pi pi-users" badgeClass="p-badge-danger" style="width: 200px; margin-left: 20px" outlined />
+                        <Button type="button" label="Liên hệ" icon="pi pi-users" badgeClass="p-badge-danger"
+                            style="width: 200px; margin-left: 20px" outlined />
                     </div>
                 </div>
                 <Divider />
@@ -128,12 +214,31 @@ const hienThiTrangThai = (trangThai) => {
                                         Màu sắc: <span>{{ hdct.tenMauSac }}</span>
                                     </p>
                                     <p>
-                                        Số lượng: x<span>{{ hdct.soLuong }}</span>
+                                        Số lượng: <span>{{ hdct.soLuong }}</span>
                                     </p>
                                 </div>
-                                <div class="price">
-                                    <h6 style="color: red">{{ formatCurrency(hdct.giaBan) }}</h6>
-                                    <Button type="button" label="Mua lại" style="width: 200px" />
+
+                                <p v-if="hdct.trangThaiHDCT == 8"> <span style="color: red;">Chú ý: </span> Hãy dùng mã
+                                    <span style="color: red;">{{ hdct.maHDCT }} </span> ghi lên kiện hàng bạn gửi cho shop
+                                    nhé ! </p>
+                                    <p v-if="hdct.trangThaiHDCT == 9">Rất tiếc đơn hàng đổi trả của bạn đã bị hủy !<br/> <span style="color: rgb(241, 50, 50);">Lý do: </span>{{ dataHD.moTa }}  </p>
+                                    <p v-if="hdct.trangThaiHDCT == 7">Đơn Hàng đổi trả đang trong quá trình xác nhận !<br/> <span style="color: rgb(241, 50, 50);">Lý do: </span>{{ dataHD.lyDo }}  </p>
+                           <div class="price">
+                                    <h6 style="color: red">{{ formatCurrency(hdct.donGia) }}</h6>
+                                    <Button type="button" label="Mua lại" style="width: 100px;margin-right: 10px;"
+                                        @click="addCart(hdct.idSPCT, hdct.soLuong)"
+                                        :disabled="dataHD.trangThai == 7 || dataHD.trangThai == 2 " />
+                                    <Button v-if="hdct.trangThaiHDCT == 3 || hdct.trangThaiHDCT == 10" severity="secondary"
+                                        label="Đổi / trả" style="width: 100px"
+                                        @click="doiTra(hdct.idHDCT, hdct.idUser, hdct.idDiaChi)" />
+                                    <p v-if="hdct.trangThaiHDCT == 9" style="margin-top: 10px;"> yêu cầu đổi sản phẩm thất
+                                        bại</p>
+                                    <p v-if="hdct.trangThaiHDCT == 8" style="margin-top: 10px;"> yêu cầu đổi sản phẩm thành
+                                        công</p>
+                                    <p v-if="hdct.trangThaiHDCT == 10" style="margin-top: 10px;">  đổi sản phẩm thành
+                                        công</p>
+                                    <p v-if="hdct.trangThaiHDCT == 7" style="margin-top: 10px;"> sản phẩm đang yêu cầu đổi
+                                        trả</p>
                                 </div>
                             </div>
                         </div>
@@ -146,9 +251,10 @@ const hienThiTrangThai = (trangThai) => {
                         <h4>Địa chỉ nhận hàng</h4>
                         <p>{{ dataHD.tenNguoiNhan }}</p>
                         <p>{{ dataHD.sdt }}</p>
-                        <p>{{ dataHD.diaChiCuThe }}, {{ dataHD.tenPhuongXa }}, {{ dataHD.tenQuanHuyen }}, {{ dataHD.tenTinhThanh }}</p>
+                        <p>{{ dataHD.diaChiCuThe }}, {{ dataHD.tenPhuongXa }}, {{ dataHD.tenQuanHuyen }}, {{
+                            dataHD.tenTinhThanh }}</p>
                     </div>
-                    <div class="c2">
+                    <div class="c2" style="margin-left: 500px;">
                         <p>Tổng tiền hàng</p>
                         <p>Phí vận chuyển</p>
 
@@ -158,16 +264,52 @@ const hienThiTrangThai = (trangThai) => {
                         <p>{{ formatCurrency(dataHD.tongTien) }}</p>
                         <p>{{ formatCurrency(dataHD.tienShip) }}</p>
 
-                        <p style="font-weight: bold; color: red">{{ formatCurrency(tinhTongTien(dataHD.tienShip, dataHD.tongTien)) }}</p>
+                        <p style="font-weight: bold; color: red">{{ formatCurrency(tinhTongTien(dataHD.tongTien,
+                            dataHD.tienShip)) }}</p>
                     </div>
                 </div>
             </div>
         </div>
+
+        <Dialog v-model:visible="doiTraDialog" :style="{ width: '450px' }" header="Đổi trả Sản phẩm" :modal="true">
+            <form @submit="onSubmit">
+                <div class="Field col-12 md:col-12" style="margin-bottom: 0px">
+                    <div style="display: flex">
+                        <span class="p-float-label" style="width: 500px;margin-top: 10px;">
+                            <Dropdown id="dropdown" style="width: 370px; " :options="dataLyDo" v-model="selectLyDo"
+                                optionLabel="value" :class="{ 'p-invalid': lyDoSacError }" @change="onTrongLuongChange">
+                            </Dropdown>
+                            <label for="dropdown">Lý do</label>
+                        </span>
+                        <TableTrongLuong :tableId="'TableTrongLuong'" :rightGhId="'right_ghTrongLuong'"
+                            :tableClass="'TableTrongLuong'" :rightGhClass="'right_ghTrongLuong'" />
+                    </div>
+                    <small class="p-error">{{ lyDoSacError }}</small>
+
+                    <div class="" style="margin-bottom: 0px;margin-top: 20px;">
+                        <label for="address">Mô tả</label>
+                        <Textarea id="address" rows="4" v-model="moTa" :class="{ 'p-invalid': MoTaSacError }"
+                            style="width: 370px; "></Textarea>
+                        <small class="p-error">{{ MoTaSacError }}</small>
+                    </div>
+                </div>
+                <div style="width: 400px; text-align: center">
+
+                    <Button class="p-button-outlined" outlined severity="secondary"
+                        style="width: 100px; height: auto; margin: 10px" @click="reset()" label="Hủy"></Button>
+                    <Button type="submit" class="p-button-outlined" style="width: 100px; height: auto; margin: 10px"
+                        label="Xác nhận"></Button>
+                </div>
+            </form>
+
+        </Dialog>
+
     </div>
 </template>
 <style scoped>
 .container {
     margin-top: 80px;
+    margin-bottom: 100px;
 }
 
 .flex {
@@ -177,14 +319,18 @@ const hienThiTrangThai = (trangThai) => {
 }
 
 .product-details {
-    flex: 1; /* Để cho phần tử này mở rộng và lấp đầy khoảng trống trong flex container */
+    flex: 1;
+    /* Để cho phần tử này mở rộng và lấp đầy khoảng trống trong flex container */
 }
 
 .details {
-    margin-left: 20px; /* Khoảng cách giữa thông tin sản phẩm và giá tiền */
+    margin-left: 20px;
+    /* Khoảng cách giữa thông tin sản phẩm và giá tiền */
 }
 
 .price {
-    text-align: right; /* Đặt giá tiền ở bên phải */
+    text-align: right;
+    /* Đặt giá tiền ở bên phải */
+    display: block;
 }
 </style>

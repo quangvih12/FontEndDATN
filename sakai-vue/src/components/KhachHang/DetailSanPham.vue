@@ -37,7 +37,7 @@ onMounted(async () => {
     await loadImg();
     await loadDataSize();
     await loadDataMauSac();
-    
+
 
     prevDataSizeLength.value = dataSize.value.length;
     prevDataMauLength.value = dataMauSac.value.length;
@@ -124,7 +124,7 @@ const getSLTonTong = async (idctsp) => {
 const loadData = async () => {
     await productStore.fetchProductById(idProduct);
     dataSanPham.value = productStore.product;
-  
+
     // loadImage.value = dataSanPham.value.images;
     // console.log(dataSanPham.value);
 };

@@ -15,7 +15,8 @@ export const gioHangStore = defineStore('gioHang', {
     // this.data.unshift(response.data.data);
     actions: {
         async addToCart(form, token) {
-            const response = await axios.post(`http://localhost:8080/api/khach-hang/giohang/addGiohang?token=${token}`, form)
+            const response = await axios.post(`http://localhost:8080/api/khach-hang/giohang/addGiohang?token=${token}`, form);
+            await this.countGHCT(token);
             return response.data;
         },
 
@@ -25,7 +26,8 @@ export const gioHangStore = defineStore('gioHang', {
         },
 
         async addToCartWhenLogin(form, token) {
-            const response = await axios.post(`http://localhost:8080/api/khach-hang/giohang/addGiohang-when-login?token=${token}`, form)
+            const response = await axios.post(`http://localhost:8080/api/khach-hang/giohang/addGiohang-when-login?token=${token}`, form);
+            await this.countGHCT(token);
             this.dataSessions = response.data;
         },
 
@@ -69,9 +71,11 @@ export const gioHangStore = defineStore('gioHang', {
             try {
                 const response = await axios.put(apiGiohang + '/congSL/' + idGHCT + `?token=${token}`);
                 const index = this.data.findIndex(hoadon => hoadon.idGHCT === idGHCT);
+              
                 if (response.data === '') {
                     this.fakedata = response.data;
                 } else {
+                    this.fakedata = response.data;
                     if (index !== -1) {
                         this.data[index] = response.data;
                     }
@@ -89,14 +93,15 @@ export const gioHangStore = defineStore('gioHang', {
                 const index = this.data.findIndex(hoadon => hoadon.idGHCT === idGHCT);
 
                 if (response.data === null) {
-
+                  
                     if (index !== -1) {
-                        console.log(response.value);
                         this.data[index] = response.data;
-                        this.fakedata = 'check';
+                        // this.fakedata = 'check';
                     }
                 } else {
+                    this.fakedata = response.data;
                     await this.getAllGHCT(token);
+                  await this.countGHCT(token);
                 }
 
             } catch (error) {
@@ -105,6 +110,7 @@ export const gioHangStore = defineStore('gioHang', {
         async xoaGHCT(idGHCT, token) {
             try {
                 const response = await axios.delete(apiGiohang + '/' + idGHCT + `?token=${token}`);
+                await this.countGHCT(token);
                 this.data = response.data;
             } catch (error) {
             }
@@ -118,9 +124,9 @@ export const gioHangStore = defineStore('gioHang', {
             }
         },
 
-        async countGHCT(userId) {
+        async countGHCT(token) {
             try {
-                const response = await axios.get(`http://localhost:8080/api/khach-hang/giohang/countGHCT?userId=${userId}`);
+                const response = await axios.get(`http://localhost:8080/api/khach-hang/giohang/countGHCT?token=${token}`);
                 this.soLuong = response.data;
             } catch (error) {
             }
