@@ -229,8 +229,8 @@ const formatDate = (value) => {
         <Column header="Hành động" headerStyle="min-width:10rem;">
             <template #body="slotProps">
                 <DetailHoaDon :my-prop="slotProps.data"></DetailHoaDon>
-                <Button label="Hoàn thành" class="p-button-outlined p-button-info mr-2 mb-2" @click="confirmAddProduct(slotProps.data.idHD)" />
-                <Button label="Thất bại" class="p-button-outlined p-button-info mr-2 mb-2" @click="confirmHuy(slotProps.data.idHD)" />
+                <!-- <Button label="Hoàn thành" class="p-button-outlined p-button-info mr-2 mb-2" @click="confirmAddProduct(slotProps.data.idHD)" />
+                <Button label="Thất bại" class="p-button-outlined p-button-info mr-2 mb-2" @click="confirmHuy(slotProps.data.idHD)" /> -->
             </template>
         </Column>
     </DataTable>

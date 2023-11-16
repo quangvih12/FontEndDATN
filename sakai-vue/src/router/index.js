@@ -11,7 +11,11 @@ const router = createRouter({
             path: '/:pathMatch(.*)*',
             component: () => import('@/views/pages/auth/Login.vue')
         }
-        ,   {
+        , {
+            path: '/login',
+            name: 'login',
+            component: () => import('@/views/pages/auth/Login.vue')
+        },  {
             path: '/',
             component: AppLayoutKH,
             children: [
@@ -20,15 +24,21 @@ const router = createRouter({
                     name: 'trang-chu',
                     component: () => import('@/components/KhachHang/TrangChu.vue')
                 },
-                {
-                    path: '/login',
-                    name: 'login',
-                    component: () => import('@/views/pages/auth/Login.vue')
-                },
+                
                 {
                     path: '/gioi-thieu',
                     name: 'gioi-thieu',
                     component: () => import('@/components/KhachHang/GioiThieu.vue')
+                },
+                {
+                    path: '/success',
+                    name: 'success',
+                    component: () => import('@/components/KhachHang/Success.vue')
+                },
+                {
+                    path: '/failed',
+                    name: 'failed',
+                    component: () => import('@/components/KhachHang/PaymentFailled.vue')
                 },
                 {
                     path: '/thong-tin-ca-nhan',

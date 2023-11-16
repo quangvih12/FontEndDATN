@@ -65,7 +65,7 @@ watch(lyDoDialog, (newVal) => {
 const loadData = async () => {
     const token = localStorage.getItem('token');
     if (token.length > 0 || token != null) {
-        await useHD.fetchDataByStatus(token, 2, "", "");
+        await useHD.fetchDataByStatus(token, 2, "", "","");
         data.value = useHD.dataDangChuanBi;
     }
 };
@@ -187,6 +187,7 @@ const formatDate = (value) => {
 };
 </script>
 <template>
+     <div style="height: 500px; font-size: 24px;" v-if="!data || data.length === 0"> Chưa có Đơn hàng !</div>
     <div v-for="(hd, index) in data" :key="index">
         <div style="width: 1060px; background: rgb(255, 255, 255); ">
 

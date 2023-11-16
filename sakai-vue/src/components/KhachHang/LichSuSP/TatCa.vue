@@ -2,7 +2,7 @@
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
 import CustomerService from '@/service/CustomerService';
 import ProductService from '@/service/ProductService';
-import { ref, onBeforeMount, onMounted } from 'vue';
+import { ref, onBeforeMount, onMounted,watch } from 'vue';
 import { HDKHStore } from '../../../service/KhachHang/HoaDonKHService';
 import DetailHoaDon from './TrangThaiDonHang.vue';
 import { useRouter } from 'vue-router';
@@ -33,6 +33,7 @@ const loadData = async () => {
     if (token.length > 0 || token != null) {
         await useHD.fetchData(token);
         data.value = useHD.dataAll;
+        // console.log(data.value);
     }
 };
 
@@ -42,24 +43,26 @@ onMounted(() => {
 });
 
 const hienThiTrangThai = (trangThai) => {
-    if (trangThai == 0) {
+    if (parseInt(trangThai) == 0) {
         return { text: 'Đã hủy', severity: 'danger' };
-    } else if (trangThai == 1) {
+    } else if (parseInt(trangThai) == 1) {
         return { text: 'Chờ thanh toán', severity: 'secondary' };
-    } else if (trangThai == 2) {
+    } else if (parseInt(trangThai) == 2) {
         return { text: 'Yêu cầu xác nhận', severity: 'success' };
-    } else if (trangThai == 3) {
+    } else if (parseInt(trangThai) == 3) {
         return { text: 'Hoàn thành', severity: 'info' };
-    } else if (trangThai == 4) {
+    } else if (parseInt(trangThai) == 4) {
         return { text: 'Đang chuẩn bị hàng', severity: 'success' };
-    } else if (trangThai == 5) {
+    } else if (parseInt(trangThai) == 5) {
         return { text: 'Đang giao', severity: 'help' };
-    } else if (trangThai == 7) {
+    } else if (parseInt(trangThai) == 7) {
         return { text: 'Yêu cầu đổi trả ', severity: 'warning' };
-    } else if (trangThai == 9) {
-        return { text: 'Yêu cầu đổi trả thất bại', severity: 'warning' };
-    } else {
+    } else if (parseInt(trangThai) == 8) {
         return { text: 'Xác nhận đổi trả thành công', severity: 'success' };
+    }else if (parseInt(trangThai) == 9) {
+        return { text: 'Yêu cầu đổi trả thất bại', severity: 'success' };
+    }else  {
+        return { text: 'Đổi trả thành công', severity: 'success' };
     }
 };
 
@@ -167,9 +170,14 @@ const addCart = async (soLuong, idCTSP) => {
     router.push({ name: 'gio-hang' });
 
 };
+const tinhTongTien = (tienShip, tongTien) => {
+    return parseInt(tongTien) + parseInt(tienShip);
+};
+
 </script>
 
 <template>
+      <div style="height: 500px; font-size: 24px;" v-if="!data || data.length === 0"> Chưa có Đơn hàng !</div>
     <div v-for="(hd, index) in data" :key="index">
         <div style="width: 1060px; background: rgb(255, 255, 255); ">
 
@@ -233,7 +241,7 @@ const addCart = async (soLuong, idCTSP) => {
                 <div style="display: flex; width: 100%; background: rgb(255, 255, 255);">
                     <div style="background: rgb(255, 255, 255);width: 30%; height: 100px; margin-top: ;">
                         <h5 style="color: rgb(253, 1, 1);margin-top: 30px;margin-left: -50px; margin-bottom: 20px;">Thành
-                            tiền: <span>{{ formatCurrency(hd.tongTien) }}</span> </h5>
+                            tiền: <span>{{ formatCurrency(tinhTongTien(hd.tongTien,hd.tienShip)) }}</span> </h5>
                     </div>
 
                     <div style="display: flex;justify-content: flex-end; width: 70%;">

@@ -106,10 +106,18 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import vue3GoogleLogin from 'vue3-google-login';
 import '@/assets/styles.scss';
+// import { Client } from 'webstomp-client';
+// import SockJS from 'sockjs-client';
+
+
+// const socket = new SockJS('http://localhost:8080/ws');
+// const stompClient = new Client({ webSocketFactory: () => socket });
+
+// Bắt đầu kết nối
+// stompClient.activate();
 
 const app = createApp(App);
 const pinia = createPinia();
-
 let idGG = '267136886669-i8612hdfmltt70f0i27avrefk82rjt7t.apps.googleusercontent.com';
 
 app.use(vue3GoogleLogin, {
@@ -122,7 +130,7 @@ app.use(PrimeVue, { ripple: true });
 app.use(ToastService);
 app.use(DialogService);
 app.use(ConfirmationService);
-
+// app.provide('stomp', stompClient); 
 app.directive('tooltip', Tooltip);
 app.directive('badge', BadgeDirective);
 app.directive('ripple', Ripple);

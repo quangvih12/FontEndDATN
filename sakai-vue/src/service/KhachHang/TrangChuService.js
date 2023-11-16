@@ -7,6 +7,7 @@ const apiTrangChu = 'http://localhost:8080/api/khach-hang/trang-chu';
 export const TrangChuStore = defineStore('trangChu', {
     state: () => ({
         dataHangMoi: [],
+        dataSPBanChay: [],
         data3Phan4: [],
         dataTreEm: [],
         dataFullface: []
@@ -17,6 +18,15 @@ export const TrangChuStore = defineStore('trangChu', {
             try {
                 const response = await axios.get(apiTrangChu + '/get-all');
                 this.dataHangMoi = response.data;
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        },
+        //load sp bán chạy
+        async fetchDataBanChay() {
+            try {
+                const response = await axios.get(apiTrangChu + '/get-san-pham-ban-chay');
+                this.dataSPBanChay = response.data;
             } catch (error) {
                 console.error('Error fetching users:', error);
             }

@@ -2,7 +2,7 @@
 import { onMounted, reactive, ref, watch } from 'vue';
 import ProductService from '@/service/ProductService';
 import { useLayout } from '@/layout/composables/layout';
-import ThongKeHoaDon from './ThongKeHoaDon.vue';
+// import ThongKeHoaDon from './ThongKeHoaDon.vue';
 import ThongKeSanPham from './ThongKeLoiNhuan.vue';
 import ThongKeTheoNgay from './ThongKeDoanhThu.vue';
 

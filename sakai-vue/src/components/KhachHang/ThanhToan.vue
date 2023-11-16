@@ -3,13 +3,18 @@ import { ref, onMounted, watchEffect } from 'vue';
 import { useRoute } from 'vue-router';
 import { useCartStore } from '@/service/KhachHang/GioHang/useCartStore.js';
 import { useDiaChi } from '@/service/KhachHang/DiaChiService.js';
-import { phiShipStore } from '@/service/KhachHang/PhiGiaoHangService.js';
+import { phiShipStore } from '../../service/KhachHang/PhiGiaoHangService';
 import { checkoutStore } from '@/service/KhachHang/HoaDonService.js';
 import { voucherStore } from '@/service/KhachHang/KHVoucherService.js';
 import tokenService from '@/service/Authentication/TokenService.js';
 import userKHService from '@/service/KhachHang/UserService.js';
+import AddDiaChi from '@/components/KhachHang/DiaChiKhachHang/Add.vue';
+import UpdateDiaChi from '@/components/KhachHang/DiaChiKhachHang/Update.vue';
+import { vnpayStore } from '@/service/KhachHang/PaymentService.js';
 import { useToast } from 'primevue/usetoast';
 import { format } from 'date-fns';
+import ModalDiaChiThanhToan from '../KhachHang/DiaChiKhachHang/ModalDiaChiThanhToan.vue';
+
 // import {userStore} from '@/service/KhachHang/UserService.js';
 import { useRouter } from 'vue-router';
 const toast = useToast();
@@ -19,16 +24,18 @@ const store = useCartStore();
 const voucherService = voucherStore();
 const diaChiService = useDiaChi();
 const phiGiaoHangService = phiShipStore();
+const vnpayService = vnpayStore();
 const selectedVoucher = ref([]);
 const giamGia = ref();
 const tongThanhToan = ref();
+const tienSauGiam = ref();
 // const userKHService = userStore();
 const selectedCity = ref();
 const diaChi = ref();
 const phiShip = ref();
 const dataVoucher = ref([]);
 const phuongThucThanhToan = ref(2);
-
+const productDialog = ref(false);
 // const selectedProducts = ref([]);
 // const tongTien = ref(0);
 const cities = ref([
@@ -40,17 +47,17 @@ const cities = ref([
 ]);
 
 const route = useRoute();
-const selectedProducts = store.selectedProducts;
+
 const dataGHCT = ref([]);
 const loaddataGHCT = () => {
-    dataGHCT.value = selectedProducts;
-    
+    dataGHCT.value = JSON.parse(localStorage.getItem('gioHang'));
 };
-onMounted(async () => {
-    await loadUser();
+onMounted(() => {
+    loadUser();
+    loadPhiShip();
     loaddataGHCT();
     loadDataVoucher();
-   
+    loadDiaChi();
 });
 
 const tinhTongTienChoTungSanPham = (soLuong, giaSauGiam, giaBan) => {
@@ -73,7 +80,7 @@ const calculateTotalAmount = () => {
 // Theo dõi thay đổi trong dataGHCT và tính tổng lại khi có sự thay đổi
 watchEffect(() => {
     calculateTotalAmount();
-    tongThanhToan.value = tongTien.value+ phiShip.value;
+    tongThanhToan.value = tongTien.value + phiShip.value;
 });
 
 const formatCurrency = (value) => {
@@ -81,20 +88,21 @@ const formatCurrency = (value) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
 };
 
+const diaChiMacDinh = ref();
 const loadUser = async () => {
     const token = localStorage.getItem('token');
-    const userName = await tokenService.getUserNameByToken(token);
+    await diaChiService.findDiaChiByIdUserAndTrangThai(token);
+    diaChiMacDinh.value = diaChiService.diaChiMacDinh;
 
-    const user = await userKHService.getUserByUsername(userName);
-
-    await diaChiService.fetchAllDiaChi(user.id);
-    diaChi.value = diaChiService.diaChi;
-
-    await phiGiaoHangService.phiShip(diaChi.value);
-    phiShip.value = phiGiaoHangService.phiShip;
-
+    await phiGiaoHangService.phiShip(diaChiMacDinh.value);
+    phiShip.value = phiGiaoHangService.money;
     return diaChi.value;
 };
+
+const loadPhiShip = async () => {
+
+
+}
 
 const diaChiDialog = ref(false);
 
@@ -107,15 +115,13 @@ const saveDiaChi = () => {
 };
 
 const dataHoaDon = ref([]);
-
-
+const stringVNpay = ref();
 const thanhtoan = async () => {
     const token = localStorage.getItem('token');
     const userName = await tokenService.getUserNameByToken(token);
 
     const user = await userKHService.getUserByUsername(userName);
-    
-  
+
     const forms = dataGHCT.value.map((item) => {
         return {
             idCTSP: item.idCTSP,
@@ -128,13 +134,45 @@ const thanhtoan = async () => {
         tienShip: phiShip.value,
         idPayMethod: parseInt(phuongThucThanhToan.value),
         idUser: user.id,
+        tienSauGiam: tienSauGiam.value,
         listHDCT: forms
     };
 
-    await checkoutService.checkout(form);
-    dataHoaDon.value = checkoutService.checkOut;
-    toast.add({ severity: 'success', summary: '', detail: 'Thanh toán thành công', life: 3000 });
-    router.push('/gio-hang');
+    const formString = JSON.stringify(form);
+
+
+    if (parseInt(phuongThucThanhToan.value) == 1) {
+        const data = {
+            vnp_Ammount: tongThanhToan.value,
+            vnp_OrderInfo: 'Thanh toan hoa don',
+            vnp_OrderType: 'Thanh toan hoa don',
+            vnp_TxnRef: '123456',
+            hdct: forms
+        };
+
+        localStorage.setItem('myForm', formString);
+
+        await vnpayService.thanhToanVnPay(data);
+        stringVNpay.value = vnpayService.vnpay;
+
+        // Kiểm tra xem API có trả về URL redirect hay không
+        if (stringVNpay.value) {
+            // Chuyển hướng người dùng đến trang thanh toán của VnPay
+
+            window.location.href = stringVNpay.value;
+        } else {
+            console.log('Failed to get redirect URL from VnPay API');
+        }
+
+        // const idAccount = sessionStorage.getItem('idAccount');
+    } else {
+        await checkoutService.checkout(form);
+        dataHoaDon.value = checkoutService.checkOut;
+        toast.add({ severity: 'success', summary: '', detail: 'Thanh toán thành công', life: 3000 });
+        router.push('/gio-hang');
+    }
+
+
 };
 
 const selectedVoucherDialog = ref(false);
@@ -149,7 +187,7 @@ const loadDataVoucher = async () => {
     const user = await userKHService.getUserByUsername(userName);
     await voucherService.getListVoucher(user.id);
     dataVoucher.value = voucherService.data;
-   // console.log(dataVoucher.value);
+    // console.log(dataVoucher.value);
 };
 
 const formatDate = (dateTime) => {
@@ -157,17 +195,48 @@ const formatDate = (dateTime) => {
 };
 
 const applyVoucher = () => {
-
     giamGia.value = selectedVoucher.value.giamToiDa;
-    tongThanhToan.value = tongTien.value+phiShip.value-giamGia.value;
+    tongThanhToan.value = tongTien.value + phiShip.value - giamGia.value;
+
+    if (selectedVoucher.value == null) {
+        tienSauGiam.value = tongThanhToan.value;
+
+    } else {
+        tienSauGiam.value = tongThanhToan.value - giamGia.value;
+    }
     toast.add({ severity: 'success', summary: '', detail: 'Áp dụng voucher thành công', life: 3000 });
     selectedVoucherDialog.value = false;
-
 };
 
 const hideDialog = () => {
     selectedVoucherDialog.value = false;
-}
+};
+
+const thietLapMacDinh = async (id) => {
+    const token = localStorage.getItem('token');
+    await diaChiService.fetchDiaChiThanhToanModal(id, token);
+    loadDiaChi();
+    loadUser();
+};
+
+
+const submitted = ref(false);
+const product = ref({});
+const openNew = () => {
+    product.value = {};
+    submitted.value = false;
+    productDialog.value = true;
+};
+
+const userDiaChi = ref([]);
+const loadDiaChi = async () => {
+    const token = localStorage.getItem('token');
+    if (token.length > 0 || token != null) {
+        await diaChiService.fetchData(token);
+        userDiaChi.value = diaChiService.diaChi;
+        console.log(userDiaChi.value);
+    }
+};
 </script>
 <template>
     <div class="card">
@@ -175,36 +244,29 @@ const hideDialog = () => {
             <div class="flex">
                 <!-- Cột trái -->
                 <div class="p-col-5">
-                    <div class="trai">
+                    <div class="trai" style="margin-top: 50px;">
                         <h5>THÔNG TIN THANH TOÁN</h5>
+                        <div style="display: flex;">
+                            <div>
+                                <h4 style="color: red"><i class="pi pi-user" style="margin-right: 15px"></i> Địa chỉ nhận
+                                    hàng</h4>
 
-                        <h4 style="color: red"><i class="pi pi-user" style="margin-right: 15px"></i> Địa chỉ nhận hàng</h4>
+                                <p style="font-weight: bold">{{ diaChiMacDinh?.user?.ten }} - {{ diaChiMacDinh?.user?.sdt }}
+                                </p>
+                                <p style="">
+                                    {{ diaChiMacDinh?.diaChi }}, {{ diaChiMacDinh?.tenphuongXa }}, {{
+                                        diaChiMacDinh?.tenQuanHuyen
+                                    }}, {{ diaChiMacDinh?.tenTinhThanh }}</p>
+                            </div>
+                            <div>
+                                <Button style="margin-left: 30px; margin-top: 50px;" label="" icon="pi pi-plus"
+                                    class="p-button-outlined p-button-info mr-2 mb-2" @click="openNew" />
+                            </div>
+                        </div>
 
-                        <p style="font-weight: bold">{{ diaChi?.user?.ten }} - {{ diaChi?.user?.sdt }}</p>
-                        <p>
-                            {{ diaChi?.diaChi }}, {{ diaChi?.tenphuongXa }}, {{ diaChi?.tenQuanHuyen }}, {{ diaChi?.tenTinhThanh }}
 
-                            <label style="color: blue; margin-left: 50px; font-size: 15px; font-weight: bold" @click="editDiaChi">Thay đổi</label>
-                        </p>
-
-                        <Dialog v-model:visible="diaChiDialog" modal header="Header" :style="{ width: '50rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
-                            <template #header>
-                                <div class="inline-flex align-items-center justify-content-center gap-2">
-                                    <Avatar image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png" shape="circle" />
-                                    <span class="font-bold white-space-nowrap">Amy Elsner</span>
-                                </div>
-                            </template>
-                            <p class="m-0">
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-                                commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim
-                                id est laborum.
-                            </p>
-                            <template #footer>
-                                <Button label="Xác nhận" icon="pi pi-check" @click="saveDiaChi" autofocus />
-                            </template>
-                        </Dialog>
-
-                        <Textarea v-model="value" rows="4" cols="87" style="margin-top: 25px" placeholder="Ghi chú về đơn hàng, ví dụ: thời gian hay địa điểm giao hàng chi tiết hơn" />
+                        <Textarea v-model="value" rows="4" cols="87" style="margin-top: 25px"
+                            placeholder="Ghi chú về đơn hàng, ví dụ: thời gian hay địa điểm giao hàng chi tiết hơn" />
                     </div>
                 </div>
                 <!-- cột phải -->
@@ -212,13 +274,8 @@ const hideDialog = () => {
                     <div class="phai">
                         <div class="card">
                             <h5>ĐƠN HÀNG CỦA BẠN</h5>
-                            <DataTable
-                                :value="dataGHCT"
-                                dataKey="id"
-                                :filters="filters"
-                                paginatorTemplate="FirstPageLink Pr
-                            evPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                            >
+                            <DataTable :value="dataGHCT" dataKey="id" :filters="filters" paginatorTemplate="FirstPageLink Pr
+                            evPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown">
                                 <Column field="code" header="Sản phẩm" headerStyle="width:38%; min-width:14rem;">
                                     <template #body="slotProps">
                                         <img :src="slotProps.data.anh" alt="Ảnh sản phẩm" class="shadow-2" width="50" />
@@ -230,7 +287,8 @@ const hideDialog = () => {
                                     <template #body="slotProps">
                                         <div style="width: 100px">
                                             <!-- <p v-if="slotProps.data.soLuongTon != 0">Phân loại hàng:</p> -->
-                                            <p style="font-size: 13px; margin-top: -10px">{{ slotProps.data.tenMauSac }}, {{ slotProps.data.tenSize }}</p>
+                                            <p style="font-size: 13px; margin-top: -10px">{{ slotProps.data.tenMauSac }}, {{
+                                                slotProps.data.tenSize }}</p>
                                         </div>
                                     </template>
                                 </Column>
@@ -238,7 +296,9 @@ const hideDialog = () => {
                                 <Column field="tenSP" header="Đơn giá" headerStyle="width:14%; min-width:5rem;">
                                     <template #body="slotProps">
                                         <div style="display: block">
-                                            <div>{{ formatCurrency(slotProps.data.giaSPSauGiam) }}</div>
+                                            <div>{{ formatCurrency(slotProps.data.giaSPSauGiam) == '' ?
+                                                formatCurrency(slotProps.data.giaBan) :
+                                                formatCurrency(slotProps.data.giaSPSauGiam) }}</div>
                                         </div>
                                     </template>
                                 </Column>
@@ -253,7 +313,8 @@ const hideDialog = () => {
                                     <template #body="slotProps">
                                         <span class="p-column-title">Code</span>
                                         <p style="font-size: 15px; color: red">
-                                            {{ formatCurrency(tinhTongTienChoTungSanPham(slotProps.data.soLuong, slotProps.data.giaSPSauGiam, slotProps.data.giaBan)) }}
+                                            {{ formatCurrency(tinhTongTienChoTungSanPham(slotProps.data.soLuong,
+                                                slotProps.data.giaSPSauGiam, slotProps.data.giaBan)) }}
                                         </p>
                                     </template>
                                 </Column>
@@ -290,52 +351,54 @@ const hideDialog = () => {
                                 </div>
                             </div>
 
-                            <Dialog v-model:visible="selectedVoucherDialog" header="Flex Scroll" :style="{ width: '50vw' }" maximizable modal :contentStyle="{ height: '300px' }" class="p-fluid">
+                            <Dialog v-model:visible="selectedVoucherDialog" header="Flex Scroll" :style="{ width: '50vw' }"
+                                maximizable modal :contentStyle="{ height: '300px' }" class="p-fluid">
                                 <template #header>
-                                    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                                    <div
+                                        class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                                         <h5 class="m-0">Voucher</h5>
                                     </div>
                                 </template>
                                 <div class="card p-fluid">
-                                    <DataTable
-                                        :value="dataVoucher"
-                                        v-model:selection="selectedVoucher"
-                                        paginator
-                                        :rows="5"
-                                        :rowsPerPageOptions="[5, 10, 20, 50]"
-                                        tableStyle="min-width: 40rem"
+                                    <DataTable :value="dataVoucher" v-model:selection="selectedVoucher" paginator :rows="5"
+                                        :rowsPerPageOptions="[5, 10, 20, 50]" tableStyle="min-width: 40rem"
                                         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                                         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
-                                        responsiveLayout="scroll"
-                                    >
+                                        responsiveLayout="scroll">
                                         <Column selectionMode="single" headerStyle="width: 3rem"></Column>
-                                        <Column field="ten" header="Tên" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+                                        <Column field="ten" header="Tên" :sortable="true"
+                                            headerStyle="width:14%; min-width:10rem;">
                                             <template #body="slotProps">
                                                 <span class="p-column-title">Tên</span>
                                                 {{ slotProps.data.ten }}
                                             </template>
                                         </Column>
-                                        <Column field="giamToiDa" header="Giảm Tối Đa" :sortable="true" headerStyle="width:14%; min-width:8rem;">
+                                        <Column field="giamToiDa" header="Giảm Tối Đa" :sortable="true"
+                                            headerStyle="width:14%; min-width:8rem;">
                                             <template #body="slotProps">
                                                 <span class="p-column-title">Giảm Tối Đa</span>
                                                 {{ slotProps.data.giamToiDa }}
                                             </template>
                                         </Column>
-                                        <Column field="moTa" header="Mô Tả" :sortable="true" headerStyle="width:14%; min-width:8rem;">
+                                        <Column field="moTa" header="Mô Tả" :sortable="true"
+                                            headerStyle="width:14%; min-width:8rem;">
                                             <template #body="slotProps">
                                                 <span class="p-column-title">Mô Tả</span>
                                                 {{ slotProps.data.moTa }}
                                             </template>
                                         </Column>
-                                        <Column header="Ngày Kết Thúc" filterField="date" dataType="date" headerStyle="width:14%; min-width:8rem;">
+                                        <Column header="Ngày Kết Thúc" filterField="date" dataType="date"
+                                            headerStyle="width:14%; min-width:8rem;">
                                             <template #body="{ data }">
                                                 {{ formatDate(data.thoiGianKetThuc) }}
                                             </template>
                                             <template #filter="{ filterModel }">
-                                                <Calendar v-model="filterModel.value" dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" />
+                                                <Calendar v-model="filterModel.value" dateFormat="mm/dd/yy"
+                                                    placeholder="mm/dd/yyyy" />
                                             </template>
                                         </Column>
-                                        <Column field="soLuong" header="Số Lượng" :sortable="true" headerStyle="width:14%; min-width:8rem;">
+                                        <Column field="soLuong" header="Số Lượng" :sortable="true"
+                                            headerStyle="width:14%; min-width:8rem;">
                                             <template #body="slotProps">
                                                 <span class="p-column-title">Số Lượng</span>
                                                 {{ slotProps.data.soLuong }}
@@ -361,8 +424,6 @@ const hideDialog = () => {
                                 </div>
                             </div>
 
-
-
                             <div class="flex">
                                 <div class="p-col-6">
                                     <div class="flex-container">
@@ -370,29 +431,29 @@ const hideDialog = () => {
                                     </div>
                                 </div>
                                 <div class="p-col-6" style="margin-left: 470px">
-                                    <h6 style="height: 20px; width: 80px">{{ formatCurrency(tongThanhToan) }} <span></span></h6>
+                                    <h6 style="height: 20px; width: 80px">{{ formatCurrency(tongThanhToan) }} <span></span>
+                                    </h6>
                                 </div>
                             </div>
                             <Divider style="margin-top: -10px" />
                             <span style="font-weight: bold">
                                 <input type="radio" id="chuyenkhoan" value="1" v-model="phuongThucThanhToan" />
 
-                                Payment Credit Card / Visa / Master Card / Amex</span
-                            >
+                                Payment Credit Card / Visa / Master Card / Amex</span>
                             <br />
 
                             <Divider style="margin-top: -10px" />
                             <span style="font-weight: bold">
                                 <input type="radio" id="tienmat" value="2" v-model="phuongThucThanhToan" />
-                                Trả tiền mặt khi nhận hàng</span
-                            >
+                                Trả tiền mặt khi nhận hàng</span>
                             <br />
                             <!-- <div class="p-inputgroup flex-1">
                                 <InputText placeholder="Mã ưu đãi" />
                                 <Button label="Áp dụng" severity="warning" />
                             </div> -->
                             <br />
-                            <span> <input type="checkbox" id="agreeCheckbox" /> Tôi đã đọc và đồng ý với điều khoản và điều kiện của website * </span>
+                            <span> <input type="checkbox" id="agreeCheckbox" /> Tôi đã đọc và đồng ý với điều khoản và điều
+                                kiện của website * </span>
                             <br />
                             <Button label="Đặt hàng" severity="danger" @click="thanhtoan" />
                             <br />
@@ -403,6 +464,52 @@ const hideDialog = () => {
             </div>
         </div>
     </div>
+
+    <Dialog v-model:visible="productDialog" :style="{ width: '600px' }" header="Địa Chỉ" :modal="true" class="p-fluid">
+        <div style="position: relative; width: 80px; margin-left: 450px; margin-bottom: 20px;">
+            <AddDiaChi style="position: absolute; right: 0; width: 80px; margin-bottom: 5px;"></AddDiaChi>
+        </div>
+        <div class="card">
+
+            <div v-for="(hd, index) in userDiaChi">
+                <div style="width: 100%; height: 100px;  display: flex;">
+
+                    <div style="width: 70%;height: 100px;  background: rgb(255, 255, 255);">
+                        <div class="flex">
+                            <label for="" style="margin-right: 10px;"> <span>{{ diaChiMacDinh?.user?.ten }} </span></label>
+                            <span style="margin-right: 10px;"> | </span>
+                            <label for="" style="color: rgb(0, 0, 0)"> {{ diaChiMacDinh?.user?.sdt }}</label>
+                            <label for="" style="color: rgb(255, 0, 0) ; margin-left: 10px;"> {{ hd.trangThai == 1 ? "Mặc định":"" }}</label>
+                        </div>
+                        <div style="margin-top: 10px;"> <label for="" style="margin-right: 10px;"> <span>{{ hd.diaChi }}
+                                </span></label>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <label for="" style="margin-right: 10px;"> <span>{{ hd.tenphuongXa }}, {{ hd.tenQuanHuyen }}, {{
+                                hd.tenTinhThanh }}
+                                </span></label>
+                        </div>
+                    </div>
+
+                    <div
+                        style="width: 35%;height: 10px;  background: rgb(255, 255, 255); display: flex; margin-top: 30px;">
+                        <UpdateDiaChi :my-prop="hd"></UpdateDiaChi>
+
+                            <Button style="width: 100px;height: 45px;  margin-top: 0px;" label="Thiết lập mặc định "
+                                    class="p-button-outlined p-button-info mr-2 mb-2" @click="thietLapMacDinh(hd.id)"/>
+                    </div>
+
+                </div>
+                <Divider />
+            </div>
+
+
+
+        </div>
+
+
+
+    </Dialog>
 </template>
 
 <style scoped>
@@ -421,6 +528,7 @@ const hideDialog = () => {
     justify-content: center;
     /* align-items: center; */
 }
+
 .trai {
     padding: 20px 20px 30px 20px;
     width: 630px;
@@ -445,5 +553,4 @@ const hideDialog = () => {
 
 span {
     font-weight: bold;
-}
-</style>
+}</style>

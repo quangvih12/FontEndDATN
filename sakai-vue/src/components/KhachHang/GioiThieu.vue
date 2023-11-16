@@ -1,5 +1,7 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+
+
 
 const home = ref({
     icon: 'pi pi-home',

@@ -34,8 +34,14 @@ onMounted(() => {
     loadData();
     loadDataHD();
 });
+const tongTienHang = ref();
 const loadData = async () => {
     dataSP.value = await useHD.findHdctByIdHd(idHD);
+    // let sum = 0;
+    // for (const key of dataSP.value) {
+    //     sum += parseInt(key.giaBan);
+    // }
+    // tongTienHang.value = sum;
 };
 
 const loadDataHD = async () => {
@@ -62,7 +68,7 @@ const events = ref([
 ]);
 
 const tinhTongTien = (tienShip, tongTien) => {
-    return parseInt(tienShip) + parseInt(tongTien);
+    return parseInt(tongTien) + parseInt(tienShip);
 };
 const formatCurrency = (value) => {
     return parseInt(value).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
@@ -84,8 +90,12 @@ const hienThiTrangThai = (trangThai) => {
         return { text: 'Đang giao', severity: 'help' };
     } else if (parseInt(trangThai) == 7) {
         return { text: 'Yêu cầu đổi trả ', severity: 'warning' };
-    } else {
+    } else if (parseInt(trangThai) == 8) {
         return { text: 'Xác nhận đổi trả thành công', severity: 'success' };
+    } else if (parseInt(trangThai) == 9) {
+        return { text: 'Yêu cầu đổi trả thất bại', severity: 'success' };
+    } else {
+        return { text: 'Đổi trả thành công', severity: 'success' };
     }
 };
 
@@ -207,17 +217,25 @@ const addCart = async (soLuong, idCTSP) => {
                                         Số lượng: <span>{{ hdct.soLuong }}</span>
                                     </p>
                                 </div>
-                                <div class="price">
-                                    <h6 style="color: red">{{ formatCurrency(hdct.giaBan) }}</h6>
+
+                                <p v-if="hdct.trangThaiHDCT == 8"> <span style="color: red;">Chú ý: </span> Hãy dùng mã
+                                    <span style="color: red;">{{ hdct.maHDCT }} </span> ghi lên kiện hàng bạn gửi cho shop
+                                    nhé ! </p>
+                                    <p v-if="hdct.trangThaiHDCT == 9">Rất tiếc đơn hàng đổi trả của bạn đã bị hủy !<br/> <span style="color: rgb(241, 50, 50);">Lý do: </span>{{ dataHD.moTa }}  </p>
+                                    <p v-if="hdct.trangThaiHDCT == 7">Đơn Hàng đổi trả đang trong quá trình xác nhận !<br/> <span style="color: rgb(241, 50, 50);">Lý do: </span>{{ dataHD.lyDo }}  </p>
+                           <div class="price">
+                                    <h6 style="color: red">{{ formatCurrency(hdct.donGia) }}</h6>
                                     <Button type="button" label="Mua lại" style="width: 100px;margin-right: 10px;"
                                         @click="addCart(hdct.idSPCT, hdct.soLuong)"
-                                        :disabled="dataHD.trangThai == 7 || dataHD.trangThai == 2 || dataHD.trangThai == 5" />
-                                    <Button v-if="hdct.trangThaiHDCT == 3 || hdct.trangThaiHDCT == 9" severity="secondary"
+                                        :disabled="dataHD.trangThai == 7 || dataHD.trangThai == 2 " />
+                                    <Button v-if="hdct.trangThaiHDCT == 3 || hdct.trangThaiHDCT == 10" severity="secondary"
                                         label="Đổi / trả" style="width: 100px"
                                         @click="doiTra(hdct.idHDCT, hdct.idUser, hdct.idDiaChi)" />
                                     <p v-if="hdct.trangThaiHDCT == 9" style="margin-top: 10px;"> yêu cầu đổi sản phẩm thất
                                         bại</p>
                                     <p v-if="hdct.trangThaiHDCT == 8" style="margin-top: 10px;"> yêu cầu đổi sản phẩm thành
+                                        công</p>
+                                    <p v-if="hdct.trangThaiHDCT == 10" style="margin-top: 10px;">  đổi sản phẩm thành
                                         công</p>
                                     <p v-if="hdct.trangThaiHDCT == 7" style="margin-top: 10px;"> sản phẩm đang yêu cầu đổi
                                         trả</p>
@@ -236,7 +254,7 @@ const addCart = async (soLuong, idCTSP) => {
                         <p>{{ dataHD.diaChiCuThe }}, {{ dataHD.tenPhuongXa }}, {{ dataHD.tenQuanHuyen }}, {{
                             dataHD.tenTinhThanh }}</p>
                     </div>
-                    <div class="c2">
+                    <div class="c2" style="margin-left: 500px;">
                         <p>Tổng tiền hàng</p>
                         <p>Phí vận chuyển</p>
 
@@ -246,8 +264,8 @@ const addCart = async (soLuong, idCTSP) => {
                         <p>{{ formatCurrency(dataHD.tongTien) }}</p>
                         <p>{{ formatCurrency(dataHD.tienShip) }}</p>
 
-                        <p style="font-weight: bold; color: red">{{ formatCurrency(tinhTongTien(dataHD.tienShip,
-                            dataHD.tongTien)) }}</p>
+                        <p style="font-weight: bold; color: red">{{ formatCurrency(tinhTongTien(dataHD.tongTien,
+                            dataHD.tienShip)) }}</p>
                     </div>
                 </div>
             </div>
