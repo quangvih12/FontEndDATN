@@ -268,6 +268,7 @@ const increment = async (idGHCT) => {
                 // Cập nhật phần tử trong mảng
                 let so = array[i].soLuong + 1;
                 if (so > array[i].soLuongTon) {
+                  
                     toast.add({ severity: 'warn', summary: '', detail: 'Số lượng nhiều hơn số lượng tồn', life: 3000 });
                     return;
                 } else {
@@ -388,6 +389,8 @@ const ThanhToan = () => {
     if (token == '' || token == null) {
         toast.add({ severity: 'warn', summary: '', detail: 'bạn cần đăng nhập  ', life: 3000 });
         router.push('/login');
+    }else if(checkedValues.length == 0){
+        toast.add({ severity: 'warn', summary: '', detail: 'bạn cần chọn sản phẩm  ', life: 3000 });
     } else {
         store.updateSelectedProducts(checkedValues);
         router.push('/thanh-toan');

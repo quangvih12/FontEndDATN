@@ -27,7 +27,7 @@ const data = ref([]);
 const loadData = async () => {
     const token = localStorage.getItem('token');
     if (token.length > 0 || token != null) {
-        await useHD.fetchDataByStatus(token, 7, 8, 9);
+        await useHD.fetchDataByStatus(token, 7, 8, 9,10);
     }
     data.value = useHD.dataHoanTraHoanTien;
 };

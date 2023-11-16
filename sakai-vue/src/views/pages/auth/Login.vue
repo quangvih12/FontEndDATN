@@ -7,7 +7,9 @@ import tokenService from '@/service/Authentication/TokenService.js';
 import { dangNhapStore } from '../../../service/KhachHang/DangNhapService';
 import { useToast } from 'primevue/usetoast';
 import { useRouter } from 'vue-router';
+import { gioHangStore } from '../../../service/KhachHang/Giohang/GiohangCTService.js';
 
+const gioHangService = gioHangStore();
 const router = useRouter();
 const dnService = dangNhapStore();
 const { layoutConfig } = useLayout();
@@ -36,6 +38,11 @@ const dangNhapa = async () => {
     const token = await dnService.dangNhap(login);
     localStorage.setItem('token', token);
     gotoTrangChu();
+
+    // khi dang nhap thanh cong thi add sp gio hang vao db 
+    let array = JSON.parse(localStorage.getItem('cart'));
+    await gioHangService.addToCartWhenLogin(array, token);
+    localStorage.removeItem('cart');
 };
 
 const logoUrl = computed(() => {

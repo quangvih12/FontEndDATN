@@ -28,7 +28,7 @@ const data = ref([]);
 const loadData = async () => {
     const token = localStorage.getItem('token');
     if (token.length > 0 || token != null) {
-        await useHD.fetchDataByStatus(token, 0, "", "");
+        await useHD.fetchDataByStatus(token, 0, "", "","");
         data.value = useHD.dataDaHuy;
     }
 };
@@ -114,8 +114,9 @@ const initFilters1 = () => {
 };
 
 const formatCurrency = (value) => {
-    return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+    return parseInt(value).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
 };
+
 
 const formatDate = (value) => {
     return value.toLocaleDateString('en-US', {
@@ -143,6 +144,8 @@ const addCart = async (soLuong, idCTSP) => {
     router.push({ name: 'gio-hang' });
 
 };
+
+
 </script>
 <template>
     <div v-for="(hd, index) in data" :key="index">

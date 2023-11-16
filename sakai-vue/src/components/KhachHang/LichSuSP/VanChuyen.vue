@@ -65,7 +65,7 @@ watch(lyDoDialog, (newVal) => {
 const loadData = async () => {
     const token = localStorage.getItem('token');
     if (token.length > 0 || token != null) {
-        await useHD.fetchDataByStatus(token, 2, "", "");
+        await useHD.fetchDataByStatus(token, 2, "", "","");
         data.value = useHD.dataDangChuanBi;
     }
 };
