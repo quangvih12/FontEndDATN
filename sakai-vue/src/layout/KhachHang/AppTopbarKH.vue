@@ -8,7 +8,6 @@ import { gioHangStore } from '@/service/KhachHang/Giohang/GiohangCTService.js';
 import tokenService from '@/service/Authentication/TokenService.js';
 import userKHService from '@/service/KhachHang/UserService.js';
 
-
 const userService = userStore();
 const { layoutConfig, onMenuToggle } = useLayout();
 
@@ -21,7 +20,7 @@ const gioHangService = gioHangStore();
 onMounted(() => {
     bindOutsideClickListener();
     fetchData();
-   // displayKH();
+    // displayKH();
 });
 
 onBeforeUnmount(() => {
@@ -91,7 +90,7 @@ const fetchData = async () => {
     try {
         await userService.getAllUser();
         khachHang.value = userService.data;
-     //   console.log(khachHang.value);
+        //   console.log(khachHang.value);
     } catch (error) {
         // Xử lý lỗi ở đây nếu cần
     }
@@ -112,7 +111,6 @@ const isTokenValid = async (token) => {
             console.error('Error while validating token:', error);
         }
     }
-
 };
 
 // dùng để lưu thông tin khách hàng khi được chọn CBB.
@@ -122,8 +120,8 @@ const isTokenValid = async (token) => {
 const soLuong = ref(null);
 
 const displayKH = async () => {
- //   const token = localStorage.getItem('token');
-    
+    //   const token = localStorage.getItem('token');
+
     // if (isTokenValid(token)) {
     //     const userName = await tokenService.getUserNameByToken(token);
 
@@ -134,12 +132,12 @@ const displayKH = async () => {
 
     //     selectedCustomer.value = khachHang.value.find((kh) => kh.userName === userName);
     // } else {
-        selectedCustomer.value = khachHang.value.find((kh) => kh.ten === selectedKH.value.ten);
-        const tokens = await tokenService.gentoken(selectedCustomer.value.userName);
-        localStorage.setItem('token', tokens);
-   // }
-   let array = JSON.parse(localStorage.getItem('cart'));
-   await gioHangService.addToCartWhenLogin(array,tokens);
+    selectedCustomer.value = khachHang.value.find((kh) => kh.ten === selectedKH.value.ten);
+    const tokens = await tokenService.gentoken(selectedCustomer.value.userName);
+    localStorage.setItem('token', tokens);
+    // }
+    let array = JSON.parse(localStorage.getItem('cart'));
+    await gioHangService.addToCartWhenLogin(array, tokens);
 };
 
 const menu = ref();
@@ -155,7 +153,7 @@ const items = ref([
     {
         label: 'Lịch sử mua hàng',
         command: onSettingsClick
-    },
+    }
 ]);
 
 const toggle = (event) => {
@@ -165,8 +163,8 @@ const toggle = (event) => {
 
 <template>
     <div class="layout-topbar">
-        <router-link to="/" class="layout-topbar-logo">
-            <img :src="logoUrl" alt="logo" />
+        <router-link to="/" class="layout-topbar-logo" style="height: 60px; width: 120px">
+            <img src="../../images/logo.png" alt="logo" style="height: 70px" />
         </router-link>
 
         <button class="p-link layout-topbar-menu-button layout-topbar-button" @click="onTopBarMenuButton()">
