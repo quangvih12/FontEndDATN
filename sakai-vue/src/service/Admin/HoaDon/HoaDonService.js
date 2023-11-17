@@ -350,6 +350,14 @@ export const HDStore = defineStore('hoaDon', {
                     this.dataDaHoanTra = response.data;
                     return this.dataDaHoanTra;
                 }
+                if (trangThai == 8) {
+                    this.dataXacNhanHoanTraHoanTien = response.data;
+                    return this.dataXacNhanHoanTraHoanTien;
+                }
+                if (trangThai == 9) {
+                    this.dataDaHuyDoiTra = response.data;
+                    return this.dataDaHuyDoiTra;
+                }
                 if (trangThai == 0) {
                     this.dataDaHuy = response.data;
                     return this.dataDaHuy;

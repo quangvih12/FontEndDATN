@@ -1,4 +1,5 @@
 <script setup>
+import { format } from 'date-fns';
 import * as yup from 'yup';
 import { useForm, useField } from 'vee-validate';
 import { ref, onMounted, defineEmits, onBeforeMount } from 'vue';
@@ -56,7 +57,7 @@ const schema = yup.object().shape({
         }),
     giaNhap: yup.number().required('Giá nhập không được để trống').min(50000, 'giá phải lớn hơn hoặc bằng 50.000 đ').max(10000000, 'Giá bán không lớn hơn  10.000.000 đ'),
     trongLuong: yup.string().required('vui lòng chọn trọng lượng sản phẩm'),
-    trangThai: yup.number().required('vui lòng chọn trạng thái '),
+    trangThai: yup.number().required('vui lòng chọn trạng thái ')
 });
 
 const { handleSubmit, resetForm } = useForm({
@@ -74,7 +75,7 @@ const { value: MauSac, errorMessage: mauSacError } = useField('mauSac');
 const { value: size, errorMessage: sizeError } = useField('size');
 const { value: TrangThai, errorMessage: TrangThaiSacError } = useField('trangThai');
 
-const emit = defineEmits(['update:myProp'])
+const emit = defineEmits(['update:myProp']);
 const onSubmit = handleSubmit(async (values) => {
     submitted.value = true;
     if (values.idKhuyenMai == null || values.idKhuyenMai == '') {
@@ -90,19 +91,16 @@ const onSubmit = handleSubmit(async (values) => {
         idKhuyenMai: values.idKhuyenMai,
         mauSac: values.mauSac,
         size: values.size,
-        trangThai: values.trangThai,
-    }
+        trangThai: values.trangThai
+    };
     // console.log(form)
     let data = await productStore.editSPCT(form, props.myProp.id);
-    emit('update:myProp', data)
+    emit('update:myProp', data);
 
     toast.add({ severity: 'success', summary: 'Success Message', detail: 'update thành công', life: 3000 });
     reset();
     productDialog.value = false;
-
 });
-
-
 
 const reset = () => {
     resetForm();
@@ -111,7 +109,7 @@ const reset = () => {
     selectedKhuyenMai.value = null;
     selectedMauSac.value = null;
     selectedTrongLuong.value = null;
-}
+};
 
 const selectedMauSac = ref(null);
 const selectedSize = ref(null);
@@ -126,7 +124,7 @@ const openNew = () => {
     GiaBan.value = props.myProp.giaBan;
     GiaNhap.value = props.myProp.giaNhap;
     TrangThai.value = props.myProp.trangThai.toString();
-    const selectedMau = dataMauSac.value.find(item => item.ten === props.myProp.tenMauSac);
+    const selectedMau = dataMauSac.value.find((item) => item.ten === props.myProp.tenMauSac);
     selectedMauSac.value = selectedMau;
     if (selectedMauSac.value) {
         MauSac.value = selectedMauSac.value.id;
@@ -134,7 +132,7 @@ const openNew = () => {
         MauSac.value = null;
     }
 
-    const selectedTrongLuongs = dataTrongLuong.value.find(item => item.value === Number(props.myProp.trongLuong));
+    const selectedTrongLuongs = dataTrongLuong.value.find((item) => item.value === Number(props.myProp.trongLuong));
     selectedTrongLuong.value = selectedTrongLuongs;
     if (selectedTrongLuong.value) {
         TrongLuong.value = selectedTrongLuong.value.id;
@@ -142,7 +140,7 @@ const openNew = () => {
         TrongLuong.value = null;
     }
 
-    const selectedSizes = dataSize.value.find(item => item.ten === props.myProp.tenSize);
+    const selectedSizes = dataSize.value.find((item) => item.ten === props.myProp.tenSize);
     selectedSize.value = selectedSizes;
     if (selectedSize.value) {
         size.value = selectedSize.value.id;
@@ -150,14 +148,13 @@ const openNew = () => {
         size.value = null;
     }
 
-    const selectedKhuyenMais = khuyenmais.value.find(item => item.ten === props.myProp.tenKM);
+    const selectedKhuyenMais = khuyenmais.value.find((item) => item.ten === props.myProp.tenKM);
     selectedKhuyenMai.value = selectedKhuyenMais;
     if (selectedKhuyenMai.value) {
         idKhuyenMai.value = selectedKhuyenMai.value.id;
     } else {
         idKhuyenMai.value = null;
     }
-
 };
 
 const anhs = ref(null);
@@ -168,7 +165,7 @@ function onFileInputImage(event) {
         const objectURL = URL.createObjectURL(file);
         anhs.value = objectURL;
         // Gán giá trị cho phần tử có id là 'imagesChinh' (thay đổi id nếu cần)
-        const basePath = "D:\\imgDATN\\"; // Đường dẫn cố định
+        const basePath = 'D:\\imgDATN\\'; // Đường dẫn cố định
         const fileName = basePath + file.name;
         anh.value = fileName;
     }
@@ -226,9 +223,9 @@ const khuyenmai = ref([]);
 const loadDataKhuyenmai = async () => {
     await khuyenmaiService.getKhuyenMai();
     khuyenmai.value = khuyenmaiService.data;
-    khuyenmais.value = khuyenmai.value.filter(data => data.trangThai == 0 || data.trangThai == 2);
-    khuyenmais.value.unshift({ ten: 'Không có', id: null, trangThai: "" });
-}
+    khuyenmais.value = khuyenmai.value.filter((data) => data.trangThai == 0 || data.trangThai == 2);
+    khuyenmais.value.unshift({ ten: 'Không có', id: null, trangThai: '' });
+};
 
 const selectedTrongLuong = ref(null);
 const dataTrongLuong = ref([]);
@@ -272,22 +269,25 @@ const getStatusLabel = (trangThai) => {
             return '';
     }
 };
-
+const formatDate = (dateTime) => {
+    if (dateTime == null || dateTime.length <= 0) {
+        return null;
+    } else {
+        return format(new Date(dateTime), 'yyyy/MM/dd HH:mm:ss');
+    }
+};
 </script>
 <template>
     <Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" @click="openNew" />
 
-    <Dialog v-model:visible="productDialog" :style="{ width: '700px' }" header="Sửa sản phẩm chi tiết" :modal="true"
-        class="p-fluid">
+    <Dialog v-model:visible="productDialog" :style="{ width: '700px' }" header="Sửa sản phẩm chi tiết" :modal="true" class="p-fluid">
         <div class="card">
             <form @submit="onSubmit">
                 <div class="p-fluid formgrid grid">
-
                     <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
                         <div class="Field col-12 md:col-12" style="margin-bottom: 30px">
                             <span class="p-float-label">
-                                <InputNumber id="soluong" v-model="soluong" :class="{ 'p-invalid': soLuongError }">
-                                </InputNumber>
+                                <InputNumber id="soluong" v-model="soluong" :class="{ 'p-invalid': soLuongError }"> </InputNumber>
                                 <label for="SoLuongTon">Số lượng tồn</label>
                             </span>
                             <small class="p-error">{{ soLuongError }}</small>
@@ -295,79 +295,63 @@ const getStatusLabel = (trangThai) => {
 
                         <div class="Field col-12 md:col-12" style="margin-bottom: 30px">
                             <span class="p-float-label">
-                                <InputNumber id="Field" v-model="GiaNhap" :class="{ 'p-invalid': giaNhapError }">
-                                </InputNumber>
+                                <InputNumber id="Field" v-model="GiaNhap" :class="{ 'p-invalid': giaNhapError }"> </InputNumber>
                                 <label for="Field">Giá Nhập</label>
                             </span>
                             <small class="p-error">{{ giaNhapError }}</small>
                         </div>
                         <div class="Field col-12 md:col-12" style="margin-bottom: 30px">
                             <span class="p-float-label">
-                                <InputNumber id="number-input" name="GiaBan" v-model="GiaBan"
-                                    :class="{ 'p-invalid': giaBanError }"></InputNumber>
+                                <InputNumber id="number-input" name="GiaBan" v-model="GiaBan" :class="{ 'p-invalid': giaBanError }"></InputNumber>
                                 <label for="Field">Giá bán</label>
                             </span>
                             <small class="p-error">{{ giaBanError }}</small>
                         </div>
                         <div class="field col-12 md:col-12" style="margin-bottom: 30px">
-                                    <label for="address">Trạng thái</label>
-                                    <div class="flex flex-wrap gap-3">
-                                        <div class="flex align-items-center">
-                                            <RadioButton v-model="TrangThai" inputId="ingredient1" name="pizza" value="1"
-                                                :class="{ 'p-invalid': TrangThaiSacError }" />
-                                            <label for="ingredient1" class="ml-2">Sẵn sàng để bán</label>
-                                        </div>
-                                        <div class="flex align-items-center">
-                                            <RadioButton v-model="TrangThai" inputId="ingredient2" name="pizza" value="3"
-                                                :class="{ 'p-invalid': TrangThaiSacError }" />
-                                            <label for="ingredient2" class="ml-2">tồn kho</label>
-                                        </div>
-                                    </div>
-                                    <small class="p-error">{{ TrangThaiSacError }}</small>
+                            <label for="address">Trạng thái</label>
+                            <div class="flex flex-wrap gap-3">
+                                <div class="flex align-items-center">
+                                    <RadioButton v-model="TrangThai" inputId="ingredient1" name="pizza" value="1" :class="{ 'p-invalid': TrangThaiSacError }" />
+                                    <label for="ingredient1" class="ml-2">Sẵn sàng để bán</label>
                                 </div>
+                                <div class="flex align-items-center">
+                                    <RadioButton v-model="TrangThai" inputId="ingredient2" name="pizza" value="3" :class="{ 'p-invalid': TrangThaiSacError }" />
+                                    <label for="ingredient2" class="ml-2">tồn kho</label>
+                                </div>
+                            </div>
+                            <small class="p-error">{{ TrangThaiSacError }}</small>
+                        </div>
                     </div>
                     <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
-                        <div class="Field col-12 md:col-12"
-                            style="margin-bottom: 30px;margin-left: 0px; height: 200px; margin-top: 60px; display: inline-flex; justify-content: center; align-items: center;display: block">
-                            <div class="t"
-                                style="border: 1px solid black; border-radius: 10px; width: 230px; height: 190px; margin-top: -60px">
-                                <img :src="anhs == null ? anh : anhs" alt=""
-                                    style="width: 200px; height: 170px; top: 50%; left: 50%; transform: translate(4%, 2%)" />
+                        <div class="Field col-12 md:col-12" style="margin-bottom: 30px; margin-left: 0px; height: 200px; margin-top: 60px; display: inline-flex; justify-content: center; align-items: center; display: block">
+                            <div class="t" style="border: 1px solid black; border-radius: 10px; width: 230px; height: 190px; margin-top: -60px">
+                                <img :src="anhs == null ? anh : anhs" alt="" style="width: 200px; height: 170px; top: 50%; left: 50%; transform: translate(4%, 2%)" />
                             </div>
                             <div class="buton" style="margin-top: 10px">
-                                <FileUpload mode="basic" name="demo[]" accept="image/*" :maxFileSize="1000000"
-                                    @input="onFileInputImage" style="display: flex; width: 200px; margin-left: 20px;" />
+                                <FileUpload mode="basic" name="demo[]" accept="image/*" :maxFileSize="1000000" @input="onFileInputImage" style="display: flex; width: 200px; margin-left: 20px" />
                             </div>
                             <small class="p-error">{{ anhError }}</small>
                         </div>
                     </div>
-                    <div class="Field col-12 md:col-12" style="margin-bottom: 30px; margin-top: 20px;">
+                    <div class="Field col-12 md:col-12" style="margin-bottom: 30px; margin-top: 20px">
                         <div class="p-fluid formgrid grid">
                             <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
                                 <div style="display: flex">
                                     <span class="p-float-label" style="width: 239px">
-                                        <Dropdown id="dropdown" :options="dataTrongLuong" v-model="selectedTrongLuong"
-                                            optionLabel="value" :class="{ 'p-invalid': trongLuongError }"
-                                            @change="onTrongLuongChange">
-                                        </Dropdown>
+                                        <Dropdown id="dropdown" :options="dataTrongLuong" v-model="selectedTrongLuong" optionLabel="value" :class="{ 'p-invalid': trongLuongError }" @change="onTrongLuongChange"> </Dropdown>
                                         <label for="dropdown">Trọng Lượng</label>
                                     </span>
-                                    <TableTrongLuong :tableId="'TableTrongLuong'" :rightGhId="'right_ghTrongLuong'"
-                                        :tableClass="'TableTrongLuong'" :rightGhClass="'right_ghTrongLuong'" />
+                                    <TableTrongLuong :tableId="'TableTrongLuong'" :rightGhId="'right_ghTrongLuong'" :tableClass="'TableTrongLuong'" :rightGhClass="'right_ghTrongLuong'" />
                                 </div>
                                 <small class="p-error">{{ trongLuongError }}</small>
                             </div>
                             <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
                                 <div style="display: flex">
                                     <span class="p-float-label" style="width: 239px">
-                                        <Dropdown id="dropdown" :options="dataMauSac" v-model="selectedMauSac"
-                                            optionLabel="ten" :class="{ 'p-invalid': mauSacError }"
-                                            @change=" onMauSacChange()">
-                                        </Dropdown>
+                                        <Dropdown id="dropdown" :options="dataMauSac" v-model="selectedMauSac" optionLabel="ten" :class="{ 'p-invalid': mauSacError }" @change="onMauSacChange()"> </Dropdown>
                                         <label for="dropdown">Màu Sắc</label>
                                     </span>
-                                    <TableMauSac :tableId="'TableMauSac'" :rightGhId="'right_ghMauSac'"
-                                        :tableClass="'TableMauSac'" :rightGhClass="'right_ghMauSac'" />
+                                    <TableMauSac :tableId="'TableMauSac'" :rightGhId="'right_ghMauSac'" :tableClass="'TableMauSac'" :rightGhClass="'right_ghMauSac'" />
                                 </div>
                                 <small class="p-error">{{ mauSacError }}</small>
                             </div>
@@ -375,45 +359,32 @@ const getStatusLabel = (trangThai) => {
                             <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
                                 <div style="display: flex">
                                     <span class="p-float-label" style="width: 239px">
-                                        <Dropdown id="dropdown" :options="dataSize" v-model="selectedSize" optionLabel="ten"
-                                            :class="{ 'p-invalid': sizeError }" @change="onSizeChange">
-                                        </Dropdown>
+                                        <Dropdown id="dropdown" :options="dataSize" v-model="selectedSize" optionLabel="ten" :class="{ 'p-invalid': sizeError }" @change="onSizeChange"> </Dropdown>
                                         <label for="dropdown">Size</label>
                                     </span>
-                                    <TableSize :tableId="'TableMauSac'" :rightGhId="'right_ghMauSac'"
-                                        :tableClass="'TableMauSac'" :rightGhClass="'right_ghMauSac'" />
+                                    <TableSize :tableId="'TableMauSac'" :rightGhId="'right_ghMauSac'" :tableClass="'TableMauSac'" :rightGhClass="'right_ghMauSac'" />
                                 </div>
                                 <small class="p-error">{{ sizeError }}</small>
                             </div>
                             <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
                                 <div style="display: flex">
                                     <span class="p-float-label" style="width: 239px">
-                                        <Dropdown id="dropdown" :options="khuyenmais" v-model="selectedKhuyenMai"
-                                            :optionLabel="(option) => `${option.ten}  ${getStatusLabel(option.trangThai)}`"
-                                            @change="onTrongLuongKhuyenMai">
-                                        </Dropdown>
+                                        <Dropdown id="dropdown" :options="khuyenmais" v-model="selectedKhuyenMai" :optionLabel="(option) => `${option.ten}  ${getStatusLabel(option.trangThai)}`" @change="onTrongLuongKhuyenMai"> </Dropdown>
                                         <label for="dropdown">Khuyễn Mại</label>
                                     </span>
-                                    <TableKhuyenMai :tableId="'TableTrongLuong'" :rightGhId="'right_ghTrongLuong'"
-                                        :tableClass="'TableTrongLuong'" :rightGhClass="'right_ghTrongLuong'" />
+                                    <TableKhuyenMai :tableId="'TableTrongLuong'" :rightGhId="'right_ghTrongLuong'" :tableClass="'TableTrongLuong'" :rightGhClass="'right_ghTrongLuong'" />
                                 </div>
-
                             </div>
                         </div>
                     </div>
 
-                    <div style="width: 1000px; text-align: center;display: flex; margin-left: 170px;">
-
-                        <Button class="p-button-outlined" outlined severity="secondary"
-                            style="width: 100px; height: auto; margin: 10px" @click="reset()" label="clear"></Button>
-                        <Button type="submit" class="p-button-outlined" style="width: 100px; height: auto; margin: 10px"
-                            label="Lưu"></Button>
+                    <div style="width: 1000px; text-align: center; display: flex; margin-left: 170px">
+                        <Button class="p-button-outlined" outlined severity="secondary" style="width: 100px; height: auto; margin: 10px" @click="reset()" label="clear"></Button>
+                        <Button type="submit" class="p-button-outlined" style="width: 100px; height: auto; margin: 10px" label="Lưu"></Button>
                     </div>
                 </div>
-
             </form>
         </div>
-
     </Dialog>
     <!-- </div>
         </div>

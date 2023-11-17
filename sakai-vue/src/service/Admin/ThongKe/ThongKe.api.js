@@ -35,7 +35,22 @@ export const ThongKeStore = defineStore('thongKe', {
                 console.error('Lỗi khi get sản phẩm:', error);
             }
         },
-
+      
+        async fetchAllByHinhThucGiaoHang(idPhuongThuc) {
+            try {
+                const response = await axios.get(`/api/admin/Thong-ke/by-phuong-thuc?idPhuongThuc=${idPhuongThuc}`);
+                this.data = response.data;
+                this.tongDoanhThu = response.data.tongDoanhThu;
+                this.lstAdminThongKeLoaiResponses = response.data.lstAdminThongKeLoaiResponses;
+                this.lstAdminThongKeSanPhamCaoResponses = response.data.lstAdminThongKeSanPhamCaoResponses;
+                this.lstAdminThongKeSanPhamThapResponses =  response.data.lstAdminThongKeSanPhamThapResponses;
+                this.lstAdminThongKeThangResponses =  response.data.lstAdminThongKeThangResponses;
+                this.lstAdminThongKeThuongHieuResponses =  response.data.lstAdminThongKeThuongHieuResponses;
+                this.lstAdminThongKeThangNamResponses = response.data.lstAdminThongKeThangNamResponses;
+            } catch (error) {
+                console.error('Lỗi khi get sản phẩm:', error);
+            }
+        },
 
         async fetchAllByLoai(id,year) {
             try {
@@ -123,6 +138,21 @@ export const ThongKeStore = defineStore('thongKe', {
         async fetchAllLoiNhuan(year,startDate, endDate) {
             try {
                 const response = await axios.get(`/api/admin/Thong-ke/loi-nhuan?year=${year}&startDate=${startDate}&endDate=${endDate}`);
+              //  this.data = response.data;
+                this.tongLoiNhuan = response.data.tongLoiNhuan;
+                this.tongDonhangHoanThanh = response.data.tongDonhangHoanThanh;
+                this.tongDonhangDangGiao = response.data.tongDonhangDangGiao;
+                this.tongDonhangHuy = response.data.tongDonhangHuy;
+                this.lstAdminThongKeLoiNhuanSanPhamResponse = response.data.adminThongKeLoiNhuanSanPhamResponses;
+                this.lstAdminThongKeLoiNhuanHoaDonResponse = response.data.adminThongKeLoiNhuanHoaDonResponses;
+            } catch (error) {
+                console.error('Lỗi khi get sản phẩm:', error);
+            }
+        },
+
+        async fetchAllLoiNhuanbyHinhThucGiaohang(idHinhThuc) {
+            try {
+                const response = await axios.get(`/api/admin/Thong-ke/loi-nhuan-hinh-thuc-giao-hang?idHinhThuc=${idHinhThuc}`);
               //  this.data = response.data;
                 this.tongLoiNhuan = response.data.tongLoiNhuan;
                 this.tongDonhangHoanThanh = response.data.tongDonhangHoanThanh;

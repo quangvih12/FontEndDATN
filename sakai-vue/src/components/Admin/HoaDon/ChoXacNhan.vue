@@ -1,5 +1,6 @@
 <!-- eslint-disable no-unused-vars -->
 <script setup>
+import { format } from 'date-fns';
 import * as yup from 'yup';
 import { useForm, useField } from 'vee-validate';
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
@@ -131,11 +132,17 @@ const dataSearchDate = ref([
     { label: 'Ngày nhận', value: 'ngayNhan' }
 ]);
 const startDate = ref(null);
-const endDate = ref([null]);
+const endDate = ref(null);
 const typeSearchDate = ref(null);
 
 const searchDate = async () => {
-    if (typeSearchDate.value == null) {
+    if (startDate.value == null || endDate.value == null) {
+        await useHD.fetchDataByStatus(10);
+        data.value = useHD.dataDaHoanTra;
+    } else if (startDate.value.length <= 0 || endDate.value.length <= 0) {
+        await useHD.fetchDataByStatus(10);
+        data.value = useHD.dataDaHoanTra;
+    } else if (typeSearchDate.value == null) {
         const respone = await useHD.searchDateByTrangThai(startDate.value, endDate.value, 'ngayTao', 2);
         data.value = respone;
     } else {
@@ -174,15 +181,19 @@ const initFilters1 = () => {
 };
 
 const formatCurrency = (value) => {
-    return parseInt(value).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+    if (value == null || value.length <= 0) {
+        return null;
+    } else {
+        return parseInt(value).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+    }
 };
 
-const formatDate = (value) => {
-    return value.toLocaleDateString('en-US', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-    });
+const formatDate = (dateTime) => {
+    if (dateTime == null || dateTime.length <= 0) {
+        return null;
+    } else {
+        return format(new Date(dateTime), 'yyyy/MM/dd HH:mm:ss');
+    }
 };
 </script>
 <template>
@@ -249,7 +260,18 @@ const formatDate = (value) => {
                 {{ formatCurrency(slotProps.data.tongTien) }}
             </template>
         </Column>
-        <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column>
+        <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+            <template #body="slotProps">
+                <span class="p-column-title">{{ col.field }}</span>
+                {{
+                    col.field === 'tienShip' || col.field === 'tienSauKhiGiam'
+                        ? formatCurrency(slotProps.data[col.field])
+                        : ['ngayTao', 'ngaySua', 'ngayShip', 'ngayNhan'].includes(col.field)
+                        ? formatDate(slotProps.data[col.field])
+                        : slotProps.data[col.field]
+                }}
+            </template>
+        </Column>
         <Column field="diaChi" header="Địa chỉ" :sortable="false" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
                 <span class="p-column-title">diaChi</span>
