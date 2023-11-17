@@ -15,7 +15,7 @@ export const userStore = defineStore('user', {
         check: 1,
     }),
     actions: {
-        async fetchDataByStatus(status) {
+        async fetchDataByStatuss(status) {
             this.check = 0;
             try {
                 const response = await axios.get(apiUser + 'trang-thai?trangThai=' + status);

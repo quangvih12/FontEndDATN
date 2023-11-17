@@ -229,13 +229,6 @@ const initFilters = () => {
 
 
 
-const dataTrangThai = ref([
-    { label: 'Tất cả', value: 'tatCa' },
-    { label: 'Còn Hàng', value: 'conHang' },
-    { label: 'hết hàng', value: 'hetHang' },
-    { label: 'Tồn kho', value: 'tonKho' },
-
-]);
 
 const columns = ref([
     { field: 'giaSauGiam', header: 'Giá giảm giá' },
@@ -252,6 +245,35 @@ const onToggle = (val) => {
     selectedColumns.value = columns.value.filter(col => val.includes(col));
 };
 
+const trangThaiselect = ref(null);
+const dataTrangThai = ref([
+    { label: 'Tất cả', value: -1 },
+    { label: 'Hết hàng', value: 0 },
+    { label: 'Còn hàng', value: 1 },
+    { label: 'khuyễn mại', value: 2 },
+    { label: 'Tồn kho', value: 3 },
+]);
+
+
+const loadDataTrangThai = () => {
+    lstChiTietSP.value = props.myProp.sanPhamChiTiet;
+    if (trangThaiselect.value.value == -1) {
+        lstChiTietSP.value = props.myProp.sanPhamChiTiet;
+        return lstChiTietSP.value;
+    } else if (trangThaiselect.value.value == 0) {
+        lstChiTietSP.value = lstChiTietSP.value.filter(item => item.trangThai == 0);
+        return lstChiTietSP.value;
+    } else if (trangThaiselect.value.value == 1) {
+        lstChiTietSP.value = lstChiTietSP.value.filter(item => item.trangThai == 1);
+        return lstChiTietSP.value;
+    } else if (trangThaiselect.value.value == 3) {
+        lstChiTietSP.value = lstChiTietSP.value.filter(item => item.trangThai == 3);
+        return lstChiTietSP.value;
+    } else {
+        lstChiTietSP.value = lstChiTietSP.value.filter(item => item.tenKM != null);
+        return lstChiTietSP.value;
+    }
+}
 </script>
 
 
@@ -433,9 +455,12 @@ const onToggle = (val) => {
                                     <InputText v-model="filters['global'].value" placeholder="Search..." />
 
                                 </span>
-                                <Dropdown v-model="trangThai" :options="dataTrangThai" optionLabel="label"
+                                <Dropdown v-model="trangThaiselect" :options="dataTrangThai" optionLabel="label"
                                     :optionLabel="(option) => option.label" placeholder="Tất cả" class="w-full md:w-14rem"
-                                    style="margin-left: 20px" />
+                                    style="margin-left: 20px" @change="loadDataTrangThai()">
+
+                                </Dropdown>
+
                             </div>
 
                         </template>

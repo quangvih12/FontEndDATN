@@ -301,7 +301,9 @@ watch(selectedLoai, async (newVal) => {
     if (vNam.value === null) {
         vNam.value = new Date().getFullYear();
     }
-
+    if(selectedLoai.value == null || selectedLoai.value == ''){
+        return;
+    }
     await onloaiChangeLoai(selectedLoai.value.id, vNam.value);
     chartData.value = setChartData();
     chartOptions.value = setChartOptions();
@@ -329,6 +331,8 @@ const onloaiChangeThuongHieu = async (id, year) => {
 watch(selectedCity, async (newVal) => {
     if (vNam.value === null) {
         vNam.value = new Date().getFullYear();
+    }if(selectedCity.value == null || selectedCity.value == ''){
+        return;
     }
     await onloaiChangeThuongHieu(selectedCity.value.id, vNam.value);
     chartData.value = setChartData();
@@ -370,6 +374,10 @@ const onloaiChangeSanPham = async (id, year) => {
 watch(selectedProduct, async (newVal) => {
     if (vNam.value === null) {
         vNam.value = new Date().getFullYear();
+    }
+
+  if(selectedProduct.value == null || selectedProduct.value == ''){
+        return;
     }
     await onloaiChangeSanPham(selectedProduct.value.id, vNam.value);
     chartData.value = setChartData();

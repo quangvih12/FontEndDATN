@@ -62,9 +62,9 @@ export const useDiaChi = defineStore('diaChi',{
                 console.error('Lỗi khi lấy danh sách địa chỉ:', error);
             }
         },
-        createDiaChi(form) {
-            axios.post(api + '/add', form).then((response) => {
-                    // console.log('Đã tạo thành công!', response.data);
+        createDiaChi(form,token) {
+            axios.post(api + `/add?token=${token}`, form).then((response) => {
+                   this.diaChi.unshift(response.data);
                 }).catch((error) => {
                     // console.error('Lỗi khi tạo:', error);
                 });
@@ -79,21 +79,20 @@ export const useDiaChi = defineStore('diaChi',{
                     // console.error("Lỗi khi xóa địa chỉ: ", error);
                 });
         },
-        updateDiaChi(id, form) {
-            axios.put(api + '/update/' + id, form).then((response) => {
-                for (let i = 0; i < this.data.length; i++) {
-                    if (id == this.data[i].id) {
-                        this.data[i].idTinhThanh = form.idTinhThanh;
-                        this.data[i].tinhThanh = form.tinhThanh;
-                        this.data[i].idQuanHuyen = form.idQuanHuyen;
-                        this.data[i].quanHuyen = form.quanHuyen;
-                        this.data[i].idPhuongXa = form.idPhuongXa;
-                        this.data[i].phuongXa = form.phuongXa;
-                        this.data[i].diaChi = form.diaChi;
-                        this.data[i].user = form.user;
+        async  updateDiaChi(id, form,token) {
+            await axios.put(api + '/update/' + id +`?token=${token}`, form);
+                for (let i = 0; i < this.diaChi.length; i++) {
+                    if (id == this.diaChi[i].id) {
+                        this.diaChi[i].idTinhThanh = form.idTinhThanh;
+                        this.diaChi[i].tinhThanh = form.tinhThanh;
+                        this.diaChi[i].idQuanHuyen = form.idQuanHuyen;
+                        this.diaChi[i].quanHuyen = form.quanHuyen;
+                        this.diaChi[i].idPhuongXa = form.idPhuongXa;
+                        this.diaChi[i].phuongXa = form.phuongXa;
+                        this.diaChi[i].diaChi = form.diaChi;
                     }
                 }
-            });
+        
         },
         async fetchTinhThanh() {
             try {

@@ -223,13 +223,13 @@ const getStatusLabel = (trangThai) => {
 
                 </div>
             </template>
-            <Column field="tenNhanVien" header="STT" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+            <Column field="tenNhanVien" header="STT" :sortable="true" headerStyle="width:14%; min-width:5rem;">
                 <template #body="slotProps">
                     <span class="p-column-title">Name</span>
                     {{ lstHoaDon.indexOf(slotProps.data) + 1 }}
                 </template>
             </Column>
-            <Column field="tenNhanVien" header="Mã" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+            <Column field="tenNhanVien" header="Mã" :sortable="true" headerStyle="width:14%; min-width:5rem;">
                 <template #body="slotProps">
                     <span class="p-column-title">ma</span>
                     {{ slotProps.data.maHD }}
@@ -291,45 +291,45 @@ const getStatusLabel = (trangThai) => {
 
                 </div>
             </template>
-            <Column field="tenNhanVien" header="STT" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+            <Column field="tenNhanVien" header="STT" :sortable="true" headerStyle="width:14%; min-width:2rem;">
                 <template #body="slotProps">
                     <span class="p-column-title">Name</span>
                     {{ lstSanPham.indexOf(slotProps.data) + 1 }}
                 </template>
             </Column>
-            <Column field="tenNhanVien" header="Ảnh" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+            <Column field="tenNhanVien" header="Ảnh" :sortable="true" headerStyle="width:14%; min-width:7rem;">
                 <template #body="slotProps">
                     <span class="p-column-title">Name</span>
                     <img :src="slotProps.data.anh" :alt="i" class="shadow-2" width="50" />
                 </template>
             </Column>
 
-            <Column field="tenNhanVien" header="Mã" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+            <Column field="ma" header="Mã" :sortable="true" headerStyle="width:14%; min-width:5rem;">
                 <template #body="slotProps">
                     <span class="p-column-title">Name</span>
                     {{ slotProps.data.ma }}
                 </template>
             </Column>
 
-            <Column field="tenNhanVien" header="Tên sản phẩm " :sortable="true" headerStyle="width:14%; min-width:10rem;">
+            <Column field="ten" header="Tên sản phẩm " :sortable="true" headerStyle="width:14%; min-width:10rem;">
                 <template #body="slotProps">
                     <span class="p-column-title">Name</span>
                     {{ slotProps.data.ten }}
                 </template>
             </Column>
-            <Column field="tenNhanVien" header="Giá Nhập" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+            <Column field="giaNhap" header="Giá Nhập" :sortable="true" headerStyle="width:14%; min-width:10rem;">
                 <template #body="slotProps">
                     <span class="p-column-title">Name</span>
                     {{  formatCurrency(slotProps.data.giaNhap) }}
                 </template>
             </Column>
-            <Column field="tenNhanVien" header="Giá Bán" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+            <Column field="giaBan" header="Giá Bán" :sortable="true" headerStyle="width:14%; min-width:9rem;">
                 <template #body="slotProps">
                     <span class="p-column-title">Name</span>
                     {{  formatCurrency(slotProps.data.giaBan) }}
                 </template>
             </Column>
-            <Column field="tenNhanVien" header="Lợi Nhuận" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+            <Column field="loiNhuan" header="Lợi Nhuận" :sortable="true" headerStyle="width:14%; min-width:10rem;">
                 <template #body="slotProps">
                     <span class="p-column-title">Name</span>
                     {{  formatCurrency(slotProps.data.loiNhuan) }}

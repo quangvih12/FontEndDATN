@@ -13,7 +13,6 @@ import UpdateDiaChi from '@/components/KhachHang/DiaChiKhachHang/Update.vue';
 import { vnpayStore } from '@/service/KhachHang/PaymentService.js';
 import { useToast } from 'primevue/usetoast';
 import { format } from 'date-fns';
-import ModalDiaChiThanhToan from '../KhachHang/DiaChiKhachHang/ModalDiaChiThanhToan.vue';
 
 // import {userStore} from '@/service/KhachHang/UserService.js';
 import { useRouter } from 'vue-router';
@@ -93,9 +92,13 @@ const loadUser = async () => {
     const token = localStorage.getItem('token');
     await diaChiService.findDiaChiByIdUserAndTrangThai(token);
     diaChiMacDinh.value = diaChiService.diaChiMacDinh;
-
-    await phiGiaoHangService.phiShip(diaChiMacDinh.value);
+     
+    if( diaChiMacDinh.value !== null ){
+        console.log(diaChiMacDinh.value);
+        await phiGiaoHangService.phiShip(diaChiMacDinh.value);
     phiShip.value = phiGiaoHangService.money;
+    }
+   
     return diaChi.value;
 };
 
@@ -234,7 +237,7 @@ const loadDiaChi = async () => {
     if (token.length > 0 || token != null) {
         await diaChiService.fetchData(token);
         userDiaChi.value = diaChiService.diaChi;
-        console.log(userDiaChi.value);
+        // console.log(userDiaChi.value);
     }
 };
 </script>

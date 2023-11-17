@@ -148,6 +148,8 @@ const toggle2 = (event) => {
 
             <div v-else class="layout-topbar-logo" style="display: inline-block">
 
+            </div> </div>
+
         <div class="layout-topbar-menu" style=" display: inline-block; ">
             <div v-if="selectedCustomer === null">
                 <Dropdown v-model="selectedKH" :options="khachHang" optionLabel="ten" placeholder="Chọn KH"
@@ -182,7 +184,7 @@ const toggle2 = (event) => {
                     <i v-badge="dem" class="pi pi-bell p-overlay-badge" style="font-size: 2rem" />
                 </button>
 
-                <OverlayPanel ref="op">
+                <OverlayPanel ref="op" style="height: 300px;overflow: auto;">
 
                     <H6>Thông báo </H6>
                     <div v-for="(o, index) in data">
@@ -212,4 +214,9 @@ const toggle2 = (event) => {
     </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+button.p-link:hover {
+    background-color: rgb(248, 239, 239);
+    /* Thay #f00 bằng màu bạn muốn */
+}
+</style>

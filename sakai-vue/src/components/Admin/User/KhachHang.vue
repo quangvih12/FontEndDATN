@@ -24,7 +24,7 @@ const dataTrangThai = ref([
 const trangThai = ref();
 
 const loadDataByTrangThai = async () => {
-    await userService.fetchDataByStatus(trangThai.value.value);
+    await userService.fetchDataByStatuss(trangThai.value.value);
     const productList = userService.data.filter((user) => user.role === 'USER');
     dataUser.value = productList;
 };

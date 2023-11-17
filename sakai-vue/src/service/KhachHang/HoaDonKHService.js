@@ -37,10 +37,10 @@ export const HDKHStore = defineStore('hoaDonKH', {
             }
         },
         //load data hd theo trạng thái
-        async fetchDataByStatus(token, status, status2, status3) {
+        async fetchDataByStatus(token, status, status2, status3 , status4) {
             this.check = 1;
             try {
-                const response = await axios.get(apiHD + '/find-all-by-trang-thai?token=' + token + '&trangThai=' + status + '&trangThai2=' + status2 + '&trangThai3=' + status3);
+                const response = await axios.get(apiHD + '/find-all-by-trang-thai?token=' + token + '&trangThai=' + status + '&trangThai2=' + status2 + '&trangThai3=' + status3 + '&trangThai4=' + status4);
                 if (status == 1) {
                     const hoaDonList = response.data;
                     for (const [key, product] of hoaDonList.entries()) {
@@ -81,7 +81,7 @@ export const HDKHStore = defineStore('hoaDonKH', {
                     }
                     this.dataHoanThanh = hoaDonList;
                 }
-                if (status == 7 || status2 == 8) {
+                if (status == 7 || status2 == 8 || status3 == 9 || status4 == 10) {
                     const hoaDonList = response.data;
                     for (const [key, product] of hoaDonList.entries()) {
                         hoaDonList[key]['sanPhamChiTiet'] = null;

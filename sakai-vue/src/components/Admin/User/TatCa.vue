@@ -45,7 +45,7 @@ const loadData = async () => {
 };
 
 const loadDataByTrangThai = async () => {
-    await userService.fetchDataByStatus(trangThai.value.value);
+    await userService.fetchDataByStatuss(trangThai.value.value);
     dataUser.value = userService.data;
 };
 
