@@ -222,13 +222,13 @@ const addCart = async (soLuong, idCTSP) => {
                                     <span style="color: red;">{{ hdct.maHDCT }} </span> ghi lên kiện hàng bạn gửi cho shop
                                     nhé ! </p>
                                     <p v-if="hdct.trangThaiHDCT == 9">Rất tiếc đơn hàng đổi trả của bạn đã bị hủy !<br/> <span style="color: rgb(241, 50, 50);">Lý do: </span>{{ dataHD.moTa }}  </p>
-                                    <p v-if="hdct.trangThaiHDCT == 7">Đơn Hàng đổi trả đang trong quá trình xác nhận !<br/> <span style="color: rgb(241, 50, 50);">Lý do: </span>{{ dataHD.lyDo }}  </p>
+                                    <p v-if="hdct.trangThaiHDCT == 7">Đơn Hàng đổi trả đang trong quá trình xác nhận !<br/> <span style="color: rgb(241, 50, 50);" v-if="dataHD.lyDo!=null">Lý do: </span>{{ dataHD.lyDo }}  </p>
                            <div class="price">
                                     <h6 style="color: red">{{ formatCurrency(hdct.donGia) }}</h6>
                                     <Button type="button" label="Mua lại" style="width: 100px;margin-right: 10px;"
                                         @click="addCart(hdct.idSPCT, hdct.soLuong)"
                                         :disabled="dataHD.trangThai == 7 || dataHD.trangThai == 2 " />
-                                    <Button v-if="hdct.trangThaiHDCT == 3 || hdct.trangThaiHDCT == 10" severity="secondary"
+                                    <Button v-if="hdct.trangThaiHDCT == 3 " severity="secondary"
                                         label="Đổi / trả" style="width: 100px"
                                         @click="doiTra(hdct.idHDCT, hdct.idUser, hdct.idDiaChi)" />
                                     <p v-if="hdct.trangThaiHDCT == 9" style="margin-top: 10px;"> yêu cầu đổi sản phẩm thất

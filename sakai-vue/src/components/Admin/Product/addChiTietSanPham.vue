@@ -57,8 +57,9 @@ const schema = yup.object().shape({
         }),
     giaNhap: yup.number().required('Giá nhập không được để trống').min(50000, 'giá phải lớn hơn hoặc bằng 50.000 đ').max(10000000, 'Giá bán không lớn hơn  10.000.000 đ'),
     trongLuong: yup.string().required('vui lòng chọn trọng lượng sản phẩm'),
-    size: yup.number().required('vui lòng size không được để trống'),
-    mauSac: yup.number().required('vui lòng màu sắc không được để trống'),
+    size: yup.number().required('vui lòng chọn size cho sản phẩm'),
+    mauSac: yup.number().required('vui lòng chọn màu sắc sản phẩm'),
+    trangThai: yup.number().required('vui lòng chọn trạng thái '),
 });
 
 const { handleSubmit, resetForm } = useForm({
@@ -74,6 +75,7 @@ const { value: TrongLuong, errorMessage: trongLuongError } = useField('trongLuon
 const { value: idKhuyenMai, errorMessage: idKhuyenMaiError } = useField('idKhuyenMai');
 const { value: MauSac, errorMessage: mauSacError } = useField('mauSac');
 const { value: size, errorMessage: sizeError } = useField('size');
+const { value: TrangThai, errorMessage: TrangThaiSacError } = useField('trangThai');
 //add
 
 const emit = defineEmits(['add:myProp'])
@@ -92,6 +94,7 @@ const onSubmit = handleSubmit(async (values) => {
         idKhuyenMai: values.idKhuyenMai,
         mauSac: values.mauSac,
         size: values.size,
+        trangThai: values.trangThai,
     }
     const check = await productStore.checkDuplicateSPCT(form.size, form.mauSac, props.idProduct);
     if (check) {
@@ -275,7 +278,22 @@ const getStatusLabel = (trangThai) => {
                             </span>
                             <small class="p-error">{{ giaBanError }}</small>
                         </div>
-
+                        <div class="field col-12 md:col-12" style="margin-bottom: 30px">
+                                    <label for="address">Trạng thái</label>
+                                    <div class="flex flex-wrap gap-3">
+                                        <div class="flex align-items-center">
+                                            <RadioButton v-model="TrangThai" inputId="ingredient1" name="pizza" value="1"
+                                                :class="{ 'p-invalid': TrangThaiSacError }" />
+                                            <label for="ingredient1" class="ml-2">Sẵn sàng để bán</label>
+                                        </div>
+                                        <div class="flex align-items-center">
+                                            <RadioButton v-model="TrangThai" inputId="ingredient2" name="pizza" value="3"
+                                                :class="{ 'p-invalid': TrangThaiSacError }" />
+                                            <label for="ingredient2" class="ml-2">tồn kho</label>
+                                        </div>
+                                    </div>
+                                    <small class="p-error">{{ TrangThaiSacError }}</small>
+                                </div>
                     </div>
                     <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
                         <div class="Field col-12 md:col-12"

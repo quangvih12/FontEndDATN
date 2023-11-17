@@ -31,10 +31,10 @@ const addProduct = async () => {
         quanHuyen: selectedQuanHuyen.value.DistrictName,
         idPhuongXa: selectedPhuongXa.value.WardCode,
         phuongXa: selectedPhuongXa.value.WardName,
-        diaChi: diaChi.value,
-        user: idUser
+        diaChi: diaChi.value
     };
-        await diaChiService.createDiaChi(form);
+    const token =   localStorage.getItem('token');
+        await diaChiService.createDiaChi(form,token);
         // window.location.reload();
         productDialog.value = false;
         toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Thêm địa chỉ thành công', life: 3000 });

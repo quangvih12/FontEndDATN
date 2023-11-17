@@ -26,9 +26,15 @@ const callback = async (response) => {
     const userData = decodeCredential(response.credential);
 
     const user = await tokenService.checkGoogle(userData.email, userData.name, userData.picture);
-    const token = await tokenService.gentoken(user.ten);
+    const token = await tokenService.gentoken(user.userName);
 
     localStorage.setItem('token', token);
+    if (localStorage.getItem('cart')) {
+        let array = JSON.parse(localStorage.getItem('cart'));
+        await gioHangService.addToCartWhenLogin(array, token);
+        localStorage.removeItem('cart');
+    }
+
     gotoTrangChu();
 };
 
@@ -42,12 +48,12 @@ const dangNhapa = async () => {
     gotoTrangChu();
 
     // khi dang nhap thanh cong thi add sp gio hang vao db 
-    if(localStorage.getItem('cart')){
+    if (localStorage.getItem('cart')) {
         let array = JSON.parse(localStorage.getItem('cart'));
-    await gioHangService.addToCartWhenLogin(array, token);
-    localStorage.removeItem('cart');
+        await gioHangService.addToCartWhenLogin(array, token);
+        localStorage.removeItem('cart');
     }
-   
+
 };
 
 const logoUrl = computed(() => {
@@ -60,7 +66,8 @@ const logoUrl = computed(() => {
         <Toast />
         <div class="flex flex-column align-items-center justify-content-center">
             <img :src="logoUrl" alt="Sakai logo" class="mb-5 w-6rem flex-shrink-0" />
-            <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
+            <div
+                style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
                 <div class="w-full surface-card py-8 px-5 sm:px-8" style="border-radius: 53px; margin-bottom: 20px">
                     <div class="text-center mb-5">
                         <img src="/demo/images/login/avatar.png" alt="Image" height="50" class="mb-3" />
@@ -70,17 +77,20 @@ const logoUrl = computed(() => {
 
                     <div>
                         <label for="email1" class="block text-900 text-xl font-medium mb-2">Email</label>
-                        <InputText id="email1" type="text" placeholder="Địa chỉ email" class="w-full md:w-30rem mb-5" style="padding: 1rem" v-model="email" />
+                        <InputText id="email1" type="text" placeholder="Địa chỉ email" class="w-full md:w-30rem mb-5"
+                            style="padding: 1rem" v-model="email" />
 
                         <label for="password1" class="block text-900 font-medium text-xl mb-2">Mật khẩu</label>
-                        <Password id="password1" v-model="password" placeholder="Mật khẩu" :toggleMask="true" class="w-full mb-3" inputClass="w-full" inputStyle="padding:1rem"></Password>
+                        <Password id="password1" v-model="password" placeholder="Mật khẩu" :toggleMask="true"
+                            class="w-full mb-3" inputClass="w-full" inputStyle="padding:1rem"></Password>
 
                         <div class="flex align-items-center justify-content-between mb-5 gap-5">
                             <div class="flex align-items-center">
                                 <Checkbox v-model="checked" id="rememberme1" binary class="mr-2"></Checkbox>
                                 <label for="rememberme1">Ghi nhớ đăng nhập</label>
                             </div>
-                            <a class="font-medium no-underline ml-2 text-right cursor-pointer" style="color: var(--primary-color)">Quên mật khẩu?</a>
+                            <a class="font-medium no-underline ml-2 text-right cursor-pointer"
+                                style="color: var(--primary-color)">Quên mật khẩu?</a>
                         </div>
                         <Button label="Đăng nhập" class="w-full p-3 text-xl" @click="dangNhapa"></Button>
                         <div style="margin-top: 20px">
@@ -103,5 +113,4 @@ const logoUrl = computed(() => {
 .pi-eye-slash {
     transform: scale(1.6);
     margin-right: 1rem;
-}
-</style>
+}</style>

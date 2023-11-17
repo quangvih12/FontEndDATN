@@ -347,10 +347,10 @@ const btnXacNhanHuyGH = () => {
                     <!-- đổi trả -->
                     <div class="flex" v-if="HienDoiTra(props.myProp.trangThai)">
                         <div class="p-col-6" style="width: 100%">
-                            <Button label="Huỷ" class="p-button-outlined p-button-info mr-2 mb-2" severity="help" @click="showDialogLyDoDoiTra(props.myProp.idHD)" style="width: 400px" />
+                            <Button label="Huỷ" class="p-button-outlined p-button-info mr-2 mb-2" severity="help" @click="showDialogLyDoDoiTra(props.myProp.idHD)" style="width: 300px" />
                         </div>
                         <div class="p-col-6" style="width: 100%">
-                            <Button label="Xác nhận" severity="danger" @click="confirmAddProductDoiTra(props.myProp.idHD)" style="width: 400px" />
+                            <Button label="Xác nhận" severity="danger" @click="confirmAddProductDoiTra(props.myProp.idHD)" style="width: 300px" />
                         </div>
                     </div>
                     <!--Xác nhận đổi trả -->

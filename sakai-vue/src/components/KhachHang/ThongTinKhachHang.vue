@@ -180,7 +180,7 @@ function onFileInputImage(event) {
                             </div>
                             <div class="flex">
                                 <label>Giới tính: </label>
-                                <div class="flex flex-wrap gap-3" style="margin-left: 125px; margin-bottom: 20px">
+                                <div class="flex flex-wrap gap-3" style="margin-left: 120px; margin-bottom: 20px">
                                     <div class="flex align-items-center">
                                         <RadioButton id="nam" value="1" v-model.trim="gioiTinh" />
                                         <label for="nam" class="ml-2">Nam</label>

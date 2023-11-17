@@ -95,7 +95,7 @@ const onSettingsClick = (event) => {
 };
 
 const thongTinCaNhan = () => {
-    router.push(`/thong-tin-ca-nhan/${selectedUserId.value}`);
+    router.push(`/thong-tin-ca-nhan`);
 }
 
 const lichSuMuaHang = () => {
