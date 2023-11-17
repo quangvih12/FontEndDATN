@@ -7,6 +7,7 @@ import UpdateVoucher from './UpdateVoucher.vue';
 import DeleteVoucher from './DeleteVoucher.vue';
 import { format } from 'date-fns';
 import ApplyVoucher from './ApplyVoucher.vue';
+import detailVoucher from './DetailVoucher.vue';
 
 const toast = useToast();
 const vouchers = ref([]);
@@ -88,7 +89,11 @@ const filteredVoucher = computed(() => {
 });
 
 const formatDate = (dateTime) => {
-    return format(new Date(dateTime), 'yyyy/MM/dd');
+    return format(new Date(dateTime), 'yyyy/MM/dd HH:mm:ss');
+};
+
+const formatCurrency = (value) => {
+    return parseInt(value).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
 };
 </script>
 
@@ -143,13 +148,13 @@ const formatDate = (dateTime) => {
                     </template>
 
                     <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-                    <Column field="ten" header="Tên" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+                    <Column field="ten" header="Tên" :sortable="true" headerStyle="width:14%; min-width:8rem;">
                         <template #body="slotProps">
                             <span class="p-column-title">Tên</span>
                             {{ slotProps.data.ten }}
                         </template>
                     </Column>
-                    <Column header="Ngày Bắt Đầu" filterField="date" dataType="date" style="min-width: 10rem">
+                    <Column header="Ngày Bắt Đầu" filterField="date" dataType="date" style="min-width: 9rem">
                         <template #body="{ data }">
                             {{ formatDate(data.thoiGianBatDau) }}
                         </template>
@@ -158,7 +163,7 @@ const formatDate = (dateTime) => {
                         </template>
                     </Column>
 
-                    <Column header="Ngày Kết Thúc" filterField="date" dataType="date" style="min-width: 10rem">
+                    <Column header="Ngày Kết Thúc" filterField="date" dataType="date" style="min-width: 9rem">
                         <template #body="{ data }">
                             {{ formatDate(data.thoiGianKetThuc) }}
                         </template>
@@ -167,16 +172,24 @@ const formatDate = (dateTime) => {
                         </template>
                     </Column>
 
+                    <Column field="giaTriGiam" header="Giá trị giảm(%)" :sortable="true" headerStyle="width:14%; min-width:8rem;">
+                        <template #body="slotProps">
+                            <span class="p-column-title">Giá trị giảm</span>
+                            {{ slotProps.data.giaTriGiam }}
+                        </template>
+                    </Column>
+
                     <Column field="giamToiDa" header="Giảm Tối Đa" :sortable="true" headerStyle="width:14%; min-width:8rem;">
                         <template #body="slotProps">
                             <span class="p-column-title">Giảm Tối Đa</span>
-                            {{ slotProps.data.giamToiDa }}
+                            {{ formatCurrency(slotProps.data.giamToiDa) }}
                         </template>
                     </Column>
-                    <Column field="moTa" header="Mô Tả" :sortable="true" headerStyle="width:14%; min-width:8rem;">
+
+                    <Column field="soLuong" header="Số Lượng" :sortable="true" headerStyle="width:14%; min-width:6rem;">
                         <template #body="slotProps">
-                            <span class="p-column-title">Mô Tả</span>
-                            {{ slotProps.data.moTa }}
+                            <span class="p-column-title">Số Lượng</span>
+                            {{ slotProps.data.soLuong }}
                         </template>
                     </Column>
 
@@ -186,19 +199,20 @@ const formatDate = (dateTime) => {
                             <!-- <span :class="'product-badge status-'">{{ slotProps.data.trangThai }}</span> -->
                         </template>
                     </Column>
-
-                    <Column field="soLuong" header="Số Lượng" :sortable="true" headerStyle="width:14%; min-width:8rem;">
+                    <!-- 
+                    <Column field="moTa" header="Mô Tả" :sortable="true" headerStyle="width:14%; min-width:8rem;">
                         <template #body="slotProps">
-                            <span class="p-column-title">Số Lượng</span>
-                            {{ slotProps.data.soLuong }}
+                            <span class="p-column-title">Mô Tả</span>
+                            {{ slotProps.data.moTa }}
                         </template>
-                    </Column>
+                    </Column> -->
 
                     <Column headerStyle="min-width:10rem;">
                         <template #body="slotProps">
                             <UpdateVoucher :my-prop="slotProps.data" />
                             <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2" @click="confirmDeleteVoucher(slotProps.data)" />
                             <ApplyVoucher :my-prop="slotProps.data" />
+                            <detailVoucher :my-prop="slotProps.data" />
                         </template>
                     </Column>
                 </DataTable>

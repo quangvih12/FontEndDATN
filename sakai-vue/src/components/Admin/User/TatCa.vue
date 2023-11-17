@@ -162,7 +162,7 @@ const onToggle = (val) => {
                 <Column field="gioiTinh" header="Giới tính" headerStyle="width:14%; min-width:8rem;">
                     <template #body="slotProps">
                         <span class="p-column-title">gioiTinh</span>
-                        {{ slotProps.data.gioiTinh == 1 ? 'Nam' : 'Nữ' }}
+                        {{ slotProps.data.gioiTinh == 1 ? 'Nam' : slotProps.data.gioiTinh == 0 ? 'Nữ' : 'Chưa xác định' }}
                     </template>
                 </Column>
                 <!-- <Column field="ngaySinh" header="Ngày sinh" headerStyle="width:14%; min-width:10rem;">
@@ -202,7 +202,7 @@ const onToggle = (val) => {
                     </template>
                 </Column>-->
 
-                <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:8%; min-width:5rem;"> </Column>
+                <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:8%; min-width:9rem;"> </Column>
                 <Column field="trangThai" header="Trạng thái" headerStyle="width:14%; min-width:10rem;">
                     <template #body="slotProps">
                         <span class="p-column-title">trangThai</span>

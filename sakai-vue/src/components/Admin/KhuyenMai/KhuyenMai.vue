@@ -1,4 +1,5 @@
 <script setup>
+import { format } from 'date-fns';
 import { ref, onMounted, computed } from 'vue';
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
 import { khuyenMaiStore } from '@/service/Admin/KhuyenMai/KhuyenMaiService.js';
@@ -96,6 +97,13 @@ const getStatusLabel = (trangThai) => {
 
         default:
             return null;
+    }
+};
+const formatDate = (dateTime) => {
+    if (dateTime == null || dateTime.length <= 0) {
+        return null;
+    } else {
+        return format(new Date(dateTime), 'yyyy/MM/dd HH:mm:ss');
     }
 };
 </script>
