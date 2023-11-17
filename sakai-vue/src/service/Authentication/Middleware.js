@@ -7,7 +7,7 @@ export  function authMiddleware (to, from, next) {
     if (!token) {
      
       // Nếu không có token, chuyển hướng người dùng đến trang đăng nhập hoặc trang khác.
-      next('/');
+      next('/login');
       
     } else {
       // Nếu có token, cho phép người dùng truy cập tuyến đường.

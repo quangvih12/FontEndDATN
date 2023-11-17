@@ -45,6 +45,15 @@ export const gioHangStore = defineStore('gioHang', {
             } catch (error) {
             }
         },
+
+        async getListVoucherByUser(token) {
+            try {
+                const response = await axios.get(apiGiohang + `/get-voucher-user?token=${token}`);
+                this.voucher = response.data;
+                
+            } catch (error) {
+            }
+        },
         async getAllMSCT() {
             try {
                 const response = await axios.get(apiGiohang + '/msct');

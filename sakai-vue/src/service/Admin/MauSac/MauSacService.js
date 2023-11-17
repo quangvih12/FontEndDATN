@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
-import axios from 'axios';
+import axios from '@/service/Authentication/http.js';
 
-const apiMauSac = 'http://localhost:8080/api/mau-sac';
+const apiMauSac = 'http://localhost:8080/api/admin/mau-sac';
 
 export const useMauSacService = defineStore('mau-sac', {
     state: () => ({

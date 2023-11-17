@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import axios from 'axios';
+import axios from '@/service/Authentication/http.js';
 
 const api = 'http://localhost:8080/api/admin/thong-bao';
 

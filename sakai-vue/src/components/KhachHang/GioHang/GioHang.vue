@@ -22,7 +22,8 @@ let prevDataMauLength = ref(null);
 
 onMounted(async () => {
     await loadDataGioHang();
-    await loadDataVoucher();
+    // await loadDataVoucher();
+    await loadDataVoucherByUser();
     prevDataSizeLength.value = dataSize.value.length;
     prevDataMauLength.value = dataMauSac.value.length;
 
@@ -47,6 +48,16 @@ const loadDataVoucher = async () => {
         dataVoucher.value = [{ ten: 'bạn cần đăng nhập' }];
     } else {
         await gioHangService.getListVoucher(token);
+        dataVoucher.value = gioHangService.voucher;
+    }
+};
+
+const loadDataVoucherByUser = async () => {
+    const token = localStorage.getItem('token');
+    if (token == '' || token == null) {
+        dataVoucher.value = [{ ten: 'bạn cần đăng nhập' }];
+    } else {
+        await gioHangService. getListVoucherByUser(token);
         dataVoucher.value = gioHangService.voucher;
     }
 };
@@ -431,8 +442,8 @@ const apDung = () => {
         if (checkedValues.length == 0 || dieuKien.value == null || dieuKien.value == 0) {
             toast.add({ severity: 'warn', summary: '', detail: 'bạn cần chọn sản phẩm hoặc voucher', life: 3000 });
         } else {
-            tienGiam.value = TongTien.value / dieuKien.value;
-            TongTienCu.value = TongTien.value - TongTien.value / dieuKien.value;
+            tienGiam.value = TongTien.value * ( dieuKien.value / 100 );
+            TongTienCu.value = TongTien.value - tienGiam.value;
         }
     }
 };

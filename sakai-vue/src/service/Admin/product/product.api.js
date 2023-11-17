@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import axios from '../../axios/axiosPort';
+import axios from '@/service/Authentication/http.js';
 
 export const ProductStore = defineStore('product', {
   state: () => ({

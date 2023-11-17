@@ -33,7 +33,7 @@ instance.interceptors.response.use(
     if ((status === 401 || status === 403) && !prevRequest?.sent) {
       prevRequest.sent = true;
       localStorage.removeItem('token');
-      router.push('/');
+      router.push('/login');
 
       return instance(prevRequest);
     }

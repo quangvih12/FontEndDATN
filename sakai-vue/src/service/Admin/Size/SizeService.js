@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
-import axios from 'axios';
-
-const apiSize = 'http://localhost:8080/api/size';
+//  import axios from 'axios';
+import instance from '@/service/Authentication/http.js';
+const apiSize = 'http://localhost:8080/api/admin/size';
 
 export const SizeStore = defineStore('size', {
     state: () => ({
@@ -15,7 +15,7 @@ export const SizeStore = defineStore('size', {
         async fetchData() {
             this.check = 0;
             try {
-                const response = await axios.get(apiSize);
+                const response = await instance.get(apiSize);
                 this.data = response.data.data;
             } catch (error) {
                 console.error('Error fetching users:', error);
@@ -25,7 +25,7 @@ export const SizeStore = defineStore('size', {
         async fetchDataByStatus(status) {
             this.check = 1;
             try {
-                const response = await axios.get(apiSize + '/trang-thai?trangThai=' + status);
+                const response = await instance.get(apiSize + '/trang-thai?trangThai=' + status);
                 if (status === 1) {
                     this.dataByStatus1 = response.data.data;
                 }
@@ -35,7 +35,7 @@ export const SizeStore = defineStore('size', {
             }
         },
         createSize(form) {
-            axios.post(apiSize + '/add', form).then((response) => {
+            instance.post(apiSize + '/add', form).then((response) => {
                 if (this.check == 0) {
                     this.data.unshift(response.data.data);
                     if (response.data.data.trangThai == 1) this.dataByStatus1.unshift(response.data.data);
@@ -46,7 +46,7 @@ export const SizeStore = defineStore('size', {
             });
         },
         updateSize(id, form) {
-            axios.put(apiSize + '/update/' + id, form).then((response) => {
+            instance.put(apiSize + '/update/' + id, form).then((response) => {
                 for (let i = 0; i < this.data.length; i++) {
                     if (id == this.data[i].id) {
                         this.data[i].ten = form.ten;
@@ -62,7 +62,7 @@ export const SizeStore = defineStore('size', {
             });
         },
         deleteSize(id) {
-            axios.put(apiSize + '/delete/' + id).then((response) => {
+            instance.put(apiSize + '/delete/' + id).then((response) => {
                 if (this.check == 0) {
                     for (let i = 0; i < this.data.length; i++) {
                         if (id == this.data[i].id) {

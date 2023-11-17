@@ -1,8 +1,8 @@
 
 import { defineStore } from 'pinia';
-import axios from 'axios';
+import axios from '@/service/Authentication/http.js';
 
-const apiKhuyenMai = 'http://localhost:8080/api/khuyenMai';
+const apiKhuyenMai = 'http://localhost:8080/api/admin/khuyenMai';
 
 export const khuyenMaiStore = defineStore('khuyenmai', {
     state: () => ({
@@ -58,7 +58,7 @@ export const khuyenMaiStore = defineStore('khuyenmai', {
         },
 
         updateCTSP(idctsp, idkm) {
-            axios.put(`http://localhost:8080/api/khuyenMai/applyKM/${idctsp}?idkm=${idkm}`).then((response) => {
+            axios.put(`http://localhost:8080/api/admin/khuyenMai/applyKM/${idctsp}?idkm=${idkm}`).then((response) => {
                 let index = -1;
                 for (let i = 0; i < this.data.length; i++) {
                     if (idctsp == this.data[i].id) {
