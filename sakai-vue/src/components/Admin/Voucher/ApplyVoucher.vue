@@ -66,7 +66,8 @@ const dataSearch = ref([
     { label: 'Dưới 1 triệu', value: 'duoi1Trieu' },
     { label: '1 đên 3 triệu', value: '1den3' },
     { label: '3 đến 6 triệu', value: '3den6' },
-    { label: '6 đến 10 triệU', value: '6den10' }
+    { label: '6 đến 10 triệu', value: '6den10' },
+    { label: 'Trên 10 triệu', value: 'tren10trieu' }
 ]);
 
 watch(cbbValue, (newVal) => {
@@ -77,6 +78,8 @@ watch(cbbValue, (newVal) => {
     } else if (cbbValue.value.value == '3den6') {
         loadDataUser('3den6');
     } else if (cbbValue.value.value == '6den10') {
+        loadDataUser('6den10');
+    } else if (cbbValue.value.value == 'tren10trieu') {
         loadDataUser('6den10');
     } else {
         loadDataUser('duoi1Trieu');

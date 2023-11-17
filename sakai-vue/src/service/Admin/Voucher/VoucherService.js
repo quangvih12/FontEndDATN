@@ -35,6 +35,11 @@ export const voucherStore = defineStore('voucher', {
                 // this.data.unshift(response.data.data);
             });
         },
+        async getUserByVoucher(idVoucher) {
+            const response = await axios.get(apiVoucher + '/get-user-by-voucher/' + idVoucher);
+            return response.data;
+            // this.data.unshift(response.data.data);
+        },
         updateVoucher(form, id) {
             axios.put(apiVoucher + '/update/' + id, form).then((response) => {
                 for (let i = 0; i < this.data.length; i++) {
@@ -45,6 +50,7 @@ export const voucherStore = defineStore('voucher', {
                         this.data[i].soLuong = form.soLuong;
                         this.data[i].moTa = form.moTa;
                         this.data[i].giamToiDa = form.giamToiDa;
+                        this.data[i].trangThai = response.data.data.trangThai;
                     }
                 }
             });

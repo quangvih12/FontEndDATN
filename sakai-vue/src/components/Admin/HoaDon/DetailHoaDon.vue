@@ -1,4 +1,5 @@
 <script setup>
+import { format } from 'date-fns';
 import { ref, onMounted, watch } from 'vue';
 import { useForm, useField } from 'vee-validate';
 import Divider from 'primevue/divider';
@@ -25,14 +26,13 @@ const props = defineProps({
 // });
 // mở form
 const editProduct = () => {
-    console.log(props.myProp);
     code.value = 'Hoá đơn: ' + props.myProp.maHD;
     productDialog.value = true;
     loadDataHDCT(props.myProp.idHD);
-    ngayDat.value = props.myProp.ngayTao;
-    ngayThanhToan.value = props.myProp.ngayThanhToan;
-    ngayGiao.value = props.myProp.ngayShip;
-    ngayNhan.value = props.myProp.ngayNhan;
+    ngayDat.value = formatDate(props.myProp.ngayTao);
+    ngayThanhToan.value = formatDate(props.myProp.ngayThanhToan);
+    ngayGiao.value = formatDate(props.myProp.ngayShip);
+    ngayNhan.value = formatDate(props.myProp.ngayNhan);
 };
 
 const ngayDat = ref('');
@@ -70,6 +70,14 @@ const hienTimeLine = (value) => {
     }
 };
 
+const formatDate = (dateTime) => {
+    if (dateTime == null || dateTime.length <= 0) {
+        return null;
+    } else {
+        return format(new Date(dateTime), 'yyyy/MM/dd HH:mm:ss');
+    }
+};
+
 const exportToPDF = () => {
     const content = document.getElementById('pdf-content');
     html2canvas(content).then((canvas) => {
@@ -90,7 +98,15 @@ const HienLyDoHuy = (value) => {
 };
 
 const HienLyDoHuyDoiTra = (value) => {
-    if (parseInt(value) == 9 || parseInt(value) == 7 || parseInt(value) == 8 || parseInt(value) == 10) {
+    if (parseInt(value) == 7 || parseInt(value) == 8 || parseInt(value) == 10) {
+        return true;
+    } else {
+        return false;
+    }
+};
+
+const HienMoTaHuyDoiTra = (value) => {
+    if (parseInt(value) == 9) {
         return true;
     } else {
         return false;
@@ -266,7 +282,7 @@ const btnXacNhanHuyGH = () => {
     <Button label="Xem" class="p-button-outlined p-button-info mr-2 mb-2" @click="editProduct()" />
     <Dialog v-model:visible="productDialog" :style="{ width: '850px' }" :header="code" :modal="true" class="p-fluid">
         <Toast />
-        <div class="flex" style="margin-left: 30px;">
+        <div class="flex" style="margin-left: 30px">
             <div class="p-col-12" style="text-align: center">
                 <div class="bills-col">
                     <div id="pdf-content" class="card p-fluid" style="background: #ffffff">
@@ -319,16 +335,21 @@ const btnXacNhanHuyGH = () => {
                             <div class="p-col-6" style="width: 100%">
                                 <div class="row flex">
                                     <div class="flex" style="min-width: 200px">
-                                        <p>Địa chỉ:</p>
-                                        <p style="margin-left: 10px">{{ props.myProp.diaChiCuThe }}, {{ props.myProp.tenPhuongXa }}, {{ props.myProp.tenQuanHuyen }}, {{ props.myProp.tenTinhThanh }}</p>
+                                        <p>Địa chỉ: {{ props.myProp.diaChiCuThe }}, {{ props.myProp.tenPhuongXa }}, {{ props.myProp.tenQuanHuyen }}, {{ props.myProp.tenTinhThanh }}</p>
                                     </div>
                                     <div class="flex" style="min-width: 200px" v-if="HienLyDoHuy(props.myProp.trangThai)">
                                         <p style="margin-top: 3px">Lý do:</p>
                                         <p style="margin-left: 10px; color: #ff3333; font-weight: bold; font-size: 18px">{{ props.myProp.lyDo }}</p>
                                     </div>
                                     <div class="flex" style="min-width: 200px" v-if="HienLyDoHuyDoiTra(props.myProp.trangThai)">
-                                        <p style="margin-top: 3px">Lý do:</p>
-                                        <p style="margin-left: 10px; color: #ff3333; font-weight: bold; font-size: 18px">{{ props.myProp.moTa }}</p>
+                                        <p style="margin-top: 3px; margin-left: 4px">
+                                            Lý do: <span style="color: #ff3333; font-weight: bold; font-size: 18px">{{ props.myProp.lyDo }}</span>
+                                        </p>
+                                    </div>
+                                    <div class="flex" style="min-width: 200px" v-if="HienMoTaHuyDoiTra(props.myProp.trangThai)">
+                                        <p style="margin-top: 3px; margin-left: 4px">
+                                            Lý do: <span style="color: #ff3333; font-weight: bold; font-size: 18px">{{ props.myProp.moTa }}</span>
+                                        </p>
                                     </div>
                                 </div>
                             </div>
