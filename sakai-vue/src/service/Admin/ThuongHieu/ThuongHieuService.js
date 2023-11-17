@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
-import axios from 'axios';
+import axios from '@/service/Authentication/http.js';
 
-const apiThuongHieu = 'http://localhost:8080/api/thuong-hieu';
+const apiThuongHieu = 'http://localhost:8080/api/admin/thuong-hieu';
 
 export const useCounterStore = defineStore('thuongHieu', {
     state: () => ({

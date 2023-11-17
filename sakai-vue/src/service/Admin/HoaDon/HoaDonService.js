@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
-import axios from 'axios';
-
+// import axios from 'axios';
+import axios from '@/service/Authentication/http.js';
 const apiHD = 'http://localhost:8080/api/admin/hoaDon';
 const apiHDCT = 'http://localhost:8080/api/admin/hoa-don-chi-tiet';
 

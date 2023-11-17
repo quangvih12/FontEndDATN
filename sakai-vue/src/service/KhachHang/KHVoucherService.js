@@ -19,5 +19,15 @@ export const voucherStore = defineStore('voucher', {
                 throw error;
             }
         }
+        ,
+        async getVoucherByUser(id) {
+            try {
+                const response = await axios.get(apiVoucher +`/${id}`);
+                this.data = response.data;
+            } catch (error) {
+                console.error('Lỗi khi lấy chi tiết sản phẩm:', error);
+                throw error;
+            }
+        }
     }
 })

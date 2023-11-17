@@ -44,6 +44,7 @@ const dangNhapa = async () => {
         password: password.value
     };
     const token = await dnService.dangNhap(login);
+    console.log("token", token)
     localStorage.setItem('token', token);
     gotoTrangChu();
 

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
-import axios from 'axios';
+import axios from '@/service/Authentication/http.js';
 
-const apiLoai = 'http://localhost:8080/api/loai';
+const apiLoai = 'http://localhost:8080/api/admin/loai';
 
 export const useLoaiService = defineStore('loai', {
     state: () => ({

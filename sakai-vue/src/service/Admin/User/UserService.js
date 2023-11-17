@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
-import axios from 'axios';
+import axios from '@/service/Authentication/http.js';
 
-const apiUser = 'http://localhost:8080/api/user/';
+const apiUser = 'http://localhost:8080/api/admin/user/';
 
 export const userStore = defineStore('user', {
     state: () => ({
@@ -70,7 +70,7 @@ export const userStore = defineStore('user', {
         },
         createUser(form) {
             // console.log(form)
-            axios.post('http://localhost:8080/api/user', form).then((response) => {
+            axios.post('http://localhost:8080/api/admin/user', form).then((response) => {
                 if(response.data.role == 'ADMIN'){
                     this.dataAdmin.unshift(response.data);
                     this.data.unshift(response.data);
@@ -184,7 +184,7 @@ export const userStore = defineStore('user', {
         },
         async sendMail(form) {
             try {
-                const response = await axios.post('http://localhost:8080/mail/send', form);
+                const response = await axios.post('http://localhost:8080/api/admin/mail/send', form);
                 return response.data;
             } catch (error) {
                 console.error('Error sending mail:', error);

@@ -6,6 +6,7 @@ import { useDiaChi } from '@/service/KhachHang/DiaChiService.js';
 import { phiShipStore } from '../../service/KhachHang/PhiGiaoHangService';
 import { checkoutStore } from '@/service/KhachHang/HoaDonService.js';
 import { voucherStore } from '@/service/KhachHang/KHVoucherService.js';
+import {uservoucherStore} from '@/service/KhachHang/UserVoucherService.js';
 import tokenService from '@/service/Authentication/TokenService.js';
 import userKHService from '@/service/KhachHang/UserService.js';
 import AddDiaChi from '@/components/KhachHang/DiaChiKhachHang/Add.vue';
@@ -21,6 +22,7 @@ const router = useRouter();
 const checkoutService = checkoutStore();
 const store = useCartStore();
 const voucherService = voucherStore();
+const userVoucherService = uservoucherStore();
 const diaChiService = useDiaChi();
 const phiGiaoHangService = phiShipStore();
 const vnpayService = vnpayStore();
@@ -94,7 +96,7 @@ const loadUser = async () => {
     diaChiMacDinh.value = diaChiService.diaChiMacDinh;
      
     if( diaChiMacDinh.value !== null ){
-        console.log(diaChiMacDinh.value);
+     
         await phiGiaoHangService.phiShip(diaChiMacDinh.value);
     phiShip.value = phiGiaoHangService.money;
     }
@@ -124,6 +126,8 @@ const thanhtoan = async () => {
     const userName = await tokenService.getUserNameByToken(token);
 
     const user = await userKHService.getUserByUsername(userName);
+
+    await userVoucherService.getUserVoucher(user.id, selectedVoucher.value.id);
 
     const forms = dataGHCT.value.map((item) => {
         return {
@@ -188,6 +192,9 @@ const loadDataVoucher = async () => {
     const token = localStorage.getItem('token');
     const userName = await tokenService.getUserNameByToken(token);
     const user = await userKHService.getUserByUsername(userName);
+
+    // await gioHangService. getListVoucherByUser(token);
+    //     dataVoucher.value = gioHangService.voucher;
     await voucherService.getListVoucher(user.id);
     dataVoucher.value = voucherService.data;
     // console.log(dataVoucher.value);
@@ -198,7 +205,10 @@ const formatDate = (dateTime) => {
 };
 
 const applyVoucher = () => {
-    giamGia.value = selectedVoucher.value.giamToiDa;
+    const phanTram = selectedVoucher.value.giaTriGiam;
+
+    giamGia.value = tongTien.value * (phanTram / 100)
+
     tongThanhToan.value = tongTien.value + phiShip.value - giamGia.value;
 
     if (selectedVoucher.value == null) {
@@ -383,6 +393,14 @@ const loadDiaChi = async () => {
                                                 {{ slotProps.data.giamToiDa }}
                                             </template>
                                         </Column>
+
+                                        <Column field="dieuKien" header="Giá trị giảm (%)" :sortable="true"
+                                            headerStyle="width:14%; min-width:8rem;">
+                                            <template #body="slotProps">
+                                                <span class="p-column-title">Giá trị giảm (%)</span>
+                                                {{ slotProps.data.giaTriGiam }} (%)
+                                            </template>
+                                        </Column>
                                         <Column field="moTa" header="Mô Tả" :sortable="true"
                                             headerStyle="width:14%; min-width:8rem;">
                                             <template #body="slotProps">
@@ -400,13 +418,7 @@ const loadDiaChi = async () => {
                                                     placeholder="mm/dd/yyyy" />
                                             </template>
                                         </Column>
-                                        <Column field="soLuong" header="Số Lượng" :sortable="true"
-                                            headerStyle="width:14%; min-width:8rem;">
-                                            <template #body="slotProps">
-                                                <span class="p-column-title">Số Lượng</span>
-                                                {{ slotProps.data.soLuong }}
-                                            </template>
-                                        </Column>
+                                      
                                     </DataTable>
                                 </div>
 
