@@ -1,5 +1,6 @@
 <!-- eslint-disable no-unused-vars -->
 <script setup>
+import { format } from 'date-fns';
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
 import CustomerService from '@/service/CustomerService';
 import ProductService from '@/service/ProductService';
@@ -108,15 +109,19 @@ const initFilters1 = () => {
 };
 
 const formatCurrency = (value) => {
-    return parseInt(value).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+    if (value == null || value.length <= 0) {
+        return null;
+    } else {
+        return parseInt(value).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+    }
 };
 
-const formatDate = (value) => {
-    return value.toLocaleDateString('en-US', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-    });
+const formatDate = (dateTime) => {
+    if (dateTime == null || dateTime.length <= 0) {
+        return null;
+    } else {
+        return format(new Date(dateTime), 'yyyy/MM/dd HH:mm:ss');
+    }
 };
 </script>
 <template>
@@ -124,11 +129,11 @@ const formatDate = (value) => {
         <Dropdown v-model="typeSearchDate" :options="dataSearchDate" optionLabel="label" placeholder="Ngày tạo" class="w-full md:w-14rem" style="height: 40px" />
         <div class="p-inputgroup flex-1" style="margin-left: 20px">
             <span class="p-inputgroup-addon" style="height: 40px">Ngày bắt đầu</span>
-            <input type="datetime-local" v-model="startDate" style="min-width: 13rem; height: 40px" />
+            <input type="datetime-local" v-model="startDate" style="height: 40px" />
         </div>
         <div class="p-inputgroup flex-1">
             <span class="p-inputgroup-addon" style="height: 40px">Ngày kết thúc</span>
-            <input type="datetime-local" v-model="endDate" style="min-width: 13rem; height: 40px" />
+            <input type="datetime-local" v-model="endDate" style="height: 40px" />
         </div>
         <div style="margin-left: 5px">
             <Button label="Seach" @click="searchDate()" icon="pi pi-search" class="p-button-rounded p-button-primary mr-2 mb-2" />
@@ -179,10 +184,21 @@ const formatDate = (value) => {
         <Column field="tongTien" header="Tổng tiền" :sortable="true" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
                 <span class="p-column-title">tongTien</span>
-                {{ formatCurrency(slotProps.data.tongTien) }}
+                {{ formatCurrency(slotProps.data.tienSauKhiGiam==null?slotProps.data.tongTien: slotProps.data.tienSauKhiGiam) }}
             </template>
         </Column>
-        <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column>
+        <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+            <template #body="slotProps">
+                <span class="p-column-title">{{ col.field }}</span>
+                {{
+                    col.field === 'tienShip' || col.field === 'tienSauKhiGiam'
+                        ? formatCurrency(slotProps.data[col.field])
+                        : ['ngayTao', 'ngaySua', 'ngayShip', 'ngayNhan'].includes(col.field)
+                        ? formatDate(slotProps.data[col.field])
+                        : slotProps.data[col.field]
+                }}
+            </template>
+        </Column>
         <Column field="diaChi" header="Địa chỉ" :sortable="false" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
                 <span class="p-column-title">diaChi</span>

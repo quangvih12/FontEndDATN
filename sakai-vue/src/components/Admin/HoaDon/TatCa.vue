@@ -1,5 +1,6 @@
 <!-- eslint-disable no-unused-vars -->
 <script setup>
+import { format } from 'date-fns';
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
 import CustomerService from '@/service/CustomerService';
 import ProductService from '@/service/ProductService';
@@ -125,16 +126,20 @@ const initFilters1 = () => {
     };
 };
 
-const formatDate = (value) => {
-    return value.toLocaleDateString('en-US', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-    });
+const formatCurrency = (value) => {
+    if (value == null || value.length <= 0) {
+        return null;
+    } else {
+        return parseInt(value).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+    }
 };
 
-const formatCurrency = (value) => {
-    return parseInt(value).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+const formatDate = (dateTime) => {
+    if (dateTime == null || dateTime.length <= 0) {
+        return null;
+    } else {
+        return format(new Date(dateTime), 'yyyy/MM/dd HH:mm:ss');
+    }
 };
 </script>
 <template>
@@ -142,13 +147,13 @@ const formatCurrency = (value) => {
         <Dropdown v-model="typeSearchDate" :options="dataSearchDate" optionLabel="label" placeholder="Ngày tạo" class="w-full md:w-14rem" style="height: 40px" />
         <div class="p-inputgroup flex-1" style="margin-left: 20px">
             <span class="p-inputgroup-addon" style="height: 40px">Ngày bắt đầu</span>
-            <input type="datetime-local" v-model="startDate" style="height: 40px; width: 160px" />
+            <input type="datetime-local" v-model="startDate" style="min-width: 13rem; height: 40px" />
         </div>
         <div class="p-inputgroup flex-1">
             <span class="p-inputgroup-addon" style="height: 40px">Ngày kết thúc</span>
-            <input type="datetime-local" v-model="endDate" style="height: 40px; width: 160px" />
+            <input type="datetime-local" v-model="endDate" style="min-width: 13rem; height: 40px" />
         </div>
-        <div style="margin-left: 0px">
+        <div style="margin-left: 5px">
             <Button label="Seach" @click="searchDate()" icon="pi pi-search" class="p-button-rounded p-button-primary mr-2 mb-2" />
         </div>
     </div>
@@ -198,10 +203,21 @@ const formatCurrency = (value) => {
             <template #body="slotProps">
                 <span class="p-column-title">tongTien</span>
 
-                {{ formatCurrency(slotProps.data.tongTien) }}
+                {{ formatCurrency(slotProps.data.tienSauKhiGiam==null?slotProps.data.tongTien: slotProps.data.tienSauKhiGiam) }}
             </template>
         </Column>
-        <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column>
+        <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+            <template #body="slotProps">
+                <span class="p-column-title">{{ col.field }}</span>
+                {{
+                    col.field === 'tienShip' || col.field === 'tienSauKhiGiam'
+                        ? formatCurrency(slotProps.data[col.field])
+                        : ['ngayTao', 'ngaySua', 'ngayShip', 'ngayNhan'].includes(col.field)
+                        ? formatDate(slotProps.data[col.field])
+                        : slotProps.data[col.field]
+                }}
+            </template>
+        </Column>
 
         <Column field="diaChi" header="Địa chỉ" :sortable="false" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
@@ -215,102 +231,7 @@ const formatCurrency = (value) => {
                 <Tag :value="hienThiTrangThai(slotProps.data.trangThai).text" :severity="hienThiTrangThai(slotProps.data.trangThai).severity" />
             </template>
         </Column>
-        <!-- <Column field="stt" header="STT" :sortable="true" headerStyle="width:14%; min-width:1rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">stt</span>
-                {{ slotProps.data.stt }}
-            </template>
-        </Column>
-        <Column field="maHD" header="Mã hoá đơn" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">maHD</span>
-                {{ slotProps.data.maHD }}
-            </template>
-        </Column>
-        <Column field="nguoiTao" header="Người tạo" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">nguoiTao</span>
-                {{ slotProps.data.nguoiTao }}
-            </template>
-        </Column>
-        <Column field="ngayTao" header="Ngày tạo" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">ngayTao</span>
-                {{ slotProps.data.ngayTao }}
-            </template>
-        </Column>
-        <Column field="ngaySua" header="Ngày sửa" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">ngaySua</span>
-                {{ slotProps.data.ngaySua }}
-            </template>
-        </Column>
-        <Column field="tenNguoiNhan" header="Người nhận" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">tenNguoiNhan</span>
-                {{ slotProps.data.tenNguoiNhan }}
-            </template>
-        </Column>
-        <Column field="tienShip" header="Tiền ship" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">tienShip</span>
-                {{ slotProps.data.tienShip }}
-            </template>
-        </Column>
-        <Column field="tongTien" header="Tổng tiền" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">tongTien</span>
-                {{ slotProps.data.tongTien }}
-            </template>
-        </Column>
-        <Column field="tienSauKhiGiam" header="Tiền sau giảm" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">tienSauKhiGiam</span>
-                {{ slotProps.data.tienSauKhiGiam }}
-            </template>
-        </Column>
-        <Column field="trangThai" header="Trạng thái" :sortable="false" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">trangThai</span>
-                {{ hienThiTrangThai(slotProps.data.trangThai) }}
-            </template>
-        </Column>
-        <Column field="tenPTTT" header="Phương thức thanh toán" :sortable="false" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">tenPTTT</span>
-                {{ slotProps.data.tenPTTT }}
-            </template>
-        </Column>
-        <Column field="ngayThanhToan" header="Ngày thanh toán" :sortable="false" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">ngayThanhToan</span>
-                {{ slotProps.data.ngayThanhToan }}
-            </template>
-        </Column>
-        <Column field="diaChi" header="Địa chỉ" :sortable="false" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">diaChi</span>
-                {{ slotProps.data.diaChi }}
-            </template>
-        </Column>
-        <Column field="ngayShip" header="Ngày ship" :sortable="false" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">ngayShip</span>
-                {{ slotProps.data.ngayShip }}
-            </template>
-        </Column>
-        <Column field="ngayNhan" header="Ngày nhận" :sortable="false" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">ngayNhan</span>
-                {{ slotProps.data.ngayNhan }}
-            </template>
-        </Column>
-        <Column field="hinhThucGiaoHang" header="Hình thức giao" :sortable="false" headerStyle="width:14%; min-width:10rem;">
-            <template #body="slotProps">
-                <span class="p-column-title">hinhThucGiaoHang</span>
-                {{ slotProps.data.hinhThucGiaoHang }}
-            </template>
-        </Column> -->
+
         <Column header="Hành động" headerStyle="min-width:10rem;">
             <template #body="slotProps">
                 <!-- <DetailSize :my-prop="slotProps.data"></DetailSize>

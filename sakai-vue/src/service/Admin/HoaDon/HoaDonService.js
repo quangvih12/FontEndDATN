@@ -99,6 +99,26 @@ export const HDStore = defineStore('hoaDon', {
             });
         },
 
+         //từ Xác nhận đổi tra -> hoàn thành đổi trả không cộng lại số lượng
+         hoanThanhDoiTraKhongCongSoLuong(id) {
+            axios.put(apiHD + '/hoan-thanh-tra/' + id).then((response) => {
+                if (this.check == 1) {
+                    if (this.dataXacNhanHoanTraHoanTien[0].trangThai == '8') {
+                        let index = -1;
+                        for (let i = 0; i < this.dataXacNhanHoanTraHoanTien.length; i++) {
+                            if (id == this.dataXacNhanHoanTraHoanTien[i].idHD) {
+                                index = i;
+                            }
+                        }
+                        this.dataXacNhanHoanTraHoanTien[index].trangThai = 10;
+                        this.dataDaHoanTra.unshift(this.dataXacNhanHoanTraHoanTien[index]);
+                        this.dataXacNhanHoanTraHoanTien.splice(index, 1);
+                    }
+                }
+            });
+        },
+
+
         //từ trả hàng -> xác nhận trả hàng
         traHang(id) {
             axios.put(apiHD + '/xac-nhan-doi-tra/' + id).then((response) => {
@@ -349,6 +369,14 @@ export const HDStore = defineStore('hoaDon', {
                 if (trangThai == 10) {
                     this.dataDaHoanTra = response.data;
                     return this.dataDaHoanTra;
+                }
+                if (trangThai == 8) {
+                    this.dataXacNhanHoanTraHoanTien = response.data;
+                    return this.dataXacNhanHoanTraHoanTien;
+                }
+                if (trangThai == 9) {
+                    this.dataDaHuyDoiTra = response.data;
+                    return this.dataDaHuyDoiTra;
                 }
                 if (trangThai == 0) {
                     this.dataDaHuy = response.data;

@@ -1,5 +1,6 @@
 <!-- eslint-disable no-unused-vars -->
 <script setup>
+import { format } from 'date-fns';
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
 import CustomerService from '@/service/CustomerService';
 import ProductService from '@/service/ProductService';
@@ -57,12 +58,26 @@ const columns = ref([
     { field: 'ngayShip', header: 'Ngày ship' },
     { field: 'ngayNhan', header: 'Ngày nhận' }
 ]);
+
+const dataSearchDate = ref([
+    { label: 'Ngày tạo', value: 'ngayTao' },
+    { label: 'Ngày sửa', value: 'ngaySua' },
+    { label: 'Ngày thanh toán', value: 'ngayThanhToan' },
+    { label: 'Ngày ship', value: 'ngayShip' },
+    { label: 'Ngày nhận', value: 'ngayNhan' }
+]);
 const startDate = ref(null);
 const endDate = ref([null]);
 const typeSearchDate = ref(null);
 
 const searchDate = async () => {
-    if (typeSearchDate.value == null) {
+    if (startDate.value == null || endDate.value == null) {
+        await useHD.fetchDataByStatus(10);
+        data.value = useHD.dataDaHoanTra;
+    } else if (startDate.value.length <= 0 || endDate.value.length <= 0) {
+        await useHD.fetchDataByStatus(10);
+        data.value = useHD.dataDaHoanTra;
+    } else if (typeSearchDate.value == null) {
         const respone = await useHD.searchDateByTrangThai(startDate.value, endDate.value, 'ngayTao', 7);
         data.value = respone;
     } else {
@@ -101,15 +116,19 @@ const initFilters1 = () => {
 };
 
 const formatCurrency = (value) => {
-    return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+    if (value == null || value.length <= 0) {
+        return null;
+    } else {
+        return parseInt(value).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+    }
 };
 
-const formatDate = (value) => {
-    return value.toLocaleDateString('en-US', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-    });
+const formatDate = (dateTime) => {
+    if (dateTime == null || dateTime.length <= 0) {
+        return null;
+    } else {
+        return format(new Date(dateTime), 'yyyy/MM/dd HH:mm:ss');
+    }
 };
 
 const tinhThanhTien = (soLuong, donGia) => {
@@ -176,7 +195,7 @@ const tinhThanhTien = (soLuong, donGia) => {
         <Column field="tongTien" header="Tổng tiền" :sortable="true" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
                 <span class="p-column-title">tongTien</span>
-                {{ formatCurrency(slotProps.data.tongTien) }}
+                {{ formatCurrency(slotProps.data.tienSauKhiGiam==null?slotProps.data.tongTien: slotProps.data.tienSauKhiGiam) }}
             </template>
         </Column>
         <Column field="diaChi" header="Địa chỉ" :sortable="false" headerStyle="width:14%; min-width:10rem;">
@@ -185,7 +204,18 @@ const tinhThanhTien = (soLuong, donGia) => {
                 {{ slotProps.data.diaChiCuThe }}, {{ slotProps.data.tenPhuongXa }}, {{ slotProps.data.tenQuanHuyen }}, {{ slotProps.data.tenTinhThanh }}
             </template>
         </Column>
-        <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column>
+        <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+            <template #body="slotProps">
+                <span class="p-column-title">{{ col.field }}</span>
+                {{
+                    col.field === 'tienShip' || col.field === 'tienSauKhiGiam'
+                        ? formatCurrency(slotProps.data[col.field])
+                        : ['ngayTao', 'ngaySua', 'ngayShip', 'ngayNhan'].includes(col.field)
+                        ? formatDate(slotProps.data[col.field])
+                        : slotProps.data[col.field]
+                }}
+            </template>
+        </Column>
         <Column field="trangThai" header="Trạng thái" :sortable="false" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
                 <span class="p-column-title">trangThai</span>

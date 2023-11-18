@@ -59,6 +59,7 @@ const loadDataVoucherByUser = async () => {
     } else {
         await gioHangService. getListVoucherByUser(token);
         dataVoucher.value = gioHangService.voucher;
+        console.log(dataVoucher.value)
     }
 };
 

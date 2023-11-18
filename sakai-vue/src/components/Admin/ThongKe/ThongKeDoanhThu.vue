@@ -51,35 +51,33 @@
                 </Panel>
             </div>
             <div class="Field col-6 md:col-4" style="height: 40px;">
-                <Panel header="Tìm kiếm" style=" width: 100%; height: 40px;">
+                <Panel header="Tìm kiếm" style=" width: 300px; height: 40px;">
                     <div class="flex flex-wrap gap-3" style="display: flex;">
-                        <Button type="button" label="Năm" @click="toggle"
+                        <Button type="button" label="Năm/tháng" @click="toggle"
+                            style="width: 105px; height: 40px;background: none;   color: black;" />
+
+                        <Button type="button" label="khác" @click="toggle1"
                             style="width: 70px; height: 40px;background: none;   color: black;" />
+                        <Button type="button" label="Tháng" @click="load()"
+                            style="width: 60px; height: 40px;background: none;    color: black;"> <i class="pi pi-replay"
+                                style="font-size: 1.8rem; margin-right: 200px;"></i></Button>
                         <OverlayPanel ref="op">
 
                             <H6>Hãy chọn năm</H6>
                             <div v-for="(o, index) in loadNam"
-                                style="display: inline-block; margin-right: 10px; margin-bottom: 10px;">
+                                style="display: inline-block; margin-right: 10px; margin-bottom: 20px;">
                                 <div class="flex align-items-center">
                                     <RadioButton v-model="vNam" type="radio" :inputId="'ingredient' + index" name="nam"
                                         :value="o.name" />
                                     <label :for="'ingredient' + index" class="ml-2">{{ o.name }}</label>
                                 </div>
                             </div>
-
-                        </OverlayPanel>
-                        <Button type="button" label="Tháng" @click="toggle1"
-                            style="width: 80px; height: 40px;background: none;   color: black;" />
-                        <Button type="button" label="Tháng" @click="load()"
-                            style="width: 70px; height: 40px;background: none;    color: black;"> <i class="pi pi-replay"
-                                style="font-size: 1.8rem; margin-right: 200px;"></i></Button>
-
-                        <OverlayPanel ref="op1" style="height: 100px;">
                             <form @submit="onSubmit">
-                                <div style="display: flex; height: 50px;">
+                                <H6></H6>
+                                <div style="display: flex; height: 50px; margin-bottom: 20px;">
 
                                     <div class="" style="height: 30px; margin-right: 20px;  display: block;">
-                                        <label style="width: 100px;">start month</label>
+                                        <label style="width: 100px;">Ngày bắt đầu</label>
                                         <span class="p-float-label">
 
                                             <InputText type="datetime-local" style="width: 160px;" v-model="startDate"
@@ -89,7 +87,7 @@
                                         <small class="p-error">{{ startDateError }}</small>
                                     </div>
                                     <div class="" style="height: 30px; margin-right: 20px;  display: block;">
-                                        <label style="width: 100px;">end month</label>
+                                        <label style="width: 100px;">Ngày kết thúc</label>
                                         <span class="p-float-label">
 
                                             <InputText type="datetime-local" style="width: 160px;" v-model="endDate"
@@ -103,6 +101,21 @@
                                             class="pi pi-search" style="font-size: 1.8rem; color: blue"></i></Button>
                                 </div>
                             </form>
+                        </OverlayPanel>
+                        <OverlayPanel ref="op1" style="height: 60px;">
+                            <div style="display: flex; ">
+                                <div class="flex align-items-center" style="margin-right: 20px;">
+                                    <RadioButton v-model="vModelHinhThuc" type="radio" :inputId="'ingredient' + index"
+                                        name="nam" value="1" />
+                                    <label :for="'ingredient' + index" class="ml-2">tại quầy</label>
+                                </div>
+                                <div class="flex align-items-center">
+                                    <RadioButton v-model="vModelHinhThuc" type="radio" :inputId="'ingredient' + index"
+                                        name="nam" value="2" />
+                                    <label :for="'ingredient' + index" class="ml-2">đặt hàng</label>
+                                </div>
+                            </div>
+
                         </OverlayPanel>
 
 
@@ -172,6 +185,7 @@ const thongKeStore = ThongKeStore();
 const thuongHieuService = useCounterStore();
 const productStore = ProductStore();
 
+const vModelHinhThuc = ref();
 const data = ref([]);
 const tongDoanhThu = ref(0);
 const lstAdminThongKeLoaiResponses = ref([]);
@@ -262,6 +276,7 @@ const load = () => {
     selectedCity.value = null;
     selectedProduct.value = null;
     vNam.value = null;
+    vModelHinhThuc.value = null;
 }
 
 
@@ -271,6 +286,7 @@ const loadDataLoai = async () => {
     await loaiStore.fetchDataByStatus(1);
     dataLoai.value = loaiStore.dataByStatus1;
 };
+
 
 const dataThuongHieu = ref([]);
 const selectedCity = ref(null);
@@ -286,6 +302,33 @@ const loadProducts = async () => {
     await productStore.fetchAll(); // Gọi hàm fetchAll từ Store
     products.value = productStore.products;
 };
+const onHinhThucGiaoHang = async (id) => {
+    await thongKeStore.fetchAllByHinhThucGiaoHang(id);
+    tongDoanhThu.value = thongKeStore.tongDoanhThu;
+    lstAdminThongKeLoaiResponses.value = thongKeStore.lstAdminThongKeLoaiResponses;
+    lstAdminThongKeSanPhamCaoResponses.value = thongKeStore.lstAdminThongKeSanPhamCaoResponses;
+    lstAdminThongKeSanPhamThapResponses.value = thongKeStore.lstAdminThongKeSanPhamThapResponses;
+    lstAdminThongKeThangResponses.value = thongKeStore.lstAdminThongKeThangResponses;
+    lstAdminThongKeThuongHieuResponses.value = thongKeStore.lstAdminThongKeThuongHieuResponses;
+    lstAdminThongKeThangNamResponses.value = thongKeStore.lstAdminThongKeThangNamResponses;
+};
+watch(vModelHinhThuc, async (newVal) => {
+
+    if (vModelHinhThuc.value == null || vModelHinhThuc.value == '') {
+        return;
+    }
+    await onHinhThucGiaoHang(vModelHinhThuc.value);
+    chartData.value = setChartData();
+    chartOptions.value = setChartOptions();
+    chartLoai.value = setChartLoai();
+    chartOptionsLoai.value = setChartOptionsLoai();
+    chartThuongHieu.value = setChartThuongHieu();
+    chartOptionsThuongHieu.value = setChartOptionsThuongHieu();
+    chartDataSPCao.value = setChartDataSpCao();
+    chartOptionsSPCao.value = setChartOptionsSpCao();
+    chartDataSPThap.value = setChartDataSpThap();
+    chartOptionsSPThap.value = setChartOptionsSpThap();
+});
 
 const onloaiChangeLoai = async (id, year) => {
     await thongKeStore.fetchAllByLoai(id, year);
@@ -301,7 +344,7 @@ watch(selectedLoai, async (newVal) => {
     if (vNam.value === null) {
         vNam.value = new Date().getFullYear();
     }
-    if(selectedLoai.value == null || selectedLoai.value == ''){
+    if (selectedLoai.value == null || selectedLoai.value == '') {
         return;
     }
     await onloaiChangeLoai(selectedLoai.value.id, vNam.value);
@@ -331,7 +374,7 @@ const onloaiChangeThuongHieu = async (id, year) => {
 watch(selectedCity, async (newVal) => {
     if (vNam.value === null) {
         vNam.value = new Date().getFullYear();
-    }if(selectedCity.value == null || selectedCity.value == ''){
+    } if (selectedCity.value == null || selectedCity.value == '') {
         return;
     }
     await onloaiChangeThuongHieu(selectedCity.value.id, vNam.value);
@@ -376,7 +419,7 @@ watch(selectedProduct, async (newVal) => {
         vNam.value = new Date().getFullYear();
     }
 
-  if(selectedProduct.value == null || selectedProduct.value == ''){
+    if (selectedProduct.value == null || selectedProduct.value == '') {
         return;
     }
     await onloaiChangeSanPham(selectedProduct.value.id, vNam.value);

@@ -1,13 +1,12 @@
 <template>
-  <div id="notfound">
-    <div class="notfound">
-      <div class="notfound-404">
+  <div id="notfound" style="height: 500px;">
+    <div class="notfound" >
+      <div class="notfound-404" >
         <h1>404</h1>
       </div>
-      <h2>Oops! This Page Could Not Be Found</h2>
-      <p>Sorry but the page you are looking for does not exist, have been removed. name changed or is temporarily
-        unavailable</p>
-      <a href="#" @click="goHome">Go To Homepage</a>
+      <h2>Oops!</h2>
+      <p>Thanh toán không thành công!</p>
+      <a href="#" @click="goHome">Quay lại trang chủ</a>
     </div>
   </div>
 </template>
@@ -40,7 +39,7 @@ body {
 
 #notfound {
   position: relative;
-  height: 100vh;
+  height: 500px;
 }
 
 #notfound .notfound {

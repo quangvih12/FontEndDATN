@@ -17,6 +17,7 @@ onMounted(() => {
     loadThang.value = thang;
 });
 
+const vModelHinhThuc = ref();
 const lstHoaDon = ref([]);
 const lstSanPham = ref([]);
 const tongLoiNhuan = ref(0);
@@ -39,6 +40,7 @@ const load = () => {
     loadSanPham();
     resetForm();
     vNam.value = null;
+    vModelHinhThuc.value= null;
 }
 const vNam = ref(null);
 const op = ref();
@@ -62,6 +64,24 @@ const thang = [{ name: '01' }, { name: '02' }, { name: '03' }, { name: '04' }, {
 const formatCurrency = (value) => {
     return value ? value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }) : 0;
 };
+
+const onHinhThucGiaoHang = async (id) => {
+    await thongKeStore.fetchAllLoiNhuanbyHinhThucGiaohang(id);
+    tongLoiNhuan.value = thongKeStore.tongLoiNhuan;
+    tongDonhangHoanThanh.value = thongKeStore.tongDonhangHoanThanh;
+    tongDonhangDangGiao.value = thongKeStore.tongDonhangDangGiao;
+    tongDonhangHuy.value = thongKeStore.tongDonhangHuy;
+    lstSanPham.value = thongKeStore.lstAdminThongKeLoiNhuanSanPhamResponse;
+    lstHoaDon.value = thongKeStore.lstAdminThongKeLoiNhuanHoaDonResponse;
+};
+watch(vModelHinhThuc, async (newVal) => {
+
+    if (vModelHinhThuc.value == null || vModelHinhThuc.value == '') {
+        return;
+    }
+    await onHinhThucGiaoHang(vModelHinhThuc.value);
+});
+
 
 watch(vNam, async (newVal) => {
     await thongKeStore.fetchAllLoiNhuan(vNam.value, '', '');
@@ -148,35 +168,26 @@ const getStatusLabel = (trangThai) => {
                 </Panel>
             </div>
         <div class="Field col-6 md:col-4" style="height: 40px;">
-            <Panel header="Tìm kiếm" style=" width: 100%; height: 40px;">
+            <Panel header="Tìm kiếm" style=" width:300px; height: 40px;">
                 <div class="flex flex-wrap gap-3" style="display: flex;">
-                    <Button type="button" label="Năm" @click="toggle"
-                        style="width: 70px; height: 40px;background: none;   color: black;" />
+                    <Button type="button" label="Năm/tháng" @click="toggle"
+                        style="width: 105px; height: 40px;background: none;   color: black;" />
                     <OverlayPanel ref="op">
 
                         <H6>Hãy chọn năm</H6>
                         <div v-for="(o, index) in loadNam"
-                            style="display: inline-block; margin-right: 10px; margin-bottom: 10px;">
+                            style="display: inline-block; margin-right: 10px; margin-bottom: 10px; margin-bottom: 20px;">
                             <div class="flex align-items-center">
                                 <RadioButton v-model="vNam" type="radio" :inputId="'ingredient' + index" name="nam"
                                     :value="o.name" />
                                 <label :for="'ingredient' + index" class="ml-2">{{ o.name }}</label>
                             </div>
                         </div>
-
-                    </OverlayPanel>
-                    <Button type="button" label="Tháng" @click="toggle1"
-                        style="width: 80px; height: 40px;background: none;   color: black;" />
-                    <Button type="button" label="Tháng" @click="load()"
-                        style="width: 50px; height: 40px;background: none;    color: black;"> <i class="pi pi-replay"
-                            style="font-size: 1.3rem; margin-left: -5px;"></i></Button>
-
-                    <OverlayPanel ref="op1" style="height: 100px;">
                         <form @submit="onSubmit">
-                            <div style="display: flex; height: 50px;">
+                            <div style="display: flex; height: 50px; margin-bottom: 20px;">
 
                                 <div class="" style="height: 30px; margin-right: 20px;  display: block;">
-                                    <label style="width: 100px;">start month</label>
+                                    <label style="width: 100px;">Ngày bắt đầu</label>
                                     <span class="p-float-label">
 
                                         <InputText type="datetime-local" style="width: 160px;" v-model="startDate"
@@ -186,7 +197,7 @@ const getStatusLabel = (trangThai) => {
                                     <small class="p-error">{{ startDateError }}</small>
                                 </div>
                                 <div class="" style="height: 30px; margin-right: 20px;  display: block;">
-                                    <label style="width: 100px;">end month</label>
+                                    <label style="width: 100px;">Ngày kết thúc</label>
                                     <span class="p-float-label">
 
                                         <InputText type="datetime-local" style="width: 160px;" v-model="endDate"
@@ -201,13 +212,33 @@ const getStatusLabel = (trangThai) => {
                             </div>
                         </form>
                     </OverlayPanel>
+                    <Button type="button" label="khác" @click="toggle1"
+                        style="width: 80px; height: 40px;background: none;   color: black;" />
+                    <Button type="button" label="Tháng" @click="load()"
+                        style="width: 50px; height: 40px;background: none;    color: black;"> <i class="pi pi-replay"
+                            style="font-size: 1.3rem; margin-left: -5px;"></i></Button>
+
+                    <OverlayPanel ref="op1" style="height: 60px;">
+                        <div style="display: flex; ">
+                                <div class="flex align-items-center" style="margin-right: 20px;">
+                                    <RadioButton v-model="vModelHinhThuc" type="radio" :inputId="'ingredient' + index"
+                                        name="nam" value="1" />
+                                    <label :for="'ingredient' + index" class="ml-2">tại quầy</label>
+                                </div>
+                                <div class="flex align-items-center">
+                                    <RadioButton v-model="vModelHinhThuc" type="radio" :inputId="'ingredient' + index"
+                                        name="nam" value="2" />
+                                    <label :for="'ingredient' + index" class="ml-2">đặt hàng</label>
+                                </div>
+                            </div>
+                    </OverlayPanel>
 
 
                 </div>
             </Panel>
         </div>
     </div>
-    <div class="Field col-12 md:col-12" style="margin-top: 100px;">
+    <div class="Field col-12 md:col-12" style="margin-top: 50px;">
         <DataTable ref="dt" :value="lstHoaDon" v-model:selection="selectedProducts" dataKey="id" :paginator="true" :rows="5"
             :filters="filters"
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"

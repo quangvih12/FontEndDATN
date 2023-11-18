@@ -1,4 +1,5 @@
 <script setup>
+import { format } from 'date-fns';
 import { ref, onMounted, watch } from 'vue';
 import Timeline from 'primevue/timeline';
 import { useRoute } from 'vue-router';
@@ -24,11 +25,8 @@ const { handleSubmit, resetForm } = useForm({
     validationSchema: schema
 });
 
-
 const { value: lyDo, errorMessage: lyDoSacError } = useField('lyDo');
 const { value: moTa, errorMessage: MoTaSacError } = useField('moTa');
-
-
 
 onMounted(() => {
     loadData();
@@ -53,10 +51,10 @@ const ngayThanhToan = ref('');
 const ngayGiao = ref('');
 const ngayNhan = ref('');
 watch(dataHD, (newVal) => {
-    ngayDat.value = dataHD.value.ngayTao;
-    ngayThanhToan.value = dataHD.value.ngayThanhToan;
-    ngayGiao.value = dataHD.value.ngayShip;
-    ngayNhan.value = dataHD.value.ngayNhan;
+    ngayDat.value = formatDate(dataHD.value.ngayTao);
+    ngayThanhToan.value = formatDate(dataHD.value.ngayThanhToan);
+    ngayGiao.value = formatDate(dataHD.value.ngayShip);
+    ngayNhan.value = formatDate(dataHD.value.ngayNhan);
 });
 
 const events = ref([
@@ -67,15 +65,19 @@ const events = ref([
     { status: 'Đánh giá', date: '17/10/2020', icon: 'pi pi-star', color: '#F55C3B' }
 ]);
 
-const tinhTongTien = (tienShip, tongTien) => {
-    return parseInt(tongTien) + parseInt(tienShip);
+const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
+    if (tienSauGiam == '' || tienSauGiam == null) {
+        return parseInt(tongTien) + parseInt(tienShip);
+    } else {
+        return parseInt(tienSauGiam);
+    }
+
 };
 const formatCurrency = (value) => {
     return parseInt(value).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
 };
 
 const hienThiTrangThai = (trangThai) => {
-
     if (parseInt(trangThai) == 0) {
         return { text: 'Đã hủy', severity: 'danger' };
     } else if (parseInt(trangThai) == 1) {
@@ -108,10 +110,10 @@ const doiTra = (idhdct, userId, diaChiId) => {
     idUser.value = userId;
     idDiaChi.value = diaChiId;
     doiTraDialog.value = true;
-}
+};
 const tatDoiTra = () => {
     doiTraDialog.value = false;
-}
+};
 
 const onSubmit = handleSubmit(async (values) => {
     const form = {
@@ -121,7 +123,7 @@ const onSubmit = handleSubmit(async (values) => {
         idDiaChi: idDiaChi.value,
         lyDo: values.lyDo,
         moTa: values.moTa
-    }
+    };
     const token = localStorage.getItem('token');
     await useHD.doiTra(token, form);
     resetForm();
@@ -140,7 +142,6 @@ const onTrongLuongChange = () => {
     }
 };
 
-
 const addCart = async (soLuong, idCTSP) => {
     const cartItem = {
         soLuong: soLuong,
@@ -149,7 +150,22 @@ const addCart = async (soLuong, idCTSP) => {
     const token = localStorage.getItem('token');
     await gioHangService.addToCart(cartItem, token);
     routers.push({ name: 'gio-hang' });
+};
 
+const hienTimeLine = (value) => {
+    if (parseInt(value) == 7 || parseInt(value) == 8 || parseInt(value) == 9 || parseInt(value) == 10) {
+        return false;
+    } else {
+        return true;
+    }
+};
+
+const formatDate = (dateTime) => {
+    if (dateTime == null || dateTime.length <= 0) {
+        return null;
+    } else {
+        return format(new Date(dateTime), 'yyyy/MM/dd HH:mm:ss');
+    }
 };
 </script>
 <template>
@@ -161,7 +177,9 @@ const addCart = async (soLuong, idCTSP) => {
                         <h3>Trạng thái đơn hàng</h3>
                     </div>
                     <div style="margin-left: 600px; font-size: 17px">
-                        <label for="">Mã đơn hàng: <span> {{ dataHD.maHD }} </span></label>
+                        <label for=""
+                            >Mã đơn hàng: <span> {{ dataHD.maHD }} </span></label
+                        >
                         <span> | </span>
                         <label for="" style="color: red">{{ hienThiTrangThai(dataHD.trangThai).text }}</label>
                     </div>
@@ -171,11 +189,9 @@ const addCart = async (soLuong, idCTSP) => {
                     </div> -->
                 </div>
                 <div>
-                    <Timeline :value="events" layout="horizontal" align="bottom" class="customized-timeline">
+                    <Timeline :value="events" layout="horizontal" align="bottom" class="customized-timeline" v-if="hienTimeLine(dataHD.trangThai)">
                         <template #marker="slotProps">
-                            <span
-                                class="flex w-2rem h-2rem align-items-center justify-content-center text-white border-circle z-1 shadow-1"
-                                :style="{ backgroundColor: slotProps.item.color }">
+                            <span class="flex w-2rem h-2rem align-items-center justify-content-center text-white border-circle z-1 shadow-1" :style="{ backgroundColor: slotProps.item.color }">
                                 <i :class="slotProps.item.icon"></i>
                             </span>
                         </template>
@@ -193,8 +209,7 @@ const addCart = async (soLuong, idCTSP) => {
                         <p>Cảm ơn bạn đã mua sắm tại VNK!</p>
                     </div>
                     <div style="margin-left: 600px">
-                        <Button type="button" label="Liên hệ" icon="pi pi-users" badgeClass="p-badge-danger"
-                            style="width: 200px; margin-left: 20px" outlined />
+                        <Button type="button" label="Liên hệ" icon="pi pi-users" badgeClass="p-badge-danger" style="width: 200px; margin-left: 20px" outlined />
                     </div>
                 </div>
                 <Divider />
@@ -218,27 +233,25 @@ const addCart = async (soLuong, idCTSP) => {
                                     </p>
                                 </div>
 
-                                <p v-if="hdct.trangThaiHDCT == 8"> <span style="color: red;">Chú ý: </span> Hãy dùng mã
-                                    <span style="color: red;">{{ hdct.maHDCT }} </span> ghi lên kiện hàng bạn gửi cho shop
-                                    nhé ! </p>
-                                    <p v-if="hdct.trangThaiHDCT == 9">Rất tiếc đơn hàng đổi trả của bạn đã bị hủy !<br/> <span style="color: rgb(241, 50, 50);">Lý do: </span>{{ dataHD.moTa }}  </p>
-                                    <p v-if="hdct.trangThaiHDCT == 7">Đơn Hàng đổi trả đang trong quá trình xác nhận !<br/> <span style="color: rgb(241, 50, 50);" v-if="dataHD.lyDo!=null">Lý do: </span>{{ dataHD.lyDo }}  </p>
-                           <div class="price">
+                                <p v-if="hdct.trangThaiHDCT == 8">
+                                    <span style="color: red">Chú ý: </span> Hãy dùng mã <span style="color: red">{{ hdct.maHDCT }} </span> ghi lên kiện hàng bạn gửi cho shop nhé !
+                                </p>
+                                <p v-if="hdct.trangThaiHDCT == 9">
+                                    Rất tiếc đơn hàng đổi trả của bạn đã bị hủy !<br />
+                                    <span style="color: rgb(241, 50, 50)">Lý do: </span>{{ dataHD.moTa }}
+                                </p>
+                                <p v-if="hdct.trangThaiHDCT == 7">
+                                    Đơn Hàng đổi trả đang trong quá trình xác nhận !<br />
+                                    <span style="color: rgb(241, 50, 50)" v-if="dataHD.lyDo != null">Lý do: </span>{{ dataHD.lyDo }}
+                                </p>
+                                <div class="price">
                                     <h6 style="color: red">{{ formatCurrency(hdct.donGia) }}</h6>
-                                    <Button type="button" label="Mua lại" style="width: 100px;margin-right: 10px;"
-                                        @click="addCart(hdct.idSPCT, hdct.soLuong)"
-                                        :disabled="dataHD.trangThai == 7 || dataHD.trangThai == 2 " />
-                                    <Button v-if="hdct.trangThaiHDCT == 3 " severity="secondary"
-                                        label="Đổi / trả" style="width: 100px"
-                                        @click="doiTra(hdct.idHDCT, hdct.idUser, hdct.idDiaChi)" />
-                                    <p v-if="hdct.trangThaiHDCT == 9" style="margin-top: 10px;"> yêu cầu đổi sản phẩm thất
-                                        bại</p>
-                                    <p v-if="hdct.trangThaiHDCT == 8" style="margin-top: 10px;"> yêu cầu đổi sản phẩm thành
-                                        công</p>
-                                    <p v-if="hdct.trangThaiHDCT == 10" style="margin-top: 10px;">  đổi sản phẩm thành
-                                        công</p>
-                                    <p v-if="hdct.trangThaiHDCT == 7" style="margin-top: 10px;"> sản phẩm đang yêu cầu đổi
-                                        trả</p>
+                                    <Button type="button" label="Mua lại" style="width: 100px; margin-right: 10px" @click="addCart(hdct.idSPCT, hdct.soLuong)" :disabled="dataHD.trangThai == 7 || dataHD.trangThai == 2" />
+                                    <Button v-if="hdct.trangThaiHDCT == 3" severity="secondary" label="Đổi / trả" style="width: 100px" @click="doiTra(hdct.idHDCT, hdct.idUser, hdct.idDiaChi)" />
+                                    <p v-if="hdct.trangThaiHDCT == 9" style="margin-top: 10px">yêu cầu đổi sản phẩm thất bại</p>
+                                    <p v-if="hdct.trangThaiHDCT == 8" style="margin-top: 10px">yêu cầu đổi sản phẩm thành công</p>
+                                    <p v-if="hdct.trangThaiHDCT == 10" style="margin-top: 10px">đổi sản phẩm thành công</p>
+                                    <p v-if="hdct.trangThaiHDCT == 7" style="margin-top: 10px">sản phẩm đang yêu cầu đổi trả</p>
                                 </div>
                             </div>
                         </div>
@@ -251,21 +264,20 @@ const addCart = async (soLuong, idCTSP) => {
                         <h4>Địa chỉ nhận hàng</h4>
                         <p>{{ dataHD.tenNguoiNhan }}</p>
                         <p>{{ dataHD.sdt }}</p>
-                        <p>{{ dataHD.diaChiCuThe }}, {{ dataHD.tenPhuongXa }}, {{ dataHD.tenQuanHuyen }}, {{
-                            dataHD.tenTinhThanh }}</p>
+                        <p>{{ dataHD.diaChiCuThe }}, {{ dataHD.tenPhuongXa }}, {{ dataHD.tenQuanHuyen }}, {{ dataHD.tenTinhThanh }}</p>
                     </div>
-                    <div class="c2" style="margin-left: 500px;">
+                    <div class="c2" style="margin-left: 500px">
                         <p>Tổng tiền hàng</p>
                         <p>Phí vận chuyển</p>
-
+                        <p>Tiền giảm</p>
                         <p>Thành tiền</p>
                     </div>
                     <div class="c2">
                         <p>{{ formatCurrency(dataHD.tongTien) }}</p>
                         <p>{{ formatCurrency(dataHD.tienShip) }}</p>
-
-                        <p style="font-weight: bold; color: red">{{ formatCurrency(tinhTongTien(dataHD.tongTien,
-                            dataHD.tienShip)) }}</p>
+                        <p style="color: red;" v-if="dataHD.tienSauKhiGiam !==null">- {{ formatCurrency(parseInt(dataHD.tongTien) - parseInt(dataHD.tienSauKhiGiam) )}}</p>
+                        <p style="color: red;" v-else>0</p>
+                        <p style="font-weight: bold; color: red">{{ formatCurrency(tinhTongTien(dataHD.tongTien, dataHD.tienShip,dataHD.tienSauKhiGiam)) }}</p>
                     </div>
                 </div>
             </div>
@@ -275,35 +287,26 @@ const addCart = async (soLuong, idCTSP) => {
             <form @submit="onSubmit">
                 <div class="Field col-12 md:col-12" style="margin-bottom: 0px">
                     <div style="display: flex">
-                        <span class="p-float-label" style="width: 500px;margin-top: 10px;">
-                            <Dropdown id="dropdown" style="width: 370px; " :options="dataLyDo" v-model="selectLyDo"
-                                optionLabel="value" :class="{ 'p-invalid': lyDoSacError }" @change="onTrongLuongChange">
-                            </Dropdown>
+                        <span class="p-float-label" style="width: 500px; margin-top: 10px">
+                            <Dropdown id="dropdown" style="width: 370px" :options="dataLyDo" v-model="selectLyDo" optionLabel="value" :class="{ 'p-invalid': lyDoSacError }" @change="onTrongLuongChange"> </Dropdown>
                             <label for="dropdown">Lý do</label>
                         </span>
-                        <TableTrongLuong :tableId="'TableTrongLuong'" :rightGhId="'right_ghTrongLuong'"
-                            :tableClass="'TableTrongLuong'" :rightGhClass="'right_ghTrongLuong'" />
+                        <TableTrongLuong :tableId="'TableTrongLuong'" :rightGhId="'right_ghTrongLuong'" :tableClass="'TableTrongLuong'" :rightGhClass="'right_ghTrongLuong'" />
                     </div>
                     <small class="p-error">{{ lyDoSacError }}</small>
 
-                    <div class="" style="margin-bottom: 0px;margin-top: 20px;">
+                    <div class="" style="margin-bottom: 0px; margin-top: 20px">
                         <label for="address">Mô tả</label>
-                        <Textarea id="address" rows="4" v-model="moTa" :class="{ 'p-invalid': MoTaSacError }"
-                            style="width: 370px; "></Textarea>
+                        <Textarea id="address" rows="4" v-model="moTa" :class="{ 'p-invalid': MoTaSacError }" style="width: 370px"></Textarea>
                         <small class="p-error">{{ MoTaSacError }}</small>
                     </div>
                 </div>
                 <div style="width: 400px; text-align: center">
-
-                    <Button class="p-button-outlined" outlined severity="secondary"
-                        style="width: 100px; height: auto; margin: 10px" @click="reset()" label="Hủy"></Button>
-                    <Button type="submit" class="p-button-outlined" style="width: 100px; height: auto; margin: 10px"
-                        label="Xác nhận"></Button>
+                    <Button class="p-button-outlined" outlined severity="secondary" style="width: 100px; height: auto; margin: 10px" @click="reset()" label="Hủy"></Button>
+                    <Button type="submit" class="p-button-outlined" style="width: 100px; height: auto; margin: 10px" label="Xác nhận"></Button>
                 </div>
             </form>
-
         </Dialog>
-
     </div>
 </template>
 <style scoped>
