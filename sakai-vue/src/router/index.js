@@ -15,7 +15,15 @@ const router = createRouter({
             path: '/login',
             name: 'login',
             component: () => import('@/views/pages/auth/Login.vue')
+        }, {
+            path: '/login-admin',
+            name: 'login-admin',
+            component: () => import('@/views/pages/auth/LoginAdmin.vue')
         },  {
+            path: '/Error',
+            name: 'eror',
+            component: () => import('@/views/pages/auth/Error.vue')
+        }, {
             path: '/',
             component: AppLayoutKH,
             children: [
@@ -104,6 +112,10 @@ const router = createRouter({
                     name: 'thongKe',
                     component: () => import('@/components/Admin/ThongKe/index.vue'),
                     beforeEnter: authMiddleware
+                }, {
+                    path: '/thong-tin-ca-nhan-ad',
+                    name: 'thong-tin-ca-nhan-ad',
+                    component: () => import('../components/Admin/ThongTinCaNhan/thongTinCaNhan.vue')
                 },
                 {
                     path: '/pages/quan-ly-hoa-don',

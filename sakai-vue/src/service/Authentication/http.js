@@ -32,8 +32,8 @@ instance.interceptors.response.use(
       //nếu token hết hạn  => xoá token trong localstorage và chuyển về trang chủ 
     if ((status === 401 || status === 403) && !prevRequest?.sent) {
       prevRequest.sent = true;
-      localStorage.removeItem('token');
-      router.push('/login');
+    //  localStorage.removeItem('token');
+      router.push('/Error');
 
       return instance(prevRequest);
     }

@@ -44,6 +44,8 @@ const hienThiTrangThai = (trangThai) => {
         return { text: 'Yêu cầu trả hàng', severity: 'warning' };
     } else if (trangThai == 8) {
         return { text: 'Đã trả hàng', severity: 'warning' };
+    }else if (trangThai == 10) {
+        return { text: 'đổi trả thành công', severity: 'success' };
     } else {
         return { text: 'Xác nhận đổi trả', severity: 'success' };
     }
@@ -196,7 +198,7 @@ const tinhThanhTien = (soLuong, donGia) => {
         <Column field="tongTien" header="Tổng tiền" :sortable="true" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
                 <span class="p-column-title">tongTien</span>
-                {{ formatCurrency(slotProps.data.tongTien) }}
+                {{ formatCurrency(slotProps.data.tienSauKhiGiam==null?slotProps.data.tongTien: slotProps.data.tienSauKhiGiam) }}
             </template>
         </Column>
         <Column field="diaChi" header="Địa chỉ" :sortable="false" headerStyle="width:14%; min-width:10rem;">

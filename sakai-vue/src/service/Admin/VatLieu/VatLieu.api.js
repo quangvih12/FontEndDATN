@@ -12,7 +12,7 @@ export const VatLieuStore = defineStore('vatLieu', {
         async fetchAll() {
             this.check = 0;
             try {
-                const response = await axios.get('/api/admin/vat-lieu'); // Thay đổi URL dựa trên API của bạn
+                const response = await axios.get('http://localhost:8080/api/admin/vat-lieu'); // Thay đổi URL dựa trên API của bạn
                 this.data = response.data.data;
             } catch (error) {
                 console.error('Lỗi khi lấy danh sách:', error);
@@ -21,7 +21,7 @@ export const VatLieuStore = defineStore('vatLieu', {
         async fetchDataByStatus(status) {
             this.check = 1;
             try {
-                const response = await axios.get('/api/admin/vat-lieu' + '/trang-thai?trangThai=' + status);
+                const response = await axios.get('http://localhost:8080/api/admin/vat-lieu' + '/trang-thai?trangThai=' + status);
                 if (status === 1) {
                     this.dataByStatus1 = response.data.data;
                 }
@@ -31,7 +31,7 @@ export const VatLieuStore = defineStore('vatLieu', {
             }
         },
         createVatLieu(form) {
-            axios.post('/api/admin/vat-lieu' + '/add', form).then((response) => {
+            axios.post('http://localhost:8080/api/admin/vat-lieu' + '/add', form).then((response) => {
                 if (this.check == 0) {
                     this.data.unshift(response.data.data);
                     if (response.data.data.trangThai == 1) this.dataByStatus1.unshift(response.data.data);
@@ -42,7 +42,7 @@ export const VatLieuStore = defineStore('vatLieu', {
             });
         },
         updateVatLieu(id, form) {
-            axios.put('/api/admin/vat-lieu' + '/update/' + id, form).then((response) => {
+            axios.put('http://localhost:8080/api/admin/vat-lieu' + '/update/' + id, form).then((response) => {
                 for (let i = 0; i < this.data.length; i++) {
                     if (id == this.data[i].id) {
                         this.data[i].ten = form.ten;
@@ -58,7 +58,7 @@ export const VatLieuStore = defineStore('vatLieu', {
             });
         },
         deleteVatLieu(id) {
-            axios.put('/api/admin/vat-lieu' + '/delete/' + id).then((response) => {
+            axios.put('http://localhost:8080/api/admin/vat-lieu' + '/delete/' + id).then((response) => {
                 if (this.check == 0) {
                     for (let i = 0; i < this.data.length; i++) {
                         if (id == this.data[i].id) {
