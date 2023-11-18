@@ -35,7 +35,7 @@ const props = defineProps({
     myProp: {}
 });
 
-const tongTienThanhToan = ref(parseInt(props.myProp.tongTien) + parseInt(props.myProp.tienShip));
+const tongTienThanhToan = ref(props.myProp.tienSauKhiGiam==''?parseInt(props.myProp.tienSauKhiGiam):parseInt(props.myProp.tongTien) + parseInt(props.myProp.tienShip));
 
 const editProduct = () => {
     code.value = 'Hoá đơn: ' + props.myProp.maHD;
@@ -50,9 +50,9 @@ const ngayNhan = ref('');
 
 watch(ship, (newVal) => {
     if (ship.value === 'nguoiGui') {
-        tongTienThanhToan.value = parseInt(props.myProp.tongTien);
+        tongTienThanhToan.value = props.myProp.tienSauKhiGiam == null ?parseInt(props.myProp.tongTien)  : parseInt(props.myProp.tienSauKhiGiam) -parseInt(props.myProp.tienShip);
     } else {
-        tongTienThanhToan.value = parseInt(props.myProp.tongTien) + parseInt(props.myProp.tienShip);
+        tongTienThanhToan.value = props.myProp.tienSauKhiGiam == null ?parseInt(props.myProp.tongTien) + parseInt(props.myProp.tienShip) : props.myProp.tienSauKhiGiam;
     }
 });
 
@@ -309,14 +309,13 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
                             <p>Tổng tiền các sản phẩm: {{ formatCurrency(props.myProp.tongTien) }}</p>
                             <p>Phí vận chuyển: {{ formatCurrency(props.myProp.tienShip) }}</p>
                             <p>Tiền giảm: <span v-if="props.myProp.tienSauKhiGiam !== null" style="color: red;">- {{
-                                        formatCurrency(parseInt(props.myProp.tongTien) -
+                                        formatCurrency(parseInt(props.myProp.tongTien)+parseInt(props.myProp.tienShip) -
                                             parseInt(props.myProp.tienSauKhiGiam)) }}</span>
                                         <span v-else style="color: red;"> 0</span>
                                     </p>
                             <p>
                                 Tổng tiền: <span style="color: #ff3333; font-size: 20px; font-weight: bold">{{
-                                            formatCurrency(tinhTongTien(props.myProp.tienShip,
-                                                props.myProp.tongTien, props.myProp.tienSauKhiGiam)) }}</span>
+                                            formatCurrency(tongTienThanhToan) }}</span>
                             </p>
                             <Button label="Giao Hàng" severity="success" class="btn-ap-dung" @click="confirmAddProduct(props.myProp.idHD)" style="margin-bottom: 20px" />
                             <Button label="Hủy" class="p-button-outlined p-button-info mr-2 mb-2" @click="showDialogLyDo(props.myProp.idHD)" />

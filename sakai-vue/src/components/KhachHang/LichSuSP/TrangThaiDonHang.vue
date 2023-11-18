@@ -275,7 +275,7 @@ const formatDate = (dateTime) => {
                     <div class="c2">
                         <p>{{ formatCurrency(dataHD.tongTien) }}</p>
                         <p>{{ formatCurrency(dataHD.tienShip) }}</p>
-                        <p style="color: red;" v-if="dataHD.tienSauKhiGiam !==null">- {{ formatCurrency(parseInt(dataHD.tongTien) - parseInt(dataHD.tienSauKhiGiam) )}}</p>
+                        <p style="color: red;" v-if="dataHD.tienSauKhiGiam !==null">- {{ formatCurrency(parseInt(dataHD.tongTien)+ parseInt(dataHD.tienShip) - parseInt(dataHD.tienSauKhiGiam) )}}</p>
                         <p style="color: red;" v-else>0</p>
                         <p style="font-weight: bold; color: red">{{ formatCurrency(tinhTongTien(dataHD.tongTien, dataHD.tienShip,dataHD.tienSauKhiGiam)) }}</p>
                     </div>
