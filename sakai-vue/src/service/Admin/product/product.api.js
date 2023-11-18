@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import axios from '@/service/Authentication/http.js';
 
+const apiSanPham = 'http://localhost:8080/api/admin/san-pham';
 export const ProductStore = defineStore('product', {
   state: () => ({
     products: [],
@@ -13,7 +14,7 @@ export const ProductStore = defineStore('product', {
   actions: {
     async fetchAll() {
       try {
-        const response = await axios.get('/api/admin/san-pham'); // Thay đổi URL dựa trên API của bạn
+        const response = await axios.get(apiSanPham); // Thay đổi URL dựa trên API của bạn
         //this.products = response.data;
         const productList =response.data; // Lấy dữ liệu từ Store và gán vào biến products
 
@@ -37,7 +38,7 @@ export const ProductStore = defineStore('product', {
 
     async fetchAllSpCT(idSP) {
       try {
-        const response = await axios.get(`/api/admin/san-pham/${idSP}`); // Thay đổi URL dựa trên API của bạn
+        const response = await axios.get(apiSanPham+`/${idSP}`); // Thay đổi URL dựa trên API của bạn
         this.sanPhamCT = response.data;
         //  console.table(this.products.size);
         return this.sanPhamCT;
@@ -48,7 +49,7 @@ export const ProductStore = defineStore('product', {
 
     async fetchDataByStatus(status) {
       try {
-        const response = await axios.get('/api/admin/san-pham/loc?comboBoxValue=' + status); // Thay đổi URL dựa trên API của bạn
+        const response = await axios.get(apiSanPham+'/loc?comboBoxValue=' + status); // Thay đổi URL dựa trên API của bạn
         this.products = response.data;
         //  console.table(this.products.size);
 
@@ -60,7 +61,7 @@ export const ProductStore = defineStore('product', {
     async fetchAllImage(idProduct) {
       try {
 
-        const response = await axios.get(`/api/admin/san-pham/${idProduct}/images`); // Thay đổi URL dựa trên API của bạn
+        const response = await axios.get(apiSanPham+ `/${idProduct}/images`); // Thay đổi URL dựa trên API của bạn
         this.images = response.data;
         return this.images;
       } catch (error) {
@@ -73,7 +74,7 @@ export const ProductStore = defineStore('product', {
     async checkDuplicateName(data) {
       try {
         // Gửi yêu cầu GET để kiểm tra tên sản phẩm
-        const response = await axios.put(`/api/admin/san-pham/check`, data); // Thay đổi URL dựa trên API của bạn
+        const response = await axios.put(apiSanPham+`/check`, data); // Thay đổi URL dựa trên API của bạn
         const isDuplicate = response.data; // API trả về một giá trị boolean cho trùng lặp
         return !isDuplicate; // Trả về true nếu không trùng lặp, ngược lại trả về false
 
@@ -86,7 +87,7 @@ export const ProductStore = defineStore('product', {
     async checkDuplicateSPCT(idSize,idMau,idSP) {
       try {
         // Gửi yêu cầu GET để kiểm tra tên sản phẩm
-        const response = await axios.put(`/api/admin/san-pham/check-spct/${idSize}?idMau=${idMau}&idSP=${idSP}`); // Thay đổi URL dựa trên API của bạn
+        const response = await axios.put(apiSanPham+`/check-spct/${idSize}?idMau=${idMau}&idSP=${idSP}`); // Thay đổi URL dựa trên API của bạn
         const isDuplicate = response.data; // API trả về một giá trị boolean cho trùng lặp
         return !isDuplicate; // Trả về true nếu không trùng lặp, ngược lại trả về false
 
@@ -99,14 +100,14 @@ export const ProductStore = defineStore('product', {
 
 
     async uploadFile(formData) {
-        const response = await axios.post("/api/admin/san-pham/view-data", formData);
+        const response = await axios.post(apiSanPham+"/view-data", formData);
         const newProductData = response.data;
         this.excels.unshift(newProductData); 
     },
 
     async add(newProduct) {
       try {
-        const response = await axios.post('/api/admin/san-pham', newProduct); // Thay đổi URL và dữ liệu newProduct tùy theo API của bạn
+        const response = await axios.post(apiSanPham, newProduct); // Thay đổi URL và dữ liệu newProduct tùy theo API của bạn
         const newProductData = response.data;
         newProductData['img'] = null;
         newProductData['sanPhamChiTiet'] = null;
@@ -124,7 +125,7 @@ export const ProductStore = defineStore('product', {
     },
     async edit(updatedProduct) {
       try {
-        const response = await axios.put(`/api/admin/san-pham/update-san-pham/${updatedProduct.id}`, updatedProduct); // Thay đổi URL và dữ liệu updatedProduct tùy theo API của bạn
+        const response = await axios.put(apiSanPham+`/update-san-pham/${updatedProduct.id}`, updatedProduct); // Thay đổi URL và dữ liệu updatedProduct tùy theo API của bạn
         const index = this.products.findIndex(product => product.id === updatedProduct.id);
         if (index !== -1) {
           let newProductData = this.products[index];
@@ -148,7 +149,7 @@ export const ProductStore = defineStore('product', {
     async delete(productId) {
       try {
         //  this.products = this.products.filter(product => product.id !== productId); // Xóa sản phẩm khỏi danh sách
-        const response = await axios.put(`/api/admin/san-pham/delete/${productId}`);
+        const response = await axios.put(apiSanPham+`/delete/${productId}`);
         const index = this.products.findIndex(product => product.id === productId);
         if (index !== -1) {
           let newProductData = this.products[index];
@@ -172,7 +173,7 @@ export const ProductStore = defineStore('product', {
     async khoiPhuc(productId) {
       try {
         //  this.products = this.products.filter(product => product.id !== productId); // Xóa sản phẩm khỏi danh sách
-        const response = await axios.put(`/api/admin/san-pham/khoi-phuc/${productId}`);
+        const response = await axios.put(apiSanPham+`/khoi-phuc/${productId}`);
         const index = this.products.findIndex(product => product.id === productId);
         if (index !== -1) {
           let newProductData = this.products[index];
@@ -193,17 +194,17 @@ export const ProductStore = defineStore('product', {
       }
     },
 
-    async deleteImg(productId, img) {
-      try {
-        await axios.delete(`/api/products/deleteImg?idSP=${productId}&img=${img}`); // Thay đổi URL tùy theo API của bạn
-      } catch (error) {
-        console.error('Lỗi khi xóa sản phẩm:', error);
-      }
-    },
+    // async deleteImg(productId, img) {
+    //   try {
+    //     await axios.delete(apiSanPham+`/api/products/deleteImg?idSP=${productId}&img=${img}`); // Thay đổi URL tùy theo API của bạn
+    //   } catch (error) {
+    //     console.error('Lỗi khi xóa sản phẩm:', error);
+    //   }
+    // },
 
     async addSPCT(newProduct) {
       try {
-        const response = await axios.post('/api/admin/san-pham/add-spct', newProduct); // Thay đổi URL và dữ liệu newProduct tùy theo API của bạn
+        const response = await axios.post(apiSanPham+'/add-spct', newProduct); // Thay đổi URL và dữ liệu newProduct tùy theo API của bạn
         await this.fetchAll();
         return response.data;
       } catch (error) {
@@ -213,7 +214,7 @@ export const ProductStore = defineStore('product', {
 
     async editSPCT(updatedProduct,id) {
       try {
-        const response = await axios.put(`/api/admin/san-pham/update-san-pham-CT/${id}`, updatedProduct); // Thay đổi URL và dữ liệu updatedProduct tùy theo API của bạn
+        const response = await axios.put(apiSanPham+`/update-san-pham-CT/${id}`, updatedProduct); // Thay đổi URL và dữ liệu updatedProduct tùy theo API của bạn
         await this.fetchAll();
         return response.data;
       } catch (error) {
@@ -223,7 +224,7 @@ export const ProductStore = defineStore('product', {
 
     async deleteSPCT(id) {
       try {
-        const response = await axios.put(`/api/admin/san-pham/delete-spct/${id}`); // Thay đổi URL và dữ liệu updatedProduct tùy theo API của bạn
+        const response = await axios.put(apiSanPham+`/delete-spct/${id}`); // Thay đổi URL và dữ liệu updatedProduct tùy theo API của bạn
         await this.fetchAll();
         return response.data;
       } catch (error) {
@@ -233,7 +234,7 @@ export const ProductStore = defineStore('product', {
 
     async khoiPhucSPCT(id) {
       try {
-        const response = await axios.put(`/api/admin/san-pham/khoi-phuc-spct/${id}`); // Thay đổi URL và dữ liệu updatedProduct tùy theo API của bạn
+        const response = await axios.put(apiSanPham+`/khoi-phuc-spct/${id}`); // Thay đổi URL và dữ liệu updatedProduct tùy theo API của bạn
         await this.fetchAll();
         return response.data;
       } catch (error) {
@@ -243,7 +244,7 @@ export const ProductStore = defineStore('product', {
 
     async addImg(newImg, id) {
       try {
-        const response = await axios.post(`/api/admin/san-pham/add-img/${id}`, newImg); // Thay đổi URL và dữ liệu newProduct tùy theo API của bạn
+        const response = await axios.post(apiSanPham+`/add-img/${id}`, newImg); // Thay đổi URL và dữ liệu newProduct tùy theo API của bạn
         await this.fetchAll();
         return response.data;
       } catch (error) {
@@ -253,7 +254,7 @@ export const ProductStore = defineStore('product', {
 
     async editImg(updateImg,id) {
       try {
-        const response = await axios.put(`/api/admin/san-pham/update-img/${id}`, updateImg); // Thay đổi URL và dữ liệu updatedProduct tùy theo API của bạn
+        const response = await axios.put(apiSanPham+`/update-img/${id}`, updateImg); // Thay đổi URL và dữ liệu updatedProduct tùy theo API của bạn
         await this.fetchAll();
         return response.data;
       } catch (error) {
@@ -263,7 +264,7 @@ export const ProductStore = defineStore('product', {
 
     async deleteImg(id) {
       try {
-        const response = await axios.delete(`/api/admin/san-pham/delete-img/${id}`); // Thay đổi URL và dữ liệu updatedProduct tùy theo API của bạn
+        const response = await axios.delete(apiSanPham+`/delete-img/${id}`); // Thay đổi URL và dữ liệu updatedProduct tùy theo API của bạn
         await this.fetchAll();
         return response.data;
       } catch (error) {

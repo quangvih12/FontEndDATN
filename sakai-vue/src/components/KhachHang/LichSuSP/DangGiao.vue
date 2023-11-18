@@ -157,6 +157,15 @@ const addCart = async (soLuong, idCTSP) => {
     router.push({ name: 'gio-hang' });
 
 };
+const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
+    if (tienSauGiam == '' || tienSauGiam == null) {
+        return parseInt(tongTien) + parseInt(tienShip);
+    } else {
+        return parseInt(tienSauGiam);
+    }
+
+};
+
 </script>
 <template>
       <div style="height: 500px; font-size: 24px;" v-if="!data || data.length === 0"> Chưa có Đơn hàng !</div>
@@ -223,7 +232,8 @@ const addCart = async (soLuong, idCTSP) => {
                 <div style="display: flex; width: 100%; background: rgb(255, 255, 255);">
                     <div style="background: rgb(255, 255, 255);width: 30%; height: 100px; margin-top: ;">
                         <h5 style="color: rgb(253, 1, 1);margin-top: 30px;margin-left: -50px; margin-bottom: 20px;">Thành
-                            tiền: <span>{{ formatCurrency(hd.tongTien) }}</span> </h5>
+                            tiền: <span>{{ formatCurrency(tinhTongTien(hd.tongTien, hd.tienShip, hd.tienSauKhiGiam)) }}</span>
+                        </h5>
                     </div>
 
                     <div style="display: flex;justify-content: flex-end; width: 70%;">

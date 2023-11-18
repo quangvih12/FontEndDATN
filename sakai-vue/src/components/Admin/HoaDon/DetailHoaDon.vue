@@ -40,7 +40,7 @@ const ngayThanhToan = ref('');
 const ngayGiao = ref('');
 const ngayNhan = ref('');
 
-onMounted(() => {});
+onMounted(() => { });
 
 const events = ref([
     { status: 'Ngày đã đặt', date: ngayDat, icon: 'pi pi-wallet', color: '#9C27B0' },
@@ -55,8 +55,13 @@ const loadDataHDCT = async (idHD) => {
     dataHDCT.value = respone;
 };
 
-const tinhTongTien = (tienShip, tongTien) => {
-    return parseInt(tienShip) + parseInt(tongTien);
+const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
+    if (tienSauGiam == '' || tienSauGiam == null) {
+        return parseInt(tongTien) + parseInt(tienShip);
+    } else {
+        return parseInt(tienSauGiam);
+    }
+
 };
 const formatCurrency = (value) => {
     return parseInt(value).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
@@ -245,6 +250,13 @@ const btnXacNhanXNDoiTra = () => {
     productDialog.value = false;
 };
 
+const btnHoanThanhDoiTraKhongCongSoLuong = () => {
+    useHD.hoanThanhDoiTraKhongCongSoLuong(idHD.value);
+    toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Xác nhận thành công', life: 3000 });
+    addProductDialogXNDoiTra.value = false;
+    productDialog.value = false;
+};
+
 //Màn giao hàng
 // confirm xác nhận
 const addProductDialogGH = ref(false);
@@ -294,7 +306,9 @@ const btnXacNhanHuyGH = () => {
                         <div v-if="hienTimeLine(props.myProp.trangThai)">
                             <Timeline :value="events" layout="horizontal" align="bottom" class="customized-timeline">
                                 <template #marker="slotProps">
-                                    <span class="flex w-2rem h-2rem align-items-center justify-content-center text-white border-circle z-1 shadow-1" :style="{ backgroundColor: slotProps.item.color }">
+                                    <span
+                                        class="flex w-2rem h-2rem align-items-center justify-content-center text-white border-circle z-1 shadow-1"
+                                        :style="{ backgroundColor: slotProps.item.color }">
                                         <i :class="slotProps.item.icon"></i>
                                     </span>
                                 </template>
@@ -335,20 +349,26 @@ const btnXacNhanHuyGH = () => {
                             <div class="p-col-6" style="width: 100%">
                                 <div class="row flex">
                                     <div class="flex" style="min-width: 200px">
-                                        <p>Địa chỉ: {{ props.myProp.diaChiCuThe }}, {{ props.myProp.tenPhuongXa }}, {{ props.myProp.tenQuanHuyen }}, {{ props.myProp.tenTinhThanh }}</p>
+                                        <p>Địa chỉ: {{ props.myProp.diaChiCuThe }}, {{ props.myProp.tenPhuongXa }}, {{
+                                            props.myProp.tenQuanHuyen }}, {{ props.myProp.tenTinhThanh }}</p>
                                     </div>
                                     <div class="flex" style="min-width: 200px" v-if="HienLyDoHuy(props.myProp.trangThai)">
                                         <p style="margin-top: 3px">Lý do:</p>
-                                        <p style="margin-left: 10px; color: #ff3333; font-weight: bold; font-size: 18px">{{ props.myProp.lyDo }}</p>
+                                        <p style="margin-left: 10px; color: #ff3333; font-weight: bold; font-size: 18px">{{
+                                            props.myProp.lyDo }}</p>
                                     </div>
-                                    <div class="flex" style="min-width: 200px" v-if="HienLyDoHuyDoiTra(props.myProp.trangThai)">
+                                    <div class="flex" style="min-width: 200px"
+                                        v-if="HienLyDoHuyDoiTra(props.myProp.trangThai)">
                                         <p style="margin-top: 3px; margin-left: 4px">
-                                            Lý do: <span style="color: #ff3333; font-weight: bold; font-size: 18px">{{ props.myProp.lyDo }}</span>
+                                            Lý do: <span style="color: #ff3333; font-weight: bold; font-size: 18px">{{
+                                                props.myProp.lyDo }}</span>
                                         </p>
                                     </div>
-                                    <div class="flex" style="min-width: 200px" v-if="HienMoTaHuyDoiTra(props.myProp.trangThai)">
+                                    <div class="flex" style="min-width: 200px"
+                                        v-if="HienMoTaHuyDoiTra(props.myProp.trangThai)">
                                         <p style="margin-top: 3px; margin-left: 4px">
-                                            Lý do: <span style="color: #ff3333; font-weight: bold; font-size: 18px">{{ props.myProp.moTa }}</span>
+                                            Lý do: <span style="color: #ff3333; font-weight: bold; font-size: 18px">{{
+                                                props.myProp.moTa }}</span>
                                         </p>
                                     </div>
                                 </div>
@@ -357,8 +377,15 @@ const btnXacNhanHuyGH = () => {
                                 <div class="ben-phai">
                                     <p>Tổng tiền các sản phẩm: {{ formatCurrency(props.myProp.tongTien) }}</p>
                                     <p>Phí vận chuyển: {{ formatCurrency(props.myProp.tienShip) }}</p>
+                                    <p>Tiền giảm: <span v-if="props.myProp.tienSauKhiGiam !== null" style="color: red;">- {{
+                                        formatCurrency(parseInt(props.myProp.tongTien) -
+                                            parseInt(props.myProp.tienSauKhiGiam)) }}</span>
+                                        <span v-else style="color: red;"> 0</span>
+                                    </p>
                                     <p>
-                                        Tổng tiền: <span style="color: #ff3333; font-size: 20px; font-weight: bold">{{ formatCurrency(tinhTongTien(props.myProp.tienShip, props.myProp.tongTien)) }}</span>
+                                        Tổng tiền: <span style="color: #ff3333; font-size: 20px; font-weight: bold">{{
+                                            formatCurrency(tinhTongTien(props.myProp.tienShip,
+                                                props.myProp.tongTien, props.myProp.tienSauKhiGiam)) }}</span>
                                     </p>
                                 </div>
                             </div>
@@ -368,31 +395,38 @@ const btnXacNhanHuyGH = () => {
                     <!-- đổi trả -->
                     <div class="flex" v-if="HienDoiTra(props.myProp.trangThai)">
                         <div class="p-col-6" style="width: 100%">
-                            <Button label="Huỷ" class="p-button-outlined p-button-info mr-2 mb-2" severity="help" @click="showDialogLyDoDoiTra(props.myProp.idHD)" style="width: 300px" />
+                            <Button label="Huỷ" class="p-button-outlined p-button-info mr-2 mb-2" severity="help"
+                                @click="showDialogLyDoDoiTra(props.myProp.idHD)" style="width: 300px" />
                         </div>
                         <div class="p-col-6" style="width: 100%">
-                            <Button label="Xác nhận" severity="danger" @click="confirmAddProductDoiTra(props.myProp.idHD)" style="width: 300px" />
+                            <Button label="Xác nhận" severity="danger" @click="confirmAddProductDoiTra(props.myProp.idHD)"
+                                style="width: 300px" />
                         </div>
                     </div>
                     <!--Xác nhận đổi trả -->
                     <div class="flex" v-if="HienXNDoiTra(props.myProp.trangThai)">
                         <div class="p-col-6" style="width: 100%">
-                            <Button label="Huỷ" class="p-button-outlined p-button-info mr-2 mb-2" severity="help" @click="showDialogLyDoXNDoiTra(props.myProp.idHD)" style="width: 300px" />
+                            <Button label="Huỷ" class="p-button-outlined p-button-info mr-2 mb-2" severity="help"
+                                @click="showDialogLyDoXNDoiTra(props.myProp.idHD)" style="width: 300px" />
                         </div>
                         <div class="p-col-6" style="width: 100%">
-                            <Button label="Xác nhận" severity="danger" @click="confirmAddProductXNDoiTra(props.myProp.idHD)" style="width: 300px" />
+                            <Button label="Xác nhận" severity="danger" @click="confirmAddProductXNDoiTra(props.myProp.idHD)"
+                                style="width: 300px" />
                         </div>
                     </div>
                     <!--Giao hàng -->
                     <div class="flex" v-if="HienDangGiao(props.myProp.trangThai)">
                         <div class="p-col-6" style="width: 100%">
-                            <Button label="Thất bại" class="p-button-outlined p-button-info mr-2 mb-2" @click="confirmHuyGH(props.myProp.idHD)" style="width: 300px" />
+                            <Button label="Thất bại" class="p-button-outlined p-button-info mr-2 mb-2"
+                                @click="confirmHuyGH(props.myProp.idHD)" style="width: 300px" />
                         </div>
                         <div class="p-col-6" style="width: 100%">
-                            <Button label="Hoàn thành" severity="danger" @click="confirmAddProductGH(props.myProp.idHD)" style="width: 300px" />
+                            <Button label="Hoàn thành" severity="danger" @click="confirmAddProductGH(props.myProp.idHD)"
+                                style="width: 300px" />
                         </div>
                     </div>
-                    <Button label="Xuất hóa đơn" severity="danger" @click="exportToPDF" v-if="HienXuatHoaDon(props.myProp.trangThai)" />
+                    <Button label="Xuất hóa đơn" severity="danger" @click="exportToPDF"
+                        v-if="HienXuatHoaDon(props.myProp.trangThai)" />
                 </div>
             </div>
         </div>
@@ -414,7 +448,8 @@ const btnXacNhanHuyGH = () => {
                 <div class="p-fluid formgrid grid">
                     <div class="field col-12" style="margin-bottom: 30px">
                         <label for="address">Lý do</label>
-                        <Textarea id="lyDo" rows="4" v-model.trim="lyDoDoiTra" :class="{ 'p-invalid': LyDoDoiTraError }" required="true" autofocus></Textarea>
+                        <Textarea id="lyDo" rows="4" v-model.trim="lyDoDoiTra" :class="{ 'p-invalid': LyDoDoiTraError }"
+                            required="true" autofocus></Textarea>
                         <small class="p-error">{{ LyDoDoiTraError }}</small>
                     </div>
                 </div>
@@ -441,10 +476,10 @@ const btnXacNhanHuyGH = () => {
     <Dialog v-model:visible="addProductDialogXNDoiTra" :style="{ width: '450px' }" header="Confirm" :modal="true">
         <div class="flex align-items-center justify-content-center">
             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-            <span>Bạn có chắc chắn muốn xác nhận không ?</span>
+            <span>Bạn có muốn cộng lại số lượng cho sản phẩm không ?</span>
         </div>
         <template #footer>
-            <Button label="No" icon="pi pi-times" class="p-button-text" @click="addProductDialogXNDoiTra = false" />
+            <Button label="No" icon="pi pi-times" class="p-button-text" @click="btnHoanThanhDoiTraKhongCongSoLuong()" />
             <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhanXNDoiTra()" />
         </template>
     </Dialog>
@@ -454,7 +489,8 @@ const btnXacNhanHuyGH = () => {
                 <div class="p-fluid formgrid grid">
                     <div class="field col-12" style="margin-bottom: 30px">
                         <label for="address">Lý do</label>
-                        <Textarea id="lyDo" rows="4" v-model.trim="lyDoXNDoiTra" :class="{ 'p-invalid': LyDoXNDoiTraError }" required="true" autofocus></Textarea>
+                        <Textarea id="lyDo" rows="4" v-model.trim="lyDoXNDoiTra" :class="{ 'p-invalid': LyDoXNDoiTraError }"
+                            required="true" autofocus></Textarea>
                         <small class="p-error">{{ LyDoXNDoiTraError }}</small>
                     </div>
                 </div>
@@ -485,23 +521,20 @@ const btnXacNhanHuyGH = () => {
         <template #footer>
             <Button label="No" icon="pi pi-times" class="p-button-text" @click="addProductDialogGH = false" />
             <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhanGH()" />
-        </template>
-    </Dialog>
-    <!-- comfirm huỷ -->
-    <Dialog v-model:visible="huyDialogGH" :style="{ width: '450px' }" header="Confirm" :modal="true">
-        <div class="flex align-items-center justify-content-center">
-            <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-            <span>Bạn có chắc chắn đơn hàng đã giao thất bại không ?</span>
-        </div>
-        <template #footer>
-            <Button label="No" icon="pi pi-times" class="p-button-text" @click="huyDialogGH = false" />
-            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhanHuyGH()" />
-        </template>
-    </Dialog>
-</template>
+    </template>
+</Dialog>
+<!-- comfirm huỷ -->
+<Dialog v-model:visible="huyDialogGH" :style="{ width: '450px' }" header="Confirm" :modal="true">
+    <div class="flex align-items-center justify-content-center">
+        <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+        <span>Bạn có chắc chắn đơn hàng đã giao thất bại không ?</span>
+    </div>
+    <template #footer>
+        <Button label="No" icon="pi pi-times" class="p-button-text" @click="huyDialogGH = false" />
+        <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhanHuyGH()" />
+    </template>
+</Dialog></template>
 
-<style scoped>
-.ben-phai {
+<style scoped>.ben-phai {
     text-align: right;
-}
-</style>
+}</style>

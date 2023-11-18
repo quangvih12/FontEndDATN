@@ -65,8 +65,13 @@ const events = ref([
     { status: 'Đánh giá', date: '17/10/2020', icon: 'pi pi-star', color: '#F55C3B' }
 ]);
 
-const tinhTongTien = (tienShip, tongTien) => {
-    return parseInt(tongTien) + parseInt(tienShip);
+const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
+    if (tienSauGiam == '' || tienSauGiam == null) {
+        return parseInt(tongTien) + parseInt(tienShip);
+    } else {
+        return parseInt(tienSauGiam);
+    }
+
 };
 const formatCurrency = (value) => {
     return parseInt(value).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
@@ -264,14 +269,15 @@ const formatDate = (dateTime) => {
                     <div class="c2" style="margin-left: 500px">
                         <p>Tổng tiền hàng</p>
                         <p>Phí vận chuyển</p>
-
+                        <p>Tiền giảm</p>
                         <p>Thành tiền</p>
                     </div>
                     <div class="c2">
                         <p>{{ formatCurrency(dataHD.tongTien) }}</p>
                         <p>{{ formatCurrency(dataHD.tienShip) }}</p>
-
-                        <p style="font-weight: bold; color: red">{{ formatCurrency(tinhTongTien(dataHD.tongTien, dataHD.tienShip)) }}</p>
+                        <p style="color: red;" v-if="dataHD.tienSauKhiGiam !==null">- {{ formatCurrency(parseInt(dataHD.tongTien) - parseInt(dataHD.tienSauKhiGiam) )}}</p>
+                        <p style="color: red;" v-else>0</p>
+                        <p style="font-weight: bold; color: red">{{ formatCurrency(tinhTongTien(dataHD.tongTien, dataHD.tienShip,dataHD.tienSauKhiGiam)) }}</p>
                     </div>
                 </div>
             </div>

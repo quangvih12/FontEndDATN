@@ -6,7 +6,7 @@ import { useDiaChi } from '@/service/KhachHang/DiaChiService.js';
 import { phiShipStore } from '../../service/KhachHang/PhiGiaoHangService';
 import { checkoutStore } from '@/service/KhachHang/HoaDonService.js';
 import { voucherStore } from '@/service/KhachHang/KHVoucherService.js';
-import {uservoucherStore} from '@/service/KhachHang/UserVoucherService.js';
+import { uservoucherStore } from '@/service/KhachHang/UserVoucherService.js';
 import tokenService from '@/service/Authentication/TokenService.js';
 import userKHService from '@/service/KhachHang/UserService.js';
 import AddDiaChi from '@/components/KhachHang/DiaChiKhachHang/Add.vue';
@@ -94,13 +94,13 @@ const loadUser = async () => {
     const token = localStorage.getItem('token');
     await diaChiService.findDiaChiByIdUserAndTrangThai(token);
     diaChiMacDinh.value = diaChiService.diaChiMacDinh;
-     
-    if( diaChiMacDinh.value !== null ){
-     
+
+    if (diaChiMacDinh.value !== null) {
+
         await phiGiaoHangService.phiShip(diaChiMacDinh.value);
-    phiShip.value = phiGiaoHangService.money;
+        phiShip.value = phiGiaoHangService.money;
     }
-   
+
     return diaChi.value;
 };
 
@@ -127,7 +127,9 @@ const thanhtoan = async () => {
 
     const user = await userKHService.getUserByUsername(userName);
 
-    await userVoucherService.getUserVoucher(user.id, selectedVoucher.value.id);
+    // if( selectedVoucher.value.id != null && selectedVoucher.value.id !==''){
+    //     await userVoucherService.getUserVoucher(user.id, selectedVoucher.value.id);
+    // }
 
     const forms = dataGHCT.value.map((item) => {
         return {
@@ -136,12 +138,17 @@ const thanhtoan = async () => {
             donGia: tongThanhToan.value
         };
     });
+
+    if (selectedVoucher.value.id == null && selectedVoucher.value.id === '') {
+        selectedVoucher.value.id = null;
+    }
     const form = {
         tongTien: tongTien.value,
         tienShip: phiShip.value,
         idPayMethod: parseInt(phuongThucThanhToan.value),
         idUser: user.id,
         tienSauGiam: tienSauGiam.value,
+        idVoucher: selectedVoucher.value.id,
         listHDCT: forms
     };
 
@@ -176,7 +183,7 @@ const thanhtoan = async () => {
         await checkoutService.checkout(form);
         dataHoaDon.value = checkoutService.checkOut;
         toast.add({ severity: 'success', summary: '', detail: 'Thanh toán thành công', life: 3000 });
-        router.push('/gio-hang');
+        router.push('/success');
     }
 
 
@@ -206,19 +213,25 @@ const formatDate = (dateTime) => {
 
 const applyVoucher = () => {
     const phanTram = selectedVoucher.value.giaTriGiam;
-
-    giamGia.value = tongTien.value * (phanTram / 100)
-
-    tongThanhToan.value = tongTien.value + phiShip.value - giamGia.value;
-
-    if (selectedVoucher.value == null) {
-        tienSauGiam.value = tongThanhToan.value;
-
+   
+   let giam = tongTien.value * (phanTram / 100)
+    if (giam > selectedVoucher.value.giamToiDa) {
+        toast.add({ severity: 'warn', summary: '', detail: 'Quá mức giảm tối đa, hãy chọn voucher khác ' + giam, life: 3000 });
+        return;
     } else {
-        tienSauGiam.value = tongThanhToan.value - giamGia.value;
+        giamGia.value = giam;
+        tongThanhToan.value = tongTien.value + phiShip.value - giamGia.value;
+
+        if (selectedVoucher.value == null) {
+            tienSauGiam.value = tongThanhToan.value;
+        } else {
+            tienSauGiam.value = tongThanhToan.value - giamGia.value;
+        }
+        toast.add({ severity: 'success', summary: '', detail: 'Áp dụng voucher thành công', life: 3000 });
+        selectedVoucherDialog.value = false;
     }
-    toast.add({ severity: 'success', summary: '', detail: 'Áp dụng voucher thành công', life: 3000 });
-    selectedVoucherDialog.value = false;
+
+
 };
 
 const hideDialog = () => {
@@ -364,63 +377,46 @@ const loadDiaChi = async () => {
                                 </div>
                             </div>
 
-                            <Dialog v-model:visible="selectedVoucherDialog" header="Flex Scroll" :style="{ width: '50vw' }"
-                                maximizable modal :contentStyle="{ height: '300px' }" class="p-fluid">
+                            <Dialog v-model:visible="selectedVoucherDialog" header="Flex Scroll" :style="{ width: '600px' }"
+                                maximizable modal :contentStyle="{ height: '370px' }" class="p-fluid">
                                 <template #header>
                                     <div
                                         class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                                         <h5 class="m-0">Voucher</h5>
                                     </div>
                                 </template>
-                                <div class="card p-fluid">
-                                    <DataTable :value="dataVoucher" v-model:selection="selectedVoucher" paginator :rows="5"
-                                        :rowsPerPageOptions="[5, 10, 20, 50]" tableStyle="min-width: 40rem"
-                                        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                                        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
-                                        responsiveLayout="scroll">
-                                        <Column selectionMode="single" headerStyle="width: 3rem"></Column>
-                                        <Column field="ten" header="Tên" :sortable="true"
-                                            headerStyle="width:14%; min-width:10rem;">
-                                            <template #body="slotProps">
-                                                <span class="p-column-title">Tên</span>
-                                                {{ slotProps.data.ten }}
-                                            </template>
-                                        </Column>
-                                        <Column field="giamToiDa" header="Giảm Tối Đa" :sortable="true"
-                                            headerStyle="width:14%; min-width:8rem;">
-                                            <template #body="slotProps">
-                                                <span class="p-column-title">Giảm Tối Đa</span>
-                                                {{ slotProps.data.giamToiDa }}
-                                            </template>
-                                        </Column>
+                               
+                                    <div v-for="(vo, index) in dataVoucher"
+                                        style="box-shadow: 0px 0px 15px 5px rgba(173, 172, 172, 0.75);border-radius: 20px 0px 0px 20px; margin-bottom: 20px; margin-top: 20px;">
+                                        <div
+                                            style="width: 100%; background: rgb(165, 27, 27); border-radius: 20px 0px 0px 20px;height: 100px; display: flex;">
+                                            <div
+                                                style="height: 100%; width: 30%; background: rgb(11, 117, 103); text-align: center;border-radius: 20px 0px 0px 20px;">
+                                                <H5 style="margin-top: 30px; color: white;">{{ vo.ten }}</H5>
+                                            </div>
+                                            <div
+                                                style="height: 100%; width: 70%; background: rgb(255, 255, 255); display: flex;">
+                                                <div style="margin-left: 20px; width:80%; background: rgb(255, 255, 255);">
+                                                    <p>giảm tối đa: {{ vo.giamToiDa }}</p>
 
-                                        <Column field="dieuKien" header="Giá trị giảm (%)" :sortable="true"
-                                            headerStyle="width:14%; min-width:8rem;">
-                                            <template #body="slotProps">
-                                                <span class="p-column-title">Giá trị giảm (%)</span>
-                                                {{ slotProps.data.giaTriGiam }} (%)
-                                            </template>
-                                        </Column>
-                                        <Column field="moTa" header="Mô Tả" :sortable="true"
-                                            headerStyle="width:14%; min-width:8rem;">
-                                            <template #body="slotProps">
-                                                <span class="p-column-title">Mô Tả</span>
-                                                {{ slotProps.data.moTa }}
-                                            </template>
-                                        </Column>
-                                        <Column header="Ngày Kết Thúc" filterField="date" dataType="date"
-                                            headerStyle="width:14%; min-width:8rem;">
-                                            <template #body="{ data }">
-                                                {{ formatDate(data.thoiGianKetThuc) }}
-                                            </template>
-                                            <template #filter="{ filterModel }">
-                                                <Calendar v-model="filterModel.value" dateFormat="mm/dd/yy"
-                                                    placeholder="mm/dd/yyyy" />
-                                            </template>
-                                        </Column>
-                                      
-                                    </DataTable>
-                                </div>
+                                                    <p style="margin-top: -10px;">giá trị giảm: {{ vo.giaTriGiam }} (%)</p>
+
+                                                    <p style="margin-top: -10px;">Thời gian kết thúc: {{ vo.thoiGianKetThuc
+                                                    }} </p>
+
+                                                    <p style="margin-top: -10px;">Mô tả: {{ vo.moTa }}</p>
+                                                </div>
+                                                <div
+                                                    style="width: 10%; display: flex; justify-content: center;padding-top: 40px;">
+                                                    <RadioButton v-model="selectedVoucher" inputId="ingredient1"
+                                                        name="pizza" :value="vo" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                
+                                
 
                                 <template #footer>
                                     <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="hideDialog" />
@@ -506,12 +502,11 @@ const loadDiaChi = async () => {
                         </div>
                     </div>
 
-                    <div
-                        style="width: 35%;height: 10px;  background: rgb(255, 255, 255); display: flex; margin-top: 30px;">
+                    <div style="width: 35%;height: 10px;  background: rgb(255, 255, 255); display: flex; margin-top: 30px;">
                         <UpdateDiaChi :my-prop="hd"></UpdateDiaChi>
 
-                            <Button style="width: 100px;height: 45px;  margin-top: 0px;" label="Thiết lập mặc định "
-                                    class="p-button-outlined p-button-info mr-2 mb-2" @click="thietLapMacDinh(hd.id)"/>
+                        <Button style="width: 100px;height: 45px;  margin-top: 0px;" label="Thiết lập mặc định "
+                            class="p-button-outlined p-button-info mr-2 mb-2" @click="thietLapMacDinh(hd.id)" />
                     </div>
 
                 </div>

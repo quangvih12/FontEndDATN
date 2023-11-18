@@ -248,7 +248,7 @@ const toggle2 = (event) => {
             <router-link to="/gioi-thieu" class="layout-topbar-logo" style="width: 120%; margin-left: 10px">
                 <p style="font-size: 16px">Về chúng tôi</p>
             </router-link>
-            <router-link to="/pages/size" class="layout-topbar-logo"
+            <router-link to="/thong-ke" class="layout-topbar-logo"
                 style="width: 90%; margin-left: 10px; margin-right: 15px">
                 <p style="font-size: 16px">Liên hệ</p>
             </router-link>

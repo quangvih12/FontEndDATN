@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import { useThongTin } from '../../service/KhachHang/ThongTinCaNhanService';
+import { useThongTin } from '../../../service/KhachHang/ThongTinCaNhanService';
 import * as yup from 'yup';
 import { useForm, useField } from 'vee-validate';
 import { useToast } from 'primevue/usetoast';
@@ -33,6 +33,7 @@ const loadData = async () => {
         ngaySinh.value = dataUser.value.ngaySinh;
         gioiTinh.value = dataUser.value.gioiTinh.toString();
         image.value = dataUser.value.anh;
+        // console.log(userService.data);
     }
 };
 
@@ -66,7 +67,7 @@ const { value: gioiTinh, errorMessage: gioiTinhError } = useField('gioiTinh');
 const { value: image, errorMessage: imageError } = useField('image');
 const onSubmit = handleSubmit(async (values) => {
     try {
-      //  console.log('Dữ liệu đã gửi:', values);
+        console.log('Dữ liệu đã gửi:', values);
         // Sau khi xử lý, đặt lại biểu mẫu
         reset();
     } catch (error) {
@@ -148,8 +149,8 @@ function onFileInputImage(event) {
 </script>
 
 <template>
-    <div class="container">
-        <div class="card" style="width: 1100px; margin-left: 100px">
+  
+        <div class="card" style="width: 1000px; margin-left: 100px">
             <h1 style="color: #e8db72">Hồ sơ của tôi</h1>
             <label for="">Quản lý thông tin hồ sơ để bảo mật tài khoản</label>
             <Divider />
@@ -224,7 +225,7 @@ function onFileInputImage(event) {
                 </form>
             </div>
         </div>
-    </div>
+   
 </template>
 
 <style scoped>
@@ -236,7 +237,7 @@ function onFileInputImage(event) {
 }
 
 .card {
-    margin-top: 70px;
+    margin-top: 0px;
 }
 
 .item {
@@ -252,7 +253,7 @@ function onFileInputImage(event) {
 }
 
 .p-col-6 {
-    min-width: 650px; /* Đặt khoảng cách giữa hai cột là tối thiểu 300px */
+    min-width: 550px; /* Đặt khoảng cách giữa hai cột là tối thiểu 300px */
     margin-right: 20px; /* Khoảng cách giữa các cột (có thể điều chỉnh giá trị này theo ý muốn) */
 }
 /* Đảm bảo rằng không có khoảng cách bên phải của cột cuối cùng */
