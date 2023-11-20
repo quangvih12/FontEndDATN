@@ -349,7 +349,7 @@ const loadDataTrangThai = () => {
                                 <label for="ingredient1" class="ml-2">Sẵn sàng để bán</label>
                             </div>
                             <div class="flex align-items-center">
-                                <RadioButton v-model="TrangThai" inputId="ingredient2" name="pizza" value="2"
+                                <RadioButton v-model="TrangThai" inputId="ingredient2" name="pizza" value="3"
                                     :class="{ 'p-invalid': TrangThaiSacError }" disabled />
                                 <label for="ingredient2" class="ml-2">tồn kho</label>
                             </div>

@@ -55,8 +55,12 @@ const loadDataHDCT = async (idHD) => {
     dataHDCT.value = respone;
 };
 
-const tinhTongTien = (tienShip, tongTien) => {
-    return parseInt(tienShip) + parseInt(tongTien);
+const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
+    if (tienSauGiam == '' || tienSauGiam == null) {
+        return parseInt(tongTien) + parseInt(tienShip);
+    } else {
+        return parseInt(tienSauGiam);
+    }
 };
 const formatCurrency = (value) => {
     return parseInt(value).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
@@ -245,6 +249,13 @@ const btnXacNhanXNDoiTra = () => {
     productDialog.value = false;
 };
 
+const btnHoanThanhDoiTraKhongCongSoLuong = () => {
+    useHD.hoanThanhDoiTraKhongCongSoLuong(idHD.value);
+    toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Xác nhận thành công', life: 3000 });
+    addProductDialogXNDoiTra.value = false;
+    productDialog.value = false;
+};
+
 //Màn giao hàng
 // confirm xác nhận
 const addProductDialogGH = ref(false);
@@ -342,6 +353,7 @@ const btnXacNhanHuyGH = () => {
                                     </div>
                                     <div class="flex" style="min-width: 200px">
                                         <p style="margin-left: -10px">Địa chỉ: {{ props.myProp.diaChiCuThe }}, {{ props.myProp.tenPhuongXa }}, {{ props.myProp.tenQuanHuyen }}, {{ props.myProp.tenTinhThanh }}</p>
+                                        <p>Địa chỉ: {{ props.myProp.diaChiCuThe }}, {{ props.myProp.tenPhuongXa }}, {{ props.myProp.tenQuanHuyen }}, {{ props.myProp.tenTinhThanh }}</p>
                                     </div>
                                     <div class="flex" style="min-width: 200px" v-if="HienLyDoHuy(props.myProp.trangThai)">
                                         <p style="margin-top: 3px">Lý do:</p>
@@ -364,7 +376,11 @@ const btnXacNhanHuyGH = () => {
                                     <p>Tổng tiền các sản phẩm: {{ formatCurrency(props.myProp.tongTien) }}</p>
                                     <p>Phí vận chuyển: {{ formatCurrency(props.myProp.tienShip) }}</p>
                                     <p>
-                                        Tổng tiền: <span style="color: #ff3333; font-size: 20px; font-weight: bold">{{ formatCurrency(tinhTongTien(props.myProp.tienShip, props.myProp.tongTien)) }}</span>
+                                        Tiền giảm: <span v-if="props.myProp.tienSauKhiGiam !== null" style="color: red">- {{ formatCurrency(parseInt(props.myProp.tongTien) - parseInt(props.myProp.tienSauKhiGiam)) }}</span>
+                                        <span v-else style="color: red"> 0</span>
+                                    </p>
+                                    <p>
+                                        Tổng tiền: <span style="color: #ff3333; font-size: 20px; font-weight: bold">{{ formatCurrency(tinhTongTien(props.myProp.tienShip, props.myProp.tongTien, props.myProp.tienSauKhiGiam)) }}</span>
                                     </p>
                                 </div>
                             </div>
@@ -447,10 +463,10 @@ const btnXacNhanHuyGH = () => {
     <Dialog v-model:visible="addProductDialogXNDoiTra" :style="{ width: '450px' }" header="Confirm" :modal="true">
         <div class="flex align-items-center justify-content-center">
             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-            <span>Bạn có chắc chắn muốn xác nhận không ?</span>
+            <span>Bạn có muốn cộng lại số lượng cho sản phẩm không ?</span>
         </div>
         <template #footer>
-            <Button label="No" icon="pi pi-times" class="p-button-text" @click="addProductDialogXNDoiTra = false" />
+            <Button label="No" icon="pi pi-times" class="p-button-text" @click="btnHoanThanhDoiTraKhongCongSoLuong()" />
             <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhanXNDoiTra()" />
         </template>
     </Dialog>

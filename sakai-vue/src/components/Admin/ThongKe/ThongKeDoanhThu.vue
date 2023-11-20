@@ -107,7 +107,7 @@
                                 <div class="flex align-items-center" style="margin-right: 20px;">
                                     <RadioButton v-model="vModelHinhThuc" type="radio" :inputId="'ingredient' + index"
                                         name="nam" value="1" />
-                                    <label :for="'ingredient' + index" class="ml-2">tại quần</label>
+                                    <label :for="'ingredient' + index" class="ml-2">tại quầy</label>
                                 </div>
                                 <div class="flex align-items-center">
                                     <RadioButton v-model="vModelHinhThuc" type="radio" :inputId="'ingredient' + index"

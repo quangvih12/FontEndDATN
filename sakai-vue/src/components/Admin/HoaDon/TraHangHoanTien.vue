@@ -195,7 +195,7 @@ const tinhThanhTien = (soLuong, donGia) => {
         <Column field="tongTien" header="Màu sắc" :sortable="true" headerStyle="width:14%; min-width:7rem;">
             <template #body="slotProps">
                 <span class="p-column-title">tongTien</span>
-                {{ formatCurrency(slotProps.data.tongTien) }}
+                {{ formatCurrency(slotProps.data.tienSauKhiGiam==null?slotProps.data.tongTien: slotProps.data.tienSauKhiGiam) }}
             </template>
         </Column>
         <Column field="diaChi" header="Size" :sortable="true" headerStyle="width:14%; min-width:7rem;">

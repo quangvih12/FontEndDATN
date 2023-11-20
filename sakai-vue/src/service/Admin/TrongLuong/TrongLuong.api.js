@@ -13,7 +13,7 @@ export const TrongLuongStore = defineStore('trongLuong', {
         async fetchAll() {
             this.check = 0;
             try {
-                const response = await axios.get('/api/admin/trong-luong'); // Thay đổi URL dựa trên API của bạn
+                const response = await axios.get('http://localhost:8080/api/admin/trong-luong'); // Thay đổi URL dựa trên API của bạn
                 this.data = response.data.data;
                 // console.table(this.data);
             } catch (error) {
@@ -23,7 +23,7 @@ export const TrongLuongStore = defineStore('trongLuong', {
         async fetchDataByStatus(status) {
             this.check = 1;
             try {
-                const response = await axios.get('/api/admin/trong-luong' + '/trang-thai?trangThai=' + status);
+                const response = await axios.get('http://localhost:8080/api/admin/trong-luong' + '/trang-thai?trangThai=' + status);
                 if (status === 1) {
                     this.dataByStatus1 = response.data.data;
                 }
@@ -33,7 +33,7 @@ export const TrongLuongStore = defineStore('trongLuong', {
             }
         },
         createTrongLuong(form) {
-            axios.post('/api/admin/trong-luong' + '/add', form).then((response) => {
+            axios.post('http://localhost:8080/api/admin/trong-luong' + '/add', form).then((response) => {
                 if (this.check == 0) {
                     this.data.unshift(response.data.data);
                     if (response.data.data.trangThai == 1) this.dataByStatus1.unshift(response.data.data);
@@ -45,7 +45,7 @@ export const TrongLuongStore = defineStore('trongLuong', {
             });
         },
         updateTrongLuong(id, form) {
-            axios.put('/api/admin/trong-luong' + '/update/' + id, form).then((response) => {
+            axios.put('http://localhost:8080/api/admin/trong-luong' + '/update/' + id, form).then((response) => {
                 for (let i = 0; i < this.data.length; i++) {
                     if (id == this.data[i].id) {
                         this.data[i].donVi = form.donVi;
@@ -63,7 +63,7 @@ export const TrongLuongStore = defineStore('trongLuong', {
             });
         },
         deleteTrongLuong(id) {
-            axios.put('/api/admin/trong-luong' + '/delete/' + id).then((response) => {
+            axios.put('http://localhost:8080/api/admin/trong-luong' + '/delete/' + id).then((response) => {
                 if (this.check == 0) {
                     for (let i = 0; i < this.data.length; i++) {
                         if (id == this.data[i].id) {

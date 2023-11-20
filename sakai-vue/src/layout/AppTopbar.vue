@@ -19,16 +19,18 @@ onMounted(() => {
     fetchData();
     getDem();
 });
-
+const tokenCheck = ref();
 const data = ref([]);
 const getAllTB = async () => {
+    const token = localStorage.getItem('token');
+    tokenCheck.value = token;
     await thongBaoStore.fetchData();
     data.value = thongBaoStore.data;
 }
 
 const dem = ref([]);
 const getDem = async () => {
-   dem.value = await thongBaoStore.fetchdem();
+    dem.value = await thongBaoStore.fetchdem();
 }
 
 
@@ -119,8 +121,23 @@ const op = ref();
 const toggle2 = (event) => {
     op.value.toggle(event);
 };
+const op2 = ref();
+const toggle = (event) => {
+    op2.value.toggle(event);
+};
 
 
+const dangXuat = () => {
+    router.push(`/login-admin`);
+    localStorage.removeItem('token');
+}
+
+const dangNhap = () => {
+    router.push(`/login-admin`);
+}
+const thongTinCaNhan = () => {
+    router.push(`/thong-tin-ca-nhan-ad`);
+}
 </script>
 
 <template>
@@ -141,47 +158,42 @@ const toggle2 = (event) => {
             <i class="pi pi-ellipsis-v"></i>
         </button>
 
-        <div class="layout-topbar-menu" style="display: inline-block">
-            <div v-if="selectedCustomer === null">
-                <Dropdown v-model="selectedKH" :options="khachHang" optionLabel="ten" placeholder="Chọn KH" class="w-full md:w-8rem" style="margin-top: 5px; max-height: 100px; overflow-y: auto" @change="displayKH" />
-            </div>
-
-            <div v-else class="layout-topbar-logo" style="display: inline-block">
-
-            </div> </div>
-
-        <div class="layout-topbar-menu" style=" display: inline-block; ">
-            <div v-if="selectedCustomer === null">
-                <Dropdown v-model="selectedKH" :options="khachHang" optionLabel="ten" placeholder="Chọn KH"
-                    class="w-full md:w-8rem" style=" margin-top: 5px; max-height: 100px; overflow-y: auto;"
-                    @change="displayKH" />
-            </div>
-
-            <div v-else class="layout-topbar-logo" style=" display: inline-block;">
-
-                <div style="font-size: 10px">
-                    <div>Tên: {{ selectedCustomer.ten }}</div>
-                    <div>Role: {{ selectedCustomer.role }}</div>
-                </div>
-            </div>
-        </div>
 
         <div class="layout-topbar-menu" :class="topbarMenuClasses">
 
-            <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
-                <i class="pi pi-user"></i>
-                <span>Profile</span>
-            </button>
-            <button @click="onSettingsClick()" class="p-link layout-topbar-button">
-                <i class="pi pi-cog"></i>
-                <span>Settings</span>
-            </button>
+            <div class="flex justify-content-center" style="margin-right: 10px; margin-left:0px; margin-right: 20px;">
 
-            <div class=" flex justify-content-center gap-4">
+                <button class="p-link " @click="toggle" aria-haspopup="true" aria-controls="overlay_tmenu">
+                    <i class="pi pi-user " style="font-size: 1.5rem" />
+                </button>
+                <OverlayPanel ref="op2" style="display: block; width: 150px;">
+                    <button v-if="tokenCheck != null" class="p-link a " aria-haspopup="true" aria-controls="overlay_tmenu"
+                        @click="thongTinCaNhan">
+                        <div class="flex align-items-center" style="height: 20px;margin-bottom: 10px; width: 120px;">
+                            Hồ sơ cá nhân
+                        </div>
+                    </button>
+                    <button v-if="tokenCheck == null" class="p-link a " aria-haspopup="true" aria-controls="overlay_tmenu"
+                        @click="dangNhap">
+                        <div class="flex align-items-center" style="height: 20px;margin-bottom: 10px; width: 120px;">
+                            Đăng Nhập
+                        </div>
+                    </button>
+
+                    <button v-if="tokenCheck != null" class="p-link a " aria-haspopup="true" aria-controls="overlay_tmenu"
+                        @click="dangXuat">
+                        <div class="flex align-items-center" style="height: 20px;margin-bottom: 10px; width: 120px;  ">
+                            Đăng Xuất
+                        </div>
+                    </button>
+                </OverlayPanel>
+            </div>
+
+            <div class=" flex justify-content-center gap-4" style="">
 
 
                 <button class="p-link " @click="toggle2" aria-haspopup="true" aria-controls="overlay_tmenu">
-                    <i v-badge="dem" class="pi pi-bell p-overlay-badge" style="font-size: 2rem" />
+                    <i v-badge="dem" class="pi pi-bell p-overlay-badge" style="font-size: 1.5rem" />
                 </button>
 
                 <OverlayPanel ref="op" style="height: 300px;overflow: auto;">
@@ -189,8 +201,7 @@ const toggle2 = (event) => {
                     <H6>Thông báo </H6>
                     <div v-for="(o, index) in data">
                         <button class="p-link " aria-haspopup="true" aria-controls="overlay_tmenu">
-                            <div class="flex align-items-center"
-                                style="height: 50px;margin-bottom: 10px; width: 240px;"
+                            <div class="flex align-items-center" style="height: 50px;margin-bottom: 10px; width: 240px;"
                                 @click="daXem(o.id)">
                                 <div style="display:  flex; ">
                                     <div style="margin-right: 10px; width: 180px;  margin-bottom: -30px;">

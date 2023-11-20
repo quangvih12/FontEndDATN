@@ -629,7 +629,7 @@ const khoiPhucSPCT = async (idSPCT, soLuong) => {
                         </div>
                         <small class="p-error">{{ demLotError }}</small>
                     </div>
-                    <div class="field col-12 md:col-12" style="margin-bottom: 30px">
+                    <div class="field col-12 md:col-8" style="margin-bottom: 30px">
                         <label for="address">Trạng thái</label>
                         <div class="flex flex-wrap gap-3">
                             <div class="flex align-items-center">

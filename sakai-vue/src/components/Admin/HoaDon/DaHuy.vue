@@ -184,7 +184,7 @@ const formatDate = (dateTime) => {
         <Column field="tongTien" header="Tổng tiền" :sortable="true" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
                 <span class="p-column-title">tongTien</span>
-                {{ formatCurrency(slotProps.data.tongTien) }}
+                {{ formatCurrency(slotProps.data.tienSauKhiGiam==null?slotProps.data.tongTien: slotProps.data.tienSauKhiGiam) }}
             </template>
         </Column>
         <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;">
