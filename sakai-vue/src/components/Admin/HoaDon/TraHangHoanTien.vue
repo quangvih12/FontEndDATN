@@ -180,34 +180,34 @@ const tinhThanhTien = (soLuong, donGia) => {
                 {{ slotProps.data.stt }}
             </template>
         </Column>
-        <Column field="maHD" header="Mã sản phẩm" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+        <Column field="maSP" header="Mã sản phẩm" :sortable="true" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
-                <span class="p-column-title">maHD</span>
-                {{ slotProps.data.maHD }}
+                <span class="p-column-title">maSP</span>
+                {{ slotProps.data.maSP }}
             </template>
         </Column>
-        <Column field="tenNguoiNhan" header="Tên sản phẩm" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+        <Column field="tenSP" header="Tên sản phẩm" :sortable="true" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
-                <span class="p-column-title">tenNguoiNhan</span>
-                {{ slotProps.data.tenNguoiNhan }}
+                <span class="p-column-title">tenSP</span>
+                {{ slotProps.data.tenSP }}
             </template>
         </Column>
-        <Column field="tongTien" header="Màu sắc" :sortable="true" headerStyle="width:14%; min-width:7rem;">
+        <Column field="tenMauSac" header="Màu sắc" :sortable="true" headerStyle="width:14%; min-width:7rem;">
             <template #body="slotProps">
-                <span class="p-column-title">tongTien</span>
-                {{ formatCurrency(slotProps.data.tienSauKhiGiam==null?slotProps.data.tongTien: slotProps.data.tienSauKhiGiam) }}
+                <span class="p-column-title">tenMauSac</span>
+                {{ slotProps.data.tenMauSac }}
             </template>
         </Column>
-        <Column field="diaChi" header="Size" :sortable="true" headerStyle="width:14%; min-width:7rem;">
+        <Column field="tenSize" header="Size" :sortable="true" headerStyle="width:14%; min-width:7rem;">
             <template #body="slotProps">
-                <span class="p-column-title">diaChi</span>
-                {{ slotProps.data.diaChiCuThe }}, {{ slotProps.data.tenPhuongXa }}, {{ slotProps.data.tenQuanHuyen }}, {{ slotProps.data.tenTinhThanh }}
+                <span class="p-column-title">tenSize</span>
+                {{ slotProps.data.tenSize }}
             </template>
         </Column>
-        <Column field="diaChi" header="Số lượng" :sortable="true" headerStyle="width:14%; min-width:7rem;">
+        <Column field="soLuong" header="Số lượng" :sortable="true" headerStyle="width:14%; min-width:7rem;">
             <template #body="slotProps">
-                <span class="p-column-title">diaChi</span>
-                {{ slotProps.data.diaChiCuThe }}, {{ slotProps.data.tenPhuongXa }}, {{ slotProps.data.tenQuanHuyen }}, {{ slotProps.data.tenTinhThanh }}
+                <span class="p-column-title">soLuong</span>
+                {{ slotProps.data.soLuong }}
             </template>
         </Column>
         <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;">

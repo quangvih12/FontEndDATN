@@ -37,8 +37,6 @@ const loadDataGioHang = async () => {
     } else {
         await gioHangService.getAllGHCT(token);
         dataGHCT.value = gioHangService.data;
-
-
     }
 };
 
@@ -57,9 +55,8 @@ const loadDataVoucherByUser = async () => {
     if (token == '' || token == null) {
         dataVoucher.value = [{ ten: 'bạn cần đăng nhập' }];
     } else {
-        await gioHangService. getListVoucherByUser(token);
+        await gioHangService.getListVoucherByUser(token);
         dataVoucher.value = gioHangService.voucher;
-        console.log(dataVoucher.value)
     }
 };
 
@@ -281,7 +278,6 @@ const increment = async (idGHCT) => {
                 // Cập nhật phần tử trong mảng
                 let so = array[i].soLuong + 1;
                 if (so > array[i].soLuongTon) {
-
                     toast.add({ severity: 'warn', summary: '', detail: 'Số lượng nhiều hơn số lượng tồn', life: 3000 });
                     return;
                 } else {
@@ -443,7 +439,7 @@ const apDung = () => {
         if (checkedValues.length == 0 || dieuKien.value == null || dieuKien.value == 0) {
             toast.add({ severity: 'warn', summary: '', detail: 'bạn cần chọn sản phẩm hoặc voucher', life: 3000 });
         } else {
-            tienGiam.value = TongTien.value * ( dieuKien.value / 100 );
+            tienGiam.value = TongTien.value * (dieuKien.value / 100);
             TongTienCu.value = TongTien.value - tienGiam.value;
         }
     }
@@ -469,14 +465,22 @@ const tinhTongTienChoTungSanPham = (soLuong, giaSauGiam, giaBan) => {
             <div class="p-fluid formgrid grid">
                 <div class="Field col-12 md:col-9">
                     <div class="trai">
-                        <DataTable :value="dataGHCT" v-model:selection="selectedGHCT" dataKey="id" :filters="filters"
+                        <DataTable
+                            :value="dataGHCT"
+                            v-model:selection="selectedGHCT"
+                            dataKey="id"
+                            :filters="filters"
                             paginatorTemplate="FirstPageLink Pr
-                            evPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown">
+                            evPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                        >
                             <Column headerStyle="width: 1rem">
                                 <template #body="slotProps">
-                                    <Checkbox v-model="checked[dataGHCT.indexOf(slotProps.data)]" :binary="true"
+                                    <Checkbox
+                                        v-model="checked[dataGHCT.indexOf(slotProps.data)]"
+                                        :binary="true"
                                         @change="onSizeChange(slotProps.data, checked[dataGHCT.indexOf(slotProps.data)])"
-                                        :disabled="slotProps.data.soLuongTon <= 0 || slotProps.data.soLuong > slotProps.data.soLuongTon" />
+                                        :disabled="slotProps.data.soLuongTon <= 0 || slotProps.data.soLuong > slotProps.data.soLuongTon"
+                                    />
                                 </template>
                             </Column>
 
@@ -495,11 +499,9 @@ const tinhTongTienChoTungSanPham = (soLuong, giaSauGiam, giaBan) => {
 
                             <Column field="code" header="" headerStyle="width:10%; min-width:5rem;">
                                 <template #body="slotProps">
-                                    <div @click="slotProps.data.soLuongTon != 0 && editProduct(slotProps.data)"
-                                        style="width: 100px">
+                                    <div @click="slotProps.data.soLuongTon != 0 && editProduct(slotProps.data)" style="width: 100px">
                                         <p v-if="slotProps.data.soLuongTon != 0">Phân loại hàng:</p>
-                                        <p style="font-size: 13px; margin-top: -10px" v-if="slotProps.data.soLuongTon != 0">
-                                            {{ slotProps.data.tenMauSac }}, {{ slotProps.data.tenSize }}</p>
+                                        <p style="font-size: 13px; margin-top: -10px" v-if="slotProps.data.soLuongTon != 0">{{ slotProps.data.tenMauSac }}, {{ slotProps.data.tenSize }}</p>
                                         <p v-if="slotProps.data.soLuongTon == 0">Hết sản phẩm</p>
                                     </div>
                                 </template>
@@ -509,12 +511,10 @@ const tinhTongTienChoTungSanPham = (soLuong, giaSauGiam, giaBan) => {
                                 <template #body="slotProps">
                                     <span class="p-column-title">Code</span>
 
-                                    <div v-if="slotProps.data.giaSPSauGiam === null">{{
-                                        formatCurrency(slotProps.data.giaBan) }}</div>
+                                    <div v-if="slotProps.data.giaSPSauGiam === null">{{ formatCurrency(slotProps.data.giaBan) }}</div>
                                     <div v-else>
                                         <div style="display: block">
-                                            <div :class="{ strikethrough: true }">{{ formatCurrency(slotProps.data.giaBan)
-                                            }}</div>
+                                            <div :class="{ strikethrough: true }">{{ formatCurrency(slotProps.data.giaBan) }}</div>
                                             <div>{{ formatCurrency(slotProps.data.giaSPSauGiam) }}</div>
                                         </div>
                                     </div>
@@ -525,15 +525,19 @@ const tinhTongTienChoTungSanPham = (soLuong, giaSauGiam, giaBan) => {
                                     <span class="p-column-title">Code</span>
 
                                     <div class="quantity">
-                                        <button @click="decrement(slotProps.data.idGHCT)" class="pi pi-minus"
+                                        <button
+                                            @click="decrement(slotProps.data.idGHCT)"
+                                            class="pi pi-minus"
                                             :disabled="slotProps.data.soLuongTon <= 0"
-                                            style="width: 30px; height: 30px; border-radius: 10px 0px 0px 10px; border: 1px solid rgb(177, 173, 173)"></button>
-                                        <input :value="slotProps.data.soLuong"
-                                            @input="updateSoLuong(slotProps.data, $event)" class="input-soluong"
-                                            style="width: 30px; height: 30px" :disabled="slotProps.data.soLuongTon == 0" />
-                                        <button @click="increment(slotProps.data.idGHCT)" class="pi pi-plus"
+                                            style="width: 30px; height: 30px; border-radius: 10px 0px 0px 10px; border: 1px solid rgb(177, 173, 173)"
+                                        ></button>
+                                        <input :value="slotProps.data.soLuong" @input="updateSoLuong(slotProps.data, $event)" class="input-soluong" style="width: 30px; height: 30px" :disabled="slotProps.data.soLuongTon == 0" />
+                                        <button
+                                            @click="increment(slotProps.data.idGHCT)"
+                                            class="pi pi-plus"
                                             style="width: 30px; height: 30px; border-radius: 0px 10px 10px 0px; border: 1px solid rgb(177, 173, 173)"
-                                            :disabled="slotProps.data.soLuongTon <= 0 || slotProps.data.soLuong > slotProps.data.soLuongTon"></button>
+                                            :disabled="slotProps.data.soLuongTon <= 0 || slotProps.data.soLuong > slotProps.data.soLuongTon"
+                                        ></button>
                                     </div>
                                 </template>
                             </Column>
@@ -541,28 +545,24 @@ const tinhTongTienChoTungSanPham = (soLuong, giaSauGiam, giaBan) => {
                                 <template #body="slotProps">
                                     <span class="p-column-title">Code</span>
                                     <p style="font-size: 15px; color: red">
-                                        {{ formatCurrency(tinhTongTienChoTungSanPham(slotProps.data.soLuong,
-                                            slotProps.data.giaSPSauGiam, slotProps.data.giaBan)) }}
+                                        {{ formatCurrency(tinhTongTienChoTungSanPham(slotProps.data.soLuong, slotProps.data.giaSPSauGiam, slotProps.data.giaBan)) }}
                                     </p>
                                 </template>
                             </Column>
                             <Column headerStyle="min-width:2rem;">
                                 <template #body="slotProps">
-                                    <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2"
-                                        @click="deleteGioHang(slotProps.data.idGHCT)" />
+                                    <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2" @click="deleteGioHang(slotProps.data.idGHCT)" />
                                 </template>
                             </Column>
                         </DataTable>
 
-                        <Dialog v-model:visible="selectedSizeMauSac" :style="{ width: '450px' }"
-                            header="Cập nhật phân loại hàng" :modal="true">
+                        <Dialog v-model:visible="selectedSizeMauSac" :style="{ width: '450px' }" header="Cập nhật phân loại hàng" :modal="true">
                             <p class="ms" v-if="datagh == ''" style="color: red; font-size: 20px">Hết Hàng</p>
                             <label class="ms">Màu sắc</label>
                             <br />
 
                             <div class="rounded-content-list">
-                                <div v-for="(mauSacs, index) in dataMauSac" :key="index" class="rounded-content"
-                                    @click="selectMauSac(mauSacs)" :class="{ selected: isMauSacSelected(mauSacs) }">
+                                <div v-for="(mauSacs, index) in dataMauSac" :key="index" class="rounded-content" @click="selectMauSac(mauSacs)" :class="{ selected: isMauSacSelected(mauSacs) }">
                                     <img class="rounded-image" :src="mauSacs.anh" alt="Hình ảnh" />
                                     <a class="rounded-text">{{ mauSacs.ten }}</a>
                                 </div>
@@ -573,17 +573,14 @@ const tinhTongTienChoTungSanPham = (soLuong, giaSauGiam, giaBan) => {
                             <br />
                             <div class="rounded-content-list">
                                 <div v-for="(size, index) in dataSize" :key="index" style="margin-right: 10px">
-                                    <RadioButton v-model="getSize" inputId="ingredient2" name="pizza" :value="size.id"
-                                        style="margin-right: 10px; color: white" />
+                                    <RadioButton v-model="getSize" inputId="ingredient2" name="pizza" :value="size.id" style="margin-right: 10px; color: white" />
                                     <label>{{ size.ten }} </label>
                                 </div>
                             </div>
 
                             <template #footer>
                                 <Button label="Trở lại" icon="pi pi-times" class="p-button-text" @click="hideDialog" />
-                                <Button type="Xác nhận" label="Save" icon="pi pi-check" class="p-button-text"
-                                    @click="updateMauSacSize(ghct.idGHCT)"
-                                    :disabled="datagh == '' || idMau == '' || idMau == null" />
+                                <Button type="Xác nhận" label="Save" icon="pi pi-check" class="p-button-text" @click="updateMauSacSize(ghct.idGHCT)" :disabled="datagh == '' || idMau == '' || idMau == null" />
                             </template>
                         </Dialog>
                     </div>
@@ -597,30 +594,25 @@ const tinhTongTienChoTungSanPham = (soLuong, giaSauGiam, giaBan) => {
                             Tổng số lượng sản phẩm: <span style="font-size: 16px">{{ TongSoLuong }}</span>
                         </p>
                         <p class="content" style="font-size: 13px">
-                            Tổng tiền: <span style="text-align: right" class="gia">{{ formatCurrency(TongTien) == '' ? 0 :
-                                formatCurrency(TongTien) }}</span>
+                            Tổng tiền: <span style="text-align: right" class="gia">{{ formatCurrency(TongTien) == '' ? 0 : formatCurrency(TongTien) }}</span>
                         </p>
                         <p class="content" v-if="tienGiam !== 0" style="font-size: 13px">
                             số tiền giảm: <span style="color: red; font-size: 15px">- {{ formatCurrency(tienGiam) }}</span>
                         </p>
                         <p class="content" v-if="tienGiam !== 0" style="font-size: 13px">
-                            Tổng tiền giảm: <span style="text-align: right; font-size: 19px" class="gia">{{
-                                formatCurrency(TongTienCu) == '' ? 0 : formatCurrency(TongTienCu) }}</span>
+                            Tổng tiền giảm: <span style="text-align: right; font-size: 19px" class="gia">{{ formatCurrency(TongTienCu) == '' ? 0 : formatCurrency(TongTienCu) }}</span>
                         </p>
 
-                        <Button label="Thanh Toán" severity="danger" class="btn-thanh-toan"
-                            style="width: 110px; font-size: 13px; height: 40px; margin-left: 40px" @click="ThanhToan()" />
+                        <Button label="Thanh Toán" severity="danger" class="btn-thanh-toan" style="width: 110px; font-size: 13px; height: 40px; margin-left: 40px" @click="ThanhToan()" />
                         <div class="phieu-uu-dai">
                             <p class="tieu-de-phieu-uu-dai">Phiếu ưu đãi</p>
                             <hr class="gach-ngang" />
                             <div style="display: flex">
                                 <span class="p-float-label" style="width: 140px; margin-top: 20px">
-                                    <Dropdown id="dropdown" :options="dataVoucher" v-model="selectVoucher" optionLabel="ten"
-                                        :class="{ 'p-invalid': loaiError }" @change="onloaiChange"> </Dropdown>
+                                    <Dropdown id="dropdown" :options="dataVoucher" v-model="selectVoucher" optionLabel="ten" :class="{ 'p-invalid': loaiError }" @change="onloaiChange"> </Dropdown>
                                     <label for="dropdown">voucher</label>
                                 </span>
-                                <Button class="pi pi-refresh"
-                                    style="width: 50px; height: 40px; margin-top: 20px; margin-left: 10px" @click="reset" />
+                                <Button class="pi pi-refresh" style="width: 50px; height: 40px; margin-top: 20px; margin-left: 10px" @click="reset" />
                             </div>
 
                             <Button label="Áp dụng" severity="success" class="btn-ap-dung" @click="apDung" />
