@@ -19,7 +19,7 @@ const products = ref(null);
 const data = ref([]);
 
 const loadData = async () => {
-    await useHD.fetchDataByStatus(7);
+    await useHD.fetchDataHDCTByStatus(7);
     data.value = useHD.dataHoanTraHoanTien;
 };
 //chạy cái hiện data luôn
@@ -180,25 +180,31 @@ const tinhThanhTien = (soLuong, donGia) => {
                 {{ slotProps.data.stt }}
             </template>
         </Column>
-        <Column field="maHD" header="Mã hoá đơn" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+        <Column field="maHD" header="Mã sản phẩm" :sortable="true" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
                 <span class="p-column-title">maHD</span>
                 {{ slotProps.data.maHD }}
             </template>
         </Column>
-        <Column field="tenNguoiNhan" header="Người nhận" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+        <Column field="tenNguoiNhan" header="Tên sản phẩm" :sortable="true" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
                 <span class="p-column-title">tenNguoiNhan</span>
                 {{ slotProps.data.tenNguoiNhan }}
             </template>
         </Column>
-        <Column field="tongTien" header="Tổng tiền" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+        <Column field="tongTien" header="Màu sắc" :sortable="true" headerStyle="width:14%; min-width:7rem;">
             <template #body="slotProps">
                 <span class="p-column-title">tongTien</span>
                 {{ formatCurrency(slotProps.data.tongTien) }}
             </template>
         </Column>
-        <Column field="diaChi" header="Địa chỉ" :sortable="false" headerStyle="width:14%; min-width:10rem;">
+        <Column field="diaChi" header="Size" :sortable="true" headerStyle="width:14%; min-width:7rem;">
+            <template #body="slotProps">
+                <span class="p-column-title">diaChi</span>
+                {{ slotProps.data.diaChiCuThe }}, {{ slotProps.data.tenPhuongXa }}, {{ slotProps.data.tenQuanHuyen }}, {{ slotProps.data.tenTinhThanh }}
+            </template>
+        </Column>
+        <Column field="diaChi" header="Số lượng" :sortable="true" headerStyle="width:14%; min-width:7rem;">
             <template #body="slotProps">
                 <span class="p-column-title">diaChi</span>
                 {{ slotProps.data.diaChiCuThe }}, {{ slotProps.data.tenPhuongXa }}, {{ slotProps.data.tenQuanHuyen }}, {{ slotProps.data.tenTinhThanh }}

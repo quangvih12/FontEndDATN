@@ -321,6 +321,18 @@ export const HDStore = defineStore('hoaDon', {
                 if (status == 4) this.dataDangChuanBi = response.data;
                 if (status == 5) this.dataDangGiao = response.data;
                 if (status == 3) this.dataHoanThanh = response.data;
+                if (status == 9) this.dataDaHuyDoiTra = response.data;
+                if (status == 10) this.dataDaHoanTra = response.data;
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        },
+        //load data hd trả theo trạng thái
+        async fetchDataHDCTByStatus(status) {
+            this.check = 1;
+            try {
+                const response = await axios.get(apiHDCT + '/find-by-trang-thai/' + status);
+                if (status == 8) this.dataXacNhanHoanTraHoanTien = response.data;
                 if (status == 7) this.dataHoanTraHoanTien = response.data;
                 if (status == 9) this.dataDaHuyDoiTra = response.data;
                 if (status == 10) this.dataDaHoanTra = response.data;

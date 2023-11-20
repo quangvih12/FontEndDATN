@@ -335,7 +335,13 @@ const btnXacNhanHuyGH = () => {
                             <div class="p-col-6" style="width: 100%">
                                 <div class="row flex">
                                     <div class="flex" style="min-width: 200px">
-                                        <p>Địa chỉ: {{ props.myProp.diaChiCuThe }}, {{ props.myProp.tenPhuongXa }}, {{ props.myProp.tenQuanHuyen }}, {{ props.myProp.tenTinhThanh }}</p>
+                                        <p>Họ tên người nhận: {{ props.myProp.tenNguoiNhan }}</p>
+                                    </div>
+                                    <div class="flex" style="min-width: 200px">
+                                        <p>Sdt: {{ props.myProp.sdt }}</p>
+                                    </div>
+                                    <div class="flex" style="min-width: 200px">
+                                        <p style="margin-left: -10px">Địa chỉ: {{ props.myProp.diaChiCuThe }}, {{ props.myProp.tenPhuongXa }}, {{ props.myProp.tenQuanHuyen }}, {{ props.myProp.tenTinhThanh }}</p>
                                     </div>
                                     <div class="flex" style="min-width: 200px" v-if="HienLyDoHuy(props.myProp.trangThai)">
                                         <p style="margin-top: 3px">Lý do:</p>
