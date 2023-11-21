@@ -16,7 +16,8 @@ export const gioHangStore = defineStore('gioHang', {
         async addToCart(form, token) {
             const response = await axios.post(`http://localhost:8080/api/khach-hang/giohang/addGiohang?token=${token}`, form);
             await this.countGHCT(token);
-            return response.data;
+            // this.data.unshift(response.data);
+             return response.data;
         },
 
         async addToCartSesion(form, token) {
@@ -36,11 +37,27 @@ export const gioHangStore = defineStore('gioHang', {
                 this.data = response.data;
             } catch (error) {}
         },
+
+        async getGHCTByIdctsp(token, idctsp) {
+            try {
+                const response = await axios.get(apiGiohang + `/getGioHangCTByIdctsp?token=${token}&idctsp=${idctsp}`);
+                this.data = response.data;
+            } catch (error) {
+            }
+        },
         async getListVoucher(token) {
             try {
                 const response = await axios.get(apiGiohang + `/get-voucher?token=${token}`);
                 this.voucher = response.data;
             } catch (error) {}
+        },
+
+        async getListVoucherByTrangThai() {
+            try {
+                const response = await axios.get(apiGiohang + `/get-voucher-trang-thai`);
+                this.voucher = response.data;
+            } catch (error) {
+            }
         },
 
         async getListVoucherByUser(token) {
@@ -82,6 +99,25 @@ export const gioHangStore = defineStore('gioHang', {
                     }
                 }
             } catch (error) {}
+        },
+
+        async updateSL(idGHCT, token, sl) {
+            try {
+                const response = await axios.put(apiGiohang + '/updateSL/' + idGHCT + `?token=${token}&sl=${sl}`);
+                const index = this.data.findIndex(hoadon => hoadon.idGHCT === idGHCT);
+              
+                if (response.data === '') {
+                    this.fakedata = response.data;
+                } else {
+                    this.fakedata = response.data;
+                    if (index !== -1) {
+                        this.data[index] = response.data;
+                    }
+                }
+
+
+            } catch (error) {
+            }
         },
 
         async truSL(idGHCT, token) {

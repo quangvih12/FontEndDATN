@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount ,watch} from 'vue';
 import { useLayout } from '@/layout/composables/layout';
 import { useRouter } from 'vue-router';
 import { userStore } from '@/service/Admin/User/UserService.js';
@@ -9,11 +9,16 @@ import tokenService from '@/service/Authentication/TokenService.js';
 import userKHService from '@/service/KhachHang/UserService.js';
 
 import { KHThongBaoStore } from '../../service/KhachHang/ThongBaoService'
+
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 
 
+
 const thongBaoStore = KHThongBaoStore();
+
+const cartItems = store.getCartItems;
+
 
 const userService = userStore();
 const { layoutConfig, onMenuToggle } = useLayout();
@@ -24,14 +29,16 @@ const router = useRouter();
 const selectedCustomer = ref(null);
 const gioHangService = gioHangStore();
 
+const slGH = ref(localStorage.getItem("soLuongGH") || 0);
+
 onMounted(() => {
     bindOutsideClickListener();
-    //  fetchData();
     getAllTB();
     getDem();
     soLuongGH();
     openSocketConnection();
 });
+
 
 const stompClient = ref(null);
 
@@ -49,6 +56,7 @@ const openSocketConnection = () => {
 
     stompClient.value.activate();
 };
+
 
 
 const data = ref([]);

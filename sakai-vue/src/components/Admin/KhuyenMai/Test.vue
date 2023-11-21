@@ -9,8 +9,8 @@
 
             <Dropdown id="dropdown" :options="dataLoai" v-model="selectedLoai" optionLabel="ten"  placeholder="Tất cả" :class="{ 'p-invalid': loaiError }" style="height: 40px"> </Dropdown>
                 <!-- <label for="dropdown" style="margin-left: 10px;">Loại</label> -->
-            <!-- <Dropdown v-model="thuongHieu" :options="dataThuongHieu" optionLabel="label" placeholder="Tất cả" class="w-full md:w-14rem" style="margin-left: 20px" /> -->
-            <Dropdown id="dropdown" :options="dataThuongHieu" v-model="selectedThuongHieu" optionLabel="ten"  placeholder="Tất cả" :class="{ 'p-invalid': loaiError }" style="height: 40px"> </Dropdown>
+            <Dropdown v-model="thuongHieu" :options="dataThuongHieu" optionLabel="label" placeholder="Tất cả" class="w-full md:w-14rem" style="margin-left: 20px" />
+
 
         </template>
         <div class="card p-fluid">
@@ -76,7 +76,8 @@
 
                 <Column header="Action" headerStyle="min-width:10rem;">
                     <template #body="slotProps">                    
-                        <SelectCTSP :new-prop="slotProps.data"></SelectCTSP>               
+                        <!-- <SelectCTSP :my-prop="slotProps.data"></SelectCTSP>           -->
+                        <Button label="Chọn sản phẩm" icon="pi pi-search" rounded  @click="showProduct(slotProps.data.id)"/>     
                     </template>
                 </Column>
             </DataTable>
@@ -86,41 +87,86 @@
             <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="hideDialog" />
             <!-- <Button label="Save" icon="pi pi-check" @click="applyKhuyenMai" /> -->
         </template>
+
+        <Dialog v-model:visible="selectedDialog" header="Flex Scroll" :style="{ width: '75vw' }" maximizable modal :contentStyle="{ height: '300px' }" class="p-fluid">
+        <template #header>
+            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                <h5 class="m-0">Khuyến Mại</h5>
+            </div>
+        </template>
+        <div class="card p-fluid">
+            <DataTable
+                :value="listSPCT"
+                v-model:selection="selectedProduct"
+                paginator
+                :rows="5"
+                :rowsPerPageOptions="[5, 10, 20, 50]"
+                tableStyle="min-width: 50rem"
+                paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords}  listSPCT"
+                responsiveLayout="scroll"
+            >
+                <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
+                <Column field="tenSP" header="Sản Phẩm"></Column>
+                <Column field="tenMauSac" header="Màu Sắc"></Column>
+                <Column field="tenSize" header="Size"></Column>
+                <Column field="giaBan" header="Giá Bán"></Column>
+            </DataTable>
+        </div>
+
+        <template #footer>
+            <!-- <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="hideDialog" /> -->
+            <Button label="Save" icon="pi pi-check" @click="applyKhuyenMai" />
+        </template>
+    </Dialog>
+
     </Dialog>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useLoaiService } from '../../../service/Admin/Loai/LoaiService';
-import { useCounterStore } from '../../../service/Admin/ThuongHieu/ThuongHieuService.js';
 import { ProductStore } from '../../../service/Admin/product/product.api';
 import SelectCTSP from './SelectCTSP.vue';
 
+import { ctspStore } from '@/service/Admin/SanPhamChiTiet/SanPhamCTService.js';
+import { useToast } from 'primevue/usetoast';
+import { khuyenMaiStore } from '@/service/Admin/KhuyenMai/KhuyenMaiService.js';
+
+const khuyenmaiService = khuyenMaiStore();
+const ctspService = ctspStore();
 const productStore = ProductStore();
-const thuonghieuService =  useCounterStore();
 const loaiStore = useLoaiService();
 const products = ref([]);
-const showSpinner = ref(false);
+const  listSPCT = ref([])
 // const productService = productStore();
 const selectedProductDialog = ref(false);
 const dataLoai = ref([]);
-const dataThuongHieu = ref([]);
-
 const props = defineProps({
     myProp: {}
 });
 
-
+const selectedDialog= ref(false);
 onMounted(() => {
     loadProducts();
     loadDataLoai();
-    loadDataThuongHieu()
+    loadDataProduct();
 });
 
+// const showProducts = () => {
+//     selectedDialog.value = true;
+// };
 
-const showProducts = () => {
-    localStorage.setItem("idkm",props.myProp.id )
+const idsp = ref()
+const showProducts = (id) => {
+    // localStorage.setItem("idkm",props.myProp.id )
     selectedProductDialog.value = true;
+    idsp.value = id;
+    cons
+};
+
+const showProduct = () => {
+    selectedDialog.value = true;
 };
 
 
@@ -128,55 +174,78 @@ const hideDialog = () => {
     selectedProductDialog.value = false;
 };
 
-
+const idkm = props.myProp.id;
 
 const loadProducts = async () => {
-    showSpinner.value = true;
     await productStore.fetchAll(); // Gọi hàm fetchAll từ Store
     products.value = productStore.products;
+
 };
 
 const selectedLoai = ref(null);
 const loadDataLoai = async () => {
     await loaiStore.fetchDataByStatus(1);
     dataLoai.value = loaiStore.dataByStatus1;
-   
-};
-watch(selectedLoai, (newVal, oldVal) => {
-  // Kiểm tra nếu giá trị mới khác giá trị cũ
-  if (newVal !== oldVal) {
-    // Gọi hàm để cập nhật dataTable dựa trên giá trị mới của selectedLoai
-    updateDataTableLoai();
-  }
-});
-
-
-const selectedThuongHieu = ref(null);
-const loadDataThuongHieu= async () => {
-    await thuonghieuService.fetchData();
-    dataThuongHieu.value = thuonghieuService.data;
-   
 };
 
-watch(selectedThuongHieu, (newVal, oldVal) => {
-  // Kiểm tra nếu giá trị mới khác giá trị cũ
-  if (newVal !== oldVal) {
-    // Gọi hàm để cập nhật dataTable dựa trên giá trị mới của selectedLoai
-    updateDataTableThuongHieu();
-  }
-});
+console.log("idsp", idsp.value)
 
-
-const updateDataTableLoai = async () => {
-    await productStore. fetchDataByLoai(selectedLoai.value.id); 
-    products.value = productStore.products;
+const loadDataProduct = async () => {
+    await ctspService.fetchData(products.value.id);
+    listSPCT.value = ctspService.data;
+    
 };
 
 
-const updateDataTableThuongHieu = async () => {
-    await productStore.fetchDataByThuongHieu(selectedThuongHieu.value.id); 
-    products.value = productStore.products;
+const applyKhuyenMai = () => {
+    // đây là số lượng SPCT được chọn để áp dụng khuyến mại
+    const sl = selectedProduct.value.length;
+    // đây là IdKM dùng để áp dụng được truyền từ component cha
+    // const idkm = localStorage.getItem("idkm")
+
+    // duyệt qua mảng danh sách các CTSP được chọn 
+    selectedProduct.value.forEach((product) => {
+        const productId = product.id;
+        // cập nhật lại giá tiền và id khuyến mại
+        khuyenmaiService.updateCTSP(productId, idkm);
+       
+      
+      
+    });
+    selectedProduct.value = [];
+    selectedDialog.value = false;
+    loadDataProduct(idsp);
+    toast.add({ severity: 'success', summary: 'Successful', detail: 'Áp dụng khuyến mại thành công', life: 3000 });
 };
+
+// const loadDataProduct = async () => {
+//     await khuyenmaiService.getProduct();
+//     products.value = khuyenmaiService.data;
+// };
+
+// const loadDataKhuyenmai = async () => {
+//     await khuyenmaiService.getKhuyenMai();
+//     khuyenmais.value = khuyenmaiService.data;
+// };
+
+// const applyKhuyenMai = () => {
+//     // đây là số lượng SPCT được chọn để áp dụng khuyến mại
+//     const sl = selectedProduct.value.length;
+//     // đây là IdKM dùng để áp dụng được truyền từ component cha
+//     const idkm = props.myProp.id;
+
+//     // duyệt qua mảng danh sách các CTSP được chọn
+//     selectedProduct.value.forEach((product) => {
+//         const productId = product.id;
+//         // cập nhật lại giá tiền và id khuyến mại
+//         khuyenmaiService.updateCTSP(productId, idkm);
+//         loadDataProduct();
+//         selectedProduct.value = [];
+//         selectedProductDialog.value = false;
+//     });
+//     loadDataProduct();
+//     toast.add({ severity: 'success', summary: 'Successful', detail: 'Áp dụng khuyến mại thành công', life: 3000 });
+// };
 
 
 const getStatusLabel = (soLuong, trangThai) => {
