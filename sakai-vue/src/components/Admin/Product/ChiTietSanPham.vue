@@ -365,31 +365,25 @@ const formatDate = (dateTime) => {
                         </template>
 
                         <template v-slot:end>
-                            <Button label="Import excel" icon="pi pi-download" @click="openPosition('top')" style="min-width: 10rem" severity="secondary" rounded />
+                            <Button label="Import excel" icon="pi pi-download" @click="openPosition('top')"
+                                style="min-width: 10rem" severity="secondary" rounded />
                         </template>
                     </Toolbar>
                     <div style="margin-left: 500px">
                         <ProgressSpinner v-if="showSpinner" />
                     </div>
-                    <DataTable
-                        ref="dt"
-                        :value="products"
-                        v-model:selection="selectedProducts"
-                        dataKey="id"
-                        v-if="visibledatatable"
-                        :paginator="true"
-                        :rows="5"
-                        :filters="filters"
+                    <DataTable ref="dt" :value="products" v-model:selection="selectedProducts" dataKey="id"
+                        v-if="visibledatatable" :paginator="true" :rows="5" :filters="filters"
                         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                         :rowsPerPageOptions="[5, 10, 25]"
                         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
-                        responsiveLayout="scroll"
-                        showGridlines
-                    >
+                        responsiveLayout="scroll" showGridlines>
                         <template #header>
                             <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                                 <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-                                    <MultiSelect icon="pi pi-plus" :modelValue="selectedColumns" :options="columns" optionLabel="header" @update:modelValue="onToggle" display="chip" placeholder="Select Columns" />
+                                    <MultiSelect icon="pi pi-plus" :modelValue="selectedColumns" :options="columns"
+                                        optionLabel="header" @update:modelValue="onToggle" display="chip"
+                                        placeholder="Select Columns" />
                                 </div>
                                 <div style="display: flex">
                                     <h5 class="m-0" style="margin-right: 20px">Sản Phẩm</h5>
@@ -398,7 +392,8 @@ const formatDate = (dateTime) => {
                                 <span class="block mt-2 md:mt-0 p-input-icon-left">
                                     <i class="pi pi-search" />
                                     <InputText v-model="filters['global'].value" placeholder="Search..." />
-                                    <Dropdown v-model="trangThai" :options="dataTrangThai" optionLabel="label" placeholder="Tất cả" class="w-full md:w-14rem" style="margin-left: 20px" />
+                                    <Dropdown v-model="trangThai" :options="dataTrangThai" optionLabel="label"
+                                        placeholder="Tất cả" class="w-full md:w-14rem" style="margin-left: 20px" />
                                 </span>
                             </div>
                         </template>
@@ -434,7 +429,8 @@ const formatDate = (dateTime) => {
                                 {{ slotProps.data.loai }}
                             </template>
                         </Column>
-                        <Column field="thuongHieu" header="Thương Hiệu" :sortable="true" headerStyle="width:8%; min-width:5rem;">
+                        <Column field="thuongHieu" header="Thương Hiệu" :sortable="true"
+                            headerStyle="width:8%; min-width:5rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">Tên</span>
                                 {{ slotProps.data.thuongHieu }}
@@ -446,19 +442,23 @@ const formatDate = (dateTime) => {
                                 {{ slotProps.data.vatLieu }}
                             </template>
                         </Column>
-                        <Column field="soLuongTon" header="Số Lượng tồn" :sortable="true" headerStyle="width:8%; min-width:5rem;">
+                        <Column field="soLuongTon" header="Số Lượng tồn" :sortable="true"
+                            headerStyle="width:8%; min-width:5rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">Tên</span>
                                 {{ slotProps.data.soLuongTon }}
                             </template>
                         </Column>
-                        <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:8%; min-width:5rem;">
-                            {{ ['ngayTao', 'ngaySua'].includes(col.field) ? formatDate(slotProps.data[col.field]) : slotProps.data[col.field] }}
+                        <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header"
+                            :key="col.field + '_' + index" :sortable="true" headerStyle="width:8%; min-width:5rem;">
+                            {{ ['ngayTao', 'ngaySua'].includes(col.field) ? formatDate(slotProps.data[col.field]) :
+                                slotProps.data[col.field] }}
                         </Column>
 
                         <Column field="trangThai" header="Trạng Thái" sortable headerStyle="width: 5%; min-width: 8rem;">
                             <template #body="slotProps">
-                                <Tag :value="getStatusLabel(slotProps.data.soLuongTon, slotProps.data.trangThai).text" :severity="getStatusLabel(slotProps.data.soLuongTon, slotProps.data.trangThai).severity" />
+                                <Tag :value="getStatusLabel(slotProps.data.soLuongTon, slotProps.data.trangThai).text"
+                                    :severity="getStatusLabel(slotProps.data.soLuongTon, slotProps.data.trangThai).severity" />
                             </template>
                         </Column>
 
@@ -466,53 +466,65 @@ const formatDate = (dateTime) => {
                             <template #body="slotProps">
                                 <Detail :my-prop="slotProps.data"></Detail>
                                 <UpdateProduct :my-prop="slotProps.data"></UpdateProduct>
-                                <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2" @click="confirmDeleteProduct(slotProps.data.id)" v-if="slotProps.data.trangThai != 0 && slotProps.data.soLuongTon > 0" />
-                                <Button icon="pi pi-refresh" class="p-button-rounded p-button-warning mt-2" @click="confirmKhoiPhucProduct(slotProps.data.id)" v-if="slotProps.data.trangThai == 0 && slotProps.data.soLuongTon > 0" />
+                                <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2"
+                                    @click="confirmDeleteProduct(slotProps.data.id)"
+                                    v-if="slotProps.data.trangThai != 0 && slotProps.data.soLuongTon > 0" />
+                                <Button icon="pi pi-refresh" class="p-button-rounded p-button-warning mt-2"
+                                    @click="confirmKhoiPhucProduct(slotProps.data.id)"
+                                    v-if="slotProps.data.trangThai == 0 && slotProps.data.soLuongTon > 0" />
                             </template>
                         </Column>
                     </DataTable>
 
-                    <Dialog v-model:visible="khoiPhucProductDialog" :style="{ width: '450px' }" header="Khôi phục Sản phẩm" :modal="true">
+                    <Dialog v-model:visible="khoiPhucProductDialog" :style="{ width: '450px' }" header="Khôi phục Sản phẩm"
+                        :modal="true">
                         <div class="flex align-items-center justify-content-center">
                             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-                            <span v-if="product"
-                                >Bạn có chắc chắn khôi phục <b>{{ product.ten }}</b> không ?</span
-                            >
+                            <span v-if="product">Bạn có chắc chắn khôi phục <b>{{ product.ten }}</b> không ?</span>
                         </div>
                         <template #footer>
-                            <Button label="Không" icon="pi pi-times" class="p-button-text" @click="deleteProductDialog = false" />
-                            <Button label="Có" icon="pi pi-check" class="p-button-text" @click="khoiPhucProduct(product.id)" />
+                            <Button label="Không" icon="pi pi-times" class="p-button-text"
+                                @click="deleteProductDialog = false" />
+                            <Button label="Có" icon="pi pi-check" class="p-button-text"
+                                @click="khoiPhucProduct(product.id)" />
                         </template>
                     </Dialog>
 
-                    <Dialog v-model:visible="deleteProductDialog" :style="{ width: '450px' }" header="Xóa Sản phẩm" :modal="true">
+                    <Dialog v-model:visible="deleteProductDialog" :style="{ width: '450px' }" header="Xóa Sản phẩm"
+                        :modal="true">
                         <div class="flex align-items-center justify-content-center">
                             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-                            <span v-if="product"
-                                >Bạn có chắc chắn muốn xoá size <b>{{ product.ten }}</b> không ?</span
-                            >
+                            <span v-if="product">Bạn có chắc chắn muốn xoá size <b>{{ product.ten }}</b> không ?</span>
                         </div>
                         <template #footer>
-                            <Button label="Không" icon="pi pi-times" class="p-button-text" @click="deleteProductDialog = false" />
-                            <Button label="Có" icon="pi pi-check" class="p-button-text" @click="deleteProduct(product.id)" />
+                            <Button label="Không" icon="pi pi-times" class="p-button-text"
+                                @click="deleteProductDialog = false" />
+                            <Button label="Có" icon="pi pi-check" class="p-button-text"
+                                @click="deleteProduct(product.id)" />
                         </template>
                     </Dialog>
 
-                    <Dialog v-model:visible="visible" header="Import excel" :style="{ width: '400px' }" :position="position" :modal="true" :draggable="false">
+                    <Dialog v-model:visible="visible" header="Import excel" :style="{ width: '400px' }" :position="position"
+                        :modal="true" :draggable="false">
                         <div class="flex align-items-center justify-content-center">
                             <div v-if="dis">
                                 <div class="custom-file-upload">
-                                    <label class="upload-button">{{ setNameFile == '' ? 'Tải lên tệp Excel' : setNameFile }}<input type="file" name="excelFile" accept=".xls, .xlsx" @change="handImportExcel($event)" /></label>
+                                    <label class="upload-button">{{ setNameFile == '' ? 'Tải lên tệp Excel' : setNameFile
+                                    }}<input type="file" name="excelFile" accept=".xls, .xlsx"
+                                            @change="handImportExcel($event)" /></label>
                                 </div>
-                                <Button icon="pi pi-trash" class="p-button-warning mr-2" @click="handRemovefile()" style="width: 35px; height: 35px; margin: 0px 10px 10px 10px" />
+                                <Button icon="pi pi-trash" class="p-button-warning mr-2" @click="handRemovefile()"
+                                    style="width: 35px; height: 35px; margin: 0px 10px 10px 10px" />
                             </div>
 
                             <ProgressSpinner v-if="showProgressSpinner" />
                         </div>
 
                         <template #footer>
-                            <Button label="Export" icon="pi pi-upload" class="p-button" @click="generateExcel($event)" rounded style="height: 40px; margin-right: 150px" severity="secondary" />
-                            <Button label="Đóng" icon="pi pi-check" class="p-button" @click="closePosition()" severity="secondary" rounded style="height: 40px" />
+                            <Button label="Export" icon="pi pi-upload" class="p-button" @click="generateExcel($event)"
+                                rounded style="height: 40px; margin-right: 150px" severity="secondary" />
+                            <Button label="Đóng" icon="pi pi-check" class="p-button" @click="closePosition()"
+                                severity="secondary" rounded style="height: 40px" />
                         </template>
                     </Dialog>
                 </section>
@@ -586,5 +598,4 @@ const formatDate = (dateTime) => {
     z-index: 1;
     width: 100%;
     height: 100%;
-}
-</style>
+}</style>

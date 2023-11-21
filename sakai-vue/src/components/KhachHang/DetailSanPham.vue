@@ -34,9 +34,6 @@ let prevDataSizeLength = ref(null);
 let prevDataMauLength = ref(null);
 
 
-
-
-
 let expiryTime = 60 * 60 * 1000; // 1 giờ
 onMounted(async () => {
     await loadData();
@@ -45,16 +42,12 @@ onMounted(async () => {
     await loadDataSize();
     await loadDataMauSac();
 
-
-
-
     prevDataSizeLength.value = dataSize.value.length;
     prevDataMauLength.value = dataMauSac.value.length;
 
     setTimeout(function () {
         localStorage.removeItem('cart');
     }, expiryTime);
-
 });
 
 if (!localStorage.getItem('cart')) {
@@ -62,11 +55,9 @@ if (!localStorage.getItem('cart')) {
     localStorage.setItem('cart', JSON.stringify(array));
 }
 
-
 const loadImg = async () => {
     await productStore.fetchAllImage(idProduct);
     loadImage.value = productStore.images;
-
 };
 const loadDataMauSac = async () => {
     await productStore.fetchAllMauSac(idProduct);
@@ -80,7 +71,6 @@ const loadDataSize = async () => {
 
 const idSanPhamChiTiet = ref(null);
 watch([getSize, idMau], async ([newGetSize, newIdMau]) => {
-
     if (getSize.value == null) {
         await productStore.fetchIdSPCT(idProduct, getSize.value, idMau.value);
         dataListSPCT.value = productStore.products;
@@ -94,25 +84,20 @@ watch([getSize, idMau], async ([newGetSize, newIdMau]) => {
         // await productStore.getMauSacBySize(idProduct, getSize.value);
         // dataMauSac.value = productStore.mauSacs;
     }
-
 });
 
 
 
 let isFirstRun = true;
 
-
 watch([dataSize, dataMauSac], async ([newDataSize, newDataMau]) => {
     if (newDataSize.length !== prevDataSizeLength.value || newDataMau.length !== prevDataMauLength.value) {
-
         if (isFirstRun && newDataSize.length > 0 && newDataMau.length > 0) {
-
             selectedMauSac.value = newDataMau[0];
             idMau.value = selectedMauSac.value.id;
             getSize.value = newDataSize[0].id;
             isFirstRun = false;
-        }
-        else if (newDataSize.length === 0 && newDataMau.length > 0) {
+        } else if (newDataSize.length === 0 && newDataMau.length > 0) {
             selectedMauSac.value = newDataMau[0];
             idMau.value = selectedMauSac.value.id;
         }
@@ -122,13 +107,11 @@ watch([dataSize, dataMauSac], async ([newDataSize, newDataMau]) => {
     }
 });
 
-
-
 const loaddataListSPCT = async () => {
     await productStore.fetchSPCTByIdSP(idProduct);
     dataListSPCT.value = productStore.products;
     //  console.log(dataListSPCT.value);
-}
+};
 
 const getSLTonTong = async (idctsp) => {
     await productStore.getAllSLTon(idctsp);
@@ -151,7 +134,7 @@ const loadData = async () => {
 // };
 
 
-
+const quantity = ref(1);
 
 
 const increment = () => {
@@ -191,7 +174,9 @@ const formatCurrency = (value) => {
 
 const hasTenKH = ref(dataSanPham.value.tenKH !== null && dataSanPham.value.tenKH !== undefined);
 
+
 const soLuongGH = ref(0);
+
 const toast = useToast();
 const dataSessoin = ref([]);
 const dataGHCT = ref([]);
@@ -218,7 +203,6 @@ const addToCart = async () => {
         toast.add({ severity: 'warn', summary: '', detail: 'Số lượng tồn không đủ', life: 5000 });
         return;
     }
-
 
 
     if (token == '' || token == null) {
@@ -250,16 +234,15 @@ const addToCart = async () => {
         
         await gioHangService.addToCart(cartItem, token);
 
-        // await gioHangService.countGHCT(token);
-        // soLuongGH.value = gioHangService.soLuong;
+        demSLGH(token);
 
-       // store.updateCartItems(soLuongGH.value);
-       // localStorage.setItem("soLuongGH",soLuongGH.value)
         toast.add({ severity: 'success', summary: 'Successful', detail: 'Thêm vào giỏ hàng thành công', life: 3000 });
         router.push({ name: 'gio-hang' });
     }
+};
 
-
+const demSLGH = async (token) => {
+    await gioHangService.countGHCT(token);
 };
 
 
@@ -338,7 +321,6 @@ const isMauSacSelected = (mauSacs) => {
     return mauSacs === selectedMauSac.value;
 };
 
-
 const isMauSacDisbled = (size) => {
     return size === null;
 };
@@ -379,9 +361,7 @@ const setDefaultQuantity = () => {
                 <div class="card md:flex md:justify-content-center" style="margin-top: 0px">
                     <div class="flex">
                         <div class="col-5">
-
-                            <Galleria :value="loadImage" :responsiveOptions="responsiveOptions" :numVisible="5"
-                                containerStyle="max-width: 450px">
+                            <Galleria :value="loadImage" :responsiveOptions="responsiveOptions" :numVisible="5" containerStyle="max-width: 450px">
                                 <template #item="slotProps">
                                     <img :src="dataSanPham.anh" :alt="slotProps.item" style="width: 100%" />
                                 </template>
@@ -392,28 +372,23 @@ const setDefaultQuantity = () => {
                         </div>
                         <div class="col-7">
                             <h1 class="masp">{{ dataSanPham.ten }}</h1>
-                            <label for="">Mã SP: <span>{{ dataSanPham.ma }}</span></label>
-                            <label for="" style="margin-left: 20px">Loại: <span style="color: red">{{ dataSanPham.loai
-                            }}</span></label>
-                            <div class="gb" style="display:  flex;">
+                            <label for=""
+                                >Mã SP: <span>{{ dataSanPham.ma }}</span></label
+                            >
+                            <label for="" style="margin-left: 20px"
+                                >Loại: <span style="color: red">{{ dataSanPham.loai }}</span></label
+                            >
+                            <div class="gb" style="display: flex">
                                 <h2 s v-if="dataListSPCT.soLuongTon !== 0">
-                                    <span tyle="color: rgb(0, 0, 0)"> {{ formatCurrency(dataListSPCT.giaBan) !== '' ?
-                                        formatCurrency(dataListSPCT.giaBan) : 'Hết hàng' }}</span>
+                                    <span tyle="color: rgb(0, 0, 0)"> {{ formatCurrency(dataListSPCT.giaBan) !== '' ? formatCurrency(dataListSPCT.giaBan) : 'Hết hàng' }}</span>
                                 </h2>
-                                <p style="color: red" v-else> Hết hàng</p>
+                                <p style="color: red" v-else>Hết hàng</p>
                                 <div>
-                                    <h2 style="color: red; margin-left: 20px;"
-                                        v-if="dataListSPCT.tenKM !== null && dataListSPCT.tenKM !== undefined">{{
-                                            formatCurrency(dataListSPCT.giaSauGiam) }}</h2>
-                                    <Tag v-if="dataListSPCT.tenKM !== null && dataListSPCT.tenKM !== undefined"
-                                        severity="danger"
-                                        style="width: 70px ; height: 20px;  margin-left: 5px; margin-bottom: 10px;">Giảm {{
-                                            dataListSPCT.giaTriGiam }}%</Tag>
+                                    <h2 style="color: red; margin-left: 20px" v-if="dataListSPCT.tenKM !== null && dataListSPCT.tenKM !== undefined">{{ formatCurrency(dataListSPCT.giaSauGiam) }}</h2>
+                                    <Tag v-if="dataListSPCT.tenKM !== null && dataListSPCT.tenKM !== undefined" severity="danger" style="width: 70px; height: 20px; margin-left: 5px; margin-bottom: 10px">Giảm {{ dataListSPCT.giaTriGiam }}%</Tag>
                                 </div>
-
                             </div>
-                            <label for="">- Trọng lượng: {{ dataListSPCT.trongLuong }} ({{ dataListSPCT.donVi }})
-                            </label>
+                            <label for="">- Trọng lượng: {{ dataListSPCT.trongLuong }} ({{ dataListSPCT.donVi }}) </label>
                             <br />
                             <label for="">- Vật liệu: {{ dataSanPham.vatLieu }}</label>
                             <br />
@@ -429,30 +404,18 @@ const setDefaultQuantity = () => {
                             <label class="ms">Màu sắc</label>
                             <br />
                             <div class="rounded-content-list">
-
-
-                                <div v-for="(mauSacs, index) in dataMauSac" :key="index" class="rounded-content"
-                                    @click="selectMauSac(mauSacs)"
-                                    :class="{ selected: isMauSacSelected(mauSacs), disabled: isMauSacDisbled(mauSacs) }">
-
-
+                                <div v-for="(mauSacs, index) in dataMauSac" :key="index" class="rounded-content" @click="selectMauSac(mauSacs)" :class="{ selected: isMauSacSelected(mauSacs), disabled: isMauSacDisbled(mauSacs) }">
                                     <img class="rounded-image" :src="mauSacs.anh" alt="Hình ảnh" />
                                     <a class="rounded-text">{{ mauSacs.ten }}</a>
                                 </div>
-
-
-
                             </div>
                             <br />
                             <label class="ms">Size</label>
                             <br />
                             <div class="rounded-content-list">
-                                <div v-for="(size, index) in dataSize" :key="index" style="margin-right: 10px;">
-
-                                    <RadioButton v-model="getSize" inputId="ingredient2" name="pizza" :value="size.id"
-                                        style="margin-right: 10px; color: white;" />
+                                <div v-for="(size, index) in dataSize" :key="index" style="margin-right: 10px">
+                                    <RadioButton v-model="getSize" inputId="ingredient2" name="pizza" :value="size.id" style="margin-right: 10px; color: white" />
                                     <label>{{ size.ten }} </label>
-
                                 </div>
                             </div>
 
@@ -462,8 +425,7 @@ const setDefaultQuantity = () => {
                                 <label for="quantity">Số lượng</label>
                                 <br />
                                 <div class="quantity">
-                                    <button @click="decrement" class="minus p-button-secondary p-button-outlined"
-                                        :disabled="dataListSPCT.giaBan == null || dataListSPCT.soLuongTon == 0">
+                                    <button @click="decrement" class="minus p-button-secondary p-button-outlined" :disabled="dataListSPCT.giaBan == null || dataListSPCT.soLuongTon == 0">
                                         <i class="pi pi-minus"></i>
                                     </button>
                                     <input v-model="quantity"
@@ -479,18 +441,25 @@ const setDefaultQuantity = () => {
                                     :disabled="dataListSPCT.giaBan == null || dataListSPCT.soLuongTon == 0" />
                                 <Button label="Mua ngay" @click="muaNgay" class="p-button-rounded p-button-warning mr-2 mb-2"
                                     style="background: #e8bd72"
-                                    :disabled="dataListSPCT.giaBan == null || dataListSPCT.soLuongTon == 0" />
+                                    :disabled="dataListSPCT.giaBan == null || dataListSPCT.soLuongTon == 0"
+                                />
+                                <Button label="Mua ngay" class="p-button-rounded p-button-warning mr-2 mb-2" style="background: #e8bd72" :disabled="dataListSPCT.giaBan == null || dataListSPCT.soLuongTon == 0" />
                             </div>
                         </div>
                     </div>
                     <div class="tab-view-container">
                         <TabView>
                             <TabPanel header="Mô tả sản phẩm">
-                                <iframe style="margin-left: 220px" width="560" height="315"
+                                <iframe
+                                    style="margin-left: 220px"
+                                    width="560"
+                                    height="315"
                                     src="https://www.youtube.com/embed/LavsX-c8m74"
-                                    title="Tự tin sống chất cùng Quỳnh Anh Shyn | Mũ bảo hiểm Royal Helmet" frameborder="0"
+                                    title="Tự tin sống chất cùng Quỳnh Anh Shyn | Mũ bảo hiểm Royal Helmet"
+                                    frameborder="0"
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                    allowfullscreen></iframe>
+                                    allowfullscreen
+                                ></iframe>
                                 <br />
                                 <br />
                                 <label for=""> {{ dataSanPham.moTa }}</label>
@@ -578,8 +547,7 @@ const setDefaultQuantity = () => {
                                 <div class="flex">
                                     <h6 style="margin-right: 10px"><span>1 </span> bình luận</h6>
                                     <label style="margin-left: 675px" for=""></label>
-                                    <Dropdown :options="dataTrangThai" optionLabel="label" placeholder="Tất cả bình luận"
-                                        class="w-full md:w-14rem" style="margin-left: 20px" />
+                                    <Dropdown :options="dataTrangThai" optionLabel="label" placeholder="Tất cả bình luận" class="w-full md:w-14rem" style="margin-left: 20px" />
                                 </div>
                                 <div class="">
                                     <Avatar icon="pi pi-user" class="" size="xlarge" />
@@ -587,8 +555,7 @@ const setDefaultQuantity = () => {
                                         <Textarea v-model="value" rows="5" cols="145" />
                                     </span>
                                     <Toast />
-                                    <div class="flex flex-wrap justify-content-between align-items-center gap-3 mt-3"
-                                        style="margin-left: 900px">
+                                    <div class="flex flex-wrap justify-content-between align-items-center gap-3 mt-3" style="margin-left: 900px">
                                         <Button type="submit" label="Đăng" />
                                     </div>
                                 </div>
