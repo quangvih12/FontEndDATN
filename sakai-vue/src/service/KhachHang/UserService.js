@@ -20,6 +20,13 @@ import axios from 'axios';
           return response.data   
        
     }
+    
+
+    async getUserByEmail(email) {
+      const response = await axios.get(`http://localhost:8080/api/khach-hang/user/find-email?email=${email}`)           
+        return response.data   
+     
+  }
 
   
 }

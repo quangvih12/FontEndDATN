@@ -23,7 +23,8 @@ let prevDataMauLength = ref(null);
 onMounted(async () => {
     await loadDataGioHang();
     // await loadDataVoucher();
-    await loadDataVoucherByUser();
+    // await loadDataVoucherByUser();
+    await loadDataVoucherByTrangThai ()
     prevDataSizeLength.value = dataSize.value.length;
     prevDataMauLength.value = dataMauSac.value.length;
 
@@ -57,14 +58,105 @@ const loadDataVoucherByUser = async () => {
     } else {
         await gioHangService.getListVoucherByUser(token);
         dataVoucher.value = gioHangService.voucher;
+
     }
 };
 
-const updateSoLuong = (product, event) => {
-    const newValue = parseInt(event.target.value, 10); // Đảm bảo giá trị nhập vào là số
-    if (!isNaN(newValue)) {
-        product.soLuong = newValue;
+const loadDataVoucherByTrangThai = async () => {
+    
+        await gioHangService.getListVoucherByTrangThai();
+        dataVoucher.value = gioHangService.voucher;
+ 
+};
+
+// const updateSoLuong = (product, event) => {
+//     const newValue = parseInt(event.target.value, 10); // Đảm bảo giá trị nhập vào là số
+//     if (!isNaN(newValue)) {
+//         product.soLuong = newValue;
+//     }
+// };
+
+
+const updateSoLuong = async (idGHCT, newSL) => {
+
+    
+   
+  // Kiểm tra nếu giá trị nhập vào là số âm thì đặt lại giá trị thành 0
+    const token = localStorage.getItem('token');
+    if (token == '' || token == null) {
+        let array = JSON.parse(localStorage.getItem('cart')); // Phân tích chuỗi JSON thành mảng
+
+        let found = false;
+        for (let i = 0; i < array.length; i++) {
+            if (array[i].idGHCT == idGHCT) {
+                // Cập nhật phần tử trong mảng
+                let so = array[i].soLuong + 1;
+                if (so > array[i].soLuongTon) {
+
+                    toast.add({ severity: 'warn', summary: '', detail: 'Số lượng nhiều hơn số lượng tồn', life: 3000 });
+                    return;
+                } else {
+                    array[i].soLuong = so;
+                    found = true;
+                    break;
+                }
+            }
+        }
+        // Nếu không tìm thấy phần tử trong mảng, thêm phần tử mới
+        if (!found) {
+            toast.add({ severity: 'warn', summary: '', detail: 'không tìm thấy sản phẩm ', life: 3000 });
+        }
+        localStorage.setItem('cart', JSON.stringify(array));
+        loadDataGioHang();
+        tinhTienKhiCongTru(dataGHCT.value);
+        //  selectedSizeMauSac.value = false;
+    } else {
+       
+        if (!/^\d+$/.test(newSL) || parseInt(newSL, 10) < 0) {
+    // Nếu giá trị không phải là số hoặc là số âm, đặt giá trị mặc định là 1
+    newSL = 1;
+  }
+
+
+        // if (newSL !== '' && !isNaN(newSL)) {
+    // Thực hiện cập nhật số lượng
+        await gioHangService.updateSL(idGHCT, token,newSL);
+        fakedata.value = gioHangService.fakedata;
+       
+       //  }
+
+       
+        if (fakedata.value !== '') {
+            for (let i = 0; i < checkedValues.length; i++) {
+                if (checkedValues[i].idSP == fakedata.value.idSP) {
+                    // Cập nhật phần tử trong mảng
+                    checkedValues[i].soLuong = fakedata.value.soLuong;
+                    break;
+                }
+            }
+            //   console.log(checkedValues)
+            tinhTienKhiCongTru(checkedValues);
+            return;
+        } else {
+            toast.add({ severity: 'warn', summary: '', detail: 'Số lượng nhiều hơn số lượng tồn', life: 3000 });
+            return;
+        }
     }
+};
+
+
+const updateSoLuongOnBlur = async (idGHCT, newSL) => {
+
+  // Gọi hàm cập nhật số lượng khi blur
+
+  if (newSL.trim() !== '' && !isNaN(newSL)) {
+    // Thực hiện cập nhật số lượng
+    updateSoLuong(idGHCT, parseInt(newSL, 10));
+  }
+ 
+//   if (newSL.trim() !== '') {
+//     updateSoLuong(idGHCT, parseInt( newSL, 10));
+//   }
 };
 
 const fakedata = ref(null);
@@ -263,7 +355,7 @@ const onSizeChange = (id, isChecked) => {
     }
 };
 
-const dieuKien = ref(0);
+const giaTriGiam = ref(0);
 const tienGiam = ref(0);
 const TongTienCu = ref(0);
 
@@ -404,9 +496,9 @@ const tongTienKhiTruCongSoLuong = (array) => {
 
 const onloaiChange = () => {
     if (selectVoucher.value) {
-        dieuKien.value = selectVoucher.value.dieuKien;
+        giaTriGiam.value = selectVoucher.value.giaTriGiam;
     } else {
-        dieuKien.value = 0;
+        giaTriGiam.value = 0;
     }
 };
 
@@ -435,11 +527,13 @@ const apDung = () => {
     if (token == '' || token == null) {
         toast.add({ severity: 'warn', summary: '', detail: 'bạn cần đăng nhập  ', life: 3000 });
     } else {
-        console.log(dieuKien.value);
-        if (checkedValues.length == 0 || dieuKien.value == null || dieuKien.value == 0) {
+        
+        if (checkedValues.length == 0 || giaTriGiam.value == null || giaTriGiam.value == 0) {
             toast.add({ severity: 'warn', summary: '', detail: 'bạn cần chọn sản phẩm hoặc voucher', life: 3000 });
         } else {
-            tienGiam.value = TongTien.value * (dieuKien.value / 100);
+
+            tienGiam.value = TongTien.value * ( giaTriGiam.value / 100 );
+
             TongTienCu.value = TongTien.value - tienGiam.value;
         }
     }
@@ -447,7 +541,7 @@ const apDung = () => {
 
 const reset = () => {
     selectVoucher.value = null;
-    dieuKien.value = 0;
+    giaTriGiam.value = 0;
     tienGiam.value = 0;
     TongTienCu.value = 0;
 };
@@ -458,6 +552,10 @@ const tinhTongTienChoTungSanPham = (soLuong, giaSauGiam, giaBan) => {
         return soLuong * giaSauGiam;
     }
 };
+
+// watch(() => dataGHCT.soLuong, (newSoLuong) => {
+//   soLuong.value = newSoLuong;
+// });
 </script>
 <template>
     <div class="grid">
@@ -529,12 +627,14 @@ const tinhTongTienChoTungSanPham = (soLuong, giaSauGiam, giaBan) => {
                                             @click="decrement(slotProps.data.idGHCT)"
                                             class="pi pi-minus"
                                             :disabled="slotProps.data.soLuongTon <= 0"
-                                            style="width: 30px; height: 30px; border-radius: 10px 0px 0px 10px; border: 1px solid rgb(177, 173, 173)"
-                                        ></button>
-                                        <input :value="slotProps.data.soLuong" @input="updateSoLuong(slotProps.data, $event)" class="input-soluong" style="width: 30px; height: 30px" :disabled="slotProps.data.soLuongTon == 0" />
-                                        <button
-                                            @click="increment(slotProps.data.idGHCT)"
-                                            class="pi pi-plus"
+                                            style="width: 30px; height: 30px; border-radius: 10px 0px 0px 10px; border: 1px solid rgb(177, 173, 173)"></button>
+                                        <input :value="slotProps.data.soLuong"     
+                                        @blur="updateSoLuongOnBlur(slotProps.data.idGHCT, $event.target.value)"
+                                            @input="updateSoLuong(slotProps.data.idGHCT,$event.target.value)"
+                                             class="input-soluong"
+                                            style="width: 30px; height: 30px" :disabled="slotProps.data.soLuongTon == 0" />
+                                        <button @click="increment(slotProps.data.idGHCT)" class="pi pi-plus"
+
                                             style="width: 30px; height: 30px; border-radius: 0px 10px 10px 0px; border: 1px solid rgb(177, 173, 173)"
                                             :disabled="slotProps.data.soLuongTon <= 0 || slotProps.data.soLuong > slotProps.data.soLuongTon"
                                         ></button>

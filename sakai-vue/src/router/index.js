@@ -15,6 +15,24 @@ const router = createRouter({
             path: '/login',
             name: 'login',
             component: () => import('@/views/pages/auth/Login.vue')
+
+        }, 
+
+        {
+            path: '/khach-hang/dang-ky',
+            name: 'dangky',
+            component: () => import('@/components/KhachHang/Register.vue'),
+            // beforeEnter: authMiddleware
+        },
+
+        {
+            path: '/otp',
+            name: 'otp',
+            component: () => import('@/components/KhachHang/OTP.vue')
+        }, 
+        
+        {
+
         }, {
             path: '/login-admin',
             name: 'login-admin',
@@ -24,6 +42,7 @@ const router = createRouter({
             name: 'eror',
             component: () => import('@/views/pages/auth/Error.vue')
         }, {
+
             path: '/',
             component: AppLayoutKH,
             children: [
@@ -107,6 +126,8 @@ const router = createRouter({
             path: '/thong-ke',
             component: AppLayout,
             children: [
+
+             
                 {
                     path: '/thong-ke',
                     name: 'thongKe',
