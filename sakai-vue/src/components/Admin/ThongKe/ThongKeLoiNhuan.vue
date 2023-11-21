@@ -2,7 +2,7 @@
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
 import CustomerService from '@/service/CustomerService';
 import { ThongKeStore } from "../../../service/Admin/ThongKe/ThongKe.api";
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch,onBeforeMount } from 'vue';
 import OverlayPanel from 'primevue/overlaypanel';
 import { th } from 'date-fns/locale';
 import { useForm, useField, defineRule } from 'vee-validate';
@@ -33,7 +33,6 @@ const loadSanPham = async () => {
     tongDonhangHuy.value = thongKeStore.tongDonhangHuy;
     lstSanPham.value = thongKeStore.lstAdminThongKeLoiNhuanSanPhamResponse;
     lstHoaDon.value = thongKeStore.lstAdminThongKeLoiNhuanHoaDonResponse;
-
 };
 
 const load = () => {
@@ -128,12 +127,30 @@ const getStatusLabel = (trangThai) => {
     }
 };
 
+const filters = ref({});
+onBeforeMount(() => {
+    initFilters();
+    initFiltersSP();
+});
+const initFilters = () => {
+    filters.value = {
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS }
+    };
+};
+
+const filtersSP = ref({});
+
+const initFiltersSP = () => {
+    filtersSP.value = {
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS }
+    };
+};
 </script>
 <template>
     <div class="Field col-12 md:col-12"
         style=" background: rgb(255, 255, 255); width: 100%; height: 120px;margin-bottom: 10px;display: flex;">
         <div class="Field col-12 md:col-2" style="margin-right: 10px;height: 30px; margin-left: -25px;">
-            <Panel header="Tổng Doanh Thu" style=" width: 150px;  height: 40px; ">
+            <Panel header="Tổng lợi nhuận" style=" width: 150px;  height: 40px; ">
                 <div style="display: flex;">
                     <div style="margin-right: 20px; text-align: center;">
                         <p class="m-0" style="text-align: center; font-weight: 900; font-size: 1.4rem;">{{
@@ -147,6 +164,12 @@ const getStatusLabel = (trangThai) => {
             </Panel>
 
         </div>
+        <div class="Field col-12 md:col-2" style="margin-right: 20px;">
+                <Panel header="Hoàn tiền" style=" width: 150px; height: 50px;">
+                    <p class="m-0" style="text-align: center; font-weight: 900; font-size: 1.4rem;">{{
+                           formatCurrency(tongDonhangDangGiao) }}</p>
+                </Panel>
+            </div>
         <div class="Field col-12 md:col-2" style="margin-right: 10px;height: 30px;">
                 <Panel header="Đơn hoàn thành" style=" width: 150px">
                     <div>
@@ -155,12 +178,7 @@ const getStatusLabel = (trangThai) => {
                     </div>
                 </Panel>
             </div>
-            <div class="Field col-12 md:col-2" style="margin-right: 20px;">
-                <Panel header="Đơn đang giao" style=" width: 150px; height: 50px;">
-                    <p class="m-0" style="text-align: center; font-weight: 900; font-size: 1.4rem;">{{
-                           tongDonhangDangGiao }}</p>
-                </Panel>
-            </div>
+          
             <div class="Field col-12 md:col-2" style="margin-right: 20px;">
                 <Panel header="Đơn hủy" style=" width: 160px; height: 30px;">
                     <p class="m-0" style="text-align: center; font-weight: 900; font-size: 1.4rem;">{{
@@ -250,8 +268,13 @@ const getStatusLabel = (trangThai) => {
 
                     <div style="display: flex;">
                         <h5 class="m-0" style="margin-right: 20px;"> Hóa đơn </h5>
+                     
                     </div>
-
+                    <span class="block mt-2 md:mt-0 p-input-icon-left">
+                                <i class="pi pi-search" />
+                                <InputText v-model="filters['global'].value" placeholder="Search..." />
+                            
+                            </span>
                 </div>
             </template>
             <Column field="tenNhanVien" header="STT" :sortable="true" headerStyle="width:14%; min-width:5rem;">
@@ -260,35 +283,43 @@ const getStatusLabel = (trangThai) => {
                     {{ lstHoaDon.indexOf(slotProps.data) + 1 }}
                 </template>
             </Column>
-            <Column field="tenNhanVien" header="Mã" :sortable="true" headerStyle="width:14%; min-width:5rem;">
+            <Column field="maHD" header="Mã" :sortable="true" headerStyle="width:14%; min-width:5rem;">
                 <template #body="slotProps">
                     <span class="p-column-title">ma</span>
                     {{ slotProps.data.maHD }}
                 </template>
             </Column>
-            <Column field="tenNhanVien" header="Ngày Tạo" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+            <Column field="ngayTao" header="Ngày Tạo" :sortable="true" headerStyle="width:14%; min-width:10rem;">
                 <template #body="slotProps">
                     <span class="p-column-title">Name</span>
                     {{ slotProps.data.ngayTao }}
                 </template>
             </Column>
-            <Column field="tenNhanVien" header="Phương thức thanh toán" :sortable="true"
+            <Column field="tenPhuongThucThanhToan" header="Phương thức thanh toán" :sortable="true"
                 headerStyle="width:14%; min-width:10rem;">
                 <template #body="slotProps">
                     <span class="p-column-title">Name</span>
                     {{ slotProps.data.tenPhuongThucThanhToan }}
+                  
                 </template>
             </Column>
-            <Column field="tenNhanVien" header="Tổng tiền" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+            <Column field="tongTien" header="Tổng tiền" :sortable="true" headerStyle="width:14%; min-width:9rem;">
                 <template #body="slotProps">
                     <span class="p-column-title">Name</span>
-                    {{  formatCurrency(slotProps.data.tongTien) }}
+                   
+                    {{ formatCurrency(slotProps.data.tienSauKhiGiam==null?parseInt(slotProps.data.tongTien)+parseInt(slotProps.data.tienShip): slotProps.data.tienSauKhiGiam) }}
                 </template>
             </Column>
-            <Column field="tenNhanVien" header="Lợi Nhuận" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+            <Column field="loiNhuan" header="Lợi Nhuận" :sortable="true" headerStyle="width:14%; min-width:9rem;">
                 <template #body="slotProps">
                     <span class="p-column-title">Name</span>
                     {{  formatCurrency(slotProps.data.loiNhuan) }}
+                </template>
+            </Column>
+            <Column field="hoanTien" header="Hoàn tiền" :sortable="true" headerStyle="width:14%; min-width:9rem;">
+                <template #body="slotProps">
+                    <span class="p-column-title">Name</span>
+                    {{  formatCurrency(slotProps.data.hoanTien) }}
                 </template>
             </Column>
 
@@ -308,7 +339,7 @@ const getStatusLabel = (trangThai) => {
 
         </DataTable>
         <DataTable ref="dt" :value="lstSanPham" v-model:selection="selectedProducts" dataKey="id" :paginator="true"
-            :rows="5" :filters="filters"
+            :rows="5" :filters="filtersSP"
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
             :rowsPerPageOptions="[5, 10, 25]"
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products" responsiveLayout="scroll">
@@ -319,7 +350,11 @@ const getStatusLabel = (trangThai) => {
                     <div style="display: flex;">
                         <h5 class="m-0" style="margin-right: 20px;"> Sản Phẩm </h5>
                     </div>
-
+                    <span class="block mt-2 md:mt-0 p-input-icon-left">
+                                <i class="pi pi-search" />
+                                <InputText v-model="filtersSP['global'].value" placeholder="Search..." />
+                            
+                            </span>
                 </div>
             </template>
             <Column field="tenNhanVien" header="STT" :sortable="true" headerStyle="width:14%; min-width:2rem;">
