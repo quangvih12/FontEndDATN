@@ -106,6 +106,22 @@ export const HDKHStore = defineStore('hoaDonKH', {
             }
         },
 
+        async findHdct(token) {
+            try {
+                const response = await axios.get(apiHDCT + '/find-by-id-hd-tra?token=' + token);
+                const hoaDonList = response.data;
+                for (const [key, product] of hoaDonList.entries()) {
+                    hoaDonList[key]['sanPhamChiTiet'] = null;
+                    const mau = await this.findHdctByIdHd(product.idHD);
+                    // mau.sort((a, b) => b.id - a.id);
+                    hoaDonList[key]['sanPhamChiTiet'] = mau;
+                }
+                this.dataHoanTraHoanTien = hoaDonList;
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        },
+
         //lấy sp theo id hoá đơn
         async findHdByIdHd(idHD) {
             try {

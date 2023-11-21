@@ -6,9 +6,17 @@ const apiKhuyenMai = 'http://localhost:8080/api/admin/khuyenMai';
 
 export const khuyenMaiStore = defineStore('khuyenmai', {
     state: () => ({
-        data: []
+        data: [],
+        excels:[]
     }),
     actions: {
+
+        async uploadFile(formData) {
+            const response = await axios.post(apiKhuyenMai+"/view-data", formData);
+            const newProductData = response.data;
+            this.excels.unshift(newProductData); 
+        },
+
         async getKhuyenMai() {
             try {
                 const response = await axios.get(apiKhuyenMai + '/getAll');

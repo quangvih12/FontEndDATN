@@ -8,7 +8,8 @@ import { gioHangStore } from '@/service/KhachHang/Giohang/GiohangCTService.js';
 import tokenService from '@/service/Authentication/TokenService.js';
 import userKHService from '@/service/KhachHang/UserService.js';
 import { KHThongBaoStore } from '../../service/KhachHang/ThongBaoService'
-
+import { Client } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
 
 const thongBaoStore = KHThongBaoStore();
 
@@ -23,12 +24,29 @@ const gioHangService = gioHangStore();
 
 onMounted(() => {
     bindOutsideClickListener();
-  //  fetchData();
+    //  fetchData();
     getAllTB();
     getDem();
     soLuongGH();
+    openSocketConnection();
 });
 
+const stompClient = ref(null);
+
+const openSocketConnection = () => {
+    stompClient.value = new Client({
+        brokerURL: 'ws://localhost:8080/ws',
+        onConnect: () => {
+            // console.log('Đã kết nối');
+            stompClient.value.subscribe('/topic/hoa-don/' + 4, (message) => {
+                getAllTB();
+                getDem();
+            });
+        },
+    });
+
+    stompClient.value.activate();
+};
 
 const data = ref([]);
 const getAllTB = async () => {
@@ -156,7 +174,7 @@ const khachHang = ref([]);
 //             await userService.getAllUser();
 //         khachHang.value = userService.data;
 //         }
-      
+
 //         //   console.log(khachHang.value);
 //     } catch (error) {
 //         // Xử lý lỗi ở đây nếu cần
@@ -193,8 +211,8 @@ const soLuongGH = async () => {
     if (token == '' || token == null) {
         return;
     } else {
-    await gioHangService.countGHCT(token);
-    soLuong.value = gioHangService.soLuong;
+        await gioHangService.countGHCT(token);
+        soLuong.value = gioHangService.soLuong;
     }
 }
 

@@ -8,6 +8,8 @@ import AddKhuyenMai from './AddKhuyenMai.vue';
 import UpdateKhuyenMai from './UpdateKhuyenMai.vue';
 import DeleteKhuyenMai from './DeleteKhuyenMai.vue';
 import ApplyKM from './ApplyKM.vue';
+import ProgressSpinner from 'primevue/progressspinner';
+import ExcelJS from 'exceljs';
 
 const toast = useToast();
 const filters = ref();
@@ -106,6 +108,132 @@ const formatDate = (dateTime) => {
         return format(new Date(dateTime), 'yyyy/MM/dd HH:mm:ss');
     }
 };
+
+const position = ref('center');
+const visible = ref(false);
+const showProgressSpinner = ref(false);
+const dis = ref(true);
+
+const openPosition = (pos) => {
+    position.value = pos;
+    visible.value = true;
+};
+const closePosition = () => {
+    visible.value = false;
+    // loadProducts();
+};
+
+const setNameFile = ref('');
+const handRemovefile = () => {
+    setNameFile.value = '';
+};
+
+const column = ['STT', 'Sản phẩm', 'Vật liệu', 'Trọng lượng', 'Giá bán', 'Giá nhập', 'Số lượng', 'Tên màu sắc', 'Tên size', 'Số lượng', 'Ảnh màu sắc ', 'Ảnh chính', 'Ảnh phụ', 'Quai đeo', 'Đệm lót', 'Mô tả sản phẩm', 'Loại sản phẩm', 'Thương hiệu'];
+
+const generateExcel = () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Sheet 1');
+
+    // Đặt hàng đầu tiên (header) với màu nền và chữ in đậm
+    const headerRow = worksheet.addRow(column);
+    headerRow.eachCell((cell) => {
+        cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFFF00' } // Màu nền của header
+        };
+        cell.font = {
+            bold: true // Chữ in đậm
+        };
+    });
+
+    // Tạo và tải file Excel
+    workbook.xlsx.writeBuffer().then((buffer) => {
+        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'sanPham.xlsx'; // Tên file Excel khi tải về
+        a.click();
+        window.URL.revokeObjectURL(url);
+    });
+};
+
+const excel = ref({});
+const handImportExcel = async (event) => {
+    showProgressSpinner.value = true;
+    dis.value = false;
+    const selectedFile = event.target.files[0];
+    setNameFile.value = event.target.files[0].name;
+  //  console.log(selectedFile)
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+    
+    try {
+        await khuyenmaiService.uploadFile(formData);
+        excel.value = khuyenmaiService.excels;
+        let hasError = false;
+        for (const o of excel.value) {
+            for (const data of o.responseList) {
+                if (data.importMessageTen !== null && data.importMessageTen !== 'SUCCESS') {
+                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageTen, life: 30000 });
+                    hasError = true;
+                    showProgressSpinner.value = false;
+                    dis.value = true;
+                    break;
+                } else if (data.importMessageThoiGianBatDau !== null && data.importMessageThoiGianBatDau !== 'SUCCESS') {
+                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageThoiGianBatDau, life: 30000 });
+                    hasError = true;
+                    showProgressSpinner.value = false;
+                    dis.value = true;
+                    break;
+                } else if (data.importMessageThoiGianKetThuc !== null && data.importMessageThoiGianKetThuc !== 'SUCCESS') {
+                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageThoiGianKetThuc, life: 30000 });
+                    hasError = true;
+                    showProgressSpinner.value = false;
+                    dis.value = true;
+                    break;
+                } else if (data.importMessageMoTa !== null && data.importMessageMoTa !== 'SUCCESS') {
+                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageMoTa, life: 30000 });
+                    hasError = true;
+                    showProgressSpinner.value = false;
+                    dis.value = true;
+                    break;
+                } else if (data.importMessageGiamToiDa !== null && data.importMessageGiamToiDa !== 'SUCCESS') {
+                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageGiamToiDa, life: 30000 });
+                    hasError = true;
+                    showProgressSpinner.value = false;
+                    dis.value = true;
+                    break;
+                } else if (data.importMessageGiaTriGiam !== null && data.importMessageGiaTriGiam !== 'SUCCESS') {
+                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageGiaTriGiam, life: 30000 });
+                    hasError = true;
+                    showProgressSpinner.value = false;
+                    dis.value = true;
+                    break;
+                } else if (data.importMessageKieuGiamGia !== null && data.importMessageKieuGiamGia !== 'SUCCESS') {
+                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageKieuGiamGia, life: 30000 });
+                    hasError = true;
+                    showProgressSpinner.value = false;
+                    dis.value = true;
+                    break;
+                }
+            }
+            if (hasError) {
+                break;
+            }
+        }
+        if (!hasError) {
+            showProgressSpinner.value = false;
+            dis.value = true;
+            loadDataKhuyenmai();
+        }
+    } catch (error) {
+        toast.add({ severity: 'error', summary: 'Error', detail: 'lỗi ', life: 10000 });
+        showProgressSpinner.value = false;
+        dis.value = true;
+    }
+};
 </script>
 <template>
     <div class="grid">
@@ -121,32 +249,27 @@ const formatDate = (dateTime) => {
                     </template>
 
                     <template v-slot:end>
-                        <FileUpload mode="basic" accept="image/*" :maxFileSize="1000000" label="Import" chooseLabel="Import" class="mr-2 inline-block" />
-                        <Button label="Export" icon="pi pi-upload" class="p-button-help" @click="exportExcel" />
+                        <Button label="Import excel" icon="pi pi-download" @click="openPosition('top')"
+                            style="min-width: 10rem" severity="secondary" rounded />
                     </template>
                 </Toolbar>
 
-                <DataTable
-                    v-model:filters="filters"
-                    v-model:selection="selectedKhuyenMai"
-                    v-model:expandedRows="expandedRows"
-                    :value="filteredVoucher"
-                    :columns="visibleColumns"
-                    :paginator="true"
-                    :rows="5"
-                    filterDisplay="menu"
+                <DataTable v-model:filters="filters" v-model:selection="selectedKhuyenMai"
+                    v-model:expandedRows="expandedRows" :value="filteredVoucher" :columns="visibleColumns" :paginator="true"
+                    :rows="5" filterDisplay="menu"
                     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                     :rowsPerPageOptions="[5, 10, 25]"
                     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
-                    responsiveLayout="scroll"
-                    :globalFilterFields="['thoiGianBatDau', 'thoiGianKetThuc', 'trangThai']"
-                >
+                    responsiveLayout="scroll" :globalFilterFields="['thoiGianBatDau', 'thoiGianKetThuc', 'trangThai']">
                     <template #header>
                         <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-                            <MultiSelect icon="pi pi-plus" placeholder="Select Columns" :modelValue="selectedColumns" :options="columns" optionLabel="header" @update:modelValue="onToggle" display="tag" />
-                            <Dropdown v-model="selectedStatus" :options="statuses" :optionLabel="(option) => option.label" placeholder="Trạng thái" class="p-column-filter" style="min-width: 12rem" :showClear="true">
+                            <MultiSelect icon="pi pi-plus" placeholder="Select Columns" :modelValue="selectedColumns"
+                                :options="columns" optionLabel="header" @update:modelValue="onToggle" display="tag" />
+                            <Dropdown v-model="selectedStatus" :options="statuses" :optionLabel="(option) => option.label"
+                                placeholder="Trạng thái" class="p-column-filter" style="min-width: 12rem" :showClear="true">
                                 <template #option="slotProps">
-                                    <Tag :value="getStatusLabel(slotProps.option.value).text" :severity="getStatusLabel(slotProps.option.value).severity" />
+                                    <Tag :value="getStatusLabel(slotProps.option.value).text"
+                                        :severity="getStatusLabel(slotProps.option.value).severity" />
                                 </template>
                             </Dropdown>
                             <span class="block mt-2 md:mt-0 p-input-icon-left">
@@ -158,17 +281,20 @@ const formatDate = (dateTime) => {
 
                     <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
 
-                    <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column>
+                    <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header"
+                        :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column>
 
                     <Column field="trangThai" header="Trạng Thái" sortable style="min-width: 12rem">
                         <template #body="slotProps">
-                            <Tag :value="getStatusLabel(slotProps.data.trangThai).text" :severity="getStatusLabel(slotProps.data.trangThai).severity" />
+                            <Tag :value="getStatusLabel(slotProps.data.trangThai).text"
+                                :severity="getStatusLabel(slotProps.data.trangThai).severity" />
                         </template>
                     </Column>
                     <Column headerStyle="min-width:15rem;">
                         <template #body="slotProps">
                             <UpdateKhuyenMai :my-prop="slotProps.data" />
-                            <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2" @click="confirmDeleteKhuyenMai(slotProps.data)" />
+                            <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2"
+                                @click="confirmDeleteKhuyenMai(slotProps.data)" />
                             <ApplyKM :my-prop="slotProps.data" />
                         </template>
                     </Column>
@@ -176,28 +302,74 @@ const formatDate = (dateTime) => {
                 <Dialog v-model:visible="deleteKhuyenMaiDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
                     <div class="flex align-items-center justify-content-center">
                         <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-                        <span v-if="khuyenmai"
-                            >Bạn có chắc chắn muốn xoá khuyến mại <b>{{ khuyenmai.ten }}</b
-                            >?</span
-                        >
+                        <span v-if="khuyenmai">Bạn có chắc chắn muốn xoá khuyến mại <b>{{ khuyenmai.ten }}</b>?</span>
                     </div>
                     <template #footer>
-                        <Button label="No" icon="pi pi-times" class="p-button-text" @click="deleteKhuyenMaiDialog = false" />
+                        <Button label="No" icon="pi pi-times" class="p-button-text"
+                            @click="deleteKhuyenMaiDialog = false" />
                         <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="deleteKhuyenMai" />
                     </template>
                 </Dialog>
             </div>
         </div>
     </div>
+    <Dialog v-model:visible="visible" header="Import excel" :style="{ width: '400px' }" :position="position" :modal="true"
+        :draggable="false">
+        <div class="flex align-items-center justify-content-center">
+            <div v-if="dis">
+                <div class="custom-file-upload">
+                    <label class="upload-button" >{{ setNameFile == '' ? 'Tải lên tệp Excel' : setNameFile }}<input
+                            type="file" name="excelFile" accept=".xls, .xlsx" @change="handImportExcel($event)" /></label>
+                </div>
+                <Button icon="pi pi-trash" class="p-button-warning mr-2" @click="handRemovefile()"
+                    style="width: 35px; height: 35px; margin: 0px 10px 10px 10px" />
+            </div>
+
+            <ProgressSpinner v-if="showProgressSpinner" />
+        </div>
+
+        <template #footer>
+            <Button label="Export" icon="pi pi-upload" class="p-button" @click="generateExcel($event)" rounded
+                style="height: 40px; margin-right: 150px" severity="secondary" />
+            <Button label="Đóng" icon="pi pi-check" class="p-button" @click="closePosition()" severity="secondary" rounded
+                style="height: 40px" />
+        </template>
+    </Dialog>
 </template>
 <style scoped lang="scss">
-// @import '@/assets/demo/styles/badges.scss';
+@import '@/assets/demo/styles/badges.scss';
+.custom-file-upload {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    border: 2px solid rgb(57, 68, 224);
+    border-radius: 10px;
+    width: 150px;
+    height: 50px;
+    text-align: center;
+}
 
-// ::v-deep(.p-datatable-frozen-tbody) {
-//     font-weight: bold;
-// }
+/* Tạo kiểu cho nút tải lên */
+.upload-button {
+    background-color: white;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    color: black;
+    font-weight: 600;
+    margin-top: 5px;
+}
 
-// ::v-deep(.p-datatable-scrollable .p-frozen-column) {
-//     font-weight: bold;
-// }
+/* Tạo kiểu cho thẻ input */
+.upload-button input[type='file'] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    cursor: pointer;
+    opacity: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+}
 </style>
