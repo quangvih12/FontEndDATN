@@ -5,6 +5,9 @@ import { useRouter } from 'vue-router';
 import { userStore } from '@/service/Admin/User/UserService.js';
 import tokenService from '@/service/Authentication/TokenService.js'
 import { ThongBaoStore } from '../service/Admin/thongBao/thongBao.api'
+import { Stomp } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
+
 
 const thongBaoStore = ThongBaoStore();
 const userService = userStore();
@@ -13,12 +16,17 @@ const outsideClickListener = ref(null);
 const topbarMenuActive = ref(false);
 const router = useRouter();
 
+
+
 onMounted(() => {
     bindOutsideClickListener();
     getAllTB();
     fetchData();
     getDem();
+  //  sockets();
 });
+
+
 const tokenCheck = ref();
 const data = ref([]);
 const getAllTB = async () => {
@@ -116,6 +124,8 @@ const displayKH = async () => {
     const token = await tokenService.gentoken(selectedCustomer.value.username)
     localStorage.setItem('token', token);
 };
+
+
 
 const op = ref();
 const toggle2 = (event) => {

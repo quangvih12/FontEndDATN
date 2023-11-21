@@ -27,7 +27,7 @@ const data = ref([]);
 const loadData = async () => {
     const token = localStorage.getItem('token');
     if (token.length > 0 || token != null) {
-        await useHD.fetchDataByStatus(token, 7, 8, 9,10);
+        await useHD.findHdct(token);
         data.value = useHD.dataHoanTraHoanTien;
         console.log(data.value);
     }
@@ -206,7 +206,7 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
                 <div style="display: flex; width: 100%; background: rgb(255, 255, 255);">
                     <div style="background: rgb(255, 255, 255);width: 30%; height: 100px; margin-top: ;">
                         <h5 style="color: rgb(253, 1, 1);margin-top: 30px;margin-left: -50px; margin-bottom: 20px;">Thành
-                            tiền: <span>{{ formatCurrency(tinhTongTien(hd.tongTien, hd.tienShip, hd.tienSauKhiGiam)) }}</span>
+                            tiền: <span>{{ formatCurrency( hd.soLuong * hd.donGia) }}</span>
                         </h5>
                     </div>
 

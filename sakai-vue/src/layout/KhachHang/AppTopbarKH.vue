@@ -7,7 +7,11 @@ import { userStore } from '@/service/Admin/User/UserService.js';
 import { gioHangStore } from '@/service/KhachHang/Giohang/GiohangCTService.js';
 import tokenService from '@/service/Authentication/TokenService.js';
 import userKHService from '@/service/KhachHang/UserService.js';
-import { KHThongBaoStore } from '../../service/KhachHang/ThongBaoService';
+
+import { KHThongBaoStore } from '../../service/KhachHang/ThongBaoService'
+import { Client } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
+
 
 const thongBaoStore = KHThongBaoStore();
 
@@ -26,7 +30,26 @@ onMounted(() => {
     getAllTB();
     getDem();
     soLuongGH();
+    openSocketConnection();
 });
+
+const stompClient = ref(null);
+
+const openSocketConnection = () => {
+    stompClient.value = new Client({
+        brokerURL: 'ws://localhost:8080/ws',
+        onConnect: () => {
+            // console.log('Đã kết nối');
+            stompClient.value.subscribe('/topic/hoa-don/' + 4, (message) => {
+                getAllTB();
+                getDem();
+            });
+        },
+    });
+
+    stompClient.value.activate();
+};
+
 
 const data = ref([]);
 const getAllTB = async () => {

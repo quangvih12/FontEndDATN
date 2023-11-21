@@ -185,6 +185,7 @@ const formatDate = (dateTime) => {
         </Column>
         <Column field="tenMauSac" header="Màu sắc" :sortable="true" headerStyle="width:14%; min-width:7rem;">
             <template #body="slotProps">
+
                 <span class="p-column-title">tenMauSac</span>
                 {{ slotProps.data.tenMauSac }}
             </template>

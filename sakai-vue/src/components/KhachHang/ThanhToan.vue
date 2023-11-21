@@ -221,17 +221,10 @@ const applyVoucher = () => {
     } else {
         giamGia.value = giam;
         tongThanhToan.value = tongTien.value + phiShip.value - giamGia.value;
-
-        if (selectedVoucher.value == null) {
-            tienSauGiam.value = tongThanhToan.value;
-        } else {
-            tienSauGiam.value = tongThanhToan.value - giamGia.value;
-        }
+        tienSauGiam.value = tongThanhToan.value;
         toast.add({ severity: 'success', summary: '', detail: 'Áp dụng voucher thành công', life: 3000 });
         selectedVoucherDialog.value = false;
     }
-
-
 };
 
 const hideDialog = () => {
