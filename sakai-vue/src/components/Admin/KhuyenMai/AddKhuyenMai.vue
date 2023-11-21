@@ -4,6 +4,7 @@
         <template #header>
             <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                 <h5 class="m-0">Khuyến Mãi</h5>
+            
             </div>
         </template>
 
@@ -61,7 +62,7 @@
 </template>
 
 <script setup>
-import { ref, defineEmits } from 'vue';
+import { ref } from 'vue';
 import * as Yup from 'yup';
 import { useField, useForm } from 'vee-validate';
 import { useToast } from 'primevue/usetoast';

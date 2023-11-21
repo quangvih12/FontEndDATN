@@ -36,6 +36,27 @@ export const ProductStore = defineStore('product', {
       }
     },
 
+    async fetchDataByLoai(idloai) {
+      try {
+        const response = await axios.get(apiSanPham+'/by-loai?idloai=' + idloai); // Thay đổi URL dựa trên API của bạn
+        this.products = response.data;
+        //  console.table(this.products.size);
+
+      } catch (error) {
+        console.error('Lỗi khi lấy danh sách sản phẩm:', error);
+      }
+    },
+    async fetchDataByThuongHieu(idthuonghieu) {
+      try {
+        const response = await axios.get(apiSanPham+'/by-thuong-hieu?idthuonghieu=' + idthuonghieu); // Thay đổi URL dựa trên API của bạn
+        this.products = response.data;
+        //  console.table(this.products.size);
+
+      } catch (error) {
+        console.error('Lỗi khi lấy danh sách sản phẩm:', error);
+      }
+    },
+
     async fetchAllSpCT(idSP) {
       try {
         const response = await axios.get(apiSanPham+`/${idSP}`); // Thay đổi URL dựa trên API của bạn

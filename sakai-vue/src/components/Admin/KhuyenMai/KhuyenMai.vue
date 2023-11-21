@@ -8,6 +8,7 @@ import AddKhuyenMai from './AddKhuyenMai.vue';
 import UpdateKhuyenMai from './UpdateKhuyenMai.vue';
 import DeleteKhuyenMai from './DeleteKhuyenMai.vue';
 import ApplyKM from './ApplyKM.vue';
+import Test from './Test.vue'
 
 const toast = useToast();
 const filters = ref();

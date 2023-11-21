@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount ,watch} from 'vue';
 import { useLayout } from '@/layout/composables/layout';
 import { useRouter } from 'vue-router';
 import { userStore } from '@/service/Admin/User/UserService.js';
@@ -8,9 +8,12 @@ import { gioHangStore } from '@/service/KhachHang/Giohang/GiohangCTService.js';
 import tokenService from '@/service/Authentication/TokenService.js';
 import userKHService from '@/service/KhachHang/UserService.js';
 import { KHThongBaoStore } from '../../service/KhachHang/ThongBaoService'
-
+import {soLuongGh} from '@/service/KhachHang/GioHang/cart.js'
 
 const thongBaoStore = KHThongBaoStore();
+const store = soLuongGh();
+const cartItems = store.getCartItems;
+
 
 const userService = userStore();
 const { layoutConfig, onMenuToggle } = useLayout();
@@ -21,15 +24,22 @@ const router = useRouter();
 const selectedCustomer = ref(null);
 const gioHangService = gioHangStore();
 
+const slGH = ref(localStorage.getItem("soLuongGH") || 0);
+
 onMounted(() => {
     bindOutsideClickListener();
-  //  fetchData();
+//     const slGH = localStorage.getItem("soLuongGH");
+//   console.log("gh test", slGH)
+
     getAllTB();
     getDem();
     soLuongGH();
 });
 
-
+// watch(() => localStorage.getItem("soLuongGH"), (newVal) => {
+//   slGH.value = parseInt(newVal) || 0;
+//   console.log("dulieu ms", slGH.value)
+// });
 const data = ref([]);
 const getAllTB = async () => {
     const token = localStorage.getItem('token');

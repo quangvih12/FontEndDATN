@@ -7,6 +7,7 @@ import { phiShipStore } from '../../service/KhachHang/PhiGiaoHangService';
 import { checkoutStore } from '@/service/KhachHang/HoaDonService.js';
 import { voucherStore } from '@/service/KhachHang/KHVoucherService.js';
 import { uservoucherStore } from '@/service/KhachHang/UserVoucherService.js';
+import { gioHangStore } from '@/service/KhachHang/Giohang/GiohangCTService.js';
 import tokenService from '@/service/Authentication/TokenService.js';
 import userKHService from '@/service/KhachHang/UserService.js';
 import AddDiaChi from '@/components/KhachHang/DiaChiKhachHang/Add.vue';
@@ -19,6 +20,7 @@ import { format } from 'date-fns';
 import { useRouter } from 'vue-router';
 const toast = useToast();
 const router = useRouter();
+const gioHangService = gioHangStore();
 const checkoutService = checkoutStore();
 const store = useCartStore();
 const voucherService = voucherStore();
@@ -147,8 +149,8 @@ const thanhtoan = async () => {
         tienShip: phiShip.value,
         idPayMethod: parseInt(phuongThucThanhToan.value),
         idUser: user.id,
-        tienSauGiam: tienSauGiam.value,
-        idVoucher: selectedVoucher.value.id,
+        tienSauGiam: tienSauGiam.value ?  tienSauGiam.value : null,
+        idVoucher: selectedVoucher.value.id ? selectedVoucher.value.id : null,
         listHDCT: forms
     };
 
@@ -196,14 +198,19 @@ const selectVoucher = () => {
 };
 
 const loadDataVoucher = async () => {
-    const token = localStorage.getItem('token');
-    const userName = await tokenService.getUserNameByToken(token);
-    const user = await userKHService.getUserByUsername(userName);
 
-    // await gioHangService. getListVoucherByUser(token);
-    //     dataVoucher.value = gioHangService.voucher;
-    await voucherService.getListVoucher(user.id);
-    dataVoucher.value = voucherService.data;
+    await gioHangService.getListVoucherByTrangThai();
+    dataVoucher.value = gioHangService.voucher;
+
+    console.log("voucher", dataVoucher.value)
+    // const token = localStorage.getItem('token');
+    // const userName = await tokenService.getUserNameByToken(token);
+    // const user = await userKHService.getUserByUsername(userName);
+
+    // // await gioHangService. getListVoucherByUser(token);
+    // //     dataVoucher.value = gioHangService.voucher;
+    // await voucherService.getListVoucher(user.id);
+    // dataVoucher.value = voucherService.data;
     // console.log(dataVoucher.value);
 };
 

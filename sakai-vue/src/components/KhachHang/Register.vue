@@ -120,6 +120,7 @@ const onSubmit = handleSubmit(async () => {
     }
      const KhachHang = khUserService.getUserByEmail(email.value)
     if(KhachHang != null){
+    
       toast.add({ severity: 'warn', summary: '', detail: 'Email đã tồn tại. Vui lòng nhập email khác', life: 5000 });
      return;
     }
