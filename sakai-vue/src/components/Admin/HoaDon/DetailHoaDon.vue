@@ -62,7 +62,7 @@ const events = ref([
 const loadDataHDCT = async (idHD) => {
     const respone = await useHD.findHdctByIdHd(idHD);
     dataHDCT.value = respone;
-    console.log(dataHDCT.value);
+  //  console.log(dataHDCT.value);
 };
 
 const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
