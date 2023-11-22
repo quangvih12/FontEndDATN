@@ -20,5 +20,10 @@ class TokenService {
         const response = await axios.get(`http://localhost:8080/api/khach-hang/user/find-user-by-email/` + email + '?username=' + name + '&anh=' + anh);
         return response.data;
     }
+
+    async findByToken(token) {
+        const response = await axios.get(`http://localhost:8080/api/khach-hang/user/find-by-token?token=` + token);
+        return response.data;
+    }
 }
 export default new TokenService();

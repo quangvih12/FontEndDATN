@@ -43,7 +43,10 @@ const editProduct = () => {
     code.value = 'Hoá đơn: ' + props.myProp.maHD;
     productDialog.value = true;
     loadDataHDCT(props.myProp.idHD);
-    console.log(props.myProp);
+    ngayDat.value = props.myProp.ngayTao;
+    ngayThanhToan.value = props.myProp.ngayThanhToan;
+    ngayGiao.value = props.myProp.ngayShip;
+    ngayNhan.value = props.myProp.ngayNhan;
 };
 
 const ngayDat = ref('');
@@ -70,10 +73,6 @@ watch(productDialog, (newVal) => {
 });
 
 onMounted(() => {
-    ngayDat.value = props.myProp.ngayTao;
-    ngayThanhToan.value = props.myProp.ngayThanhToan;
-    ngayGiao.value = props.myProp.ngayShip;
-    ngayNhan.value = props.myProp.ngayNhan;
     ship.value = 'nguoiNhan';
     openSocketConnection();
 });
@@ -94,7 +93,7 @@ const openSocketConnection = () => {
 
 const sendMessage = () => {
     stompClient.value.publish({
-        destination: '/app/hoa-don/' + 4,
+        destination: '/app/hoa-don/' + props.myProp.idUser,
         body: ''
     });
 };
@@ -146,7 +145,6 @@ const loadDataHDCT = async (idHD) => {
     for (let i = 0; i < dataHDCT.value.length; i++) {
         khoiLuong.value += parseInt(dataHDCT.value[i].trongLuong);
     }
-    console.log(dataHDCT.value);
 };
 
 const formatCurrency = (value) => {
@@ -195,6 +193,7 @@ const btnXacNhanHuy = () => {
         huyDialog.value = false;
     } else {
         useHD.huyHoaDon(idHD.value, lyDo.value, 2);
+        sendMessage();
         toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Huỷ thành công', life: 3000 });
         lyDo.value = '';
         huyDialog.value = false;

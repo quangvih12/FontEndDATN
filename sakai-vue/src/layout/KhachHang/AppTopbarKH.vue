@@ -1,24 +1,19 @@
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount ,watch} from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useLayout } from '@/layout/composables/layout';
 import { useRouter } from 'vue-router';
 import { userStore } from '@/service/Admin/User/UserService.js';
-
 import { gioHangStore } from '@/service/KhachHang/Giohang/GiohangCTService.js';
 import tokenService from '@/service/Authentication/TokenService.js';
 import userKHService from '@/service/KhachHang/UserService.js';
+// import tokenService from '../../service/Authentication/TokenService.js';
 
-import { KHThongBaoStore } from '../../service/KhachHang/ThongBaoService'
+import { KHThongBaoStore } from '../../service/KhachHang/ThongBaoService';
 
-import { Client } from "@stomp/stompjs";
-import SockJS from "sockjs-client";
-
-
+import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 
 const thongBaoStore = KHThongBaoStore();
-
-const cartItems = store.getCartItems;
-
 
 const userService = userStore();
 const { layoutConfig, onMenuToggle } = useLayout();
@@ -29,7 +24,7 @@ const router = useRouter();
 const selectedCustomer = ref(null);
 const gioHangService = gioHangStore();
 
-const slGH = ref(localStorage.getItem("soLuongGH") || 0);
+const slGH = ref(localStorage.getItem('soLuongGH') || 0);
 
 onMounted(() => {
     bindOutsideClickListener();
@@ -39,25 +34,27 @@ onMounted(() => {
     openSocketConnection();
 });
 
+// const cartItems = store.getCartItems;
 
 const stompClient = ref(null);
 
 const openSocketConnection = () => {
     stompClient.value = new Client({
         brokerURL: 'ws://localhost:8080/ws',
-        onConnect: () => {
+        onConnect: async () => {
             // console.log('Đã kết nối');
-            stompClient.value.subscribe('/topic/hoa-don/' + 4, (message) => {
+            // findUserByToken();
+            const token = localStorage.getItem('token');
+            const respone = await tokenService.findByToken(token);
+            stompClient.value.subscribe('/topic/hoa-don/' + respone.id, (message) => {
                 getAllTB();
                 getDem();
             });
-        },
+        }
     });
 
     stompClient.value.activate();
 };
-
-
 
 const data = ref([]);
 const getAllTB = async () => {
