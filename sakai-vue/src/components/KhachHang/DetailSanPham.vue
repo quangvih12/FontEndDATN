@@ -9,14 +9,18 @@ import { useRoute } from 'vue-router';
 import { gioHangStore } from '@/service/KhachHang/Giohang/GiohangCTService.js';
 import { useRouter } from 'vue-router';
 
+import {soLuongGh} from '@/service/KhachHang/GioHang/cart.js'
+
+
 const router = useRouter();
 const gioHangService = gioHangStore();
 const productStore = useDetailProductStore();
 const route = useRoute();
 const idProduct = parseInt(route.params.id);
-
+const store = soLuongGh();
 const dataSanPham = ref({});
 
+const quantity = ref(1);
 const dataMauSac = ref([]);
 const dataSize = ref([]);
 const loadImage = ref([]);
@@ -28,6 +32,7 @@ const soLuongTon = ref('');
 const selectedMauSac = ref('');
 let prevDataSizeLength = ref(null);
 let prevDataMauLength = ref(null);
+
 
 let expiryTime = 60 * 60 * 1000; // 1 giờ
 onMounted(async () => {
@@ -74,10 +79,14 @@ watch([getSize, idMau], async ([newGetSize, newIdMau]) => {
         await productStore.fetchIdSPCT(idProduct, getSize.value, idMau.value);
         dataListSPCT.value = productStore.products;
         idSanPhamChiTiet.value = dataListSPCT.value.id;
+        
+        quantity.value = 1;
         // await productStore.getMauSacBySize(idProduct, getSize.value);
         // dataMauSac.value = productStore.mauSacs;
     }
 });
+
+
 
 let isFirstRun = true;
 
@@ -92,6 +101,7 @@ watch([dataSize, dataMauSac], async ([newDataSize, newDataMau]) => {
             selectedMauSac.value = newDataMau[0];
             idMau.value = selectedMauSac.value.id;
         }
+        quantity.value = 1;
         prevDataSizeLength.value = newDataSize.length;
         prevDataMauLength.value = newDataMau.length;
     }
@@ -123,7 +133,9 @@ const loadData = async () => {
 //     soLuongTon.value = productStore.slTon;
 // };
 
+
 const quantity = ref(1);
+
 
 const increment = () => {
     quantity.value += 1;
@@ -162,19 +174,36 @@ const formatCurrency = (value) => {
 
 const hasTenKH = ref(dataSanPham.value.tenKH !== null && dataSanPham.value.tenKH !== undefined);
 
+
+const soLuongGH = ref(0);
+
 const toast = useToast();
 const dataSessoin = ref([]);
+const dataGHCT = ref([]);
 const addToCart = async () => {
     const cartItem = {
         soLuong: quantity.value,
         sanPhamChiTiet: idSanPhamChiTiet.value
     };
+
     const token = localStorage.getItem('token');
     //  console.log(token)
     if (quantity.value > dataListSPCT.value.soLuongTon) {
         toast.add({ severity: 'warn', summary: '', detail: 'Số lượng tồn không đủ', life: 5000 });
         return;
+    }  
+
+    await gioHangService.getGHCTByIdctsp(token,dataListSPCT.value.id)
+    dataGHCT.value = gioHangService.data;
+
+    soLuongGH.value = parseInt(quantity.value )+ parseInt(dataGHCT.value.soLuong)
+
+
+    if(soLuongGH.value > dataListSPCT.value.soLuongTon){
+        toast.add({ severity: 'warn', summary: '', detail: 'Số lượng tồn không đủ', life: 5000 });
+        return;
     }
+
 
     if (token == '' || token == null) {
         await gioHangService.addToCartSesion(cartItem, token);
@@ -201,8 +230,12 @@ const addToCart = async () => {
         toast.add({ severity: 'success', summary: 'Successful', detail: 'Thêm vào giỏ hàng thành công', life: 3000 });
         router.push({ name: 'gio-hang' });
     } else {
+
+        
         await gioHangService.addToCart(cartItem, token);
+
         demSLGH(token);
+
         toast.add({ severity: 'success', summary: 'Successful', detail: 'Thêm vào giỏ hàng thành công', life: 3000 });
         router.push({ name: 'gio-hang' });
     }
@@ -211,6 +244,59 @@ const addToCart = async () => {
 const demSLGH = async (token) => {
     await gioHangService.countGHCT(token);
 };
+
+
+const muaNgay = async () => {
+
+    const cartItem = {
+        soLuong: quantity.value,
+        sanPhamChiTiet: idSanPhamChiTiet.value
+    };
+    const token = localStorage.getItem('token');
+    //  console.log(token)
+    if (quantity.value > dataListSPCT.value.soLuongTon) {
+        toast.add({ severity: 'warn', summary: '', detail: 'Số lượng tồn không đủ', life: 5000 });
+        return;
+    }
+
+    if (token == '' || token == null) {
+
+        await gioHangService.addToCartSesion(cartItem, token);
+        dataSessoin.value = gioHangService.dataSessions;
+
+        // Lấy mảng từ sessionStorage và chuyển đổi nó trở lại thành mảng
+
+        let array = JSON.parse(localStorage.getItem('cart')); // Phân tích chuỗi JSON thành mảng
+
+        let found = false;
+        for (let i = 0; i < array.length; i++) {
+            if (array[i].idCTSP == dataSessoin.value.idCTSP) {
+                // Cập nhật phần tử trong mảng
+                array[i].soLuong = array[i].soLuong + dataSessoin.value.soLuong;
+                found = true;
+                break;
+            }
+        }
+        // Nếu không tìm thấy phần tử trong mảng, thêm phần tử mới
+        if (!found) {
+            array.push(dataSessoin.value);
+        }
+        // Lưu lại mảng vào sessionStorage
+        localStorage.setItem('cart', JSON.stringify(array));
+        toast.add({ severity: 'success', summary: 'Successful', detail: 'Thêm vào giỏ hàng thành công', life: 3000 });
+        router.push({ name: 'gio-hang' });
+    } else {   
+        console.log("1234")
+       const res =  await gioHangService.addToCart(cartItem, token);
+       console.log("data test", res)
+        
+        toast.add({ severity: 'success', summary: 'Successful', detail: 'Thêm vào giỏ hàng thành công', life: 3000 });
+        router.push({ name: 'gio-hang' });
+    }
+
+
+
+}
 
 const selectMauSac = async (mauSacs) => {
     // Loại bỏ viền đỏ của màu sắc đã chọn trước đó (nếu có)
@@ -246,6 +332,24 @@ const getMauSacBySize = async (idsizect) => {
 };
 
 const check = ref(false);
+
+
+const validateQuantity = () => {
+
+    quantity.value = quantity.value.replace(/[^0-9]/g, '');
+  // Kiểm tra nếu giá trị nhập vào là số âm thì đặt lại giá trị thành 0
+  if (quantity.value < 0) {
+    quantity.value = 1;
+  }
+};
+
+const setDefaultQuantity = () => {
+  // Kiểm tra nếu giá trị là rỗng, đặt giá trị mặc định là 1
+  if (!quantity.value) {
+    quantity.value = 1;
+  }
+};
+
 </script>
 
 <template>
@@ -324,16 +428,18 @@ const check = ref(false);
                                     <button @click="decrement" class="minus p-button-secondary p-button-outlined" :disabled="dataListSPCT.giaBan == null || dataListSPCT.soLuongTon == 0">
                                         <i class="pi pi-minus"></i>
                                     </button>
-                                    <input v-model="quantity" class="input-soluong" style="width: 35px" disabled />
-                                    <button @click="increment" class="plus-phai p-button-secondary p-button-outlined" :disabled="dataListSPCT.giaBan == null || dataListSPCT.soLuongTon == 0">
+                                    <input v-model="quantity"
+                                    class="input-soluong" style="width: 35px"  @input="validateQuantity" @blur="setDefaultQuantity" />
+                                    <!-- <input v-model="quantity" class="input-soluong" style="width: 35px" disabled /> -->
+                                    <button @click="increment" class="plus-phai p-button-secondary p-button-outlined"
+                                        :disabled="dataListSPCT.giaBan == null || dataListSPCT.soLuongTon == 0">
                                         <i class="pi pi-plus"></i>
                                     </button>
                                 </div>
-                                <Button
-                                    label="Thêm vào giỏ hàng"
-                                    @click="addToCart"
-                                    icon="pi pi-shopping-cart"
-                                    class="p-button-rounded p-button-warning mr-2 mb-2"
+                                <Button label="Thêm vào giỏ hàng" @click="addToCart" icon="pi pi-shopping-cart"
+                                    class="p-button-rounded p-button-warning mr-2 mb-2" style="background: #e8bd72"
+                                    :disabled="dataListSPCT.giaBan == null || dataListSPCT.soLuongTon == 0" />
+                                <Button label="Mua ngay" @click="muaNgay" class="p-button-rounded p-button-warning mr-2 mb-2"
                                     style="background: #e8bd72"
                                     :disabled="dataListSPCT.giaBan == null || dataListSPCT.soLuongTon == 0"
                                 />

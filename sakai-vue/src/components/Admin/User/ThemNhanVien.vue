@@ -217,7 +217,7 @@ function onFileInputImage(event) {
                             </div>
                             <div class="field col-12" style="margin-bottom: 30px">
                                 <label for="ngaySinh">Ngày sinh</label>
-                                <InputText type="date" v-model.trim="ngaySinh" :class="{ 'p-invalid': ngaySinhError }" />
+                                <InputText type="date" v-model.trim="ngaySinh"   />
                                 <small class="p-error">{{ ngaySinhError }}</small>
                             </div>
                             <div class="field col-12" style="margin-bottom: 30px">
