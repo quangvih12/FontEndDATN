@@ -43,7 +43,7 @@ const hienThiTrangThai = (trangThai) => {
     } else if (trangThai == 6) {
         return { text: 'Yêu cầu đổi trả', severity: 'warning' };
     } else if (trangThai == 9) {
-        return { text: 'Đã huỷ đổi trả', severity: 'warning' };
+        return { text: 'Đã huỷ đổi trả', severity: 'danger' };
     } else {
         return { text: 'Xác nhận đổi trả', severity: 'success' };
     }
@@ -143,7 +143,7 @@ const formatDate = (dateTime) => {
     </div>
     <DataTable
         ref="dt"
-        :value="data"
+        :value="useHD.dataDaHuyDoiTra"
         v-model:selection="selectedProducts"
         dataKey="id"
         :paginator="true"

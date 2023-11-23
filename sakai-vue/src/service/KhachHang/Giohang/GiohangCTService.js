@@ -154,9 +154,16 @@ export const gioHangStore = defineStore('gioHang', {
 
         async countGHCT(token) {
             try {
-                const response = await axios.get(`http://localhost:8080/api/khach-hang/giohang/countGHCT?token=${token}`);
-                this.soLuong = parseInt(response.data);
-                return this.soLuong;
+                if(token == null|| token ==''){
+                    let array = JSON.parse(localStorage.getItem('cart'));
+                    this.soLuong = array.length;
+                    return this.soLuong;
+                }else{
+                    const response = await axios.get(`http://localhost:8080/api/khach-hang/giohang/countGHCT?token=${token}`);
+                    this.soLuong = parseInt(response.data);
+                    return this.soLuong;
+                }
+                
             } catch (error) {}
         }
     }

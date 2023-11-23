@@ -152,7 +152,7 @@ const tinhThanhTien = (soLuong, donGia) => {
     </div>
     <DataTable
         ref="dt"
-        :value="data"
+        :value="useHD.dataHoanTraHoanTien"
         v-model:selection="selectedProducts"
         dataKey="id"
         :paginator="true"

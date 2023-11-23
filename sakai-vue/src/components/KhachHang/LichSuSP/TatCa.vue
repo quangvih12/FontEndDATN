@@ -182,7 +182,7 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
 
 <template>
     <div style="height: 500px; font-size: 24px;" v-if="!data || data.length === 0"> Chưa có Đơn hàng !</div>
-    <div v-for="(hd, index) in data" :key="index">
+    <div v-for="(hd, index) in useHD.dataAll" :key="index">
         <div style="width: 1060px; background: rgb(255, 255, 255); ">
 
             <div style="width: 1060px; background: rgb(252, 246, 246);  ">
@@ -253,7 +253,7 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
 
                         <div style=" height: 100%; margin-top: 30px;">
 
-                            <Button type="button" :disabled="hd.trangThai == 2 || hd.trangThai == 5 || hd.trangThai == 7"
+                            <Button type="button" :disabled="hd.trangThai == 2 || hd.trangThai == 7"
                                 label="Mua lại" style="width: 100px;margin-right: 10px; "
                                 @click="showDialogMuaLai(hd.idHD)" />
                             <Button severity="secondary" label="Xem chi tiết" style="width: 150px"

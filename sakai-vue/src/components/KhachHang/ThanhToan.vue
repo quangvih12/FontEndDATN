@@ -214,7 +214,7 @@ const loadDataVoucher = async () => {
     await gioHangService.getListVoucherByTrangThai();
     dataVoucher.value = gioHangService.voucher;
 
-    console.log('voucher', dataVoucher.value);
+  //  console.log('voucher', dataVoucher.value);
     // const token = localStorage.getItem('token');
     // const userName = await tokenService.getUserNameByToken(token);
     // const user = await userKHService.getUserByUsername(userName);
@@ -315,7 +315,7 @@ const loadDiaChi = async () => {
                             >
                                 <Column field="code" header="Sản phẩm" headerStyle="width:38%; min-width:14rem;">
                                     <template #body="slotProps">
-                                        <img :src="slotProps.data.anh" alt="Ảnh sản phẩm" class="shadow-2" width="50" />
+                                        <img :src="slotProps.data.anhMau" alt="Ảnh sản phẩm" class="shadow-2" width="50" />
                                         <span style="margin-left: 10px">{{ slotProps.data.tenSP }}</span>
                                     </template>
                                 </Column>

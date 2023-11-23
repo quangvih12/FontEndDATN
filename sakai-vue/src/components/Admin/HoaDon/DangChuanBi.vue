@@ -204,7 +204,7 @@ const formatDate = (dateTime) => {
     </div>
     <DataTable
         ref="dt"
-        :value="data"
+        :value="useHD.dataDangChuanBi"
         v-model:selection="selectedProducts"
         dataKey="id"
         :paginator="true"

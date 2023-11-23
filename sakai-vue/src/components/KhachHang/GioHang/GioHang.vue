@@ -249,6 +249,7 @@ const deleteGioHang = async (idghct) => {
         }
         localStorage.setItem('cart', JSON.stringify(array));
         loadDataGioHang();
+        demSLGH(token);
         toast.add({ severity: 'warn', summary: '', detail: 'Xoá thành công', life: 3000 });
     } else {
         await gioHangService.xoaGHCT(idghct, token);
@@ -428,7 +429,7 @@ const decrement = async (idGHCT) => {
             if (array[i].idGHCT == idGHCT) {
                 // Cập nhật phần tử trong mảng
                 let so = array[i].soLuong - 1;
-                console.log(so);
+          //      console.log(so);
                 if (so <= 0) {
                     array.splice(i, 1);
                     loadDataGioHang();
@@ -447,6 +448,7 @@ const decrement = async (idGHCT) => {
         }
         localStorage.setItem('cart', JSON.stringify(array));
         loadDataGioHang();
+        demSLGH(token);
         tinhTienKhiCongTru(checkedValues);
     } else {
         await gioHangService.truSL(idGHCT, token);
@@ -459,10 +461,16 @@ const decrement = async (idGHCT) => {
                 break;
             }
         }
+
         // console.log( gioHangService.fakedata)
         tinhTienKhiCongTru(checkedValues);
     }
 };
+
+const demSLGH = async (token) => {
+    await gioHangService.countGHCT(token);
+};
+
 
 const tinhTienKhiCongTru = (data) => {
     if (ischeckeds.value === true) {
@@ -588,7 +596,7 @@ const tinhTongTienChoTungSanPham = (soLuong, giaSauGiam, giaBan) => {
                                 <template #body="slotProps">
                                     <div class="product-container">
                                         <div class="thumbnail">
-                                            <img :src="slotProps.data.anh" alt="Ảnh sản phẩm" class="shadow-2" width="50" />
+                                            <img :src="slotProps.data.anhMau" alt="Ảnh sản phẩm" class="shadow-2" width="50" />
                                         </div>
                                         <div class="details">
                                             <p style="margin-top: 10px; font-size: 15px">{{ slotProps.data.tenSP }}</p>
