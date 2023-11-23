@@ -7,10 +7,8 @@ import { da } from 'date-fns/locale';
 import { HDStore } from '../../../service/Admin/HoaDon/HoaDonService';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import  {Client} from "@stomp/stompjs";
-import SockJS from "sockjs-client";
-
-
+import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 
 const toast = useToast();
 const useHD = HDStore();
@@ -45,7 +43,10 @@ const editProduct = () => {
     code.value = 'Hoá đơn: ' + props.myProp.maHD;
     productDialog.value = true;
     loadDataHDCT(props.myProp.idHD);
-    console.log(props.myProp);
+    ngayDat.value = props.myProp.ngayTao;
+    ngayThanhToan.value = props.myProp.ngayThanhToan;
+    ngayGiao.value = props.myProp.ngayShip;
+    ngayNhan.value = props.myProp.ngayNhan;
 };
 
 const ngayDat = ref('');
@@ -72,10 +73,6 @@ watch(productDialog, (newVal) => {
 });
 
 onMounted(() => {
-    ngayDat.value = props.myProp.ngayTao;
-    ngayThanhToan.value = props.myProp.ngayThanhToan;
-    ngayGiao.value = props.myProp.ngayShip;
-    ngayNhan.value = props.myProp.ngayNhan;
     ship.value = 'nguoiNhan';
     openSocketConnection();
 });
@@ -87,23 +84,21 @@ const giaoHangNhanh = async (idHD, hoaDon, formGHN) => {
 
 const stompClient = ref(null);
 const openSocketConnection = () => {
-  stompClient.value = new Client({
- brokerURL: 'ws://localhost:8080/ws'
- });
+    stompClient.value = new Client({
+        brokerURL: 'ws://localhost:8080/ws'
+    });
 
- stompClient.value.activate();
+    stompClient.value.activate();
+};
 
- };
-
- const sendMessage = () => {
+const sendMessage = () => {
     stompClient.value.publish({
-        destination: '/app/hoa-don/'+4,
-        body: '',
+        destination: '/app/hoa-don/' + props.myProp.idUser,
+        body: ''
     });
 };
 
 const btnXacNhan = () => {
-
     const formGHN = {
         trongLuong: khoiLuong.value,
         dai: dai.value,
@@ -129,7 +124,6 @@ const btnXacNhan = () => {
     } else {
         const responeDCB = useHD.dangChuanBi(idHD.value, ngayDuKienGiao.value);
         sendMessage();
-
         // giaoHangNhanh(idHD.value, responeDCB, formGHN);
         toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Xác nhận thành công', life: 3000 });
         addProductDialog.value = false;
@@ -149,7 +143,7 @@ const loadDataHDCT = async (idHD) => {
     const respone = await useHD.findHdctByIdHd(idHD);
     dataHDCT.value = respone;
     for (let i = 0; i < dataHDCT.value.length; i++) {
-        khoiLuong.value += dataHDCT.value[i].trongLuong;
+        khoiLuong.value += parseInt(dataHDCT.value[i].trongLuong);
     }
 };
 
@@ -199,6 +193,7 @@ const btnXacNhanHuy = () => {
         huyDialog.value = false;
     } else {
         useHD.huyHoaDon(idHD.value, lyDo.value, 2);
+        sendMessage();
         toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Huỷ thành công', life: 3000 });
         lyDo.value = '';
         huyDialog.value = false;
@@ -213,7 +208,6 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
     } else {
         return parseInt(tienSauGiam);
     }
-
 };
 </script>
 <template>
@@ -233,12 +227,9 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
                                         <h5>Hóa đơn thanh toán</h5>
                                     </div>
                                     <div v-if="hienTimeLine(props.myProp.trangThai)">
-                                        <Timeline :value="events" layout="horizontal" align="bottom"
-                                            class="customized-timeline">
+                                        <Timeline :value="events" layout="horizontal" align="bottom" class="customized-timeline">
                                             <template #marker="slotProps">
-                                                <span
-                                                    class="flex w-2rem h-2rem align-items-center justify-content-center text-white border-circle z-1 shadow-1"
-                                                    :style="{ backgroundColor: slotProps.item.color }">
+                                                <span class="flex w-2rem h-2rem align-items-center justify-content-center text-white border-circle z-1 shadow-1" :style="{ backgroundColor: slotProps.item.color }">
                                                     <i :class="slotProps.item.icon"></i>
                                                 </span>
                                             </template>
@@ -265,8 +256,7 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
                                         <hr />
                                         <tr v-for="(item, index) in dataHDCT" :key="index">
                                             <td style="width: 30px">{{ index + 1 }}</td>
-                                            <td style="width: 20%"><img :src="item.anh" style="width: 50%"
-                                                    alt="HoaDon Image" /></td>
+                                            <td style="width: 20%"><img :src="item.anh" style="width: 50%" alt="HoaDon Image" /></td>
                                             <td>{{ item.tenSP }}</td>
                                             <td>{{ item.tenMauSac }}</td>
                                             <td>{{ item.tenSize == null ? 'Không có' : item.tenSize }}</td>
@@ -292,8 +282,7 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
                                     <div class="row flex">
                                         <div class="flex" style="min-width: 200px; margin-bottom: 6px">
                                             <p>
-                                                Họ và tên người nhận: <span style="margin-left: 5px">{{
-                                                    props.myProp.tenNguoiNhan }}</span>
+                                                Họ và tên người nhận: <span style="margin-left: 5px">{{ props.myProp.tenNguoiNhan }}</span>
                                             </p>
                                         </div>
                                         <div class="flex" style="min-width: 200px; margin-bottom: 6px">
@@ -304,9 +293,7 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
 
                                         <div class="flex" style="min-width: 200px; margin-bottom: 6px">
                                             <p>
-                                                Địa chỉ: <span style="margin-left: 5px">{{ props.myProp.diaChiCuThe }}, {{
-                                                    props.myProp.tenPhuongXa }}, {{ props.myProp.tenQuanHuyen }}, {{
-        props.myProp.tenTinhThanh }}</span>
+                                                Địa chỉ: <span style="margin-left: 5px">{{ props.myProp.diaChiCuThe }}, {{ props.myProp.tenPhuongXa }}, {{ props.myProp.tenQuanHuyen }}, {{ props.myProp.tenTinhThanh }}</span>
                                             </p>
                                             <!-- <p style="margin-left: 10px">{{ props.myProp.diaChiCuThe }}, {{ props.myProp.tenPhuongXa }}, {{ props.myProp.tenQuanHuyen }}, {{ props.myProp.tenTinhThanh }}</p> -->
                                         </div>
@@ -315,27 +302,19 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
                             </div>
                             <div class="p-inputgroup flex-1">
                                 <p>Ngày dự kiến giao:</p>
-                                <input type="datetime-local" v-model="ngayDuKienGiao"
-                                    style="width: 170px; height: 25px; margin-left: 10px" />
+                                <input type="datetime-local" v-model="ngayDuKienGiao" style="width: 170px; height: 25px; margin-left: 10px" />
                             </div>
                             <div>
                                 <p style="float: left; margin-right: 20px; margin-top: 5px">Khối lượng:</p>
-                                <InputText id="ten" name="ten" type="text" v-model.trim="khoiLuong"
-                                    :class="{ 'p-invalid': tenError }" required="true" style="width: 80px; height: 30px" />
+                                <InputText id="ten" name="ten" type="text" v-model.trim="khoiLuong" :class="{ 'p-invalid': tenError }" required="true" style="width: 80px; height: 30px" />
                             </div>
                             <div>
                                 <p style="float: left; margin-right: 15px; margin-top: 5px">Kích thước(cm):</p>
-                                <InputText id="ten" name="ten" type="text" v-model.trim="dai"
-                                    :class="{ 'p-invalid': tenError }" required="true"
-                                    style="width: 50px; height: 30px; float: left; margin-right: 5px" />
+                                <InputText id="ten" name="ten" type="text" v-model.trim="dai" :class="{ 'p-invalid': tenError }" required="true" style="width: 50px; height: 30px; float: left; margin-right: 5px" />
                                 <p style="float: left; margin-right: 5px; margin-top: 5px">Dài</p>
-                                <InputText id="ten" name="ten" type="text" v-model.trim="rong"
-                                    :class="{ 'p-invalid': tenError }" required="true"
-                                    style="width: 50px; height: 30px; float: left; margin-right: 5px" />
+                                <InputText id="ten" name="ten" type="text" v-model.trim="rong" :class="{ 'p-invalid': tenError }" required="true" style="width: 50px; height: 30px; float: left; margin-right: 5px" />
                                 <p style="float: left; margin-right: 5px; margin-top: 5px">Rộng</p>
-                                <InputText id="ten" name="ten" type="text" v-model.trim="cao"
-                                    :class="{ 'p-invalid': tenError }" required="true"
-                                    style="width: 50px; height: 30px; float: left; margin-right: 5px" />
+                                <InputText id="ten" name="ten" type="text" v-model.trim="cao" :class="{ 'p-invalid': tenError }" required="true" style="width: 50px; height: 30px; float: left; margin-right: 5px" />
                                 <p style="float: left; margin-right: 5px; margin-top: 5px">Cao</p>
                             </div>
                             <div>
@@ -349,19 +328,15 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
                             </div>
                             <p>Tổng tiền các sản phẩm: {{ formatCurrency(props.myProp.tongTien) }}</p>
                             <p>Phí vận chuyển: {{ formatCurrency(props.myProp.tienShip) }}</p>
-                            <p>Tiền giảm: <span v-if="props.myProp.tienSauKhiGiam !== null" style="color: red;">- {{
-                                formatCurrency(parseInt(props.myProp.tongTien) + parseInt(props.myProp.tienShip) -
-                                    parseInt(props.myProp.tienSauKhiGiam)) }}</span>
-                                <span v-else style="color: red;"> 0</span>
+                            <p>
+                                Tiền giảm: <span v-if="props.myProp.tienSauKhiGiam !== null" style="color: red">- {{ formatCurrency(parseInt(props.myProp.tongTien) + parseInt(props.myProp.tienShip) - parseInt(props.myProp.tienSauKhiGiam)) }}</span>
+                                <span v-else style="color: red"> 0</span>
                             </p>
                             <p>
-                                Tổng tiền: <span style="color: #ff3333; font-size: 20px; font-weight: bold">{{
-                                    formatCurrency(tongTienThanhToan) }}</span>
+                                Tổng tiền: <span style="color: #ff3333; font-size: 20px; font-weight: bold">{{ formatCurrency(tongTienThanhToan) }}</span>
                             </p>
-                            <Button label="Giao Hàng" severity="success" class="btn-ap-dung"
-                                @click="confirmAddProduct(props.myProp.idHD)" style="margin-bottom: 20px" />
-                            <Button label="Hủy" class="p-button-outlined p-button-info mr-2 mb-2"
-                                @click="showDialogLyDo(props.myProp.idHD)" />
+                            <Button label="Giao Hàng" severity="success" class="btn-ap-dung" @click="confirmAddProduct(props.myProp.idHD)" style="margin-bottom: 20px" />
+                            <Button label="Hủy" class="p-button-outlined p-button-info mr-2 mb-2" @click="showDialogLyDo(props.myProp.idHD)" />
                         </div>
                     </div>
                 </div>
@@ -383,8 +358,7 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
                     <div class="p-fluid formgrid grid">
                         <div class="field col-12" style="margin-bottom: 30px">
                             <label for="address">Lý do</label>
-                            <Textarea id="lyDo" rows="4" v-model.trim="lyDo" :class="{ 'p-invalid': LyDoError }"
-                                required="true" autofocus></Textarea>
+                            <Textarea id="lyDo" rows="4" v-model.trim="lyDo" :class="{ 'p-invalid': LyDoError }" required="true" autofocus></Textarea>
                             <small class="p-error">{{ LyDoError }}</small>
                         </div>
                     </div>
@@ -398,16 +372,19 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
         <!-- comfirm huỷ -->
         <Dialog v-model:visible="huyDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
             <div class="flex align-items-center justify-content-center">
-            <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-            <span>Bạn có chắc chắn muốn huỷ không ?</span>
-        </div>
-        <template #footer>
-            <Button label="No" icon="pi pi-times" class="p-button-text" @click="huyDialog = false" />
-            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhanHuy()" />
-        </template>
+                <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+                <span>Bạn có chắc chắn muốn huỷ không ?</span>
+            </div>
+            <template #footer>
+                <Button label="No" icon="pi pi-times" class="p-button-text" @click="huyDialog = false" />
+                <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhanHuy()" />
+            </template>
+        </Dialog>
     </Dialog>
-</Dialog></template>
+</template>
 
-<style scoped>.ben-phai {
+<style scoped>
+.ben-phai {
     text-align: right;
-}</style>
+}
+</style>

@@ -8,7 +8,7 @@ import { useForm, useField, defineRule } from 'vee-validate';
 import * as yup from 'yup';
 import { gioHangStore } from '../../../service/KhachHang/Giohang/GiohangCTService';
 import { useRouter } from 'vue-router';
-
+import { Client } from '@stomp/stompjs';
 import { useToast } from 'primevue/usetoast';
 
 const toast = useToast();
@@ -24,7 +24,7 @@ const dataHD = ref({});
 const schema = yup.object().shape({
     lyDo: yup.string().required('Vui lòng chọn lý do'),
     moTa: yup.string().required('Vui lòng điền mô tả ').min(10, 'Mô tả sản phẩm phải có ít nhất 10 ký tự'),
-    soLuong: yup.number().required('số lượng không được để trống').typeError('Số lượng phải là một số').min(1, 'Số lượng phải lớn hơn hoặc bằng 1').nullable(),
+    soLuong: yup.number().required('số lượng không được để trống').typeError('Số lượng phải là một số').min(1, 'Số lượng phải lớn hơn hoặc bằng 1').nullable()
 });
 const { handleSubmit, resetForm } = useForm({
     validationSchema: schema
@@ -41,6 +41,7 @@ const tongTienHang = ref();
 const bien = ref();
 const loadData = async () => {
     dataSP.value = await useHD.findHdctByIdHd(idHD);
+    console.log(dataSP.value);
     let sum = 0;
     for (const key of dataSP.value) {
         if (key.trangThaiHDCT == 7 || key.trangThaiHDCT == 8) {
@@ -79,7 +80,6 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
     } else {
         return parseInt(tienSauGiam);
     }
-
 };
 const formatCurrency = (value) => {
     return parseInt(value).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
@@ -114,6 +114,22 @@ const idHDCT = ref(null);
 const idUser = ref(null);
 const idDiaChi = ref(null);
 const soLuongHang = ref(null);
+
+const stompClient = ref(null);
+const openSocketConnection = () => {
+    stompClient.value = new Client({
+        brokerURL: 'ws://localhost:8080/ws'
+    });
+
+    stompClient.value.activate();
+};
+
+const sendMessage = () => {
+    stompClient.value.publish({
+        destination: '/app/admin/hoa-don',
+        body: ''
+    });
+};
 
 const doiTra = (idhdct, userId, diaChiId, soluong) => {
     idHDCT.value = idhdct;
@@ -153,6 +169,7 @@ const onSubmit = handleSubmit(async (values) => {
     resetForm();
     loadData();
     loadDataHD();
+    sendMessage();
     doiTraDialog.value = false;
 });
 
@@ -193,14 +210,12 @@ const formatDate = (dateTime) => {
 };
 
 const checks = (trangThai, soLuong) => {
-
     if (parseInt(trangThai) == 3 && parseInt(bien.value) < parseInt(soLuong)) {
         return true;
-    }
-    else if (parseInt(bien.value) >= parseInt(soLuong) && parseInt(trangThai) == 3) {
+    } else if (parseInt(bien.value) >= parseInt(soLuong) && parseInt(trangThai) == 3) {
         return false;
     }
-}
+};
 </script>
 <template>
     <div class="container">
@@ -211,7 +226,9 @@ const checks = (trangThai, soLuong) => {
                         <h3>Trạng thái đơn hàng</h3>
                     </div>
                     <div style="margin-left: 600px; font-size: 17px">
-                        <label for="">Mã đơn hàng: <span> {{ dataHD.maHD }} </span></label>
+                        <label for=""
+                            >Mã đơn hàng: <span> {{ dataHD.maHD }} </span></label
+                        >
                         <span> | </span>
                         <label for="" style="color: red">{{ hienThiTrangThai(dataHD.trangThai).text }}</label>
                     </div>
@@ -221,12 +238,9 @@ const checks = (trangThai, soLuong) => {
                     </div> -->
                 </div>
                 <div>
-                    <Timeline :value="events" layout="horizontal" align="bottom" class="customized-timeline"
-                        v-if="hienTimeLine(dataHD.trangThai)">
+                    <Timeline :value="events" layout="horizontal" align="bottom" class="customized-timeline" v-if="hienTimeLine(dataHD.trangThai)">
                         <template #marker="slotProps">
-                            <span
-                                class="flex w-2rem h-2rem align-items-center justify-content-center text-white border-circle z-1 shadow-1"
-                                :style="{ backgroundColor: slotProps.item.color }">
+                            <span class="flex w-2rem h-2rem align-items-center justify-content-center text-white border-circle z-1 shadow-1" :style="{ backgroundColor: slotProps.item.color }">
                                 <i :class="slotProps.item.icon"></i>
                             </span>
                         </template>
@@ -244,8 +258,7 @@ const checks = (trangThai, soLuong) => {
                         <p>Cảm ơn bạn đã mua sắm tại VNK!</p>
                     </div>
                     <div style="margin-left: 600px">
-                        <Button type="button" label="Liên hệ" icon="pi pi-users" badgeClass="p-badge-danger"
-                            style="width: 200px; margin-left: 20px" outlined />
+                        <Button type="button" label="Liên hệ" icon="pi pi-users" badgeClass="p-badge-danger" style="width: 200px; margin-left: 20px" outlined />
                     </div>
                 </div>
                 <Divider />
@@ -270,8 +283,7 @@ const checks = (trangThai, soLuong) => {
                                 </div>
 
                                 <p v-if="hdct.trangThaiHDCT == 8">
-                                    <span style="color: red">Chú ý: </span> Hãy dùng mã <span style="color: red">{{
-                                        hdct.maHDCT }} </span> ghi lên kiện hàng bạn gửi cho shop nhé !
+                                    <span style="color: red">Chú ý: </span> Hãy dùng mã <span style="color: red">{{ hdct.maHDCT }} </span> ghi lên kiện hàng bạn gửi cho shop nhé !
                                 </p>
                                 <p v-if="hdct.trangThaiHDCT == 9">
                                     Rất tiếc đơn hàng đổi trả của bạn đã bị hủy !<br />
@@ -279,25 +291,17 @@ const checks = (trangThai, soLuong) => {
                                 </p>
                                 <p v-if="hdct.trangThaiHDCT == 7">
                                     Đang trong quá trình xác nhận trả hàng !<br />
-                                    <span style="color: rgb(241, 50, 50)" v-if="dataHD.lyDo != null">Lý do: </span>{{
-                                        dataHD.lyDo }}
+                                    <span style="color: rgb(241, 50, 50)" v-if="hdct.lyDo != null">Lý do: </span>{{ hdct.lyDo }}
                                 </p>
                                 <div class="price">
                                     <h6 style="color: red">{{ formatCurrency(hdct.donGia) }}</h6>
-                                    <Button type="button" label="Mua lại" style="width: 100px; margin-right: 10px"
-                                        @click="addCart(hdct.idSPCT, hdct.soLuong)"
-                                        :disabled="dataHD.trangThai == 7 || dataHD.trangThai == 2" />
-                                    <Button v-if="checks(hdct.trangThai, hdct.soLuong)" severity="secondary"
-                                        label="Trả Hàng" style="width: 100px"
-                                        @click="doiTra(hdct.idHDCT, hdct.idUser, hdct.idDiaChi, hdct.soLuong)" />
+                                    <Button type="button" label="Mua lại" style="width: 100px; margin-right: 10px" @click="addCart(hdct.idSPCT, hdct.soLuong)" :disabled="dataHD.trangThai == 7 || dataHD.trangThai == 2" />
+                                    <Button v-if="checks(hdct.trangThai, hdct.soLuong)" severity="secondary" label="Trả Hàng" style="width: 100px" @click="doiTra(hdct.idHDCT, hdct.idUser, hdct.idDiaChi, hdct.soLuong)" />
 
-                                    <p v-if="hdct.trangThaiHDCT == 9" style="margin-top: 10px">yêu cầu Trả sản phẩm thất bại
-                                    </p>
-                                    <p v-if="hdct.trangThaiHDCT == 8" style="margin-top: 10px">yêu cầu Trả sản phẩm thành
-                                        công</p>
+                                    <p v-if="hdct.trangThaiHDCT == 9" style="margin-top: 10px">yêu cầu Trả sản phẩm thất bại</p>
+                                    <p v-if="hdct.trangThaiHDCT == 8" style="margin-top: 10px">yêu cầu Trả sản phẩm thành công</p>
                                     <p v-if="hdct.trangThaiHDCT == 10" style="margin-top: 10px">Trả sản phẩm thành công</p>
-                                    <p v-if="hdct.trangThaiHDCT == 7" style="margin-top: 10px">sản phẩm đang yêu cầu trả
-                                        hàng</p>
+                                    <p v-if="hdct.trangThaiHDCT == 7" style="margin-top: 10px">sản phẩm đang yêu cầu trả hàng</p>
                                 </div>
                             </div>
                         </div>
@@ -310,8 +314,7 @@ const checks = (trangThai, soLuong) => {
                         <h4>Địa chỉ nhận hàng</h4>
                         <p>{{ dataHD.tenNguoiNhan }}</p>
                         <p>{{ dataHD.sdt }}</p>
-                        <p>{{ dataHD.diaChiCuThe }}, {{ dataHD.tenPhuongXa }}, {{ dataHD.tenQuanHuyen }}, {{
-                            dataHD.tenTinhThanh }}</p>
+                        <p>{{ dataHD.diaChiCuThe }}, {{ dataHD.tenPhuongXa }}, {{ dataHD.tenQuanHuyen }}, {{ dataHD.tenTinhThanh }}</p>
                     </div>
                     <div class="c2" style="margin-left: 500px">
                         <p>Tổng tiền hàng</p>
@@ -322,12 +325,9 @@ const checks = (trangThai, soLuong) => {
                     <div class="c2">
                         <p>{{ formatCurrency(dataHD.tongTien) }}</p>
                         <p>{{ formatCurrency(dataHD.tienShip) }}</p>
-                        <p style="color: red;" v-if="dataHD.tienSauKhiGiam !== null">- {{
-                            formatCurrency(parseInt(dataHD.tongTien) + parseInt(dataHD.tienShip) -
-                                parseInt(dataHD.tienSauKhiGiam)) }}</p>
-                        <p style="color: red;" v-else>0</p>
-                        <p style="font-weight: bold; color: red">{{ formatCurrency(tinhTongTien(dataHD.tongTien,
-                            dataHD.tienShip, dataHD.tienSauKhiGiam)) }}</p>
+                        <p style="color: red" v-if="dataHD.tienSauKhiGiam !== null">- {{ formatCurrency(parseInt(dataHD.tongTien) + parseInt(dataHD.tienShip) - parseInt(dataHD.tienSauKhiGiam)) }}</p>
+                        <p style="color: red" v-else>0</p>
+                        <p style="font-weight: bold; color: red">{{ formatCurrency(tinhTongTien(dataHD.tongTien, dataHD.tienShip, dataHD.tienSauKhiGiam)) }}</p>
                     </div>
                 </div>
             </div>
@@ -336,41 +336,34 @@ const checks = (trangThai, soLuong) => {
         <Dialog v-model:visible="doiTraDialog" :style="{ width: '450px' }" header="Đổi trả Sản phẩm" :modal="true">
             <form @submit="onSubmit">
                 <div class="Field col-12 md:col-12" style="margin-bottom: 0px">
-                    <div class="" style="margin-bottom: 10px; margin-top: 20px; display: flex;">
+                    <div class="" style="margin-bottom: 10px; margin-top: 20px; display: flex">
                         <span class="p-float-label">
-                            <InputNumber id="soluong" v-model="soluong" :class="{ 'p-invalid': soLuongError }">
-                            </InputNumber>
+                            <InputNumber id="soluong" v-model="soluong" :class="{ 'p-invalid': soLuongError }"> </InputNumber>
                             <label for="SoLuongTon">Số lượng trả hàng</label>
                         </span>
                         <small class="p-error">{{ soLuongError }}</small>
-                        <p style="margin-left: 10px;margin-top: 10px;">số lượng: {{ soLuongHang }}</p>
+                        <p style="margin-left: 10px; margin-top: 10px">số lượng: {{ soLuongHang }}</p>
                     </div>
 
                     <div style="display: flex">
                         <span class="p-float-label" style="width: 500px; margin-top: 10px">
-                            <Dropdown id="dropdown" style="width: 370px" :options="dataLyDo" v-model="selectLyDo"
-                                optionLabel="value" :class="{ 'p-invalid': lyDoSacError }" @change="onTrongLuongChange">
-                            </Dropdown>
+                            <Dropdown id="dropdown" style="width: 370px" :options="dataLyDo" v-model="selectLyDo" optionLabel="value" :class="{ 'p-invalid': lyDoSacError }" @change="onTrongLuongChange"> </Dropdown>
                             <label for="dropdown">Lý do</label>
                         </span>
-                        <TableTrongLuong :tableId="'TableTrongLuong'" :rightGhId="'right_ghTrongLuong'"
-                            :tableClass="'TableTrongLuong'" :rightGhClass="'right_ghTrongLuong'" />
+                        <TableTrongLuong :tableId="'TableTrongLuong'" :rightGhId="'right_ghTrongLuong'" :tableClass="'TableTrongLuong'" :rightGhClass="'right_ghTrongLuong'" />
                     </div>
 
                     <small class="p-error">{{ lyDoSacError }}</small>
 
                     <div class="" style="margin-bottom: 0px; margin-top: 20px">
                         <label for="address">Mô tả</label>
-                        <Textarea id="address" rows="4" v-model="moTa" :class="{ 'p-invalid': MoTaSacError }"
-                            style="width: 370px"></Textarea>
+                        <Textarea id="address" rows="4" v-model="moTa" :class="{ 'p-invalid': MoTaSacError }" style="width: 370px"></Textarea>
                         <small class="p-error">{{ MoTaSacError }}</small>
                     </div>
                 </div>
                 <div style="width: 400px; text-align: center">
-                    <Button class="p-button-outlined" outlined severity="secondary"
-                        style="width: 100px; height: auto; margin: 10px" @click="reset()" label="Hủy"></Button>
-                    <Button type="submit" class="p-button-outlined" style="width: 100px; height: auto; margin: 10px"
-                        label="Xác nhận"></Button>
+                    <Button class="p-button-outlined" outlined severity="secondary" style="width: 100px; height: auto; margin: 10px" @click="reset()" label="Hủy"></Button>
+                    <Button type="submit" class="p-button-outlined" style="width: 100px; height: auto; margin: 10px" label="Xác nhận"></Button>
                 </div>
             </form>
         </Dialog>
@@ -402,4 +395,5 @@ const checks = (trangThai, soLuong) => {
     text-align: right;
     /* Đặt giá tiền ở bên phải */
     display: block;
-}</style>
+}
+</style>

@@ -68,22 +68,6 @@ const dangNhapa = handleSubmit(async () => {
     }
 });
 
-// const dangNhapa = async () => {
-//     const login = {
-//         usernameOrEmail: email.value,
-//         password: password.value
-//     };
-//     const token = await dnService.dangNhap(login);
-//     localStorage.setItem('token', token);
-//     gotoTrangChu();
-
-//     // khi dang nhap thanh cong thi add sp gio hang vao db
-//     if (localStorage.getItem('cart')) {
-//         let array = JSON.parse(localStorage.getItem('cart'));
-//         await gioHangService.addToCartWhenLogin(array, token);
-//         localStorage.removeItem('cart');
-//     }
-// };
 
 const logoUrl = computed(() => {
     return `layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.svg`;
