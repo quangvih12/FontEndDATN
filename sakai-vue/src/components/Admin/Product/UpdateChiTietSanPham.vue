@@ -93,7 +93,6 @@ const onSubmit = handleSubmit(async (values) => {
         size: values.size,
         trangThai: values.trangThai
     };
-    // console.log(form)
     let data = await productStore.editSPCT(form, props.myProp.id);
     emit('update:myProp', data);
 

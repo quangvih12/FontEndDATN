@@ -8,7 +8,6 @@ import { useDetailProductStore } from '../../service/KhachHang/DetailService'; /
 import { useRoute } from 'vue-router';
 import { gioHangStore } from '@/service/KhachHang/Giohang/GiohangCTService.js';
 import { useRouter } from 'vue-router';
-
 import {soLuongGh} from '@/service/KhachHang/GioHang/cart.js'
 
 
@@ -134,7 +133,6 @@ const loadData = async () => {
 // };
 
 
-const quantity = ref(1);
 
 
 const increment = () => {
@@ -379,10 +377,10 @@ const setDefaultQuantity = () => {
                                 >Loại: <span style="color: red">{{ dataSanPham.loai }}</span></label
                             >
                             <div class="gb" style="display: flex">
-                                <h2 s v-if="dataListSPCT.soLuongTon !== 0">
-                                    <span tyle="color: rgb(0, 0, 0)"> {{ formatCurrency(dataListSPCT.giaBan) !== '' ? formatCurrency(dataListSPCT.giaBan) : 'Hết hàng' }}</span>
+                                <h2 s v-if=" dataListSPCT.soLuongTon>0 || dataListSPCT.soLuongTon == null">
+                                    <p tyle="color: rgb(0, 0, 0)"> {{ formatCurrency(dataListSPCT.giaBan) !== '' ? formatCurrency(dataListSPCT.giaBan) : 'Hết hàng' }}</p>
                                 </h2>
-                                <p style="color: red" v-else>Hết hàng</p>
+                                <p style="color: red; font-size: 25px;" v-else>Hết hàng</p>
                                 <div>
                                     <h2 style="color: red; margin-left: 20px" v-if="dataListSPCT.tenKM !== null && dataListSPCT.tenKM !== undefined">{{ formatCurrency(dataListSPCT.giaSauGiam) }}</h2>
                                     <Tag v-if="dataListSPCT.tenKM !== null && dataListSPCT.tenKM !== undefined" severity="danger" style="width: 70px; height: 20px; margin-left: 5px; margin-bottom: 10px">Giảm {{ dataListSPCT.giaTriGiam }}%</Tag>
@@ -398,7 +396,7 @@ const setDefaultQuantity = () => {
                             <br />
                             <label for="">- Thương hiệu: {{ dataSanPham.thuongHieu }}</label>
                             <br />
-                            <label for="">- Số lượng tồn: {{ dataListSPCT.soLuongTon }}</label>
+                            <label for="">- Số lượng tồn: {{ dataListSPCT.soLuongTon <=0?0:dataListSPCT.soLuongTon  }}</label>
                             <br />
                             <br />
                             <label class="ms">Màu sắc</label>
@@ -438,12 +436,12 @@ const setDefaultQuantity = () => {
                                 </div>
                                 <Button label="Thêm vào giỏ hàng" @click="addToCart" icon="pi pi-shopping-cart"
                                     class="p-button-rounded p-button-warning mr-2 mb-2" style="background: #e8bd72"
-                                    :disabled="dataListSPCT.giaBan == null || dataListSPCT.soLuongTon == 0" />
+                                    :disabled="dataListSPCT.giaBan == null || dataListSPCT.soLuongTon <= 0" />
                                 <Button label="Mua ngay" @click="muaNgay" class="p-button-rounded p-button-warning mr-2 mb-2"
                                     style="background: #e8bd72"
-                                    :disabled="dataListSPCT.giaBan == null || dataListSPCT.soLuongTon == 0"
+                                    :disabled="dataListSPCT.giaBan == null || dataListSPCT.soLuongTon <= 0"
                                 />
-                                <Button label="Mua ngay" class="p-button-rounded p-button-warning mr-2 mb-2" style="background: #e8bd72" :disabled="dataListSPCT.giaBan == null || dataListSPCT.soLuongTon == 0" />
+                              
                             </div>
                         </div>
                     </div>
