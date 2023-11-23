@@ -8,6 +8,8 @@ import { HDStore } from '../../../service/Admin/HoaDon/HoaDonService';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { useToast } from 'primevue/usetoast';
+import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 
 const toast = useToast();
 const useHD = HDStore();
@@ -28,6 +30,7 @@ const props = defineProps({
 const tienGiam =ref(0);
 // mở form
 const editProduct = () => {
+    console.log(props.myProp);
     code.value = 'Hoá đơn: ' + props.myProp.maHD;
     productDialog.value = true;
     loadDataHDCT(props.myProp.idHD);
@@ -49,7 +52,9 @@ const ngayThanhToan = ref('');
 const ngayGiao = ref('');
 const ngayNhan = ref('');
 
-onMounted(() => {});
+onMounted(() => {
+    openSocketConnection();
+});
 
 const events = ref([
     { status: 'Ngày đã đặt', date: ngayDat, icon: 'pi pi-wallet', color: '#9C27B0' },
@@ -62,7 +67,6 @@ const events = ref([
 const loadDataHDCT = async (idHD) => {
     const respone = await useHD.findHdctByIdHd(idHD);
     dataHDCT.value = respone;
-  //  console.log(dataHDCT.value);
 };
 
 const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
@@ -236,6 +240,22 @@ const hienThiTrangThai = (trangThai) => {
     }
 };
 
+const stompClient = ref(null);
+const openSocketConnection = () => {
+    stompClient.value = new Client({
+        brokerURL: 'ws://localhost:8080/ws'
+    });
+
+    stompClient.value.activate();
+};
+
+const sendMessage = () => {
+    stompClient.value.publish({
+        destination: '/app/hoa-don/' + props.myProp.idUser,
+        body: ''
+    });
+};
+
 // màn xác nhận đổi trả
 //show dialog lý do đổi trả
 const lyDoDialogXNDoiTra = ref(false);
@@ -268,6 +288,7 @@ const btnXacNhanHuyXNDoiTra = () => {
         huyDialogXNDoiTra.value = false;
     } else {
         useHD.huyHoaDonDoiTra(idHD.value, lyDoXNDoiTra.value, 8);
+        sendMessage();
         toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Huỷ thành công', life: 3000 });
         lyDoXNDoiTra.value = '';
         huyDialogXNDoiTra.value = false;
@@ -277,6 +298,7 @@ const btnXacNhanHuyXNDoiTra = () => {
 };
 const btnXacNhanXNDoiTra = () => {
     useHD.hoanThanhDoiTra(idHD.value);
+    sendMessage();
     toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Xác nhận thành công', life: 3000 });
     addProductDialogXNDoiTra.value = false;
     productDialog.value = false;
@@ -284,6 +306,7 @@ const btnXacNhanXNDoiTra = () => {
 
 const btnHoanThanhDoiTraKhongCongSoLuong = () => {
     useHD.hoanThanhDoiTraKhongCongSoLuong(idHD.value);
+    sendMessage();
     toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Xác nhận thành công', life: 3000 });
     addProductDialogXNDoiTra.value = false;
     productDialog.value = false;
@@ -310,6 +333,7 @@ const confirmHuyGH = (id) => {
 
 const btnXacNhanGH = () => {
     useHD.hoanThanh(idHD.value);
+    sendMessage();
     toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Xác nhận thành công', life: 3000 });
     addProductDialogGH.value = false;
     productDialog.value = false;
@@ -317,6 +341,7 @@ const btnXacNhanGH = () => {
 
 const btnXacNhanHuyGH = () => {
     useHD.huyHoaDon(idHD.value, 'Người dùng không nhận hàng', 5);
+    sendMessage();
     toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Xác nhận giao thất bại thành công', life: 3000 });
     huyDialogGH.value = false;
     productDialog.value = false;
@@ -397,7 +422,7 @@ const btnXacNhanHuyGH = () => {
                                 <th>Số lượng</th>
                                 <th>Đơn giá</th>
                                 <th>Thành tiền</th>
-                                <th>Trạng thái</th>
+                                <!-- <th>Trạng thái</th> -->
                             </tr>
                             <hr />
                             <tr v-for="(item, index) in dataHDCT" :key="index">
@@ -409,7 +434,7 @@ const btnXacNhanHuyGH = () => {
                                 <td>{{ item.soLuong }}</td>
                                 <td>{{ formatCurrency(item.donGia) }}</td>
                                 <td>{{ formatCurrency(item.soLuong * item.donGia) }}</td>
-                                <td><Tag :value="hienThiTrangThai(item.trangThai).text" :severity="hienThiTrangThai(item.trangThai).severity" /></td>
+                                <!-- <td><Tag :value="hienThiTrangThai(item.trangThai).text" :severity="hienThiTrangThai(item.trangThai).severity" /></td> -->
                             </tr>
                         </table>
                         <hr />
@@ -446,11 +471,13 @@ const btnXacNhanHuyGH = () => {
                                 <div class="ben-phai">
                                     <p>Tổng tiền các sản phẩm: {{ formatCurrency(props.myProp.tongTien) }}</p>
                                     <p>Phí vận chuyển: {{ formatCurrency(props.myProp.tienShip) }}</p>
+
                                     <p>Tiền giảm:
                                           <span v-if="props.myProp.tienSauKhiGiam != null" style="color: red;">- {{
                                         formatCurrency(parseInt(props.myProp.tongTien)+parseInt(props.myProp.tienShip) -
                                             parseInt(tienGiam)) }}</span>
                                         <span v-else style="color: red;"> 0</span>
+
                                     </p>
                                     <p>
                                         Tổng tiền: <span style="color: #ff3333; font-size: 20px; font-weight: bold">{{

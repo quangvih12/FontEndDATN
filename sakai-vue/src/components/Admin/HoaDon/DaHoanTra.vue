@@ -21,7 +21,6 @@ const data = ref([]);
 const loadData = async () => {
     await useHD.fetchDataHDCTByStatus(8);
     data.value = useHD.dataXacNhanHoanTraHoanTien;
-    console.log(data.value);
 };
 //chạy cái hiện data luôn
 onMounted(() => {

@@ -19,7 +19,7 @@ const idProduct = parseInt(route.params.id);
 const store = soLuongGh();
 const dataSanPham = ref({});
 
-const quantity = ref(1);
+// const quantity = ref(1);
 const dataMauSac = ref([]);
 const dataSize = ref([]);
 const loadImage = ref([]);
