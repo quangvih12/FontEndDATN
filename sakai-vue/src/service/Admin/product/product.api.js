@@ -17,18 +17,6 @@ export const ProductStore = defineStore('product', {
         const response = await axios.get(apiSanPham); // Thay đổi URL dựa trên API của bạn
         //this.products = response.data;
         const productList =response.data; // Lấy dữ liệu từ Store và gán vào biến products
-
-        for (const [key, product] of productList.entries()) {
-            productList[key]['img'] = null;
-            productList[key]['sanPhamChiTiet'] = null;
-            const mau = await this.fetchAllSpCT(product.id);
-            mau.sort((a, b) => b.id - a.id);
-            productList[key]['sanPhamChiTiet'] = mau;
-            const img = await this.fetchAllImage(product.id);
-            img.sort((a, b) => b.id - a.id);
-            productList[key]['img'] = img;
-        }
-    
         this.products = productList;
 
       } catch (error) {
@@ -36,38 +24,28 @@ export const ProductStore = defineStore('product', {
       }
     },
 
-    async fetchDataByLoai(idloai) {
-      try {
-        const response = await axios.get(apiSanPham+'/by-loai?idloai=' + idloai); // Thay đổi URL dựa trên API của bạn
-        this.products = response.data;
-        //  console.table(this.products.size);
+    // async fetchDataByLoai(idloai) {
+    //   try {
+    //     const response = await axios.get(apiSanPham+'/by-loai?idloai=' + idloai); // Thay đổi URL dựa trên API của bạn
+    //     this.products = response.data;
+    //     //  console.table(this.products.size);
 
-      } catch (error) {
-        console.error('Lỗi khi lấy danh sách sản phẩm:', error);
-      }
-    },
-    async fetchDataByThuongHieu(idthuonghieu) {
-      try {
-        const response = await axios.get(apiSanPham+'/by-thuong-hieu?idthuonghieu=' + idthuonghieu); // Thay đổi URL dựa trên API của bạn
-        this.products = response.data;
-        //  console.table(this.products.size);
+    //   } catch (error) {
+    //     console.error('Lỗi khi lấy danh sách sản phẩm:', error);
+    //   }
+    // },
+    // async fetchDataByThuongHieu(idthuonghieu) {
+    //   try {
+    //     const response = await axios.get(apiSanPham+'/by-thuong-hieu?idthuonghieu=' + idthuonghieu); // Thay đổi URL dựa trên API của bạn
+    //     this.products = response.data;
+    //     //  console.table(this.products.size);
 
-      } catch (error) {
-        console.error('Lỗi khi lấy danh sách sản phẩm:', error);
-      }
-    },
+    //   } catch (error) {
+    //     console.error('Lỗi khi lấy danh sách sản phẩm:', error);
+    //   }
+    // },
 
-    async fetchAllSpCT(idSP) {
-      try {
-        const response = await axios.get(apiSanPham+`/${idSP}`); // Thay đổi URL dựa trên API của bạn
-        this.sanPhamCT = response.data;
-        //  console.table(this.products.size);
-        return this.sanPhamCT;
-      } catch (error) {
-        console.error('Lỗi khi lấy danh sách sản phẩm:', error);
-      }
-    },
-
+ 
     async fetchDataByStatus(status) {
       try {
         const response = await axios.get(apiSanPham+'/loc?comboBoxValue=' + status); // Thay đổi URL dựa trên API của bạn
@@ -78,18 +56,6 @@ export const ProductStore = defineStore('product', {
         console.error('Lỗi khi lấy danh sách sản phẩm:', error);
       }
     },
-
-    async fetchAllImage(idProduct) {
-      try {
-
-        const response = await axios.get(apiSanPham+ `/${idProduct}/images`); // Thay đổi URL dựa trên API của bạn
-        this.images = response.data;
-        return this.images;
-      } catch (error) {
-        console.error('Lỗi khi lấy danh sách sản phẩm:', error);
-      }
-    },
-
 
 
     async checkDuplicateName(data) {
@@ -130,15 +96,6 @@ export const ProductStore = defineStore('product', {
       try {
         const response = await axios.post(apiSanPham, newProduct); // Thay đổi URL và dữ liệu newProduct tùy theo API của bạn
         const newProductData = response.data;
-        newProductData['img'] = null;
-        newProductData['sanPhamChiTiet'] = null;
-        const mau = await this.fetchAllSpCT(newProductData.id);
-        mau.sort((a, b) => b.id - a.id);
-        newProductData['sanPhamChiTiet'] = mau;
-        const img = await this.fetchAllImage(newProductData.id);
-        img.sort((a, b) => b.id - a.id);
-        newProductData['img'] = img;
-
         this.products.unshift(newProductData); // Thêm sản phẩm mới vào danh sách
       } catch (error) {
         console.error('Lỗi khi thêm sản phẩm:', error);
@@ -151,17 +108,7 @@ export const ProductStore = defineStore('product', {
         if (index !== -1) {
           let newProductData = this.products[index];
           newProductData = response.data;
-          newProductData['img'] = null;
-          newProductData['sanPhamChiTiet'] = null;
-          const mau = await this.fetchAllSpCT(newProductData.id);
-          mau.sort((a, b) => b.id - a.id);
-          newProductData['sanPhamChiTiet'] = mau;
-          const img = await this.fetchAllImage(newProductData.id);
-          img.sort((a, b) => b.id - a.id);
-          newProductData['img'] = img;
-
           this.products[index] = newProductData;
-         /// console.log(this.products[index]);
         }
       } catch (error) {
         console.error('Lỗi khi sửa sản phẩm:', error);
@@ -175,14 +122,7 @@ export const ProductStore = defineStore('product', {
         if (index !== -1) {
           let newProductData = this.products[index];
           newProductData = response.data;
-          newProductData['img'] = null;
-          newProductData['sanPhamChiTiet'] = null;
-          const mau = await this.fetchAllSpCT(newProductData.id);
-          mau.sort((a, b) => b.id - a.id);
-          newProductData['sanPhamChiTiet'] = mau;
-          const img = await this.fetchAllImage(newProductData.id);
-          img.sort((a, b) => b.id - a.id);
-          newProductData['img'] = img;
+        
 
           this.products[index] = newProductData;
         }
@@ -199,14 +139,7 @@ export const ProductStore = defineStore('product', {
         if (index !== -1) {
           let newProductData = this.products[index];
           newProductData = response.data;
-          newProductData['img'] = null;
-          newProductData['sanPhamChiTiet'] = null;
-          const mau = await this.fetchAllSpCT(newProductData.id);
-          mau.sort((a, b) => b.id - a.id);
-          newProductData['sanPhamChiTiet'] = mau;
-          const img = await this.fetchAllImage(newProductData.id);
-          img.sort((a, b) => b.id - a.id);
-          newProductData['img'] = img;
+         
 
           this.products[index] = newProductData;
         }
@@ -226,7 +159,7 @@ export const ProductStore = defineStore('product', {
     async addSPCT(newProduct) {
       try {
         const response = await axios.post(apiSanPham+'/add-spct', newProduct); // Thay đổi URL và dữ liệu newProduct tùy theo API của bạn
-        await this.fetchAll();
+      //  await this.fetchAll();
         return response.data;
       } catch (error) {
         console.error('Lỗi khi thêm sản phẩm:', error);
@@ -236,7 +169,7 @@ export const ProductStore = defineStore('product', {
     async editSPCT(updatedProduct,id) {
       try {
         const response = await axios.put(apiSanPham+`/update-san-pham-CT/${id}`, updatedProduct); // Thay đổi URL và dữ liệu updatedProduct tùy theo API của bạn
-        await this.fetchAll();
+      //  await this.fetchAll();
         return response.data;
       } catch (error) {
         console.error('Lỗi khi sửa sản phẩm:', error);
@@ -246,7 +179,7 @@ export const ProductStore = defineStore('product', {
     async deleteSPCT(id) {
       try {
         const response = await axios.put(apiSanPham+`/delete-spct/${id}`); // Thay đổi URL và dữ liệu updatedProduct tùy theo API của bạn
-        await this.fetchAll();
+    //    await this.fetchAll();
         return response.data;
       } catch (error) {
         console.error('Lỗi khi sửa sản phẩm:', error);
@@ -256,7 +189,7 @@ export const ProductStore = defineStore('product', {
     async khoiPhucSPCT(id) {
       try {
         const response = await axios.put(apiSanPham+`/khoi-phuc-spct/${id}`); // Thay đổi URL và dữ liệu updatedProduct tùy theo API của bạn
-        await this.fetchAll();
+      //  await this.fetchAll();
         return response.data;
       } catch (error) {
         console.error('Lỗi khi sửa sản phẩm:', error);
@@ -266,7 +199,7 @@ export const ProductStore = defineStore('product', {
     async addImg(newImg, id) {
       try {
         const response = await axios.post(apiSanPham+`/add-img/${id}`, newImg); // Thay đổi URL và dữ liệu newProduct tùy theo API của bạn
-        await this.fetchAll();
+    //    await this.fetchAll();
         return response.data;
       } catch (error) {
         console.error('Lỗi khi thêm sản phẩm:', error);
@@ -276,7 +209,7 @@ export const ProductStore = defineStore('product', {
     async editImg(updateImg,id) {
       try {
         const response = await axios.put(apiSanPham+`/update-img/${id}`, updateImg); // Thay đổi URL và dữ liệu updatedProduct tùy theo API của bạn
-        await this.fetchAll();
+    //    await this.fetchAll();
         return response.data;
       } catch (error) {
         console.error('Lỗi khi sửa sản phẩm:', error);
@@ -286,7 +219,7 @@ export const ProductStore = defineStore('product', {
     async deleteImg(id) {
       try {
         const response = await axios.delete(apiSanPham+`/delete-img/${id}`); // Thay đổi URL và dữ liệu updatedProduct tùy theo API của bạn
-        await this.fetchAll();
+     //   await this.fetchAll();
         return response.data;
       } catch (error) {
         console.error('Lỗi khi sửa sản phẩm:', error);

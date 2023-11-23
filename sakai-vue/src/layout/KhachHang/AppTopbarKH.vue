@@ -17,9 +17,6 @@ import SockJS from "sockjs-client";
 
 const thongBaoStore = KHThongBaoStore();
 
-const cartItems = store.getCartItems;
-
-
 const userService = userStore();
 const { layoutConfig, onMenuToggle } = useLayout();
 

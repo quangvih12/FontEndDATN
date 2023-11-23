@@ -223,8 +223,11 @@ const applyVoucher = () => {
    
    let giam = tongTien.value * (phanTram / 100)
     if (giam > selectedVoucher.value.giamToiDa) {
-        toast.add({ severity: 'warn', summary: '', detail: 'Quá mức giảm tối đa, hãy chọn voucher khác ' + giam, life: 3000 });
-        return;
+        giamGia.value = selectedVoucher.value.giamToiDa;
+        tongThanhToan.value = tongTien.value + phiShip.value - giamGia.value;
+        tienSauGiam.value = tongThanhToan.value;
+        toast.add({ severity: 'success', summary: '', detail: 'Áp dụng voucher thành công', life: 3000 });
+        selectedVoucherDialog.value = false;
     } else {
         giamGia.value = giam;
         tongThanhToan.value = tongTien.value + phiShip.value - giamGia.value;

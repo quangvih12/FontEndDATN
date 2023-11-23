@@ -48,6 +48,7 @@ const loadData = async () => {
         }
     }
     bien.value = sum;
+
 };
 
 const loadDataHD = async () => {
@@ -194,7 +195,7 @@ const formatDate = (dateTime) => {
 
 const checks = (trangThai, soLuong) => {
 
-    if (parseInt(trangThai) == 3 && parseInt(bien.value) < parseInt(soLuong)) {
+    if (parseInt(trangThai) == 3 && parseInt(bien.value) <= parseInt(soLuong)) {
         return true;
     }
     else if (parseInt(bien.value) >= parseInt(soLuong) && parseInt(trangThai) == 3) {
@@ -342,12 +343,12 @@ const checks = (trangThai, soLuong) => {
                             </InputNumber>
                             <label for="SoLuongTon">Số lượng trả hàng</label>
                         </span>
-                        <small class="p-error">{{ soLuongError }}</small>
+                       
                         <p style="margin-left: 10px;margin-top: 10px;">số lượng: {{ soLuongHang }}</p>
                     </div>
-
+                    <small class="p-error">{{ soLuongError }}</small>
                     <div style="display: flex">
-                        <span class="p-float-label" style="width: 500px; margin-top: 10px">
+                        <span class="p-float-label" style="width: 500px; margin-top: 20px">
                             <Dropdown id="dropdown" style="width: 370px" :options="dataLyDo" v-model="selectLyDo"
                                 optionLabel="value" :class="{ 'p-invalid': lyDoSacError }" @change="onTrongLuongChange">
                             </Dropdown>

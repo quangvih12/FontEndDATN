@@ -278,7 +278,7 @@ const loadDataTrangThai = () => {
 
 
 <template>
-    <Button icon="pi pi-eye" class="p-button-rounded p-button-success mr-2" @click="editProduct()" />
+    <Button icon="pi pi-eye" severity="secondary" class="p-button-rounded  mr-2" @click="editProduct()" />
     <Dialog v-model:visible="productDialog" :style="{ width: '1050px' }" header="Xem Chi Tiết Sản Phẩm" :modal="true"
         class="p-fluid">
         <form @submit="onSubmit" style="margin-top: 30px;">

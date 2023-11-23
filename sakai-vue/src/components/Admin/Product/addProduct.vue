@@ -60,9 +60,7 @@ const schema = yup.object().shape({
     soLuongSize: yup.number().required(' vui lòng nhập số lượng').typeError('Số lượng size phải là một số').min(1, 'Số lượng phải lớn hơn hoặc bằng 1').nullable(),
     trongLuong: yup.string().required('vui lòng chọn trọng lượng sản phẩm'),
     imgMauSac: yup.array().required('vui lòng chọn ảnh màu sắc sản phẩm'),
-    trangThai: yup.number().required('vui lòng chọn trạng thái của sản phẩm'),
     moTa: yup.string().required('Vui lòng điền mô tả sản phẩm').min(10, 'Mô tả sản phẩm phải có ít nhất 10 ký tự'),
-    //   imagesProduct: yup.array().required('Vui lòng chọn ảnh cho sản phẩm'),
     anh: yup.string().required('vui lòng chọn ảnh chính cho sản phẩm')
 });
 
@@ -502,7 +500,7 @@ const openNew = () => {
                                     </div>
                                     <small class="p-error">{{ demLotError }}</small>
                                 </div>
-                                <div class="field col-12 md:col-8" style="margin-bottom: 30px">
+                                <!-- <div class="field col-12 md:col-8" style="margin-bottom: 30px">
                                     <label for="address">Trạng thái</label>
                                     <div class="flex flex-wrap gap-3" >
                                         <div class="flex align-items-center">
@@ -517,7 +515,7 @@ const openNew = () => {
                                         </div>
                                     </div>
                                     <small class="p-error">{{ TrangThaiSacError }}</small>
-                                </div>
+                                </div> -->
                                 <div class="p-fluid formgrid grid">
                                     <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
                                         <div style="display: flex">
@@ -783,11 +781,12 @@ const openNew = () => {
                             </div>
 
                             <div style="width: 1000px; text-align: center">
-                                <Button type="submit" class="p-button-outlined"
-                                    style="width: 200px; height: auto; margin: 10px" label="Lưu"></Button>
+                               
                                 <Button class="p-button-outlined" outlined severity="secondary"
                                     style="width: 200px; height: auto; margin: 10px" @click="reset()"
                                     label="clear"></Button>
+                                    <Button type="submit" class="p-button-outlined"
+                                    style="width: 200px; height: auto; margin: 10px" label="Lưu"></Button>
                             </div>
                         </div>
                     </form>
