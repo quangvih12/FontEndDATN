@@ -65,7 +65,7 @@ onMounted(() => {
     loadDataTreEm();
 });
 
-const banner1 = 'https://nontrum.vn/wp-content/uploads/2023/05/18.5-BANNER-NONTRUM.jpg';
+const banner1 = '../../images/banner.jpg';
 const thumbnails = [
     {
         imageUrl: 'https://nontrum.vn/wp-content/uploads/2019/10/non-balder-vang-1-e1583121638578.jpg',
@@ -165,7 +165,7 @@ const banner9 =
     <div class="grid">
         <div class="image-container">
             <div class="nav-button left-button" @click="previousImage">&lt;</div>
-            <img :src="banner1" class="centered-image" />
+            <img src="../../images/banner.jpg" class="centered-image" />
             <div class="nav-button right-button" @click="nextImage">&gt;</div>
         </div>
         <div class="main-sp">

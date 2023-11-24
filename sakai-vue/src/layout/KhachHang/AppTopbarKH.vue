@@ -291,13 +291,13 @@ const toggle2 = (event) => {
             <router-link to="/san-pham" class="layout-topbar-logo" style="width: 100%; margin-left: 10px">
                 <p style="font-size: 16px">Sản phẩm</p>
             </router-link>
-            <router-link to="/gioi-thieu" class="layout-topbar-logo" style="width: 120%; margin-left: 10px">
+            <router-link to="/gioi-thieu" class="layout-topbar-logo" style="width: 140%; margin-left: 10px">
                 <p style="font-size: 16px">Về chúng tôi</p>
             </router-link>
-            <router-link to="/thong-ke" class="layout-topbar-logo"
+            <!-- <router-link to="/thong-ke" class="layout-topbar-logo"
                 style="width: 90%; margin-left: 10px; margin-right: 15px">
                 <p style="font-size: 16px">Liên hệ</p>
-            </router-link>
+            </router-link> -->
             <router-link to="/gio-hang" class="layout-topbar-logo" style="width: 5%; margin-right: 3px">
                 <i class="pi pi-shopping-cart p-text-secondary p-overlay-badge" style="font-size: 1.5rem"
                     v-badge="gioHangService.soLuong"></i>
