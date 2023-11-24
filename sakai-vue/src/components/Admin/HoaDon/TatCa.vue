@@ -45,8 +45,12 @@ const hienThiTrangThai = (trangThai) => {
         return { text: 'Đang chuẩn bị hàng', severity: 'success' };
     } else if (trangThai == 5) {
         return { text: 'Giao cho đơn vị vận chuyển', severity: 'help' };
-    } else if (trangThai == 6) {
-        return { text: 'Yêu cầu đổi trả', severity: 'warning' };
+    }else if (trangThai == 7) {
+        return { text: 'Yêu cầu trả hàng', severity: 'warning' };
+    } else if (trangThai == 8) {
+        return { text: 'Đã trả hàng', severity: 'warning' };
+    }else if (trangThai == 10) {
+        return { text: 'đổi trả thành công', severity: 'success' };
     } else {
         return { text: 'Xác nhận đổi trả', severity: 'success' };
     }
@@ -203,7 +207,7 @@ const formatDate = (dateTime) => {
             <template #body="slotProps">
                 <span class="p-column-title">tongTien</span>
 
-                {{ formatCurrency(slotProps.data.tienSauKhiGiam==null?slotProps.data.tongTien: slotProps.data.tienSauKhiGiam) }}
+                {{ formatCurrency(slotProps.data.tienSauKhiGiam==null?parseInt(slotProps.data.tongTien)+parseInt(slotProps.data.tienShip): slotProps.data.tienSauKhiGiam) }}
             </template>
         </Column>
         <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;">

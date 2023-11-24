@@ -8,7 +8,8 @@ const apiUser = 'http://localhost:8080/api/admin/user';
 export const voucherStore = defineStore('voucher', {
     state: () => ({
         data: [],
-        dataUser: []
+        dataUser: [],
+        excels:[]
     }),
     actions: {
         async getVoucher() {
@@ -54,6 +55,11 @@ export const voucherStore = defineStore('voucher', {
                     }
                 }
             });
+        },
+        async uploadFile(formData) {
+            const response = await axios.post(apiVoucher+"/view-data", formData);
+            const newProductData = response.data;
+            this.excels.unshift(newProductData); 
         },
         deleteVoucher(form, id) {
             axios.put(apiVoucher + '/delete/' + id, form).then((response) => {
