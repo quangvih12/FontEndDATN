@@ -19,7 +19,7 @@ const dataSP = ref([]);
 const loadData = async () => {
     await SanPhamService.fetchAll();
     dataSP.value = SanPhamService.dataSP;
-    console.log(SanPhamService.dataSP);
+   // console.log(SanPhamService.dataSP);
 };
 
 const uniqueTenLoai = computed(() => {
@@ -41,8 +41,8 @@ const formatCurrency = (value) => {
 
 const priceRanges = [
     { label: 'Lọc theo giá', min: 0, max: Infinity },
-    { label: 'Dưới 500k', min: 0, max: 500000 },
-    { label: '500k - 1 triệu', min: 500000, max: 1000000 },
+    { label: 'Dưới 500.000', min: 0, max: 500000 },
+    { label: '500.000 - 1 triệu', min: 500000, max: 1000000 },
     { label: 'Trên 1 triệu', min: 1000000, max: Infinity }
 ];
 const selectedSortOption = ref(null);
@@ -87,7 +87,8 @@ const filteredAndSortedProducts = computed(() => {
     if (selectedPriceRange.value) {
         const { min, max } = selectedPriceRange.value;
         filteredProducts = filteredProducts.filter((product) => {
-            const productPrice = (product.giaBanMin + product.giaBanMax) / 2;
+          
+            const productPrice = (parseInt( product.giaBanMin) + parseInt(product.giaBanMax)) / 2;
             return productPrice >= min && productPrice <= max;
         });
     }
@@ -119,6 +120,95 @@ const filteredAndSortedProducts = computed(() => {
         <div class="container">
             <Breadcrumb :home="home" :model="items" />
             <h1>Sản phẩm</h1>
+          
+            <Divider />
+            <div class="flex">
+                <Dropdown v-model="selectedSortOption" :options="sapXep" optionLabel="label" placeholder="Sắp xếp" class="w-full md:w-14rem" />
+                <Dropdown v-model="selectedPriceRange" :options="priceRanges" optionLabel="label" placeholder="Lọc theo giá" class="w-full md:w-14rem" style="margin-left: 20px" />
+                <Dropdown v-model="selectedTenLoai" :options="uniqueTenLoai" placeholder="Chọn loại sản phẩm" class="w-full md:w-14rem" style="margin-left: 20px" />
+                <Dropdown v-model="selectedTenThuongHieu" :options="uniqueTenThuongHieu" placeholder="Chọn thương hiệu" class="w-full md:w-14rem" style="margin-left: 20px" />
+                <span class="block mt-2 md:mt-0 p-input-icon-left" style="margin-left: 150px">
+                    <i class="pi pi-search" />
+                    <InputText v-model="searchTerm" placeholder="Search..." />
+                </span>
+            </div>
+            <br />
+            <DataView
+                :value="filteredAndSortedProducts"
+                :layout="layout"
+                dataKey="id"
+                :paginator="true"
+                :rows="12"
+                :filters="filters"
+                paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                :rowsPerPageOptions="[12, 18, 27]"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
+                responsiveLayout="scroll"
+            >
+                <template #header>
+                    <div class="flex justify-content-end">
+                        <DataViewLayoutOptions v-model="layout" />
+                    </div>
+                </template>
+
+                <template #list="slotProps">
+                    <div class="col-12">
+                        <div class="flex flex-column xl:flex-row xl:align-items-start p-4 gap-4">
+                            <img class="w-9 sm:w-16rem xl:w-10rem shadow-2 block xl:block mx-auto border-round" :src="`${slotProps.data.anh}`" :alt="slotProps.data.name" />
+                            <div class="flex flex-column sm:flex-row justify-content-between align-items-center xl:align-items-start flex-1 gap-4">
+                                <div class="flex flex-column align-items-center sm:align-items-start gap-3">
+                                    <div class="text-2xl font-bold text-900">{{ slotProps.data.tenSP }}</div>
+                                </div>
+                                <div class="flex sm:flex-column align-items-center sm:align-items-end gap-3 sm:gap-2">
+                                    <p class="text-xl font-semibold" style="color: black; text-align: center" v-if="slotProps.data.giaBanMin == slotProps.data.giaBanMax">{{ formatCurrency(slotProps.data.giaBanMax) }}</p>
+                                    <p
+                                        class="text-xl font-semibold"
+                                        style="color: black; text-align: center"
+                                        v-else-if="slotProps.data.giaSauGiamMax != null && slotProps.data.giaSauGiamMin != null && slotProps.data.giaSauGiamMax != slotProps.data.giaSauGiamMin"
+                                    >
+                                        {{ formatCurrency(slotProps.data.giaSauGiamMin) }} - {{ formatCurrency(slotProps.data.giaSauGiamMax) }}
+                                    </p>
+                                    <p class="text-xl font-semibold" style="color: black; text-align: center" v-else-if="slotProps.data.giaSauGiamMax == null && slotProps.data.giaSauGiamMin == null">
+                                        {{ formatCurrency(slotProps.data.giaBanMin) }} - {{ formatCurrency(slotProps.data.giaBanMax) }}
+                                    </p>
+                                    <p class="text-xl font-semibold" style="color: black; text-align: center" v-else-if="slotProps.data.giaSauGiamMax == slotProps.data.giaSauGiamMin">{{ formatCurrency(slotProps.data.giaSauGiamMax) }}</p>
+                                    <p class="text-xl font-semibold" style="color: black; text-align: center" v-else>{{ formatCurrency(slotProps.data.giaBanMin) }} - {{ formatCurrency(slotProps.data.giaBanMax) }}</p>
+                                    <Button icon="pi  pi-shopping-cart" rounded @click="goToProductDetail(slotProps.data.idSP)"></Button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <template #grid="slotProps">
+                    <div class="col-12 sm:col-6 lg:col-12 xl:col-3 p-2" style="margin-right: 0px;">
+                        <div class="p-4 border-1 surface-border surface-card border-round"  style="height:380px; width: 260px; margin-right:10px ;">
+                            <div class="flex flex-column align-items-center gap-3 py-4">
+                                <img class="w-9 shadow-2 border-round" :src="`${slotProps.data.anh}`" :alt="slotProps.data.tenSP" />
+                                <div style="font-size: 20px; font-weight: 700;">{{ slotProps.data.tenSP }}</div>
+                            </div>
+                            <div class="flex sm:flex-column align-items-center  gap-3 sm:gap-2">
+                                <p class="text-xl font-semibold" style="color: black; text-align: center;  " v-if="slotProps.data.giaBanMin == slotProps.data.giaBanMax">{{ formatCurrency(slotProps.data.giaBanMax) }}</p>
+                                <p
+                                    class="text-xl font-semibold"
+                                    style="color: black; text-align: center ; "
+                                    v-else-if="slotProps.data.giaSauGiamMax != null && slotProps.data.giaSauGiamMin != null && slotProps.data.giaSauGiamMax != slotProps.data.giaSauGiamMin"
+                                >
+                                    {{ formatCurrency(slotProps.data.giaSauGiamMin) }} - {{ formatCurrency(slotProps.data.giaSauGiamMax) }}
+                                </p>
+                                <p class="text-xl font-semibold" style="color: black; text-align: center" v-else-if="slotProps.data.giaSauGiamMax == null && slotProps.data.giaSauGiamMin == null">
+                                    {{ formatCurrency(slotProps.data.giaBanMin) }} - {{ formatCurrency(slotProps.data.giaBanMax) }}
+                                </p>
+                                <p class="text-xl font-semibold" style="color: black;  text-align: center" v-else-if="slotProps.data.giaSauGiamMax == slotProps.data.giaSauGiamMin">{{ formatCurrency(slotProps.data.giaSauGiamMax) }}</p>
+                                <p class="text-xl font-semibold" style="color: black;  text-align: center" v-else>{{ formatCurrency(slotProps.data.giaBanMin) }} - {{ formatCurrency(slotProps.data.giaBanMax) }}</p>
+                                <Button  icon="pi pi-shopping-cart" rounded @click="goToProductDetail(slotProps.data.idSP)"></Button>    
+                            </div>
+                          
+                        </div>
+                    </div>
+                </template>
+            </DataView>
+            <Divider />
             <Carousel :value="dataSP" :numVisible="4" :numScroll="4" :responsiveOptions="responsiveOptions">
                 <template #item="slotProps">
                     <div class="border-1 surface-border border-round m-2 text-center py-5 px-3">
@@ -143,92 +233,6 @@ const filteredAndSortedProducts = computed(() => {
                     </div>
                 </template>
             </Carousel>
-            <Divider />
-            <div class="flex">
-                <Dropdown v-model="selectedSortOption" :options="sapXep" optionLabel="label" placeholder="Sắp xếp" class="w-full md:w-14rem" />
-                <Dropdown v-model="selectedPriceRange" :options="priceRanges" optionLabel="label" placeholder="Lọc theo giá" class="w-full md:w-14rem" style="margin-left: 20px" />
-                <Dropdown v-model="selectedTenLoai" :options="uniqueTenLoai" placeholder="Chọn loại sản phẩm" class="w-full md:w-14rem" style="margin-left: 20px" />
-                <Dropdown v-model="selectedTenThuongHieu" :options="uniqueTenThuongHieu" placeholder="Chọn thương hiệu" class="w-full md:w-14rem" style="margin-left: 20px" />
-                <span class="block mt-2 md:mt-0 p-input-icon-left" style="margin-left: 150px">
-                    <i class="pi pi-search" />
-                    <InputText v-model="searchTerm" placeholder="Search..." />
-                </span>
-            </div>
-            <br />
-            <DataView
-                :value="filteredAndSortedProducts"
-                :layout="layout"
-                dataKey="id"
-                :paginator="true"
-                :rows="9"
-                :filters="filters"
-                paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                :rowsPerPageOptions="[9, 18, 27]"
-                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
-                responsiveLayout="scroll"
-            >
-                <template #header>
-                    <div class="flex justify-content-end">
-                        <DataViewLayoutOptions v-model="layout" />
-                    </div>
-                </template>
-
-                <template #list="slotProps">
-                    <div class="col-12">
-                        <div class="flex flex-column xl:flex-row xl:align-items-start p-4 gap-4">
-                            <img class="w-9 sm:w-16rem xl:w-10rem shadow-2 block xl:block mx-auto border-round" :src="`${slotProps.data.anh}`" :alt="slotProps.data.name" />
-                            <div class="flex flex-column sm:flex-row justify-content-between align-items-center xl:align-items-start flex-1 gap-4">
-                                <div class="flex flex-column align-items-center sm:align-items-start gap-3">
-                                    <div class="text-2xl font-bold text-900">{{ slotProps.data.tenSP }}</div>
-                                </div>
-                                <div class="flex sm:flex-column align-items-center sm:align-items-end gap-3 sm:gap-2">
-                                    <p class="text-2xl font-semibold" style="color: black; text-align: center" v-if="slotProps.data.giaBanMin == slotProps.data.giaBanMax">{{ formatCurrency(slotProps.data.giaBanMax) }}</p>
-                                    <p
-                                        class="text-2xl font-semibold"
-                                        style="color: black; text-align: center"
-                                        v-else-if="slotProps.data.giaSauGiamMax != null && slotProps.data.giaSauGiamMin != null && slotProps.data.giaSauGiamMax != slotProps.data.giaSauGiamMin"
-                                    >
-                                        {{ formatCurrency(slotProps.data.giaSauGiamMin) }} - {{ formatCurrency(slotProps.data.giaSauGiamMax) }}
-                                    </p>
-                                    <p class="text-2xl font-semibold" style="color: black; text-align: center" v-else-if="slotProps.data.giaSauGiamMax == null && slotProps.data.giaSauGiamMin == null">
-                                        {{ formatCurrency(slotProps.data.giaBanMin) }} - {{ formatCurrency(slotProps.data.giaBanMax) }}
-                                    </p>
-                                    <p class="text-2xl font-semibold" style="color: black; text-align: center" v-else-if="slotProps.data.giaSauGiamMax == slotProps.data.giaSauGiamMin">{{ formatCurrency(slotProps.data.giaSauGiamMax) }}</p>
-                                    <p class="text-2xl font-semibold" style="color: black; text-align: center" v-else>{{ formatCurrency(slotProps.data.giaBanMin) }} - {{ formatCurrency(slotProps.data.giaBanMax) }}</p>
-                                    <Button icon="pi pi-search" rounded @click="goToProductDetail(slotProps.data.idSP)"></Button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </template>
-
-                <template #grid="slotProps">
-                    <div class="col-12 sm:col-6 lg:col-12 xl:col-4 p-2">
-                        <div class="p-4 border-1 surface-border surface-card border-round">
-                            <div class="flex flex-column align-items-center gap-3 py-5">
-                                <img class="w-9 shadow-2 border-round" :src="`${slotProps.data.anh}`" :alt="slotProps.data.tenSP" />
-                                <div class="text-2xl font-bold">{{ slotProps.data.tenSP }}</div>
-                            </div>
-                            <div class="flex align-items-center justify-content-between">
-                                <p class="text-2xl font-semibold" style="color: black; text-align: center" v-if="slotProps.data.giaBanMin == slotProps.data.giaBanMax">{{ formatCurrency(slotProps.data.giaBanMax) }}</p>
-                                <p
-                                    class="text-2xl font-semibold"
-                                    style="color: black; text-align: center"
-                                    v-else-if="slotProps.data.giaSauGiamMax != null && slotProps.data.giaSauGiamMin != null && slotProps.data.giaSauGiamMax != slotProps.data.giaSauGiamMin"
-                                >
-                                    {{ formatCurrency(slotProps.data.giaSauGiamMin) }} - {{ formatCurrency(slotProps.data.giaSauGiamMax) }}
-                                </p>
-                                <p class="text-2xl font-semibold" style="color: black; text-align: center" v-else-if="slotProps.data.giaSauGiamMax == null && slotProps.data.giaSauGiamMin == null">
-                                    {{ formatCurrency(slotProps.data.giaBanMin) }} - {{ formatCurrency(slotProps.data.giaBanMax) }}
-                                </p>
-                                <p class="text-2xl font-semibold" style="color: black; text-align: center" v-else-if="slotProps.data.giaSauGiamMax == slotProps.data.giaSauGiamMin">{{ formatCurrency(slotProps.data.giaSauGiamMax) }}</p>
-                                <p class="text-2xl font-semibold" style="color: black; text-align: center" v-else>{{ formatCurrency(slotProps.data.giaBanMin) }} - {{ formatCurrency(slotProps.data.giaBanMax) }}</p>
-                                <Button icon="pi pi-search" rounded @click="goToProductDetail(slotProps.data.idSP)"></Button>
-                            </div>
-                        </div>
-                    </div>
-                </template>
-            </DataView>
         </div>
     </div>
 </template>

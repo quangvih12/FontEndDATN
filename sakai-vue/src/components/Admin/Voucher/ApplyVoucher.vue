@@ -136,7 +136,7 @@ const initFilters = () => {
 
 <template>
     <!-- không thể chọn CTSP áp dụng khuyến mại nếu trạng thái khuyến mại là hết hạn ( = 1) -->
-    <Button icon="pi pi-search" class="p-button-rounded p-button-info ml-2" @click="showProducts()" :disabled="props.myProp.trangThai === 1" />
+    <Button icon="pi pi-search"  class="p-button-rounded p-button-info mr-2" @click="showProducts()" :disabled="props.myProp.trangThai === 1" />
     <Dialog v-model:visible="selectedProductDialog" header="Flex Scroll" :style="{ width: '75vw' }" maximizable modal :contentStyle="{ height: '300px' }" class="p-fluid">
         <template #header>
             <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">

@@ -9,8 +9,9 @@ import { HDKHStore } from '../../../service/KhachHang/HoaDonKHService';
 import DetailHoaDon from './TrangThaiDonHang.vue';
 import { useRouter } from 'vue-router';
 import { gioHangStore } from '../../../service/KhachHang/Giohang/GiohangCTService';
+import { useDetailProductStore } from '../../../service/KhachHang/DetailService';
 
-
+const productStore = useDetailProductStore();
 const router = useRouter();
 const gioHangService = gioHangStore();
 const redirectToTrangThaiDonHang = (id) => {
@@ -30,7 +31,7 @@ const data = ref([]);
 const loadData = async () => {
     const token = localStorage.getItem('token');
     if (token.length > 0 || token != null) {
-        await useHD.fetchDataByStatus(token, 3, "", "","");
+        await useHD.fetchDataByStatus(token, 3, "", "", "");
         data.value = useHD.dataHoanThanh;
     }
 };
@@ -127,13 +128,31 @@ const showDialogMuaLai = async (idHD) => {
     muaLaiDialog.value = true;
 };
 
-const addCart = async (soLuong, idCTSP) => {
+const dataGHCT = ref([]);
+const soLuongGH = ref(0);
+const dataListSPCT = ref([]);
+const loaddataListSPCT = async (idProduct, idSize, idMau) => {
+    await productStore.fetchIdSPCT(idProduct, idSize, idMau);
+    dataListSPCT.value = productStore.products;
+};
+const addCart = async (soLuong, idCTSP, idSize, idMau) => {
     const cartItem = {
         soLuong: soLuong,
         sanPhamChiTiet: idCTSP
     };
     const token = localStorage.getItem('token');
+    await loaddataListSPCT(idCTSP, idSize, idMau);
 
+    await gioHangService.getGHCTByIdctsp(token, idCTSP)
+    dataGHCT.value = gioHangService.data;
+
+    soLuongGH.value = parseInt(soLuong) + parseInt(dataGHCT.value.soLuong)
+
+
+    if (soLuongGH.value > dataListSPCT.value.soLuongTon) {
+        toast.add({ severity: 'warn', summary: '', detail: 'Số lượng bạn chọn đã đạt mức tối đa của sản phẩm', life: 5000 });
+        return;
+    }
     await gioHangService.addToCart(cartItem, token);
     router.push({ name: 'gio-hang' });
 
@@ -149,7 +168,7 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
 };
 </script>
 <template>
-      <div style="height: 500px; font-size: 24px;" v-if="!data || data.length === 0"> Chưa có Đơn hàng !</div>
+    <div style="height: 500px; font-size: 24px;" v-if="!data || data.length === 0"> Chưa có Đơn hàng !</div>
     <div v-for="(hd, index) in useHD.dataHoanThanh" :key="index">
         <div style="width: 1060px; background: rgb(255, 255, 255); ">
 
@@ -171,9 +190,9 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
                         <label for="" style="color: red">{{ hienThiTrangThai(hd.trangThai).text }}</label>
                     </div>
                     <!-- <div style="margin-left: 10px">
-                        <span> | </span>
-                        <label for="" style="color: red; margin-left: 10px">{{ hienThiTrangThai(dataHD.trangThai).text }}</label>
-                    </div> -->
+                            <span> | </span>
+                            <label for="" style="color: red; margin-left: 10px">{{ hienThiTrangThai(dataHD.trangThai).text }}</label>
+                        </div> -->
                 </div>
 
             </div>
@@ -213,7 +232,8 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
                 <div style="display: flex; width: 100%; background: rgb(255, 255, 255);">
                     <div style="background: rgb(255, 255, 255);width: 30%; height: 100px; margin-top: ;">
                         <h5 style="color: rgb(253, 1, 1);margin-top: 30px;margin-left: -50px; margin-bottom: 20px;">Thành
-                            tiền: <span>{{ formatCurrency(tinhTongTien(hd.tongTien, hd.tienShip, hd.tienSauKhiGiam)) }}</span>
+                            tiền: <span>{{ formatCurrency(tinhTongTien(hd.tongTien, hd.tienShip, hd.tienSauKhiGiam))
+                            }}</span>
                         </h5>
                     </div>
 
@@ -267,7 +287,7 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
 
                         </div>
                         <Button icon="pi pi-shopping-cart" class="p-button-rounded p-button-warning mt-2" style=""
-                            @click="addCart(sp.soLuong, sp.idSPCT)" :disabled="sp.soLuongTon < sp.soLuong" />
+                            @click="addCart(sp.soLuong, sp.idSPCT, sp.idSize, sp.idMau)" :disabled="sp.soLuongTon < sp.soLuong" />
                     </div>
                 </div>
             </div>
@@ -287,4 +307,5 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
 
 .product-details {
     flex: 1;
-}</style>
+}
+</style>

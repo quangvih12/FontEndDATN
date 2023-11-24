@@ -172,7 +172,7 @@ function onFileInputImage(event) {
 }
 </script>
 <template>
-    <Button label="New" icon="pi pi-plus" class="p-button-success mr-2" @click="openNew" />
+    <Button label="Thêm mới" icon="pi pi-plus" class="p-button-success mr-2" @click="openNew" />
     <Dialog v-model:visible="productDialog" :style="{ width: '800px' }" header="Thêm Admin" :modal="true" class="p-fluid">
         <div class="card">
             <!-- <Button label="Toggle Camera" icon="pi pi-camera" class="p-button-success" @click="toggleCamera" /> -->

@@ -34,9 +34,9 @@ export const TrangChuStore = defineStore('trangChu', {
         //load tất cả data
         async fetchDataByTenLoai(tenLoai) {
             try {
-                const response = await axios.get(apiTrangChu + '/get-all-by-ten-loai?tenLoai=' + tenLoai);
-                if (tenLoai == 'Trẻ em') this.dataTreEm = response.data;
-                if (tenLoai == 'Fullface') this.dataFullface = response.data;
+                const response = await axios.get(apiTrangChu + '/get-all-by-ten-loai/' + tenLoai);
+                if (tenLoai == 5) this.dataTreEm = response.data;
+                if (tenLoai == 2) this.dataFullface = response.data;
             } catch (error) {
                 console.error('Error fetching users:', error);
             }

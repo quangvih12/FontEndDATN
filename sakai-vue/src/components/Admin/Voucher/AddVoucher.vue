@@ -75,7 +75,7 @@ const save = handleSubmit(async () => {
 </script>
 
 <template>
-    <Button label="New" icon="pi pi-plus" class="p-button-success mr-2" @click="openNew" />
+    <Button label="Thêm mới" icon="pi pi-plus" class="p-button-success mr-2" @click="openNew" />
     <Dialog v-model:visible="voucherDialog" :style="{ width: '450px' }" header="Add Voucher" :modal="false" class="p-fluid">
         <div class="field">
             <label for="ten">Tên</label>

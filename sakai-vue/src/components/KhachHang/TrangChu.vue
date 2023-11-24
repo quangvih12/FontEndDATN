@@ -16,8 +16,9 @@ const goToProductDetail = (productId) => {
 
 //load data full
 const loadData = async () => {
-    await useTrangChuService.fetchDataByTenLoai('Fullface');
+    await useTrangChuService.fetchDataByTenLoai(2);
     dataFullrace.value = useTrangChuService.dataFullface;
+    console.log(dataFullrace.value);
 };
 
 //load data hang moi
@@ -34,7 +35,7 @@ const loadDataSPBanChay = async () => {
 
 //load data hang moi
 const loadDataTreEm = async () => {
-    await useTrangChuService.fetchDataByTenLoai('Trẻ em');
+    await useTrangChuService.fetchDataByTenLoai(5);
     dataTreEm.value = useTrangChuService.dataTreEm;
 };
 

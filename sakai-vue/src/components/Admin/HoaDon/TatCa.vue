@@ -174,13 +174,13 @@ const formatDate = (dateTime) => {
         responsiveLayout="scroll"
     >
         <template #header>
-            <div class="col-12 flex">
+            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                 <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                     <MultiSelect icon="pi pi-plus" placeholder="Select Columns" :modelValue="selectedColumns" :options="columns" optionLabel="header" @update:modelValue="onToggle" display="tag" />
                 </div>
                 <span class="p-input-icon-left" style="margin-left: 20px">
                     <i class="pi pi-search" />
-                    <InputText v-model="filters1['global'].value" placeholder="Keyword Search" style="min-width: 13rem; height: 40px" />
+                    <InputText v-model="filters1['global'].value" placeholder="Search..." style="min-width: 13rem; height: 40px" />
                 </span>
             </div>
         </template>

@@ -435,14 +435,12 @@ const openNew = () => {
 </script>
 
 <template>
-    <Button label="New" icon="pi pi-plus" class="p-button-success mr-2" @click="openNew" />
+    <Button label="Thêm mới" icon="pi pi-plus" class="p-button-success mr-2" @click="openNew" />
     <div>
-        <Dialog v-model:visible="productDialog" :style="{ width: '1100px' }" header="Product Details" :modal="true"
+        <Dialog v-model:visible="productDialog" :style="{ width: '1100px' }" header="Thêm Mới Sản Phẩm" :modal="true"
             class="p-fluid">
             <div class="col-12">
-                <div class="card" style="align-items: center; justify-content: center; height: 90px">
-                    <h1 style="margin-bottom: 30px; font-size: 50px; margin-top: 20px">Sản phẩm</h1>
-                </div>
+
                 <div class="card">
                     <form @submit="onSubmit">
                         <div class="p-fluid formgrid grid">
@@ -501,21 +499,21 @@ const openNew = () => {
                                     <small class="p-error">{{ demLotError }}</small>
                                 </div>
                                 <!-- <div class="field col-12 md:col-8" style="margin-bottom: 30px">
-                                    <label for="address">Trạng thái</label>
-                                    <div class="flex flex-wrap gap-3" >
-                                        <div class="flex align-items-center">
-                                            <RadioButton v-model="TrangThai" inputId="ingredient1" name="pizza" value="1"
-                                                :class="{ 'p-invalid': TrangThaiSacError }" />
-                                            <label for="ingredient1" class="ml-2">Sẵn sàng để bán</label>
+                                        <label for="address">Trạng thái</label>
+                                        <div class="flex flex-wrap gap-3" >
+                                            <div class="flex align-items-center">
+                                                <RadioButton v-model="TrangThai" inputId="ingredient1" name="pizza" value="1"
+                                                    :class="{ 'p-invalid': TrangThaiSacError }" />
+                                                <label for="ingredient1" class="ml-2">Sẵn sàng để bán</label>
+                                            </div>
+                                            <div class="flex align-items-center" >
+                                                <RadioButton v-model="TrangThai" inputId="ingredient2" name="pizza" value="3"
+                                              :class="{ 'p-invalid': TrangThaiSacError }" />
+                                                <label for="ingredient2" class="ml-2">tồn kho</label>
+                                            </div>
                                         </div>
-                                        <div class="flex align-items-center" >
-                                            <RadioButton v-model="TrangThai" inputId="ingredient2" name="pizza" value="3"
-                                          :class="{ 'p-invalid': TrangThaiSacError }" />
-                                            <label for="ingredient2" class="ml-2">tồn kho</label>
-                                        </div>
-                                    </div>
-                                    <small class="p-error">{{ TrangThaiSacError }}</small>
-                                </div> -->
+                                        <small class="p-error">{{ TrangThaiSacError }}</small>
+                                    </div> -->
                                 <div class="p-fluid formgrid grid">
                                     <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
                                         <div style="display: flex">
@@ -667,34 +665,37 @@ const openNew = () => {
                                         <div style="width:75px">
                                             <p>Số lượng :</p>
                                         </div>
-                                        <div style="background: rgb(255, 255, 255); width: 20% ; height: 100%;">
+                                        <div style="width: 100%; height: 100%; display: flex; flex-wrap: wrap">
+                                            <div style=" width: 20% ; height: 100%;">
 
-                                            <div style="display: flex; flex-wrap: wrap">
-                                                <div v-for="(mau, index) in selectedSizes" :key="index"
-                                                    style="margin-top: 5px; margin-left: 30px;">
-                                                    <label :for="`input-${mau.id}`"
-                                                        style="margin-right: 5px; margin-left: 0px">{{
-                                                            mau.ten }}</label>
+                                                <div style="display: flex; flex-wrap: wrap">
+                                                    <div v-for="(mau, index) in selectedSizes" :key="index"
+                                                        style="margin-top: 5px; margin-left: 30px;">
+                                                        <label :for="`input-${mau.id}`"
+                                                            style="margin-right: 5px; margin-left: 0px">{{
+                                                                mau.ten }}</label>
+                                                    </div>
+
                                                 </div>
-
                                             </div>
-                                        </div>
-                                        <div style="background: rgb(255, 255, 255); width: 80% ; height: 100%;">
-                                            <div style="display: flex; flex-wrap: wrap">
-                                                <div v-for="(mau, index) in selectedMauSac" :key="index"
-                                                    style="margin-top: 5px">
-                                                    <label :for="`input-${mau.id}`"
-                                                        style="margin-right: 10px; margin-left: 10px">{{
-                                                            mau.ten }} <span v-if="mau.size !== null"> - {{ mau.size.ten
+                                            <div style=" width: 80% ; height: 100%;">
+                                                <div style="display: flex; flex-wrap: wrap">
+                                                    <div v-for="(mau, index) in selectedMauSac" :key="index"
+                                                        style="margin-top: 5px">
+                                                        <label :for="`input-${mau.id}`"
+                                                            style="margin-right: 10px; margin-left: 10px">{{
+                                                                mau.ten }} <span v-if="mau.size !== null"> - {{ mau.size.ten
     }}</span></label>
-                                                    <input type="number" :id="`input-${mau.id}`" v-model="array[index]"
-                                                        @change="handleInputChange(mau.id)"
-                                                        :class="{ 'p-invalid': soLuongSizeError }"
-                                                        style="height: 20px; width: 80px;border-radius: 5px ; border: 1px solid;" />
+                                                        <input type="number" :id="`input-${mau.id}`" v-model="array[index]"
+                                                            @change="handleInputChange(mau.id)"
+                                                            :class="{ 'p-invalid': soLuongSizeError }"
+                                                            style="height: 20px; width: 80px;border-radius: 5px ; border: 1px solid;" />
 
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
+
                                     </div>
                                     <small class="p-error">{{ soLuongSizeError }}</small>
                                 </div>
@@ -781,11 +782,11 @@ const openNew = () => {
                             </div>
 
                             <div style="width: 1000px; text-align: center">
-                               
+
                                 <Button class="p-button-outlined" outlined severity="secondary"
                                     style="width: 200px; height: auto; margin: 10px" @click="reset()"
                                     label="clear"></Button>
-                                    <Button type="submit" class="p-button-outlined"
+                                <Button type="submit" class="p-button-outlined"
                                     style="width: 200px; height: auto; margin: 10px" label="Lưu"></Button>
                             </div>
                         </div>

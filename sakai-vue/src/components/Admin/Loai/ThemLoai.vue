@@ -91,7 +91,7 @@ const saveProduct = () => {
 };
 </script>
 <template>
-    <Button label="New" icon="pi pi-plus" class="p-button-success mr-2" @click="openNew" />
+    <Button label="Thêm mới" icon="pi pi-plus" class="p-button-success mr-2" @click="openNew" />
     <Dialog v-model:visible="productDialog" :style="{ width: '600px' }" header="Thêm loại" :modal="true" class="p-fluid">
         <div class="card">
             <form @submit="onSubmit">

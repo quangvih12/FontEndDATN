@@ -165,7 +165,7 @@ const initFiltersSP = () => {
 
         </div>
         <div class="Field col-12 md:col-2" style="margin-right: 20px;">
-                <Panel header="Hoàn tiền" style=" width: 150px; height: 50px;">
+                <Panel header="Hoàn tiền" style=" width: 170px; height: 50px;">
                     <p class="m-0" style="text-align: center; font-weight: 900; font-size: 1.4rem;">{{
                            formatCurrency(tongDonhangDangGiao) }}</p>
                 </Panel>

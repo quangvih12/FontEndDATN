@@ -109,6 +109,7 @@ watch([dataSize, dataMauSac], async ([newDataSize, newDataMau]) => {
 const loaddataListSPCT = async () => {
     await productStore.fetchSPCTByIdSP(idProduct);
     dataListSPCT.value = productStore.products;
+    
     //  console.log(dataListSPCT.value);
 };
 

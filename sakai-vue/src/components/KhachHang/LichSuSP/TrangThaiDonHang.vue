@@ -10,7 +10,9 @@ import { gioHangStore } from '../../../service/KhachHang/Giohang/GiohangCTServic
 import { useRouter } from 'vue-router';
 import { Client } from '@stomp/stompjs';
 import { useToast } from 'primevue/usetoast';
+import { useDetailProductStore } from '../../../service/KhachHang/DetailService';
 
+const productStore = useDetailProductStore();
 const toast = useToast();
 
 const gioHangService = gioHangStore();
@@ -183,14 +185,34 @@ const onTrongLuongChange = () => {
     }
 };
 
-const addCart = async (soLuong, idCTSP) => {
+const dataGHCT = ref([]);
+const soLuongGH = ref(0);
+const dataListSPCT = ref([]);
+const loaddataListSPCT = async (idProduct, idSize, idMau) => {
+    await productStore.fetchIdSPCT(idProduct, idSize, idMau);
+    dataListSPCT.value = productStore.products;
+};
+const addCart = async (soLuong, idCTSP, idSize, idMau) => {
     const cartItem = {
         soLuong: soLuong,
         sanPhamChiTiet: idCTSP
     };
     const token = localStorage.getItem('token');
+    await loaddataListSPCT(idCTSP, idSize, idMau);
+
+    await gioHangService.getGHCTByIdctsp(token, idCTSP)
+    dataGHCT.value = gioHangService.data;
+
+    soLuongGH.value = parseInt(soLuong) + parseInt(dataGHCT.value.soLuong)
+
+
+        if (soLuongGH.value > dataListSPCT.value.soLuongTon) {
+            toast.add({ severity: 'warn', summary: '', detail: 'Số lượng bạn chọn đã đạt mức tối đa của sản phẩm', life: 5000 });
+            return;
+        }
     await gioHangService.addToCart(cartItem, token);
     routers.push({ name: 'gio-hang' });
+
 };
 
 const hienTimeLine = (value) => {
@@ -303,7 +325,7 @@ const checks = (trangThai, soLuong) => {
                                 <div class="price">
                                     <h6 style="color: red">{{ formatCurrency(hdct.donGia) }}</h6>
                                     <Button type="button" label="Mua lại" style="width: 100px; margin-right: 10px"
-                                        @click="addCart(hdct.idSPCT, hdct.soLuong)"
+                                        @click="addCart(hdct.idSPCT, hdct.soLuong, hdct.idSize, hdct.idMau)"
                                         :disabled="dataHD.trangThai == 7 || dataHD.trangThai == 2" />
                                     <Button v-if="checks(hdct.trangThai, hdct.soLuong)" severity="secondary"
                                         label="Trả Hàng" style="width: 100px"
