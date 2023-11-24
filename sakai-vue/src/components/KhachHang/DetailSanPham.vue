@@ -7,6 +7,7 @@ import TabPanel from 'primevue/tabpanel';
 import { useDetailProductStore } from '../../service/KhachHang/DetailService'; // Đường dẫn đến store của bạn
 import { useRoute } from 'vue-router';
 import { gioHangStore } from '@/service/KhachHang/Giohang/GiohangCTService.js';
+import {commentStore} from '@/service/KhachHang/CommentService.js';
 import { useRouter } from 'vue-router';
 
 import {soLuongGh} from '@/service/KhachHang/GioHang/cart.js'
@@ -15,6 +16,7 @@ import {soLuongGh} from '@/service/KhachHang/GioHang/cart.js'
 const router = useRouter();
 const gioHangService = gioHangStore();
 const productStore = useDetailProductStore();
+const commentService = commentStore();
 const route = useRoute();
 const idProduct = parseInt(route.params.id);
 const store = soLuongGh();
@@ -32,7 +34,7 @@ const soLuongTon = ref('');
 const selectedMauSac = ref('');
 let prevDataSizeLength = ref(null);
 let prevDataMauLength = ref(null);
-
+const noiDung = ref(null);
 
 
 
@@ -44,6 +46,7 @@ onMounted(async () => {
     await loadImg();
     await loadDataSize();
     await loadDataMauSac();
+    loadComment();
 
 
 
@@ -303,9 +306,9 @@ const muaNgay = async () => {
         toast.add({ severity: 'success', summary: 'Successful', detail: 'Thêm vào giỏ hàng thành công', life: 3000 });
         router.push({ name: 'gio-hang' });
     } else {   
-        console.log("1234")
+       
        const res =  await gioHangService.addToCart(cartItem, token);
-       console.log("data test", res)
+   
         
         toast.add({ severity: 'success', summary: 'Successful', detail: 'Thêm vào giỏ hàng thành công', life: 3000 });
         router.push({ name: 'gio-hang' });
@@ -366,6 +369,54 @@ const setDefaultQuantity = () => {
   if (!quantity.value) {
     quantity.value = 1;
   }
+};
+
+const comment = ref("");
+
+const comments = ref([]);
+
+const resetNoiDung = () => {
+    noiDung.value = '';
+};
+
+const addComment = async () => {
+    const form = {
+        noiDung: noiDung.value,
+        sanPham: idProduct
+    }
+
+    const token = localStorage.getItem('token');
+
+    if (token == '' || token == null) {
+
+
+        toast.add({ severity: 'warn', summary: '', detail: 'Bạn cần đăng nhập để bình luận', life: 5000 });
+        return
+    }
+
+    await commentService.addComment(form, token);
+    comment.value = commentService.data;
+
+    resetNoiDung();
+
+}
+
+const loadComment = async () => {
+    const token = localStorage.getItem('token');
+
+    if (token) {
+
+        await commentService.getListComment(token,idProduct) 
+        comments.value = commentService.data;
+    
+    }
+    
+}
+
+
+const xoa = async (id) => {  
+        await commentService.xoaComment(id);
+        loadComment();   
 };
 
 </script>
@@ -584,22 +635,28 @@ const setDefaultQuantity = () => {
                                 <div class="">
                                     <Avatar icon="pi pi-user" class="" size="xlarge" />
                                     <span class="p-float-label">
-                                        <Textarea v-model="value" rows="5" cols="145" />
+                                        <Textarea v-model="noiDung" rows="5" cols="145" />
                                     </span>
                                     <Toast />
                                     <div class="flex flex-wrap justify-content-between align-items-center gap-3 mt-3"
                                         style="margin-left: 900px">
-                                        <Button type="submit" label="Đăng" />
+                                        <Button type="submit" label="Đăng" @click = "addComment" />
                                     </div>
                                 </div>
-                                <div class="flex">
+                                <div class="flex" v-for="(comment, index) in comments" :key="index" style="margin-bottom: 15px;">
                                     <div>
                                         <Avatar label="P" class="mr-2" size="xlarge" />
                                     </div>
-                                    <div>
-                                        <h6><a href="">Nguyễn Long Vũ</a></h6>
-                                        <span>Sản phẩm xịn</span>
+                                    <div >
+                                        <h6><a href="">{{ comment.user.ten }}</a></h6>
+                                        <span>{{ comment.noiDung }}</span>
                                     </div>
+
+                                    <div class="flex flex-wrap justify-content-between align-items-center gap-3 mt-3 "  
+                                        style="margin-left: 770px">
+                                        <Button type="submit" severity="danger"  label="Xoá" @click = "xoa(comment.id)" class="small-button" />
+                                    </div>
+
                                 </div>
                             </TabPanel>
                         </TabView>
@@ -637,6 +694,12 @@ const setDefaultQuantity = () => {
 <style scoped>
 div.selected {
     border: 2px solid red;
+}
+
+.small-button {
+  width: 80px; /* Đặt chiều rộng mong muốn */
+  height: 30px; /* Đặt chiều cao mong muốn */
+  font-size: 14px; /* Đặt kích thước chữ mong muốn */
 }
 
 .strikethrough {

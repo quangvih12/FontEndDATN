@@ -118,8 +118,6 @@ const updateSoLuong = async (idGHCT, newSL) => {
     // Nếu giá trị không phải là số hoặc là số âm, đặt giá trị mặc định là 1
     newSL = 1;
   }
-
-
         // if (newSL !== '' && !isNaN(newSL)) {
     // Thực hiện cập nhật số lượng
         await gioHangService.updateSL(idGHCT, token,newSL);
@@ -155,6 +153,7 @@ const updateSoLuongOnBlur = async (idGHCT, newSL) => {
     // Thực hiện cập nhật số lượng
     updateSoLuong(idGHCT, parseInt(newSL, 10));
   }
+
  
 //   if (newSL.trim() !== '') {
 //     updateSoLuong(idGHCT, parseInt( newSL, 10));
