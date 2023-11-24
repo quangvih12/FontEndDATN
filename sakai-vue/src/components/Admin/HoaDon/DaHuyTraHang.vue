@@ -43,7 +43,7 @@ const hienThiTrangThai = (trangThai) => {
     } else if (trangThai == 6) {
         return { text: 'Yêu cầu đổi trả', severity: 'warning' };
     } else if (trangThai == 9) {
-        return { text: 'Đã huỷ đổi trả', severity: 'warning' };
+        return { text: 'Đã huỷ đổi trả', severity: 'danger' };
     } else {
         return { text: 'Xác nhận đổi trả', severity: 'success' };
     }
@@ -143,7 +143,7 @@ const formatDate = (dateTime) => {
     </div>
     <DataTable
         ref="dt"
-        :value="data"
+        :value="useHD.dataDaHuyDoiTra"
         v-model:selection="selectedProducts"
         dataKey="id"
         :paginator="true"
@@ -155,7 +155,7 @@ const formatDate = (dateTime) => {
         responsiveLayout="scroll"
     >
         <template #header>
-            <div class="col-12 flex">
+            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                 <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                     <MultiSelect icon="pi pi-plus" placeholder="Select Columns" :modelValue="selectedColumns" :options="columns" optionLabel="header" @update:modelValue="onToggle" display="tag" />
                 </div>

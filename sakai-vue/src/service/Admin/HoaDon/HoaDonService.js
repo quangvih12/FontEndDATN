@@ -313,6 +313,7 @@ export const HDStore = defineStore('hoaDon', {
             try {
                 const response = await axios.get(apiHD);
                 this.dataAll = response.data;
+                return   this.dataAll;
             } catch (error) {
                 console.error('Error fetching users:', error);
             }

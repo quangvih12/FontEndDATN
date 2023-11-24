@@ -30,7 +30,7 @@ const props = defineProps({
 const tienGiam =ref(0);
 // mở form
 const editProduct = () => {
-    console.log(props.myProp);
+    //console.log(props.myProp);
     code.value = 'Hoá đơn: ' + props.myProp.maHD;
     productDialog.value = true;
     loadDataHDCT(props.myProp.idHD);
@@ -187,8 +187,8 @@ const showDialogLyDoDoiTra = (id) => {
 const idSPCTDT = ref();
 //hiện confirm đổi trả
 const confirmAddProductDoiTra = (id, idSPCT) => {
-    console.log(id);
-    console.log(idSPCT);
+    // console.log(id);
+    // console.log(idSPCT);
     idSPCTDT.value = idSPCT;
     idHD.value = id;
     addProductDialogDoiTra.value = true;

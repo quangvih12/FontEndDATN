@@ -113,8 +113,11 @@ export const HDKHStore = defineStore('hoaDonKH', {
                 for (const [key, product] of hoaDonList.entries()) {
                     hoaDonList[key]['sanPhamChiTiet'] = null;
                     const mau = await this.findHdctByIdHd(product.idHD);
+                  
+                    const doiTuong = mau.filter(item => item.trangThaiHDCT === 7 ||  item.trangThaiHDCT === 8  ||  item.trangThaiHDCT === 9);
+                   
                     // mau.sort((a, b) => b.id - a.id);
-                    hoaDonList[key]['sanPhamChiTiet'] = mau;
+                    hoaDonList[key]['sanPhamChiTiet'] = doiTuong;
                 }
                 this.dataHoanTraHoanTien = hoaDonList;
             } catch (error) {
@@ -212,6 +215,7 @@ export const HDKHStore = defineStore('hoaDonKH', {
         async doiTra(token, newHoaDon) {
             try {
                 const response = await axios.post(apiHD + `/doi-tra?token=${token}`, newHoaDon);
+                console.log(response.data)
                 this.dataDaHoanTra.unshift(response.data);
             } catch (error) {
                 console.error('Error fetching users:', error);

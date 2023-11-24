@@ -29,6 +29,7 @@ const loadData = async () => {
     if (token.length > 0 || token != null) {
         await useHD.findHdct(token);
         data.value = useHD.dataHoanTraHoanTien;
+        console.log(data.value);
     }
 };
 //chạy cái hiện data luôn
@@ -50,13 +51,13 @@ const hienThiTrangThai = (trangThai) => {
     } else if (parseInt(trangThai) == 5) {
         return { text: 'Đang giao', severity: 'help' };
     } else if (parseInt(trangThai) == 7) {
-        return { text: 'Yêu cầu đổi trả ', severity: 'warning' };
+        return { text: 'Yêu cầu trả ', severity: 'warning' };
     } else if (parseInt(trangThai) == 8) {
-        return { text: 'Xác nhận đổi trả thành công', severity: 'success' };
+        return { text: 'Xác nhận trả thành công', severity: 'success' };
     } else if (parseInt(trangThai) == 9) {
-        return { text: 'Yêu cầu đổi trả thất bại', severity: 'success' };
+        return { text: 'Yêu cầu trả thất bại', severity: 'success' };
     } else {
-        return { text: 'Đổi trả thành công', severity: 'success' };
+        return { text: ' trả thành công', severity: 'success' };
     }
 };
 
@@ -139,7 +140,7 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
 </script>
 <template>
     <div style="height: 500px; font-size: 24px" v-if="!data || data.length === 0">Chưa có Đơn hàng !</div>
-    <div v-for="(hd, index) in data" :key="index">
+    <div v-for="(hd, index) in  useHD.dataHoanTraHoanTien" :key="index">
         <div style="width: 1060px; background: rgb(255, 255, 255)">
             <div style="width: 1060px; background: rgb(252, 246, 246)">
                 <div class="flex">
@@ -161,7 +162,7 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
                             >Mã đơn hàng: <span>{{ hd.maHD }} </span></label
                         >
                         <span> | </span>
-                        <label for="" style="color: red">{{ hienThiTrangThai(hd.trangThai).text }}</label>
+                        <label for="" style="color: red">{{ hienThiTrangThai(hd.trangThaiHoaDonChiTiet).text }}</label>
                     </div>
                     <!-- <div style="margin-left: 10px">
                         <span> | </span>
@@ -170,10 +171,12 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
                 </div>
             </div>
             <Divider />
+    
             <div v-for="(sp, index) in hd.sanPhamChiTiet" :key="index">
                 <div style="width: 1060px; background: rgb(255, 255, 255); height: 120px; margin-top: 10px">
                     <div class="flex">
                         <div style="margin-left: 20px; margin-top: 20px">
+                           
                             <Image :src="sp.anh" alt="Image" width="90" preview />
                         </div>
                         <div class="product-details" style="margin-top: 10px; margin-left: 20px">

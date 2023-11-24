@@ -8,7 +8,9 @@ import { ThongBaoStore } from '../service/Admin/thongBao/thongBao.api';
 import { Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
+import { HDStore } from '../service/Admin/HoaDon/HoaDonService';
 
+const useHD = HDStore();
 const thongBaoStore = ThongBaoStore();
 const userService = userStore();
 const { layoutConfig, onMenuToggle } = useLayout();
@@ -37,6 +39,15 @@ const openSocketConnection = () => {
             stompClient.value.subscribe('/topic/admin/hoa-don', (message) => {
                 getAllTB();
                 getDem();
+                loadHD();
+                loadHDByTrangThai(2);
+                loadHDByTrangThai(0);
+                loadHDByTrangThai(4);
+                loadHDByTrangThai(5);
+                loadHDByTrangThai(3);
+                loadHDByTrangThaiTraHang(7);
+                loadHDByTrangThaiTraHang(8);
+                loadHDByTrangThaiTraHang(9);
             });
         }
     });
@@ -51,6 +62,18 @@ const getAllTB = async () => {
     tokenCheck.value = token;
     await thongBaoStore.fetchData();
     data.value = thongBaoStore.data;
+};
+
+const loadHD = async () => {
+    await useHD.fetchData();
+};
+
+const loadHDByTrangThai = async (status) => {
+    await useHD.fetchDataByStatus(status);
+};
+
+const loadHDByTrangThaiTraHang = async (status) => {
+    await useHD.fetchDataHDCTByStatus(status);
 };
 
 const dem = ref([]);
@@ -164,9 +187,9 @@ const thongTinCaNhan = () => {
 <template>
     <div class="layout-topbar">
         <!-- <router-link to="/" class="layout-topbar-logo">
-            <img :src="logoUrl" alt="logo" />
-            <span>SAKAI</span>
-        </router-link> -->
+                <img :src="logoUrl" alt="logo" />
+                <span>SAKAI</span>
+            </router-link> -->
         <router-link to="/" class="layout-topbar-logo" style="height: 60px; width: 120px">
             <img src="../images/logo.png" alt="logo" style="height: 70px" />
         </router-link>
@@ -185,15 +208,21 @@ const thongTinCaNhan = () => {
                     <i class="pi pi-user" style="font-size: 1.5rem" />
                 </button>
                 <OverlayPanel ref="op2" style="display: block; width: 150px">
-                    <button v-if="tokenCheck != null" class="p-link a" aria-haspopup="true" aria-controls="overlay_tmenu" @click="thongTinCaNhan">
-                        <div class="flex align-items-center" style="height: 20px; margin-bottom: 10px; width: 120px">Hồ sơ cá nhân</div>
+                    <button v-if="tokenCheck != null" class="p-link a" aria-haspopup="true" aria-controls="overlay_tmenu"
+                        @click="thongTinCaNhan">
+                        <div class="flex align-items-center" style="height: 20px; margin-bottom: 10px; width: 120px">Hồ sơ
+                            cá nhân</div>
                     </button>
-                    <button v-if="tokenCheck == null" class="p-link a" aria-haspopup="true" aria-controls="overlay_tmenu" @click="dangNhap">
-                        <div class="flex align-items-center" style="height: 20px; margin-bottom: 10px; width: 120px">Đăng Nhập</div>
+                    <button v-if="tokenCheck == null" class="p-link a" aria-haspopup="true" aria-controls="overlay_tmenu"
+                        @click="dangNhap">
+                        <div class="flex align-items-center" style="height: 20px; margin-bottom: 10px; width: 120px">Đăng
+                            Nhập</div>
                     </button>
 
-                    <button v-if="tokenCheck != null" class="p-link a" aria-haspopup="true" aria-controls="overlay_tmenu" @click="dangXuat">
-                        <div class="flex align-items-center" style="height: 20px; margin-bottom: 10px; width: 120px">Đăng Xuất</div>
+                    <button v-if="tokenCheck != null" class="p-link a" aria-haspopup="true" aria-controls="overlay_tmenu"
+                        @click="dangXuat">
+                        <div class="flex align-items-center" style="height: 20px; margin-bottom: 10px; width: 120px">Đăng
+                            Xuất</div>
                     </button>
                 </OverlayPanel>
             </div>
@@ -207,13 +236,15 @@ const thongTinCaNhan = () => {
                     <H6>Thông báo </H6>
                     <div v-for="(o, index) in data">
                         <button class="p-link" aria-haspopup="true" aria-controls="overlay_tmenu">
-                            <div class="flex align-items-center" style="height: 50px; margin-bottom: 10px; width: 240px" @click="daXem(o.id)">
+                            <div class="flex align-items-center" style="height: 50px; margin-bottom: 10px; width: 240px"
+                                @click="daXem(o.id)">
                                 <div style="display: flex">
                                     <div style="margin-right: 10px; width: 180px; margin-bottom: -30px">
                                         <p style="margin-bottom: 30px">{{ o.content }}</p>
                                     </div>
                                     <div style="">
-                                        <span style="font-size: 10px; margin-top: 0px">{{ o.trangThai == 0 ? 'đã xem' : 'chưa xem' }}</span>
+                                        <span style="font-size: 10px; margin-top: 0px">{{ o.trangThai == 0 ? 'đã xem' :
+                                            'chưa xem' }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -225,9 +256,7 @@ const thongTinCaNhan = () => {
     </div>
 </template>
 
-<style lang="scss" scoped>
-button.p-link:hover {
+<style lang="scss" scoped>button.p-link:hover {
     background-color: rgb(248, 239, 239);
     /* Thay #f00 bằng màu bạn muốn */
-}
-</style>
+}</style>
