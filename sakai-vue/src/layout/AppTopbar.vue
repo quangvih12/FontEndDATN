@@ -3,12 +3,14 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useLayout } from '@/layout/composables/layout';
 import { useRouter } from 'vue-router';
 import { userStore } from '@/service/Admin/User/UserService.js';
-import tokenService from '@/service/Authentication/TokenService.js'
-import { ThongBaoStore } from '../service/Admin/thongBao/thongBao.api'
-import { Stomp } from "@stomp/stompjs";
-import SockJS from "sockjs-client";
+import tokenService from '@/service/Authentication/TokenService.js';
+import { ThongBaoStore } from '../service/Admin/thongBao/thongBao.api';
+import { Stomp } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
+import { Client } from '@stomp/stompjs';
+import { HDStore } from '../service/Admin/HoaDon/HoaDonService';
 
-
+const useHD = HDStore();
 const thongBaoStore = ThongBaoStore();
 const userService = userStore();
 const { layoutConfig, onMenuToggle } = useLayout();
@@ -16,16 +18,42 @@ const outsideClickListener = ref(null);
 const topbarMenuActive = ref(false);
 const router = useRouter();
 
-
-
 onMounted(() => {
     bindOutsideClickListener();
     getAllTB();
     fetchData();
     getDem();
-  //  sockets();
+    //  sockets();
+    openSocketConnection();
 });
 
+const stompClient = ref(null);
+
+const openSocketConnection = () => {
+    stompClient.value = new Client({
+        brokerURL: 'ws://localhost:8080/ws',
+        onConnect: async () => {
+            // findUserByToken();
+            // const token = localStorage.getItem('token');
+            // const respone = await tokenService.findByToken(token);
+            stompClient.value.subscribe('/topic/admin/hoa-don', (message) => {
+                getAllTB();
+                getDem();
+                loadHD();
+                loadHDByTrangThai(2);
+                loadHDByTrangThai(0);
+                loadHDByTrangThai(4);
+                loadHDByTrangThai(5);
+                loadHDByTrangThai(3);
+                loadHDByTrangThaiTraHang(7);
+                loadHDByTrangThaiTraHang(8);
+                loadHDByTrangThaiTraHang(9);
+            });
+        }
+    });
+
+    stompClient.value.activate();
+};
 
 const tokenCheck = ref();
 const data = ref([]);
@@ -34,20 +62,31 @@ const getAllTB = async () => {
     tokenCheck.value = token;
     await thongBaoStore.fetchData();
     data.value = thongBaoStore.data;
-}
+};
+
+const loadHD = async () => {
+    await useHD.fetchData();
+};
+
+const loadHDByTrangThai = async (status) => {
+    await useHD.fetchDataByStatus(status);
+};
+
+const loadHDByTrangThaiTraHang = async (status) => {
+    await useHD.fetchDataHDCTByStatus(status);
+};
 
 const dem = ref([]);
 const getDem = async () => {
     dem.value = await thongBaoStore.fetchdem();
-}
-
+};
 
 const daXem = async (id) => {
     await thongBaoStore.daXem(id);
     getAllTB();
     getDem();
     router.push({ name: 'quan-ly-hoa-don' });
-}
+};
 
 onBeforeUnmount(() => {
     unbindOutsideClickListener();
@@ -60,6 +99,7 @@ const logoUrl = computed(() => {
 const onTopBarMenuButton = () => {
     topbarMenuActive.value = !topbarMenuActive.value;
 };
+
 const onSettingsClick = () => {
     topbarMenuActive.value = false;
     router.push('/documentation');
@@ -107,11 +147,9 @@ const fetchData = async () => {
     }
 };
 
-
 onMounted(() => {
     fetchData();
 });
-
 
 // dùng để lưu thông tin khách hàng khi được chọn CBB.
 // nếu muốn dùng thông tin khách hàng khi đặt hàng thì dùng selectedCustomer.value
@@ -119,13 +157,10 @@ const selectedCustomer = ref(null);
 
 // hàm gọi sự thay đổi thông tin của khách hàng khi click vào CBB
 const displayKH = async () => {
-
-    selectedCustomer.value = khachHang.value.find(kh => kh.ten === selectedKH.value.ten);
-    const token = await tokenService.gentoken(selectedCustomer.value.username)
+    selectedCustomer.value = khachHang.value.find((kh) => kh.ten === selectedKH.value.ten);
+    const token = await tokenService.gentoken(selectedCustomer.value.username);
     localStorage.setItem('token', token);
 };
-
-
 
 const op = ref();
 const toggle2 = (event) => {
@@ -136,26 +171,25 @@ const toggle = (event) => {
     op2.value.toggle(event);
 };
 
-
 const dangXuat = () => {
     router.push(`/login-admin`);
     localStorage.removeItem('token');
-}
+};
 
 const dangNhap = () => {
     router.push(`/login-admin`);
-}
+};
 const thongTinCaNhan = () => {
     router.push(`/thong-tin-ca-nhan-ad`);
-}
+};
 </script>
 
 <template>
     <div class="layout-topbar">
         <!-- <router-link to="/" class="layout-topbar-logo">
-            <img :src="logoUrl" alt="logo" />
-            <span>SAKAI</span>
-        </router-link> -->
+                <img :src="logoUrl" alt="logo" />
+                <span>SAKAI</span>
+            </router-link> -->
         <router-link to="/" class="layout-topbar-logo" style="height: 60px; width: 120px">
             <img src="../images/logo.png" alt="logo" style="height: 70px" />
         </router-link>
@@ -168,76 +202,61 @@ const thongTinCaNhan = () => {
             <i class="pi pi-ellipsis-v"></i>
         </button>
 
-
         <div class="layout-topbar-menu" :class="topbarMenuClasses">
-
-            <div class="flex justify-content-center" style="margin-right: 10px; margin-left:0px; margin-right: 20px;">
-
-                <button class="p-link " @click="toggle" aria-haspopup="true" aria-controls="overlay_tmenu">
-                    <i class="pi pi-user " style="font-size: 1.5rem" />
+            <div class="flex justify-content-center" style="margin-right: 10px; margin-left: 0px; margin-right: 20px">
+                <button class="p-link" @click="toggle" aria-haspopup="true" aria-controls="overlay_tmenu">
+                    <i class="pi pi-user" style="font-size: 1.5rem" />
                 </button>
-                <OverlayPanel ref="op2" style="display: block; width: 150px;">
-                    <button v-if="tokenCheck != null" class="p-link a " aria-haspopup="true" aria-controls="overlay_tmenu"
+                <OverlayPanel ref="op2" style="display: block; width: 150px">
+                    <button v-if="tokenCheck != null" class="p-link a" aria-haspopup="true" aria-controls="overlay_tmenu"
                         @click="thongTinCaNhan">
-                        <div class="flex align-items-center" style="height: 20px;margin-bottom: 10px; width: 120px;">
-                            Hồ sơ cá nhân
-                        </div>
+                        <div class="flex align-items-center" style="height: 20px; margin-bottom: 10px; width: 120px">Hồ sơ
+                            cá nhân</div>
                     </button>
-                    <button v-if="tokenCheck == null" class="p-link a " aria-haspopup="true" aria-controls="overlay_tmenu"
+                    <button v-if="tokenCheck == null" class="p-link a" aria-haspopup="true" aria-controls="overlay_tmenu"
                         @click="dangNhap">
-                        <div class="flex align-items-center" style="height: 20px;margin-bottom: 10px; width: 120px;">
-                            Đăng Nhập
-                        </div>
+                        <div class="flex align-items-center" style="height: 20px; margin-bottom: 10px; width: 120px">Đăng
+                            Nhập</div>
                     </button>
 
-                    <button v-if="tokenCheck != null" class="p-link a " aria-haspopup="true" aria-controls="overlay_tmenu"
+                    <button v-if="tokenCheck != null" class="p-link a" aria-haspopup="true" aria-controls="overlay_tmenu"
                         @click="dangXuat">
-                        <div class="flex align-items-center" style="height: 20px;margin-bottom: 10px; width: 120px;  ">
-                            Đăng Xuất
-                        </div>
+                        <div class="flex align-items-center" style="height: 20px; margin-bottom: 10px; width: 120px">Đăng
+                            Xuất</div>
                     </button>
                 </OverlayPanel>
             </div>
 
-            <div class=" flex justify-content-center gap-4" style="">
-
-
-                <button class="p-link " @click="toggle2" aria-haspopup="true" aria-controls="overlay_tmenu">
+            <div class="flex justify-content-center gap-4" style="">
+                <button class="p-link" @click="toggle2" aria-haspopup="true" aria-controls="overlay_tmenu">
                     <i v-badge="dem" class="pi pi-bell p-overlay-badge" style="font-size: 1.5rem" />
                 </button>
 
-                <OverlayPanel ref="op" style="height: 300px;overflow: auto;">
-
+                <OverlayPanel ref="op" style="height: 300px; overflow: auto">
                     <H6>Thông báo </H6>
                     <div v-for="(o, index) in data">
-                        <button class="p-link " aria-haspopup="true" aria-controls="overlay_tmenu">
-                            <div class="flex align-items-center" style="height: 50px;margin-bottom: 10px; width: 240px;"
+                        <button class="p-link" aria-haspopup="true" aria-controls="overlay_tmenu">
+                            <div class="flex align-items-center" style="height: 50px; margin-bottom: 10px; width: 240px"
                                 @click="daXem(o.id)">
-                                <div style="display:  flex; ">
-                                    <div style="margin-right: 10px; width: 180px;  margin-bottom: -30px;">
-                                        <p style="margin-bottom: 30px; ">{{ o.content }}</p>
+                                <div style="display: flex">
+                                    <div style="margin-right: 10px; width: 180px; margin-bottom: -30px">
+                                        <p style="margin-bottom: 30px">{{ o.content }}</p>
                                     </div>
-                                    <div style=" ">
-                                        <span style="font-size: 10px; margin-top: 0px; ">{{ o.trangThai == 0 ? 'đã xem' :
+                                    <div style="">
+                                        <span style="font-size: 10px; margin-top: 0px">{{ o.trangThai == 0 ? 'đã xem' :
                                             'chưa xem' }}</span>
                                     </div>
                                 </div>
-
-
                             </div>
                         </button>
-
                     </div>
-
                 </OverlayPanel>
             </div>
         </div>
     </div>
 </template>
 
-<style lang="scss" scoped>
-button.p-link:hover {
+<style lang="scss" scoped>button.p-link:hover {
     background-color: rgb(248, 239, 239);
     /* Thay #f00 bằng màu bạn muốn */
-}
-</style>
+}</style>

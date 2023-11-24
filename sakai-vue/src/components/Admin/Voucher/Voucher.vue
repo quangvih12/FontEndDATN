@@ -342,7 +342,7 @@ const handImportExcel = async (event) => {
                             <UpdateVoucher :my-prop="slotProps.data" />
                             <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2"
                                 @click="confirmDeleteVoucher(slotProps.data)" />
-                            <ApplyVoucher :my-prop="slotProps.data" />
+                            <!-- <ApplyVoucher :my-prop="slotProps.data" /> -->
                             <detailVoucher :my-prop="slotProps.data" />
                         </template>
                     </Column>

@@ -204,7 +204,7 @@ const formatDate = (dateTime) => {
     </div>
     <DataTable
         ref="dt"
-        :value="data"
+        :value="useHD.dataDangChuanBi"
         v-model:selection="selectedProducts"
         dataKey="id"
         :paginator="true"
@@ -216,7 +216,7 @@ const formatDate = (dateTime) => {
         responsiveLayout="scroll"
     >
         <template #header>
-            <div class="col-12 flex">
+            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                 <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                     <MultiSelect icon="pi pi-plus" placeholder="Select Columns" :modelValue="selectedColumns" :options="columns" optionLabel="header" @update:modelValue="onToggle" display="tag" />
                 </div>

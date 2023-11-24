@@ -6,6 +6,7 @@ import AddProduct from './addProduct.vue';
 import { useToast } from 'primevue/usetoast';
 import UpdateProduct from './updateProduct.vue';
 import Detail from './DetailProduct.vue';
+import ModalSPCT from './modalSPCT.vue';
 import ProgressSpinner from 'primevue/progressspinner';
 import ExcelJS from 'exceljs';
 import { format } from 'date-fns';
@@ -75,21 +76,6 @@ const loadProducts = async () => {
     visibledatatable.value = true;
 };
 
-const lstSanPhamCT = ref([]);
-
-const fetchAllSpCt = async (idProduct) => {
-    await productStore.fetchAllSpCT(idProduct); // Gọi hàm fetchAll từ Store
-    lstSanPhamCT.value = productStore.sanPhamCT;
-    return lstSanPhamCT.value;
-};
-
-const loadImage = ref([]);
-
-const loadImg = async (idProduct) => {
-    await productStore.fetchAllImage(idProduct); // Gọi hàm fetchAll từ Store
-    loadImage.value = productStore.images;
-    return loadImage.value;
-};
 
 const url = ref([]);
 let soLuongSP = ref(null);
@@ -318,16 +304,6 @@ const loadDataByTrangThai = async () => {
     await productStore.fetchDataByStatus(trangThai.value.value);
     products.value = productStore.products;
     const productList = productStore.products; // Lấy dữ liệu từ Store và gán vào biến products
-
-    for (const [key, product] of productList.entries()) {
-        productList[key]['img'] = null;
-        productList[key]['sanPhamChiTiet'] = null;
-        const mau = await fetchAllSpCt(product.id);
-        productList[key]['sanPhamChiTiet'] = mau;
-        const img = await loadImg(product.id);
-        productList[key]['img'] = img;
-    }
-
     products.value = productList;
 
     showSpinner.value = false;
@@ -466,6 +442,7 @@ const formatDate = (dateTime) => {
                             <template #body="slotProps">
                                 <Detail :my-prop="slotProps.data"></Detail>
                                 <UpdateProduct :my-prop="slotProps.data"></UpdateProduct>
+                                <ModalSPCT :my-prop="slotProps.data"></ModalSPCT>
                                 <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2"
                                     @click="confirmDeleteProduct(slotProps.data.id)"
                                     v-if="slotProps.data.trangThai != 0 && slotProps.data.soLuongTon > 0" />

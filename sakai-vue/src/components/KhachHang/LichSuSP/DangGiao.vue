@@ -9,7 +9,9 @@ import { HDKHStore } from '../../../service/KhachHang/HoaDonKHService';
 import DetailHoaDon from './TrangThaiDonHang.vue';
 import { useRouter } from 'vue-router';
 import { gioHangStore } from '../../../service/KhachHang/Giohang/GiohangCTService';
+import { useDetailProductStore } from '../../../service/KhachHang/DetailService';
 
+const productStore = useDetailProductStore();
 const router = useRouter();
 const gioHangService = gioHangStore();
 const redirectToTrangThaiDonHang = (id) => {
@@ -146,13 +148,31 @@ const showDialogMuaLai = async (idHD) => {
     muaLaiDialog.value = true;
 };
 
-const addCart = async (soLuong, idCTSP) => {
+const dataGHCT = ref([]);
+const soLuongGH = ref(0);
+const dataListSPCT = ref([]);
+const loaddataListSPCT = async (idProduct, idSize, idMau) => {
+    await productStore.fetchIdSPCT(idProduct, idSize, idMau);
+    dataListSPCT.value = productStore.products;
+};
+const addCart = async (soLuong, idCTSP, idSize, idMau) => {
     const cartItem = {
         soLuong: soLuong,
         sanPhamChiTiet: idCTSP
     };
     const token = localStorage.getItem('token');
+    await loaddataListSPCT(idCTSP, idSize, idMau);
 
+    await gioHangService.getGHCTByIdctsp(token, idCTSP)
+    dataGHCT.value = gioHangService.data;
+
+    soLuongGH.value = parseInt(soLuong) + parseInt(dataGHCT.value.soLuong)
+
+
+        if (soLuongGH.value > dataListSPCT.value.soLuongTon) {
+            toast.add({ severity: 'warn', summary: '', detail: 'Số lượng bạn chọn đã đạt mức tối đa của sản phẩm', life: 5000 });
+            return;
+        }
     await gioHangService.addToCart(cartItem, token);
     router.push({ name: 'gio-hang' });
 
@@ -169,7 +189,7 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
 </script>
 <template>
       <div style="height: 500px; font-size: 24px;" v-if="!data || data.length === 0"> Chưa có Đơn hàng !</div>
-    <div v-for="(hd, index) in data" :key="index">
+    <div v-for="(hd, index) in  useHD.dataDangGiao" :key="index">
         <div style="width: 1060px; background: rgb(255, 255, 255); ">
 
             <div style="width: 1060px; background: rgb(252, 246, 246);  ">
@@ -286,7 +306,7 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
 
                         </div>
                         <Button icon="pi pi-shopping-cart" class="p-button-rounded p-button-warning mt-2" style=""
-                            @click="addCart(sp.soLuong, sp.idSPCT)" :disabled="sp.soLuongTon < sp.soLuong" />
+                            @click="addCart(sp.soLuong, sp.idSPCT, sp.idSize, sp.idMau)" :disabled="sp.soLuongTon < sp.soLuong" />
                     </div>
                 </div>
             </div>

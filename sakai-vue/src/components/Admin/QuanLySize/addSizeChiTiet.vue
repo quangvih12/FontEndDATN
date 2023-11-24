@@ -98,7 +98,7 @@ const onSizeChange = () => {
 };
 </script>
 <template>
-    <Button label="" icon="pi pi-plus" class="p-button-success mr-2" @click="openNew" style="width: 50px; height: 40px; margin-left: 20px"  />
+    <Button label="Thêm mới" icon="pi pi-plus" class="p-button-success mr-2" @click="openNew" style="width: 50px; height: 40px; margin-left: 20px"  />
 
     <Dialog v-model:visible="productDialog" :style="{ width: '300px' }" header="Thêm size" :modal="true" class="p-fluid">
         <div class="card">

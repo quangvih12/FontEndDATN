@@ -1,5 +1,5 @@
 <template>
-    <Button label="New" icon="pi pi-plus" class="p-button-success mr-2" @click="openNew" />
+    <Button label="Thêm mới" icon="pi pi-plus" class="p-button-success mr-2" @click="openNew" />
     <Dialog v-model:visible="addKhuyenMaiDialog" header="Flex Scroll" :style="{ width: '75vw' }" maximizable modal :contentStyle="{ height: '300px' }" class="p-fluid">
         <template #header>
             <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
