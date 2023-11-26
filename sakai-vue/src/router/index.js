@@ -18,6 +18,13 @@ const router = createRouter({
 
         }, 
 
+        , {
+            path: '/test',
+            name: 'test',
+            component: () => import('@/components/KhachHang/Test.vue')
+
+        }, 
+
         {
             path: '/khach-hang/dang-ky',
             name: 'dangky',

@@ -1,5 +1,7 @@
 <template>
+      <Toast />
     <div class="form">
+        <Toast />
         <div class="title">OTP</div>
         <div class="title">Verification Code</div>
         <p class="message">We have sent a verification code to your mobile number</p>
@@ -41,7 +43,7 @@ const verify = async () => {
     await registerService.register(storedForm);
     dataDangKy.value = registerService.data;
   
-    toast.add({ severity: 'warn', summary: '', detail: 'OTP không đúng. Vui lòng thử lại', life: 5000 });
+    toast.add({ severity: 'success', summary: '', detail: 'Đăng ký thành công. Vui lòng đăng nhập', life: 6000 });
     localStorage.removeItem("otp");
     localStorage.removeItem("dangky");
     router.push('/login');
