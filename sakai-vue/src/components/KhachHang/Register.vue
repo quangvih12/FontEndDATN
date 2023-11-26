@@ -2,7 +2,9 @@
 
 <section class="container">
   <header>Registration Form</header>
+  <Toast />
   <form class="form" action="#" @submit="onSubmit">
+    <Toast />
       <div class="input-box">
           <label>Họ và Tên</label>
           <input  placeholder="Nhập họ và tên" type="text" v-model = "ten" :class="{ 'p-invalid': tenError }" required="true" autofocus>
@@ -44,13 +46,13 @@
       <div class="column">
           <div class="input-box">
             <label>Mật khẩu</label>
-            <input required="" placeholder="Nhập mật khẩu" type="text" v-model="matKhau"  autofocus :class="{ 'p-invalid': passError }" >
+            <input required="" placeholder="Nhập mật khẩu" type="password" v-model="matKhau"  autofocus :class="{ 'p-invalid': passError }" >
             <small class="p-error">{{ passError }}</small>
           </div>
           <div class="input-box">
             <label>Nhập lại mật khẩu</label>
            
-            <input required="" placeholder="Nhập lại mật khẩu" type="text" v-model="xacNhanMK"  autofocus :class="{ 'p-invalid': xacNhanMKError }">
+            <input required="" placeholder="Nhập lại mật khẩu" type="password" v-model="xacNhanMK"  autofocus :class="{ 'p-invalid': xacNhanMKError }">
             <small class="p-error">{{ xacNhanMKError }}</small>
         </div>
       </div>
@@ -107,7 +109,7 @@ const { value: xacNhanMK, errorMessage: xacNhanMKError } = useField('xacNhanMK')
 const gioiTinh = ref(2);
 const toast = useToast();
 const otp = ref(null);
-
+const khachHang = ref(null);
 const onSubmit = handleSubmit(async () => {
 
     const form = {
@@ -118,10 +120,12 @@ const onSubmit = handleSubmit(async () => {
         ngaySinh: ngaySinh.value,
         gioiTinh: parseInt(gioiTinh.value)
     }
-     const KhachHang = khUserService.getUserByEmail(email.value)
-    if(KhachHang != null){
-    
-      toast.add({ severity: 'warn', summary: '', detail: 'Email đã tồn tại. Vui lòng nhập email khác', life: 5000 });
+      await registerService.getUserByEmail(email.value)
+      khachHang.value = registerService.data;
+     console.log("dâtta test",khachHang.value)
+    if(khachHang.value != null){
+      console.log("chay vao day")
+      toast.add({ severity: 'warn', summary: '', detail: 'Email đã tồn tại', life: 3000 });
      return;
     }
 
@@ -140,7 +144,7 @@ const onSubmit = handleSubmit(async () => {
     }
 
     await userService.sendOTP(mailData);
-
+    toast.add({ severity: 'success', summary: '', detail: 'OTP được gửi trong mail của bạn', life: 7000 });
     router.push('/otp');
 
 
