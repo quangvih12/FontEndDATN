@@ -37,20 +37,20 @@ const schema = yup.object().shape({
         .number()
         .required('Giá bán không được để trống')
         .min(50000, 'giá phải lớn hơn hoặc bằng 50.000 đ')
-        .max(10000000, 'Giá bán không lớn hơn 10.000.000 đ')
-        .when(['giaNhap'], (giaBan, schema) => {
-            return schema.test({
-                test: function (value) {
-                    const giaNhap = this.resolve(yup.ref('giaNhap'));
-                    if (value < giaNhap) {
-                        toast.add({ severity: 'error', summary: 'Error ', detail: 'Giá Nhập không được nhỏ hơn giá bán', life: 3000 });
-                    }
-                    return true;
-                },
-                message: 'Giá bán phải nhỏ hơn giá nhập'
-            });
-        }),
-    giaNhap: yup.number().required('Giá nhập không được để trống').min(50000, 'giá phải lớn hơn hoặc bằng 50.000 đ').max(10000000, 'Giá bán không lớn hơn  10.000.000 đ'),
+        .max(10000000, 'Giá bán không lớn hơn 10.000.000 đ'),
+        // .when(['giaNhap'], (giaBan, schema) => {
+        //     return schema.test({
+        //         test: function (value) {
+        //             const giaNhap = this.resolve(yup.ref('giaNhap'));
+        //             if (value < giaNhap) {
+        //                 toast.add({ severity: 'error', summary: 'Error ', detail: 'Giá Nhập không được nhỏ hơn giá bán', life: 3000 });
+        //             }
+        //             return true;
+        //         },
+        //         message: 'Giá bán phải nhỏ hơn giá nhập'
+        //     });
+        // }),
+    // giaNhap: yup.number().required('Giá nhập không được để trống').min(50000, 'giá phải lớn hơn hoặc bằng 50.000 đ').max(10000000, 'Giá bán không lớn hơn  10.000.000 đ'),
     quaiDeo: yup.string().required('Bạn cần chọn quai đeo cho sản phẩm'),
     loai: yup.number().required('loại sản phẩm không được để trống'),
     thuongHieu: yup.number().required('vui lòng chọn Thương hiệu sản phẩm '),
@@ -70,7 +70,7 @@ const { handleSubmit, resetForm } = useForm({
 
 const { value: name, errorMessage: nameError } = useField('ten');
 const { value: GiaBan, errorMessage: giaBanError } = useField('giaBan');
-const { value: GiaNhap, errorMessage: giaNhapError } = useField('giaNhap');
+// const { value: GiaNhap, errorMessage: giaNhapError } = useField('giaNhap');
 const { value: QuaiDeo, errorMessage: quaiDeoError } = useField('quaiDeo');
 const { value: Loai, errorMessage: loaiError } = useField('loai');
 const { value: ThuongHieu, errorMessage: thuongHieuError } = useField('thuongHieu');
@@ -100,7 +100,7 @@ const onSubmit = handleSubmit(async (values) => {
 
             for (let i = 0; i < values.giaBan.length; i++) {
                 let giaBan = values.giaBan[i];
-                let giaNhap = values.giaNhap[i];
+             //   let giaNhap = values.giaNhap[i];
                 let soLuong = values.soLuongSize[i];
                 if (soLuong <= 0) {
                     toast.add({ severity: 'error', summary: 'Error', detail: 'Số lượng sản phẩm phải lớn hơn 0', life: 3000 });
@@ -126,26 +126,26 @@ const onSubmit = handleSubmit(async (values) => {
                     toast.add({ severity: 'error', summary: 'Error', detail: 'Giá bán không lớn hơn 10.000.000 đ', life: 3000 });
                     return;
                 }
-                if (giaNhap <= 0) {
-                    toast.add({ severity: 'error', summary: 'Error', detail: 'Giá nhập sản phẩm phải lớn hơn 0', life: 3000 });
-                    return;
-                }
-                if (isNaN(giaNhap)) {
-                    toast.add({ severity: 'error', summary: 'Error', detail: 'Giá nhập phải là một số', life: 3000 });
-                    return;
-                }
-                if (giaNhap < 50000) {
-                    toast.add({ severity: 'error', summary: 'Error', detail: 'giá nhập phải lớn hơn 50.000 đ', life: 3000 });
-                    return;
-                }
-                if (giaNhap > 10000000) {
-                    toast.add({ severity: 'error', summary: 'Error', detail: 'Giá nhập không lớn hơn 10.000.000 đ', life: 3000 });
-                    return;
-                }
-                if (giaNhap > giaBan) {
-                    toast.add({ severity: 'error', summary: 'Error', detail: 'Giá nhập phải lớn hơn giá bán', life: 3000 });
-                    return;
-                }
+                // if (giaNhap <= 0) {
+                //     toast.add({ severity: 'error', summary: 'Error', detail: 'Giá nhập sản phẩm phải lớn hơn 0', life: 3000 });
+                //     return;
+                // }
+                // if (isNaN(giaNhap)) {
+                //     toast.add({ severity: 'error', summary: 'Error', detail: 'Giá nhập phải là một số', life: 3000 });
+                //     return;
+                // }
+                // if (giaNhap < 50000) {
+                //     toast.add({ severity: 'error', summary: 'Error', detail: 'giá nhập phải lớn hơn 50.000 đ', life: 3000 });
+                //     return;
+                // }
+                // if (giaNhap > 10000000) {
+                //     toast.add({ severity: 'error', summary: 'Error', detail: 'Giá nhập không lớn hơn 10.000.000 đ', life: 3000 });
+                //     return;
+                // }
+                // if (giaNhap > giaBan) {
+                //     toast.add({ severity: 'error', summary: 'Error', detail: 'Giá nhập phải lớn hơn giá bán', life: 3000 });
+                //     return;
+                // }
 
             }
             await productStore.add(values);
@@ -701,7 +701,7 @@ const openNew = () => {
                                 </div>
 
 
-                                <div class="field col-12 md:col-12">
+                                <!-- <div class="field col-12 md:col-12">
 
                                     <div style="background: rgb(255, 255, 255); width: 450px ;  display: flex;">
                                         <div style="width: 75px; ">
@@ -738,7 +738,7 @@ const openNew = () => {
                                     </div>
                                     <small class="p-error">{{ giaNhapError }}</small>
 
-                                </div>
+                                </div> -->
 
                                 <div class="field col-12 md:col-12">
 

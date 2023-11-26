@@ -109,7 +109,9 @@ const { value: xacNhanMK, errorMessage: xacNhanMKError } = useField('xacNhanMK')
 const gioiTinh = ref(2);
 const toast = useToast();
 const otp = ref(null);
+
 const khachHang = ref(null);
+
 const onSubmit = handleSubmit(async () => {
 
     const form = {
@@ -120,15 +122,14 @@ const onSubmit = handleSubmit(async () => {
         ngaySinh: ngaySinh.value,
         gioiTinh: parseInt(gioiTinh.value)
     }
+
       await registerService.getUserByEmail(email.value)
       khachHang.value = registerService.data;
      console.log("dâtta test",khachHang.value)
     if(khachHang.value != null){
-      console.log("chay vao day")
       toast.add({ severity: 'warn', summary: '', detail: 'Email đã tồn tại', life: 3000 });
      return;
     }
-
     const formString = JSON.stringify(form);
 
     const randomOTP = Math.floor(1000 + Math.random() * 9000);

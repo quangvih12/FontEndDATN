@@ -38,6 +38,7 @@ const loadDataGioHang = async () => {
     } else {
         await gioHangService.getAllGHCT(token);
         dataGHCT.value = gioHangService.data;
+      //  console.log(dataGHCT.value);
     }
 };
 
@@ -595,7 +596,7 @@ const tinhTongTienChoTungSanPham = (soLuong, giaSauGiam, giaBan) => {
                                 <template #body="slotProps">
                                     <Checkbox v-model="checked[dataGHCT.indexOf(slotProps.data)]" :binary="true"
                                         @change="onSizeChange(slotProps.data, checked[dataGHCT.indexOf(slotProps.data)])"
-                                        :disabled="slotProps.data.soLuongTon <= 0 || slotProps.data.soLuong > slotProps.data.soLuongTon" />
+                                        :disabled="slotProps.data.soLuongTon <= 0 || slotProps.data.soLuong > slotProps.data.soLuongTon || slotProps.data.trangThaiSP==3 || slotProps.data.trangThaiSPCT==3 " />
                                 </template>
                             </Column>
 
@@ -619,7 +620,7 @@ const tinhTongTienChoTungSanPham = (soLuong, giaSauGiam, giaBan) => {
                                         <p v-if="slotProps.data.soLuongTon != 0">Phân loại hàng:</p>
                                         <p style="font-size: 13px; margin-top: -10px" v-if="slotProps.data.soLuongTon != 0">
                                             {{ slotProps.data.tenMauSac }}, {{ slotProps.data.tenSize }}</p>
-                                        <p v-if="slotProps.data.soLuongTon == 0">Hết sản phẩm</p>
+                                        <p style="color: red;" v-if="slotProps.data.soLuongTon <= 0 || slotProps.data.trangThaiSP==3 || slotProps.data.trangThaiSPCT==3 ">Hết sản phẩm</p>
                                     </div>
                                 </template>
                             </Column>
@@ -651,10 +652,10 @@ const tinhTongTienChoTungSanPham = (soLuong, giaSauGiam, giaBan) => {
                                             @blur="updateSoLuongOnBlur(slotProps.data.idGHCT, $event.target.value, slotProps.data.soLuong)"
                                             @input="updateSoLuong(slotProps.data.idGHCT, $event.target.value, slotProps.data.soLuong)"
                                             class="input-soluong" style="width: 30px; height: 30px"
-                                            :disabled="slotProps.data.soLuongTon == 0" />
+                                            :disabled="slotProps.data.soLuongTon <= 0" />
                                         <button @click="increment(slotProps.data.idGHCT)" class="pi pi-plus"
                                             style="width: 30px; height: 30px; border-radius: 0px 10px 10px 0px; border: 1px solid rgb(177, 173, 173)"
-                                            :disabled="slotProps.data.soLuongTon <= 0 || slotProps.data.soLuong > slotProps.data.soLuongTon"></button>
+                                            :disabled="slotProps.data.soLuongTon <= 0 || slotProps.data.soLuong > slotProps.data.soLuongTon || slotProps.data.trangThaiSP==3 || slotProps.data.trangThaiSPCT==3 "></button>
                                     </div>
                                 </template>
                             </Column>

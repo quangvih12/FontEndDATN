@@ -99,18 +99,19 @@ watch(
 
     <div class="card">
         <div class="card">
-            <TabView>
+            <ThongKeTheoNgay></ThongKeTheoNgay>
+            <!-- <TabView>
                 <TabPanel header="Thống kê doanh thu">
-                    <ThongKeTheoNgay></ThongKeTheoNgay>
+                    
                 </TabPanel>
                 <TabPanel header="Thống kê Lợi nhuận">
                     <ThongKeSanPham></ThongKeSanPham>
                 </TabPanel>
               
-                <!-- <TabPanel header="Thống kê hoá đơn">
+                <TabPanel header="Thống kê hoá đơn">
                     <ThongKeHoaDon></ThongKeHoaDon>
-                </TabPanel> -->
-            </TabView>
+                </TabPanel>
+            </TabView> -->
 
         </div>
     </div>

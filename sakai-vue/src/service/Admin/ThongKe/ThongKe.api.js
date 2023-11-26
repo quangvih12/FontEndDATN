@@ -7,6 +7,10 @@ export const ThongKeStore = defineStore('thongKe', {
     state: () => ({
         data: [],
         tongDoanhThu: 0,
+        tongHoanTien: 0,
+        tongChietKhau: 0,
+        tongDonHoanThanh: 0,
+
         tongLoiNhuan: 0,
         tongDonhangHoanThanh: 0,
         tongDonhangDangGiao: 0,
@@ -27,6 +31,9 @@ export const ThongKeStore = defineStore('thongKe', {
                 const response = await axios.get(apiThongKe);
                 this.data = response.data;
                 this.tongDoanhThu = response.data.tongDoanhThu;
+                this.tongHoanTien = response.data.tongHoanTien;
+                this.tongChietKhau = response.data.tongChietKhau;
+                this.tongDonHoanThanh = response.data.tongDonHoanThanh;
                 this.lstAdminThongKeLoaiResponses = response.data.lstAdminThongKeLoaiResponses;
                 this.lstAdminThongKeSanPhamCaoResponses = response.data.lstAdminThongKeSanPhamCaoResponses;
                 this.lstAdminThongKeSanPhamThapResponses =  response.data.lstAdminThongKeSanPhamThapResponses;
@@ -43,6 +50,9 @@ export const ThongKeStore = defineStore('thongKe', {
                 const response = await axios.get(apiThongKe+`/by-phuong-thuc?idPhuongThuc=${idPhuongThuc}`);
                 this.data = response.data;
                 this.tongDoanhThu = response.data.tongDoanhThu;
+                this.tongHoanTien = response.data.tongHoanTien;
+                this.tongChietKhau = response.data.tongChietKhau;
+                this.tongDonHoanThanh = response.data.tongDonHoanThanh;
                 this.lstAdminThongKeLoaiResponses = response.data.lstAdminThongKeLoaiResponses;
                 this.lstAdminThongKeSanPhamCaoResponses = response.data.lstAdminThongKeSanPhamCaoResponses;
                 this.lstAdminThongKeSanPhamThapResponses =  response.data.lstAdminThongKeSanPhamThapResponses;
@@ -59,6 +69,9 @@ export const ThongKeStore = defineStore('thongKe', {
                 const response = await axios.get(apiThongKe+`/loai/${id}?year=${year}`);
                 this.data = response.data;
                 this.tongDoanhThu = response.data.tongDoanhThu;
+                this.tongHoanTien = response.data.tongHoanTien;
+                this.tongChietKhau = response.data.tongChietKhau;
+                this.tongDonHoanThanh = response.data.tongDonHoanThanh;
                 this.lstAdminThongKeLoaiResponses = response.data.lstAdminThongKeLoaiResponses;
                 this.lstAdminThongKeSanPhamCaoResponses = response.data.lstAdminThongKeSanPhamCaoResponses;
                 this.lstAdminThongKeSanPhamThapResponses =  response.data.lstAdminThongKeSanPhamThapResponses;
@@ -75,6 +88,9 @@ export const ThongKeStore = defineStore('thongKe', {
                 const response = await axios.get(apiThongKe+`/thuong-hieu/${id}?year=${year}`);
                 this.data = response.data;
                 this.tongDoanhThu = response.data.tongDoanhThu;
+                this.tongHoanTien = response.data.tongHoanTien;
+                this.tongChietKhau = response.data.tongChietKhau;
+                this.tongDonHoanThanh = response.data.tongDonHoanThanh;
                 this.lstAdminThongKeLoaiResponses = response.data.lstAdminThongKeLoaiResponses;
                 this.lstAdminThongKeSanPhamCaoResponses = response.data.lstAdminThongKeSanPhamCaoResponses;
                 this.lstAdminThongKeSanPhamThapResponses =  response.data.lstAdminThongKeSanPhamThapResponses;
@@ -92,6 +108,9 @@ export const ThongKeStore = defineStore('thongKe', {
                 this.data = response.data;
                 // console.log(year)
                 this.tongDoanhThu = response.data.tongDoanhThu;
+                this.tongHoanTien = response.data.tongHoanTien;
+                this.tongChietKhau = response.data.tongChietKhau;
+                this.tongDonHoanThanh = response.data.tongDonHoanThanh;
                 this.lstAdminThongKeLoaiResponses = response.data.lstAdminThongKeLoaiResponses;
                 this.lstAdminThongKeSanPhamCaoResponses = response.data.lstAdminThongKeSanPhamCaoResponses;
                 this.lstAdminThongKeSanPhamThapResponses =  response.data.lstAdminThongKeSanPhamThapResponses;
@@ -109,6 +128,9 @@ export const ThongKeStore = defineStore('thongKe', {
                 this.data = response.data;
                 // console.log(year)
                 this.tongDoanhThu = response.data.tongDoanhThu;
+                this.tongHoanTien = response.data.tongHoanTien;
+                this.tongChietKhau = response.data.tongChietKhau;
+                this.tongDonHoanThanh = response.data.tongDonHoanThanh;
                 this.lstAdminThongKeLoaiResponses = response.data.lstAdminThongKeLoaiResponses;
                 this.lstAdminThongKeSanPhamCaoResponses = response.data.lstAdminThongKeSanPhamCaoResponses;
                 this.lstAdminThongKeSanPhamThapResponses =  response.data.lstAdminThongKeSanPhamThapResponses;
@@ -126,6 +148,9 @@ export const ThongKeStore = defineStore('thongKe', {
                 this.data = response.data;
                 // console.log(year)
                 this.tongDoanhThu = response.data.tongDoanhThu;
+                this.tongHoanTien = response.data.tongHoanTien;
+                this.tongChietKhau = response.data.tongChietKhau;
+                this.tongDonHoanThanh = response.data.tongDonHoanThanh;
                 this.lstAdminThongKeLoaiResponses = response.data.lstAdminThongKeLoaiResponses;
                 this.lstAdminThongKeSanPhamCaoResponses = response.data.lstAdminThongKeSanPhamCaoResponses;
                 this.lstAdminThongKeSanPhamThapResponses =  response.data.lstAdminThongKeSanPhamThapResponses;
