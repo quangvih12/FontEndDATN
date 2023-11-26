@@ -498,12 +498,12 @@ const loadDataTrangThai = () => {
                                 {{ slotProps.data.soLuongTon }}
                             </template>
                         </Column>
-                        <Column field="giaNhap" header="Giá Nhập" :sortable="true" headerStyle="width:14%; min-width:8rem;">
+                        <!-- <Column field="giaNhap" header="Giá Nhập" :sortable="true" headerStyle="width:14%; min-width:8rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">Số Lượng</span>
                                 {{ formatCurrency(slotProps.data.giaNhap) }}
                             </template>
-                        </Column>
+                        </Column> -->
                         <Column field="giaBan" header="Giá Bán" :sortable="true" headerStyle="width:14%; min-width:8rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">Số Lượng</span>

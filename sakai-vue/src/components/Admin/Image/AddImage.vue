@@ -111,20 +111,20 @@ function onFileInputImage(event) {
         <div class="card">
             <form @submit="onSubmit">
                 <div class="p-fluid formgrid grid">
-                    <div style="display: block; margin-left: 60px; margin-top: 50px;">
+                  
                         <div class="t"
-                            style="border: 1px solid black; border-radius: 10px; width: 200px; height: 140px; margin-top: -60px">
+                        style="border: 1px solid black; border-radius: 10px; width: 300px; height: 240px; margin-top: 10px; margin-left: 10px; margin-bottom: 20px;">
                             <img :src="anh" alt=""
-                                style="width: 175px; height: 130px; top: 50%; left: 50%; transform: translate(4%, 2%)" />
+                            style="width: 275px; height: 230px; top: 50%; left: 50%; transform: translate(4%, 2%)"  />
                         </div>
-                        <div class="buton" style="margin-top: 10px">
+                        <div class="buton" style="margin-top: 10px; margin-bottom: 20px;">
                             <FileUpload mode="basic" name="demo[]" accept="image/*" :maxFileSize="1000000"
-                                @input="onFileInputImage" style="display: flex" />
+                                @input="onFileInputImage" style="display: flex; width: 200px; margin-left: 50px;"/>
                         </div>
                         <small class="p-error">{{ imagesProductError }}</small>
-                    </div>
+                  
 
-                    <div style="width: 1000px; text-align: center;display: flex; margin-top: 20px;margin-left: 40px;">
+                   <div style="width: 1000px; text-align: center;display: flex; margin-left: 40px;">
 
                         <Button class="p-button-outlined" outlined severity="secondary"
                             style="width: 100px; height: auto; margin: 10px" @click="reset()" label="clear"></Button>

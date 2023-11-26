@@ -12,7 +12,7 @@
       <div class="input-box">
           <label>Email</label>
           <input required="true" placeholder="Nhập email" type="email"  v-model = "email" autofocus :class="{ 'p-invalid': emailError }">
-          <small class="p-error">{{ emailError }}</small>
+          <small class="p-error">{{ emailERR==''? emailError:emailERR }}</small>
       </div>
       <div class="column">
           <div class="input-box">
@@ -108,6 +108,7 @@ const gioiTinh = ref(2);
 const toast = useToast();
 const otp = ref(null);
 
+const emailERR = ref('');
 const onSubmit = handleSubmit(async () => {
 
     const form = {
@@ -120,11 +121,12 @@ const onSubmit = handleSubmit(async () => {
     }
      const KhachHang = khUserService.getUserByEmail(email.value)
     if(KhachHang != null){
-    
-      toast.add({ severity: 'warn', summary: '', detail: 'Email đã tồn tại. Vui lòng nhập email khác', life: 5000 });
+
+      emailERR.value = 'Email đã tồn tại. Vui lòng nhập email khác';
+     
      return;
     }
-
+ console.log("email")
     const formString = JSON.stringify(form);
 
     const randomOTP = Math.floor(1000 + Math.random() * 9000);

@@ -42,20 +42,20 @@ const schema = yup.object().shape({
         .number()
         .required('Giá bán không được để trống')
         .min(50000, 'giá phải lớn hơn hoặc bằng 50.000 đ')
-        .max(10000000, 'Giá bán không lớn hơn 10.000.000 đ')
-        .when(['giaNhap'], (giaBan, schema) => {
-            return schema.test({
-                test: function (value) {
-                    const giaNhap = this.resolve(yup.ref('giaNhap'));
-                    if (value < giaNhap) {
-                        toast.add({ severity: 'error', summary: 'Error ', detail: 'Giá Nhập không được nhỏ hơn giá bán', life: 3000 });
-                    }
-                    return true;
-                },
-                message: 'Giá bán phải nhỏ hơn giá nhập'
-            });
-        }),
-    giaNhap: yup.number().required('Giá nhập không được để trống').min(50000, 'giá phải lớn hơn hoặc bằng 50.000 đ').max(10000000, 'Giá bán không lớn hơn  10.000.000 đ'),
+        .max(10000000, 'Giá bán không lớn hơn 10.000.000 đ'),
+        // .when(['giaNhap'], (giaBan, schema) => {
+        //     return schema.test({
+        //         test: function (value) {
+        //             const giaNhap = this.resolve(yup.ref('giaNhap'));
+        //             if (value < giaNhap) {
+        //                 toast.add({ severity: 'error', summary: 'Error ', detail: 'Giá Nhập không được nhỏ hơn giá bán', life: 3000 });
+        //             }
+        //             return true;
+        //         },
+        //         message: 'Giá bán phải nhỏ hơn giá nhập'
+        //     });
+        // }),
+    // giaNhap: yup.number().required('Giá nhập không được để trống').min(50000, 'giá phải lớn hơn hoặc bằng 50.000 đ').max(10000000, 'Giá bán không lớn hơn  10.000.000 đ'),
     trongLuong: yup.string().required('vui lòng chọn trọng lượng sản phẩm'),
     size: yup.number().required('vui lòng chọn size cho sản phẩm'),
     mauSac: yup.number().required('vui lòng chọn màu sắc sản phẩm'),
@@ -70,7 +70,7 @@ const { value: idSP, errorMessage: idError } = useField('idSP');
 const { value: anh, errorMessage: anhError } = useField('anh');
 const { value: soluong, errorMessage: soLuongError } = useField('soLuongTon');
 const { value: GiaBan, errorMessage: giaBanError } = useField('giaBan');
-const { value: GiaNhap, errorMessage: giaNhapError } = useField('giaNhap');
+// const { value: GiaNhap, errorMessage: giaNhapError } = useField('giaNhap');
 const { value: TrongLuong, errorMessage: trongLuongError } = useField('trongLuong');
 const { value: idKhuyenMai, errorMessage: idKhuyenMaiError } = useField('idKhuyenMai');
 const { value: MauSac, errorMessage: mauSacError } = useField('mauSac');
@@ -89,7 +89,7 @@ const onSubmit = handleSubmit(async (values) => {
         anh: values.anh,
         soLuongTon: values.soLuongTon,
         giaBan: values.giaBan,
-        giaNhap: values.giaNhap,
+        // giaNhap: values.giaNhap,
         trongLuong: values.trongLuong,
         idKhuyenMai: values.idKhuyenMai,
         mauSac: values.mauSac,
@@ -261,7 +261,7 @@ const getStatusLabel = (trangThai) => {
                             </span>
                             <small class="p-error">{{ soLuongError }}</small>
                         </div>
-
+<!-- 
                         <div class="Field col-12 md:col-12" style="margin-bottom: 30px">
                             <span class="p-float-label">
                                 <InputNumber id="Field" v-model="GiaNhap" :class="{ 'p-invalid': giaNhapError }">
@@ -269,7 +269,7 @@ const getStatusLabel = (trangThai) => {
                                 <label for="Field">Giá Nhập</label>
                             </span>
                             <small class="p-error">{{ giaNhapError }}</small>
-                        </div>
+                        </div> -->
                         <div class="Field col-12 md:col-12" style="margin-bottom: 30px">
                             <span class="p-float-label">
                                 <InputNumber id="number-input" name="GiaBan" v-model="GiaBan"

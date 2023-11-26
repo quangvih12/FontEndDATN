@@ -7,7 +7,7 @@
                 <Panel header="Tổng Doanh Thu" style=" width: 150px;  height: 40px; ">
                     <div style="display: flex;">
                         <div style="margin-right: 20px; text-align: center;">
-                            <p class="m-0" style="text-align: center; font-weight: 900; font-size: 1.4rem;">{{
+                            <p class="m-0" style="text-align: center; font-weight: 750; font-size: 1.4rem;">{{
                                 formatCurrency(tongDoanhThu) }}</p>
                         </div>
                         <div>
@@ -18,38 +18,55 @@
                 </Panel>
 
             </div>
-            <div class="Field col-12 md:col-2" style="margin-right: 10px;height: 30px;">
-                <Panel header="Loại" style=" width: 150px">
-                    <div>
-                        <span class="p-float-label" style="height: 40px;">
-                            <Dropdown id="dropdown" :options="dataLoai" v-model="selectedLoai" optionLabel="ten"
-                                :class="{ 'p-invalid': loaiError }" style="height: 40px;">
-                            </Dropdown>
-                            <label for="dropdown">Loại</label>
-                        </span>
+            <div class="Field col-12 md:col-2" style="margin-right: 10px;height: 30px; margin-left: 5px;">
+                <Panel header="Tổng Hoàn tiền" style=" width: 150px;  height: 40px; ">
+                    <div style="display: flex;">
+                        <div style="margin-right: 20px; text-align: center;">
+                            <p class="m-0" style="text-align: center; font-weight: 750; font-size: 1.4rem;">{{
+                                formatCurrency(tongHoanTien) }}</p>
+                        </div>
+                        <div>
+
+                        </div>
+
                     </div>
                 </Panel>
+
             </div>
-            <div class="Field col-12 md:col-2" style="margin-right: 20px;">
-                <Panel header="Thương hiệu" style=" width: 160px; height: 50px;">
-                    <span class="p-float-label" style="height: 40px">
-                        <Dropdown id="dropdown" :options="dataThuongHieu" v-model="selectedCity" optionLabel="ten"
-                            @change="onCityChange" style="height: 40px;">
-                        </Dropdown>
-                        <label for="dropdown">Thương Hiệu</label>
-                    </span>
+            <div class="Field col-12 md:col-2" style="margin-right: 10px;height: 30px;">
+
+                <Panel header="Tổng Chiết khấu" style=" width: 150px;  height: 40px; ">
+                    <div style="display: flex;">
+                        <div style="margin-right: 20px; text-align: center;">
+                            <p class="m-0" style="text-align: center; font-weight: 750; font-size: 1.4rem;">{{
+                                formatCurrency(tongChietKhau) }}</p>
+                        </div>
+                        <div>
+
+                        </div>
+
+                    </div>
                 </Panel>
+
             </div>
-            <div class="Field col-12 md:col-2" style="margin-right: 20px;">
-                <Panel header="Sản phẩm" style=" width: 160px; height: 30px;">
-                    <span class="p-float-label" style="height: 40px">
-                        <Dropdown id="dropdown" :options="products" v-model="selectedProduct" optionLabel="ten"
-                            @change="onCityChange" style="height: 40px;">
-                        </Dropdown>
-                        <label for="dropdown">Sản phẩm</label>
-                    </span>
+            <div class="Field col-12 md:col-2" style="margin-right: 10px;height: 30px;">
+
+                <Panel header="Đơn hoàn thành" style=" width: 150px;  height: 40px; ">
+                    <div style="display: flex;">
+                        <div style="margin-left: 40px; text-align: center;">
+                            <p class="m-0" style="text-align: center; font-weight: 750; font-size: 1.4rem;">{{
+                               tongDonHoanThanh }}</p>
+                        </div>
+                        <div>
+
+                        </div>
+
+                    </div>
                 </Panel>
+
             </div>
+
+
             <div class="Field col-6 md:col-4" style="height: 40px;">
                 <Panel header="Tìm kiếm" style=" width: 300px; height: 40px;">
                     <div class="flex flex-wrap gap-3" style="display: flex;">
@@ -102,20 +119,55 @@
                                 </div>
                             </form>
                         </OverlayPanel>
-                        <OverlayPanel ref="op1" style="height: 60px;">
+                        <OverlayPanel ref="op1" style="height: 120px;width: 500px;">
                             <div style="display: flex; ">
-                                <div class="flex align-items-center" style="margin-right: 20px;">
+                                <p>hình thức: </p>
+                                <div class="flex align-items-center" style="margin-right: 20px; margin-left: 20px; margin-top: -10px;">
                                     <RadioButton v-model="vModelHinhThuc" type="radio" :inputId="'ingredient' + index"
                                         name="nam" value="1" />
                                     <label :for="'ingredient' + index" class="ml-2">tại quầy</label>
                                 </div>
-                                <div class="flex align-items-center">
+                                <div class="flex align-items-center" style=" margin-top: -10px;">
                                     <RadioButton v-model="vModelHinhThuc" type="radio" :inputId="'ingredient' + index"
                                         name="nam" value="2" />
                                     <label :for="'ingredient' + index" class="ml-2">đặt hàng</label>
                                 </div>
                             </div>
-
+                            <div style="display: flex; margin-top: 10px;">
+                                <p>Hoặc: </p>
+                                <div class="Field col-12 md:col-2" style="margin-right: 50px;height: 30px; margin-top: -10px;">
+                                   
+                                            <span class="p-float-label" style="height: 40px;">
+                                                <Dropdown id="dropdown" :options="dataLoai" v-model="selectedLoai"
+                                                    optionLabel="ten" :class="{ 'p-invalid': loaiError }"
+                                                    style="height: 40px; width: 120px;">
+                                                </Dropdown>
+                                                <label for="dropdown">Loại</label>
+                                            </span>
+                                        </div>
+                                  
+                               
+                                <div class="Field col-12 md:col-2" style="margin-right: 70px;margin-top: -10px;">
+                                   
+                                        <span class="p-float-label" style="height: 40px;width: 100px;">
+                                            <Dropdown id="dropdown" :options="dataThuongHieu" v-model="selectedCity"
+                                                optionLabel="ten" @change="onCityChange" style="height: 40px;width: 140px;">
+                                            </Dropdown>
+                                            <label for="dropdown">Thương Hiệu</label>
+                                        </span>
+                                  
+                                </div>
+                                <div class="Field col-12 md:col-2" style="margin-right: 0px;margin-top: -10px;">
+                                    
+                                        <span class="p-float-label" style="height: 40px;width: 100px;">
+                                            <Dropdown id="dropdown" :options="products" v-model="selectedProduct"
+                                                optionLabel="ten" @change="onCityChange" style="height: 40px;width: 140px;">
+                                            </Dropdown>
+                                            <label for="dropdown">Sản phẩm</label>
+                                        </span>
+                                  
+                                </div>
+                            </div>
                         </OverlayPanel>
 
 
@@ -125,6 +177,7 @@
 
 
         </div>
+
         <div class="Field col-12 md:col-12"
             style="background: rgb(255, 255, 255);display: flex; margin-left: 3px; margin-top: 10px;">
 
@@ -188,6 +241,9 @@ const productStore = ProductStore();
 const vModelHinhThuc = ref();
 const data = ref([]);
 const tongDoanhThu = ref(0);
+const tongHoanTien = ref(0);
+const tongChietKhau = ref(0);
+const tongDonHoanThanh = ref(0);
 const lstAdminThongKeLoaiResponses = ref([]);
 const lstAdminThongKeSanPhamCaoResponses = ref([]);
 const lstAdminThongKeSanPhamThapResponses = ref([]);
@@ -210,6 +266,9 @@ const { value: endDate, errorMessage: endDateError } = useField('endDate');
 const onSubmit = handleSubmit(async (values) => {
     await thongKeStore.fetchAllByMonth(values.startDate, values.endDate);
     tongDoanhThu.value = thongKeStore.tongDoanhThu;
+    tongHoanTien.value = thongKeStore.tongHoanTien;
+    tongChietKhau.value = thongKeStore.tongChietKhau;
+    tongDonHoanThanh.value = thongKeStore.tongDonHoanThanh;
     lstAdminThongKeLoaiResponses.value = thongKeStore.lstAdminThongKeLoaiResponses;
     lstAdminThongKeSanPhamCaoResponses.value = thongKeStore.lstAdminThongKeSanPhamCaoResponses;
     lstAdminThongKeSanPhamThapResponses.value = thongKeStore.lstAdminThongKeSanPhamThapResponses;
@@ -249,6 +308,9 @@ const loadData = async () => {
     await thongKeStore.fetchAll();
     data.value = thongKeStore.data;
     tongDoanhThu.value = thongKeStore.tongDoanhThu;
+    tongHoanTien.value = thongKeStore.tongHoanTien;
+    tongChietKhau.value = thongKeStore.tongChietKhau;
+    tongDonHoanThanh.value = thongKeStore.tongDonHoanThanh;
     lstAdminThongKeLoaiResponses.value = thongKeStore.lstAdminThongKeLoaiResponses;
     lstAdminThongKeSanPhamCaoResponses.value = thongKeStore.lstAdminThongKeSanPhamCaoResponses;
     lstAdminThongKeSanPhamThapResponses.value = thongKeStore.lstAdminThongKeSanPhamThapResponses;
@@ -270,7 +332,7 @@ const loadData = async () => {
 };
 
 const load = () => {
-    loadData();
+     loadData();
     resetForm();
     selectedLoai.value = null;
     selectedCity.value = null;
@@ -305,6 +367,9 @@ const loadProducts = async () => {
 const onHinhThucGiaoHang = async (id) => {
     await thongKeStore.fetchAllByHinhThucGiaoHang(id);
     tongDoanhThu.value = thongKeStore.tongDoanhThu;
+    tongHoanTien.value = thongKeStore.tongHoanTien;
+    tongChietKhau.value = thongKeStore.tongChietKhau;
+    tongDonHoanThanh.value = thongKeStore.tongDonHoanThanh;
     lstAdminThongKeLoaiResponses.value = thongKeStore.lstAdminThongKeLoaiResponses;
     lstAdminThongKeSanPhamCaoResponses.value = thongKeStore.lstAdminThongKeSanPhamCaoResponses;
     lstAdminThongKeSanPhamThapResponses.value = thongKeStore.lstAdminThongKeSanPhamThapResponses;
@@ -333,6 +398,9 @@ watch(vModelHinhThuc, async (newVal) => {
 const onloaiChangeLoai = async (id, year) => {
     await thongKeStore.fetchAllByLoai(id, year);
     tongDoanhThu.value = thongKeStore.tongDoanhThu;
+    tongHoanTien.value = thongKeStore.tongHoanTien;
+    tongChietKhau.value = thongKeStore.tongChietKhau;
+    tongDonHoanThanh.value = thongKeStore.tongDonHoanThanh;
     lstAdminThongKeLoaiResponses.value = thongKeStore.lstAdminThongKeLoaiResponses;
     lstAdminThongKeSanPhamCaoResponses.value = thongKeStore.lstAdminThongKeSanPhamCaoResponses;
     lstAdminThongKeSanPhamThapResponses.value = thongKeStore.lstAdminThongKeSanPhamThapResponses;
@@ -363,6 +431,9 @@ watch(selectedLoai, async (newVal) => {
 const onloaiChangeThuongHieu = async (id, year) => {
     await thongKeStore.fetchAllByThuongHieu(id, year);
     tongDoanhThu.value = thongKeStore.tongDoanhThu;
+    tongHoanTien.value = thongKeStore.tongHoanTien;
+    tongChietKhau.value = thongKeStore.tongChietKhau;
+    tongDonHoanThanh.value = thongKeStore.tongDonHoanThanh;
     lstAdminThongKeLoaiResponses.value = thongKeStore.lstAdminThongKeLoaiResponses;
     lstAdminThongKeSanPhamCaoResponses.value = thongKeStore.lstAdminThongKeSanPhamCaoResponses;
     lstAdminThongKeSanPhamThapResponses.value = thongKeStore.lstAdminThongKeSanPhamThapResponses;
@@ -393,6 +464,9 @@ watch(selectedCity, async (newVal) => {
 const onloaiChangeYear = async (year) => {
     await thongKeStore.fetchAllByYear(year);
     tongDoanhThu.value = thongKeStore.tongDoanhThu;
+    tongHoanTien.value = thongKeStore.tongHoanTien;
+    tongChietKhau.value = thongKeStore.tongChietKhau;
+    tongDonHoanThanh.value = thongKeStore.tongDonHoanThanh;
     lstAdminThongKeLoaiResponses.value = thongKeStore.lstAdminThongKeLoaiResponses;
     lstAdminThongKeSanPhamCaoResponses.value = thongKeStore.lstAdminThongKeSanPhamCaoResponses;
     lstAdminThongKeSanPhamThapResponses.value = thongKeStore.lstAdminThongKeSanPhamThapResponses;
@@ -405,6 +479,9 @@ const onloaiChangeYear = async (year) => {
 const onloaiChangeSanPham = async (id, year) => {
     await thongKeStore.fetchAllBySanPham(id, year);
     tongDoanhThu.value = thongKeStore.tongDoanhThu;
+    tongHoanTien.value = thongKeStore.tongHoanTien;
+    tongChietKhau.value = thongKeStore.tongChietKhau;
+    tongDonHoanThanh.value = thongKeStore.tongDonHoanThanh;
     lstAdminThongKeLoaiResponses.value = thongKeStore.lstAdminThongKeLoaiResponses;
     lstAdminThongKeSanPhamCaoResponses.value = thongKeStore.lstAdminThongKeSanPhamCaoResponses;
     lstAdminThongKeSanPhamThapResponses.value = thongKeStore.lstAdminThongKeSanPhamThapResponses;

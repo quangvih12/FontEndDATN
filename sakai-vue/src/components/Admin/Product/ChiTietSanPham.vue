@@ -11,7 +11,7 @@ import ProgressSpinner from 'primevue/progressspinner';
 import ExcelJS from 'exceljs';
 import { format } from 'date-fns';
 
-const column = ['STT', 'Sản phẩm', 'Vật liệu', 'Trọng lượng', 'Giá bán', 'Giá nhập', 'Số lượng', 'Tên màu sắc', 'Tên size', 'Số lượng', 'Ảnh màu sắc ', 'Ảnh chính', 'Ảnh phụ', 'Quai đeo', 'Đệm lót', 'Mô tả sản phẩm', 'Loại sản phẩm', 'Thương hiệu'];
+const column = ['STT', 'Sản phẩm', 'Vật liệu', 'Trọng lượng', 'Giá bán', 'Số lượng', 'Tên màu sắc', 'Tên size', 'Số lượng', 'Ảnh màu sắc ', 'Ảnh chính', 'Ảnh phụ', 'Quai đeo', 'Đệm lót', 'Mô tả sản phẩm', 'Loại sản phẩm', 'Thương hiệu'];
 
 const generateExcel = () => {
     const workbook = new ExcelJS.Workbook();
@@ -196,12 +196,6 @@ const handImportExcel = async (event) => {
                     break;
                 } else if (data.importMessageDemLot !== null && data.importMessageDemLot !== 'SUCCESS') {
                     toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageDemLot, life: 30000 });
-                    hasError = true;
-                    showProgressSpinner.value = false;
-                    dis.value = true;
-                    break;
-                } else if (data.importMessageGiaNhap !== null && data.importMessageGiaNhap !== 'SUCCESS') {
-                    toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageGiaNhap, life: 30000 });
                     hasError = true;
                     showProgressSpinner.value = false;
                     dis.value = true;
@@ -471,7 +465,7 @@ const formatDate = (dateTime) => {
                         :modal="true">
                         <div class="flex align-items-center justify-content-center">
                             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-                            <span v-if="product">Bạn có chắc chắn muốn xoá size <b>{{ product.ten }}</b> không ?</span>
+                            <span v-if="product">Bạn có chắc chắn muốn xoá sản phẩm <b>{{ product.ten }}</b> không ?</span>
                         </div>
                         <template #footer>
                             <Button label="Không" icon="pi pi-times" class="p-button-text"
