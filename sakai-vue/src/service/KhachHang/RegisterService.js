@@ -17,6 +17,14 @@ export const userRegisterStore = defineStore('register',{
             } catch (error) {
                 console.error('Error fetching users:', error);
             }
+        },
+        async getUserByEmail(email) {
+            try {
+            const response = await axios.get(`http://localhost:8080/api/khach-hang/user/find-email?email=${email}`);
+            this.data  =  response.data;
+        } catch (error) {
+            console.error('Error fetching users:', error);
+        }
         }
     }
 })

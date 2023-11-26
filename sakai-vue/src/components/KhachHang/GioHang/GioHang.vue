@@ -123,6 +123,7 @@ const updateSoLuong = async (idGHCT, newSL, soLuong) => {
         }
 
 
+
         // if (newSL !== '' && !isNaN(newSL)) {
         // Thực hiện cập nhật số lượng
         await gioHangService.updateSL(idGHCT, token, newSL);
@@ -162,9 +163,15 @@ const updateSoLuongOnBlur = async (idGHCT, newSL, soLuong) => {
         updateSoLuong(idGHCT, parseInt(newSL, 10), soLuong);
     }
 
-    //   if (newSL.trim() !== '') {
-    //     updateSoLuong(idGHCT, parseInt( newSL, 10));
-    //   }
+  if (newSL.trim() !== '' && !isNaN(newSL)) {
+    // Thực hiện cập nhật số lượng
+    updateSoLuong(idGHCT, parseInt(newSL, 10));
+  }
+
+ 
+//   if (newSL.trim() !== '') {
+//     updateSoLuong(idGHCT, parseInt( newSL, 10));
+
 };
 
 const fakedata = ref(null);
