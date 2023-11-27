@@ -10,25 +10,24 @@ const router = createRouter({
         {
             path: '/:pathMatch(.*)*',
             component: () => import('@/views/pages/auth/Login.vue')
-        }
-        , {
+        },
+        {
             path: '/login',
             name: 'login',
             component: () => import('@/views/pages/auth/Login.vue')
+        },
 
-        }, 
-
-        , {
-            path: '/test',
-            name: 'test',
-            component: () => import('@/components/KhachHang/Test.vue')
-
-        }, 
+        ,
+        // {
+        //     path: '/test',
+        //     name: 'test',
+        //     component: () => import('@/components/KhachHang/Test.vue')
+        // },
 
         {
             path: '/khach-hang/dang-ky',
             name: 'dangky',
-            component: () => import('@/components/KhachHang/Register.vue'),
+            component: () => import('@/components/KhachHang/Register.vue')
             // beforeEnter: authMiddleware
         },
 
@@ -36,20 +35,20 @@ const router = createRouter({
             path: '/otp',
             name: 'otp',
             component: () => import('@/components/KhachHang/OTP.vue')
-        }, 
-        
-        {
+        },
 
-        }, {
+        {},
+        {
             path: '/login-admin',
             name: 'login-admin',
             component: () => import('@/views/pages/auth/LoginAdmin.vue')
-        },  {
+        },
+        {
             path: '/Error',
             name: 'eror',
             component: () => import('@/views/pages/auth/Error.vue')
-        }, {
-
+        },
+        {
             path: '/',
             component: AppLayoutKH,
             children: [
@@ -58,11 +57,16 @@ const router = createRouter({
                     name: 'trang-chu',
                     component: () => import('@/components/KhachHang/TrangChu.vue')
                 },
-                
+
                 {
                     path: '/gioi-thieu',
                     name: 'gioi-thieu',
                     component: () => import('@/components/KhachHang/GioiThieu.vue')
+                },
+                {
+                    path: '/san-pham-da-xem',
+                    name: 'san-pham-da-xem',
+                    component: () => import('@/components/KhachHang/SanPhamDaXem.vue')
                 },
                 {
                     path: '/success',
@@ -110,8 +114,8 @@ const router = createRouter({
                     path: '/dia-chi',
                     name: 'dia-chi',
                     component: () => import('@/components/KhachHang/DiaChiKhachHang/Index.vue')
-
-                }, {
+                },
+                {
                     path: '/lich-su-sp',
                     name: 'lich-su-sp',
                     component: () => import('@/components/KhachHang/LichSuSP/LichSuSP.vue')
@@ -133,14 +137,13 @@ const router = createRouter({
             path: '/thong-ke',
             component: AppLayout,
             children: [
-
-             
                 {
                     path: '/thong-ke',
                     name: 'thongKe',
                     component: () => import('@/components/Admin/ThongKe/index.vue'),
                     beforeEnter: authMiddleware
-                }, {
+                },
+                {
                     path: '/thong-tin-ca-nhan-ad',
                     name: 'thong-tin-ca-nhan-ad',
                     component: () => import('../components/Admin/ThongTinCaNhan/thongTinCaNhan.vue')

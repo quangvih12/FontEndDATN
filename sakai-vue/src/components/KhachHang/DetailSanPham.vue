@@ -11,7 +11,6 @@ import { commentStore } from '@/service/KhachHang/CommentService.js';
 import { useRouter } from 'vue-router';
 import { soLuongGh } from '@/service/KhachHang/GioHang/cart.js';
 
-
 const router = useRouter();
 const gioHangService = gioHangStore();
 const productStore = useDetailProductStore();
@@ -45,7 +44,6 @@ onMounted(async () => {
     await loadDataMauSac();
     loadComment();
     loadPhanHoi();
-
     prevDataSizeLength.value = dataSize.value.length;
     prevDataMauLength.value = dataMauSac.value.length;
 
@@ -178,6 +176,21 @@ const soLuongGH = ref(0);
 const toast = useToast();
 const dataSessoin = ref([]);
 const dataGHCT = ref([]);
+
+const themSPDaXem = async () => {
+    const cartItem = {
+        soLuong: 1,
+        sanPhamChiTiet: idSanPhamChiTiet.value
+    };
+    const token = localStorage.getItem('token');
+
+    if (token == '' || token == null) {
+        let array = JSON.parse(localStorage.getItem('cart')); // Phân tích chuỗi JSON thành mảng
+        await gioHangService.addToCartSesion(cartItem, token);
+        localStorage.setItem('cart', JSON.stringify(array));
+    }
+};
+
 const addToCart = async () => {
     const cartItem = {
         soLuong: quantity.value,
@@ -400,82 +413,70 @@ const loadPhanHoi = async () => {
     const token = localStorage.getItem('token');
 
     if (token) {
-
-            await commentService.getListCommentByIdPhanHoi();
-            phanHois.value = commentService.dataPhanHoi;
-
+        await commentService.getListCommentByIdPhanHoi();
+        phanHois.value = commentService.dataPhanHoi;
     }
 };
 const user = ref(null);
 
-const deleteDialog = ref(false)
+const deleteDialog = ref(false);
 const idcomment = ref(null);
 const xoa = (comment) => {
-
-    idcomment.value  = comment;
+    idcomment.value = comment;
     deleteDialog.value = true;
-     
 };
 
-
 const deleteComment = async () => {
-
-
     const token = localStorage.getItem('token');
-
 
     await commentService.findByToken(token);
     user.value = commentService.user;
 
     if (token) {
         // if(comment.user.id !== user.id )
-        if( idcomment.value.user.id !== user.value.id){
+        if (idcomment.value.user.id !== user.value.id) {
             toast.add({ severity: 'warn', summary: '', detail: 'Bạn không thể xoá bình luận của người khác', life: 5000 });
             return;
         }
-        
+
         await commentService.xoaComment(idcomment.value.id);
         loadComment();
         toast.add({ severity: 'warn', summary: '', detail: 'Xoá thành công', life: 3000 });
-         deleteDialog.value = false;
+        deleteDialog.value = false;
     }
     // VoucherService.deleteVoucher(voucher.value, voucher.value.id);
     // toast.add({ severity: 'warn', summary: '', detail: 'Xoá thành công', life: 3000 });
     // deleteDialog.value = false;
-
-}
+};
 const phanHoiDialog = ref(false);
-const commentId = ref(null)
+const commentId = ref(null);
 const phanHoi = (id) => {
     phanHoiDialog.value = true;
     commentId.value = id;
-   
 };
 
-const xoaPhanHoi = async(phanhoi) => {
+const xoaPhanHoi = async (phanhoi) => {
     const token = localStorage.getItem('token');
-
 
     await commentService.findByToken(token);
     user.value = commentService.user;
 
     if (token) {
         // if(comment.user.id !== user.id )
-        if( phanhoi.user.id !== user.value.id){
+        if (phanhoi.user.id !== user.value.id) {
             toast.add({ severity: 'warn', summary: '', detail: 'Bạn không thể xoá bình luận của người khác', life: 5000 });
             return;
         }
-        
+
         await commentService.xoaComment(phanhoi.id);
         loadPhanHoi();
         toast.add({ severity: 'warn', summary: '', detail: 'Xoá thành công', life: 3000 });
     }
-}
+};
 
 const phanHoiComment = async () => {
-    
     const form = {
-        idPhanHoi:  commentId.value,
+        idPhanHoi: commentId.value,
         noiDung: traLoi.value,
         sanPham: idProduct
     };
@@ -714,7 +715,7 @@ const menu = ref();
                                         <span>{{ cm.noiDung }}</span>
 
                                         <!-- Phản hồi -->
-                                        <div v-for="(ph, index) in phanHois.filter(item => item.idPhanHoi === cm.id)" :key="index" style="margin-top: 15px; margin-left: 30px" class="flex">
+                                        <div v-for="(ph, index) in phanHois.filter((item) => item.idPhanHoi === cm.id)" :key="index" style="margin-top: 15px; margin-left: 30px" class="flex">
                                             <div>
                                                 <Avatar label="P" class="mr-2" size="xlarge" />
                                             </div>
@@ -726,15 +727,13 @@ const menu = ref();
                                             </div>
                                             <!-- Nút phản hồi và xoá (bạn có thể di chuyển nó lên nếu muốn) -->
                                             <div class="flex flex-wrap justify-content-between align-items-center gap-3 mt-3" style="margin-left: 550px">
-                                                
-                                                <a  @click="phanHoi(cm.id)" style="color: blue;">Phản hồi</a>
-                                                <a  @click="xoaPhanHoi(ph)" style="color: red;">Xoá</a>
-                                             
+                                                <a @click="phanHoi(cm.id)" style="color: blue">Phản hồi</a>
+                                                <a @click="xoaPhanHoi(ph)" style="color: red">Xoá</a>
                                             </div>
-                                </div>
+                                        </div>
                                         <div class="flex flex-wrap justify-content-between align-items-center gap-3 mt-3" style="margin-left: 660px">
                                             <Button type="submit" label="Phản hồi" @click="phanHoi(cm.id)" class="ph-button" />
-                                            <Button  severity="danger" label="Xoá" @click="xoa(cm)" class="small-button" />
+                                            <Button severity="danger" label="Xoá" @click="xoa(cm)" class="small-button" />
 
                                             <Dialog v-model:visible="phanHoiDialog" modal header="Phản hổi" :style="{ width: '50rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
                                                 <Textarea v-model="traLoi" rows="5" cols="90" />
@@ -746,7 +745,7 @@ const menu = ref();
                                             <Dialog v-model:visible="deleteDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
                                                 <div class="flex align-items-center justify-content-center">
                                                     <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-                                                    <span >Bạn có muốn xoá bình luận ?</span>
+                                                    <span>Bạn có muốn xoá bình luận ?</span>
                                                 </div>
                                                 <template #footer>
                                                     <Button label="No" icon="pi pi-times" class="p-button-text" @click="deleteDialog = false" />
@@ -756,10 +755,6 @@ const menu = ref();
                                         </div>
                                     </div>
                                 </div>
-
-                               
-
-                               
                             </TabPanel>
                         </TabView>
                     </div>
