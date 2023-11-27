@@ -15,7 +15,6 @@ export const dangNhapStore = defineStore('dangNhap', {
         async dangNhap(login) {
             try {
                 const response = await axios.post(apiDangNhap + '/login', login);
-                console.log(response.data.accessToken);
                 return response.data.accessToken;
             } catch (error) {
                 console.error('Error fetching users:', error);

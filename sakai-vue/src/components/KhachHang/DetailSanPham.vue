@@ -110,8 +110,6 @@ watch([dataSize, dataMauSac], async ([newDataSize, newDataMau]) => {
 const loaddataListSPCT = async () => {
     await productStore.fetchSPCTByIdSP(idProduct);
     dataListSPCT.value = productStore.products;
-
-    //  console.log(dataListSPCT.value);
 };
 
 const getSLTonTong = async (idctsp) => {
@@ -124,13 +122,11 @@ const loadData = async () => {
     dataSanPham.value = productStore.product;
 
     // loadImage.value = dataSanPham.value.images;
-    // console.log(dataSanPham.value);
 };
 
 // const loadProducts = async () => {
 //     await productStore.fetchAll();
 //     products.value = productStore.products;
-//     // console.log(productStore.products);
 //     soLuongTon.value = productStore.slTon;
 // };
 
@@ -177,20 +173,6 @@ const toast = useToast();
 const dataSessoin = ref([]);
 const dataGHCT = ref([]);
 
-const themSPDaXem = async () => {
-    const cartItem = {
-        soLuong: 1,
-        sanPhamChiTiet: idSanPhamChiTiet.value
-    };
-    const token = localStorage.getItem('token');
-
-    if (token == '' || token == null) {
-        let array = JSON.parse(localStorage.getItem('cart')); // Phân tích chuỗi JSON thành mảng
-        await gioHangService.addToCartSesion(cartItem, token);
-        localStorage.setItem('cart', JSON.stringify(array));
-    }
-};
-
 const addToCart = async () => {
     const cartItem = {
         soLuong: quantity.value,
@@ -198,7 +180,6 @@ const addToCart = async () => {
     };
 
     const token = localStorage.getItem('token');
-    //  console.log(token)
     if (quantity.value > dataListSPCT.value.soLuongTon) {
         toast.add({ severity: 'warn', summary: '', detail: 'Số lượng tồn không đủ', life: 5000 });
         return;
@@ -263,7 +244,6 @@ const muaNgay = async () => {
         sanPhamChiTiet: idSanPhamChiTiet.value
     };
     const token = localStorage.getItem('token');
-    //  console.log(token)
     if (quantity.value > dataListSPCT.value.soLuongTon) {
         toast.add({ severity: 'warn', summary: '', detail: 'Số lượng tồn không đủ', life: 5000 });
         return;
@@ -345,7 +325,6 @@ const isMauSacDisbled = (size) => {
 const getMauSacBySize = async (idsizect) => {
     await productStore.getMauSacBySize(idProduct, idsizect);
     dataMauSac.value = productStore.mauSacs;
-    // console.log(dataMauSac.value)
 };
 
 const check = ref(false);

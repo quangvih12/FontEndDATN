@@ -171,7 +171,6 @@ const themSPDaXem = async (idSP) => {
     const respone = await spDaXemService.themSPDaXem(idSP);
     let array = JSON.parse(localStorage.getItem('spDaXem')); // Phân tích chuỗi JSON thành mảng
     if (token == null) {
-        console.log('khoong có');
         const form = {
             idUser: -1,
             anh: respone.anh,
@@ -225,7 +224,6 @@ const themSPDaXem = async (idSP) => {
             tenThuongHieu: respone.tenThuongHieu,
             trangThai: respone.trangThai
         };
-        console.log(form);
         if (array.length <= 0) {
             array.unshift(form);
             localStorage.setItem('spDaXem', JSON.stringify(array));
