@@ -7,6 +7,7 @@ export const gioHangStore = defineStore('gioHang', {
     state: () => ({
         data: [],
         dataSessions: [],
+        dataSPDaXem: [],
         voucher: [],
         soLuong: 0,
         fakedata: 'check'
@@ -17,12 +18,14 @@ export const gioHangStore = defineStore('gioHang', {
             const response = await axios.post(`http://localhost:8080/api/khach-hang/giohang/addGiohang?token=${token}`, form);
             await this.countGHCT(token);
             // this.data.unshift(response.data);
-             return response.data;
+            return response.data;
         },
 
         async addToCartSesion(form, token) {
             const response = await axios.post(`http://localhost:8080/api/khach-hang/giohang/addGiohang-session?token=${token}`, form);
             this.dataSessions = response.data;
+            this.dataSPDaXem = response.data;
+            console.log(this.dataSPDaXem);
         },
 
         async addToCartWhenLogin(form, token) {
@@ -42,8 +45,7 @@ export const gioHangStore = defineStore('gioHang', {
             try {
                 const response = await axios.get(apiGiohang + `/getGioHangCTByIdctsp?token=${token}&idctsp=${idctsp}`);
                 this.data = response.data;
-            } catch (error) {
-            }
+            } catch (error) {}
         },
         async getListVoucher(token) {
             try {
@@ -56,8 +58,7 @@ export const gioHangStore = defineStore('gioHang', {
             try {
                 const response = await axios.get(apiGiohang + `/get-voucher-trang-thai`);
                 this.voucher = response.data;
-            } catch (error) {
-            }
+            } catch (error) {}
         },
 
         async getListVoucherByUser(token) {
@@ -104,8 +105,8 @@ export const gioHangStore = defineStore('gioHang', {
         async updateSL(idGHCT, token, sl) {
             try {
                 const response = await axios.put(apiGiohang + '/updateSL/' + idGHCT + `?token=${token}&sl=${sl}`);
-                const index = this.data.findIndex(hoadon => hoadon.idGHCT === idGHCT);
-              
+                const index = this.data.findIndex((hoadon) => hoadon.idGHCT === idGHCT);
+
                 if (response.data === '') {
                     this.fakedata = response.data;
                 } else {
@@ -114,10 +115,7 @@ export const gioHangStore = defineStore('gioHang', {
                         this.data[index] = response.data;
                     }
                 }
-
-
-            } catch (error) {
-            }
+            } catch (error) {}
         },
 
         async truSL(idGHCT, token) {
@@ -154,16 +152,15 @@ export const gioHangStore = defineStore('gioHang', {
 
         async countGHCT(token) {
             try {
-                if(token == null|| token ==''){
+                if (token == null || token == '') {
                     let array = JSON.parse(localStorage.getItem('cart'));
                     this.soLuong = array.length;
                     return this.soLuong;
-                }else{
+                } else {
                     const response = await axios.get(`http://localhost:8080/api/khach-hang/giohang/countGHCT?token=${token}`);
                     this.soLuong = parseInt(response.data);
                     return this.soLuong;
                 }
-                
             } catch (error) {}
         }
     }
