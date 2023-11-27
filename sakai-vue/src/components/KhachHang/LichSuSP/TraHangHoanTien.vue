@@ -29,7 +29,7 @@ const loadData = async () => {
     if (token.length > 0 || token != null) {
         await useHD.findHdct(token);
         data.value = useHD.dataHoanTraHoanTien;
-        console.log(data.value);
+      //  console.log(data.value);
     }
 };
 //chạy cái hiện data luôn
