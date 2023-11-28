@@ -68,14 +68,13 @@ const dangNhapa = handleSubmit(async () => {
     }
 });
 
-
 const logoUrl = computed(() => {
     return `layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.svg`;
 });
 
 const dangKy = () => {
     router.push({ name: 'dangky' });
-}
+};
 </script>
 
 <template>

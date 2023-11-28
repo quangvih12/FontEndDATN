@@ -82,6 +82,7 @@ export const useDiaChi = defineStore('diaChi',{
         async  updateDiaChi(id, form,token) {
             await axios.put(api + '/update/' + id +`?token=${token}`, form);
                 for (let i = 0; i < this.diaChi.length; i++) {
+                  
                     if (id == this.diaChi[i].id) {
                         this.diaChi[i].idTinhThanh = form.idTinhThanh;
                         this.diaChi[i].tinhThanh = form.tinhThanh;
@@ -90,9 +91,9 @@ export const useDiaChi = defineStore('diaChi',{
                         this.diaChi[i].idPhuongXa = form.idPhuongXa;
                         this.diaChi[i].phuongXa = form.phuongXa;
                         this.diaChi[i].diaChi = form.diaChi;
+                        
                     }
                 }
-        
         },
         async fetchTinhThanh() {
             try {
