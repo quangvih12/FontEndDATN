@@ -81,11 +81,12 @@ const updateProduct = async () => {
     };
 
     try {
-        const token =   localStorage.getItem('token');
-        await diaChiService.updateDiaChi(props.myProp.id, form,token);
+        const token = localStorage.getItem('token');
+        await diaChiService.updateDiaChi(props.myProp.id, form, token);
         // console.log(form);
         // window.location.reload();
         toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Sửa địa chỉ thành công', life: 3000 });
+        updateProductDialog.value = false;
         clearForm();
         productDialog.value = false;
     } catch (error) {

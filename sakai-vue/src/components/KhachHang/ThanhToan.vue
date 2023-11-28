@@ -216,7 +216,7 @@ const loadDataVoucher = async () => {
     await gioHangService.getListVoucherByTrangThai();
     dataVoucher.value = gioHangService.voucher;
 
-  //  console.log('voucher', dataVoucher.value);
+    //  console.log('voucher', dataVoucher.value);
     // const token = localStorage.getItem('token');
     // const userName = await tokenService.getUserNameByToken(token);
     // const user = await userKHService.getUserByUsername(userName);
@@ -276,7 +276,7 @@ const loadDiaChi = async () => {
     if (token.length > 0 || token != null) {
         await diaChiService.fetchData(token);
         userDiaChi.value = diaChiService.diaChi;
-    //    console.log(userDiaChi.value);
+
     }
 };
 </script>
