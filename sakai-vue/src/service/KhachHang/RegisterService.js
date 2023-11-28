@@ -25,6 +25,15 @@ export const userRegisterStore = defineStore('register',{
         } catch (error) {
             console.error('Error fetching users:', error);
         }
-        }
+        },
+        async sendOTP(form) {
+            try {
+                const response = await axios.post('http://localhost:8080/api/khach-hang/mail/sendOTP', form);
+                return response.data;
+            } catch (error) {
+                console.error('Error sending mail:', error);
+                throw error; // You can handle the error in the component that calls this action
+            }
+        },
     }
 })

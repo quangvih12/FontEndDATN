@@ -82,6 +82,7 @@ export const useDiaChi = defineStore('diaChi', {
                     // console.error("Lỗi khi xóa địa chỉ: ", error);
                 });
         },
+
         async updateDiaChi(id, form, token) {
             await axios.put(api + '/update/' + id + `?token=${token}`, form);
             for (let i = 0; i < this.diaChi.length; i++) {
@@ -96,6 +97,7 @@ export const useDiaChi = defineStore('diaChi', {
                     console.log(this.diaChi[i]);
                 }
             }
+
         },
         async fetchTinhThanh() {
             try {

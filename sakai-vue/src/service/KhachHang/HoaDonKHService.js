@@ -156,6 +156,13 @@ export const HDKHStore = defineStore('hoaDonKH', {
                     const mau = await this.findHdctByIdHd(id);
                     // mau.sort((a, b) => b.id - a.id);
                     newProductData['sanPhamChiTiet'] = mau;
+                
+                    for (let i = 0; i <  this.dataAll.length; i++){
+                     if(this.dataAll[i].idHD == id){
+                        console.log(this.dataAll[i].id);
+                        this.dataAll[i].trangThai = 0;
+                     }
+                    }
                     this.dataDaHuy.unshift(newProductData);
                     this.dataDangChuanBi.splice(index, 1);
                 }

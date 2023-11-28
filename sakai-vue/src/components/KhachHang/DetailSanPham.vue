@@ -230,7 +230,7 @@ const addToCart = async () => {
         demSLGH(token);
 
         toast.add({ severity: 'success', summary: 'Successful', detail: 'Thêm vào giỏ hàng thành công', life: 3000 });
-        router.push({ name: 'gio-hang' });
+    //    router.push({ name: 'gio-hang' });
     }
 };
 

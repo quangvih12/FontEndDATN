@@ -13,9 +13,7 @@ import Divider from 'primevue/divider';
 
 <template>
     <div class="grid">
-        <div class="image-container">
-            <img class="full-width-image" src="https://orientoil.com.vn/wp-content/uploads/2018/11/hinh-3d-1500x250.jpg" alt="Image" />
-        </div>
+      
         <div class="container">
             <br />
             <h2 style="color: #e8bd72">Về chúng tôi</h2>

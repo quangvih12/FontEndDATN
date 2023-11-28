@@ -3,15 +3,15 @@
     <div class="form">
         <Toast />
         <div class="title">OTP</div>
-        <div class="title">Verification Code</div>
-        <p class="message">We have sent a verification code to your mobile number</p>
+        <div class="title">Mã xác nhận</div>
+        <p class="message">Chúng tôi đã gửi mã xác minh tới email của bạn</p>
         <div class="inputs">
             <input id="input1" type="text" maxlength="1" v-model="input1" /> 
             <input id="input2" type="text" maxlength="1" v-model="input2"/> 
             <input id="input3" type="text" maxlength="1" v-model="input3"/> 
             <input id="input4" type="text" maxlength="1" v-model="input4"/>
         </div>
-        <button class="action" @click="verify">verify me</button>
+        <button class="action" @click="verify">Xác minh</button>
     </div>
 </template>
 

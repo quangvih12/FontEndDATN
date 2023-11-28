@@ -234,6 +234,16 @@ const thongTinCaNhan = () => {
 
                 <OverlayPanel ref="op" style="height: 300px; overflow: auto">
                     <H6>Thông báo </H6>
+                    <div v-if="!data || data.length===0" style="text-align: center; margin-top: 50px; "  > 
+                                  
+                                  <svg  width="50px" height="50px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#000000" class="bi bi-file-earmark-x">
+<path d="M6.854 7.146a.5.5 0 1 0-.708.708L7.293 9l-1.147 1.146a.5.5 0 0 0 .708.708L8 9.707l1.146 1.147a.5.5 0 0 0 .708-.708L8.707 9l1.147-1.146a.5.5 0 0 0-.708-.708L8 8.293 6.854 7.146z"/>
+<path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
+</svg>
+                       
+                            
+<h5  style="text-align: center;">Chưa có Thông báo !</h5>
+                          </div>
                     <div v-for="(o, index) in data">
                         <button class="p-link" aria-haspopup="true" aria-controls="overlay_tmenu">
                             <div class="flex align-items-center" style="height: 50px; margin-bottom: 10px; width: 240px"
