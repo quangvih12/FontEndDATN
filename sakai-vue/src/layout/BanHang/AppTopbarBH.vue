@@ -65,8 +65,8 @@ const isOutsideClicked = (event) => {
         </span> -->
 
         <div class="layout-topbar-menu">
-            <label for="" style="margin-right: 50px">Nhân viên: <span>Nguyễn Long Vũ</span></label>
-            <span style="font-weight: bold">9:25:00</span>
+            <label for="" style="margin-right: 50px">Nhân viên: <span>Lê Văn B</span></label>
+<!--            <span style="font-weight: bold">9:25:00</span>-->
         </div>
     </div>
 </template>
