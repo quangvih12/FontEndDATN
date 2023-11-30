@@ -2,7 +2,8 @@
 import { TrangChuStore } from '../../service/KhachHang/TrangChuService';
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-
+import { SPDaXemStore } from '../../service/KhachHang/SanPhamDaXem.js';
+const spDaXemService = SPDaXemStore();
 const router = useRouter();
 const useTrangChuService = TrangChuStore();
 const dataHangMoi = ref([]);
@@ -11,12 +12,13 @@ const dataTreEm = ref([]);
 const dataSPBanChay = ref([]);
 
 const goToProductDetail = (productId) => {
+    themSPDaXem(productId);
     router.push({ name: 'ProductDetail', params: { id: productId } });
 };
 
 //load data full
 const loadData = async () => {
-    await useTrangChuService.fetchDataByTenLoai('Fullface');
+    await useTrangChuService.fetchDataByTenLoai(2);
     dataFullrace.value = useTrangChuService.dataFullface;
 };
 
@@ -34,7 +36,7 @@ const loadDataSPBanChay = async () => {
 
 //load data hang moi
 const loadDataTreEm = async () => {
-    await useTrangChuService.fetchDataByTenLoai('Trẻ em');
+    await useTrangChuService.fetchDataByTenLoai(5);
     dataTreEm.value = useTrangChuService.dataTreEm;
 };
 
@@ -64,7 +66,7 @@ onMounted(() => {
     loadDataTreEm();
 });
 
-const banner1 = 'https://nontrum.vn/wp-content/uploads/2023/05/18.5-BANNER-NONTRUM.jpg';
+const banner1 = '../../images/banner.jpg';
 const thumbnails = [
     {
         imageUrl: 'https://nontrum.vn/wp-content/uploads/2019/10/non-balder-vang-1-e1583121638578.jpg',
@@ -158,13 +160,94 @@ const banner8 =
     'https://scontent.xx.fbcdn.net/v/t1.15752-9/384494576_212944041799990_6536877871085600694_n.jpg?stp=dst-jpg_s1080x2048&_nc_cat=100&ccb=1-7&_nc_sid=510075&_nc_ohc=CBKQdqsgXOwAX8fYuuX&_nc_ad=z-m&_nc_cid=0&_nc_ht=scontent.xx&oh=03_AdREjH2b3LqpYhiC0dFqK-EDrJwPhnwR0pxyUQxipcou9w&oe=6572841E';
 const banner9 =
     'https://scontent.xx.fbcdn.net/v/t1.15752-9/384495534_246446494627006_6844178457291330656_n.png?_nc_cat=107&ccb=1-7&_nc_sid=510075&_nc_ohc=cO2KzVhSOtgAX9CX4lV&_nc_ad=z-m&_nc_cid=0&_nc_ht=scontent.xx&oh=03_AdT-I5MJyt7UQ5wMxpWJf93pktpDOFy0SmdrK6cxujiHjQ&oe=6572A2D8';
+
+if (!localStorage.getItem('spDaXem')) {
+    let array = [];
+    localStorage.setItem('spDaXem', JSON.stringify(array));
+}
+
+const themSPDaXem = async (idSP) => {
+    const token = localStorage.getItem('token');
+    const respone = await spDaXemService.themSPDaXem(idSP);
+    let array = JSON.parse(localStorage.getItem('spDaXem')); // Phân tích chuỗi JSON thành mảng
+    if (token == null) {
+        const form = {
+            idUser: -1,
+            anh: respone.anh,
+            demLot: respone.demLot,
+            giaBanMax: respone.giaBanMax,
+            giaBanMin: respone.giaBanMin,
+            giaSauGiamMax: respone.giaSauGiamMax,
+            giaSauGiamMin: respone.giaSauGiamMin,
+            idSP: respone.idSP,
+            ma: respone.ma,
+            moTa: respone.moTa,
+            ngayTao: respone.ngayTao,
+            quaiDeo: respone.quaiDeo,
+            tenLoai: respone.tenLoai,
+            tenSP: respone.tenSP,
+            tenThuongHieu: respone.tenThuongHieu,
+            trangThai: respone.trangThai
+        };
+        if (array.length <= 0) {
+            array.unshift(form);
+            localStorage.setItem('spDaXem', JSON.stringify(array));
+        } else {
+            let check = ref(0);
+            for (let i = 0; i < array.length; i++) {
+                if (array[i].idSP == idSP) {
+                    check.value = 1;
+                }
+            }
+            if (check.value == 0) {
+                array.unshift(form);
+                localStorage.setItem('spDaXem', JSON.stringify(array));
+            }
+        }
+    } else {
+        const responeKH = await spDaXemService.findByToken(token);
+        const form = {
+            idUser: responeKH.id,
+            anh: respone.anh,
+            demLot: respone.demLot,
+            giaBanMax: respone.giaBanMax,
+            giaBanMin: respone.giaBanMin,
+            giaSauGiamMax: respone.giaSauGiamMax,
+            giaSauGiamMin: respone.giaSauGiamMin,
+            idSP: respone.idSP,
+            ma: respone.ma,
+            moTa: respone.moTa,
+            ngayTao: respone.ngayTao,
+            quaiDeo: respone.quaiDeo,
+            tenLoai: respone.tenLoai,
+            tenSP: respone.tenSP,
+            tenThuongHieu: respone.tenThuongHieu,
+            trangThai: respone.trangThai
+        };
+        if (array.length <= 0) {
+            array.unshift(form);
+            localStorage.setItem('spDaXem', JSON.stringify(array));
+        } else {
+            let check = ref(0);
+            for (let i = 0; i < array.length; i++) {
+                if (array[i].idSP == idSP) {
+                    check.value = 1;
+                }
+            }
+            if (check.value == 0) {
+                array.unshift(form);
+                localStorage.setItem('spDaXem', JSON.stringify(array));
+            }
+        }
+    }
+};
 </script>
 
 <template>
     <div class="grid">
         <div class="image-container">
             <div class="nav-button left-button" @click="previousImage">&lt;</div>
-            <img :src="banner1" class="centered-image" />
+            <img src="../../images/banner.jpg" class="centered-image" />
             <div class="nav-button right-button" @click="nextImage">&gt;</div>
         </div>
         <div class="main-sp">

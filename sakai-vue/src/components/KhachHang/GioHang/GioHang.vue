@@ -23,7 +23,8 @@ let prevDataMauLength = ref(null);
 onMounted(async () => {
     await loadDataGioHang();
     // await loadDataVoucher();
-    await loadDataVoucherByUser();
+    // await loadDataVoucherByUser();
+    await loadDataVoucherByTrangThai();
     prevDataSizeLength.value = dataSize.value.length;
     prevDataMauLength.value = dataMauSac.value.length;
 
@@ -37,8 +38,7 @@ const loadDataGioHang = async () => {
     } else {
         await gioHangService.getAllGHCT(token);
         dataGHCT.value = gioHangService.data;
-
-
+        //  console.log(dataGHCT.value);
     }
 };
 
@@ -57,17 +57,110 @@ const loadDataVoucherByUser = async () => {
     if (token == '' || token == null) {
         dataVoucher.value = [{ ten: 'bạn cần đăng nhập' }];
     } else {
-        await gioHangService. getListVoucherByUser(token);
+        await gioHangService.getListVoucherByUser(token);
         dataVoucher.value = gioHangService.voucher;
-        console.log(dataVoucher.value)
     }
 };
 
-const updateSoLuong = (product, event) => {
-    const newValue = parseInt(event.target.value, 10); // Đảm bảo giá trị nhập vào là số
-    if (!isNaN(newValue)) {
-        product.soLuong = newValue;
+const loadDataVoucherByTrangThai = async () => {
+    await gioHangService.getListVoucherByTrangThai();
+    dataVoucher.value = gioHangService.voucher;
+};
+
+// const updateSoLuong = (product, event) => {
+//     const newValue = parseInt(event.target.value, 10); // Đảm bảo giá trị nhập vào là số
+//     if (!isNaN(newValue)) {
+//         product.soLuong = newValue;
+//     }
+// };
+
+const updateSoLuong = async (idGHCT, newSL, soLuong) => {
+    if (newSL <= 0) {
+        newSL = 1;
     }
+
+    // Kiểm tra nếu giá trị nhập vào là số âm thì đặt lại giá trị thành 0
+    const token = localStorage.getItem('token');
+    if (token == '' || token == null) {
+        let array = JSON.parse(localStorage.getItem('cart')); // Phân tích chuỗi JSON thành mảng
+
+        let found = false;
+        for (let i = 0; i < array.length; i++) {
+            if (array[i].idGHCT == idGHCT) {
+                // Cập nhật phần tử trong mảng
+                let so = newSL;
+                if (so > array[i].soLuongTon) {
+                    array[i].soLuong = array[i].soLuong;
+                    toast.add({ severity: 'warn', summary: '', detail: 'Số lượng nhiều hơn số lượng tồn', life: 3000 });
+                    localStorage.setItem('cart', JSON.stringify(array));
+                    loadDataGioHang();
+                    tinhTienKhiCongTru(dataGHCT.value);
+                    return;
+                } else {
+                    array[i].soLuong = so;
+                    found = true;
+                    break;
+                }
+            }
+        }
+        // Nếu không tìm thấy phần tử trong mảng, thêm phần tử mới
+        if (!found) {
+            toast.add({ severity: 'warn', summary: '', detail: 'không tìm thấy sản phẩm ', life: 3000 });
+        }
+        localStorage.setItem('cart', JSON.stringify(array));
+        loadDataGioHang();
+        tinhTienKhiCongTru(dataGHCT.value);
+        //  selectedSizeMauSac.value = false;
+    } else {
+        if (!/^\d+$/.test(newSL) || parseInt(newSL, 10) < 0) {
+            // Nếu giá trị không phải là số hoặc là số âm, đặt giá trị mặc định là 1
+            newSL = 1;
+        }
+
+        // if (newSL !== '' && !isNaN(newSL)) {
+        // Thực hiện cập nhật số lượng
+        await gioHangService.updateSL(idGHCT, token, newSL);
+        fakedata.value = gioHangService.fakedata;
+
+        //  }
+
+        if (fakedata.value !== '') {
+            for (let i = 0; i < checkedValues.length; i++) {
+                if (checkedValues[i].idSP == fakedata.value.idSP) {
+                    // Cập nhật phần tử trong mảng
+                    checkedValues[i].soLuong = fakedata.value.soLuong;
+                    break;
+                }
+            }
+            //   console.log(checkedValues)
+
+            tinhTienKhiCongTru(checkedValues);
+            return;
+        } else {
+            newSL = soLuong;
+            await gioHangService.updateSL(idGHCT, token, newSL);
+            fakedata.value = gioHangService.fakedata;
+            toast.add({ severity: 'warn', summary: '', detail: 'Số lượng nhiều hơn số lượng tồn', life: 3000 });
+            return;
+        }
+    }
+};
+
+const updateSoLuongOnBlur = async (idGHCT, newSL, soLuong) => {
+    // Gọi hàm cập nhật số lượng khi blur
+
+    if (newSL.trim() !== '' && !isNaN(newSL)) {
+        // Thực hiện cập nhật số lượng
+        updateSoLuong(idGHCT, parseInt(newSL, 10), soLuong);
+    }
+
+    if (newSL.trim() !== '' && !isNaN(newSL)) {
+        // Thực hiện cập nhật số lượng
+        updateSoLuong(idGHCT, parseInt(newSL, 10));
+    }
+
+    //   if (newSL.trim() !== '') {
+    //     updateSoLuong(idGHCT, parseInt( newSL, 10));
 };
 
 const fakedata = ref(null);
@@ -153,6 +246,7 @@ const deleteGioHang = async (idghct) => {
         }
         localStorage.setItem('cart', JSON.stringify(array));
         loadDataGioHang();
+        demSLGH(token);
         toast.add({ severity: 'warn', summary: '', detail: 'Xoá thành công', life: 3000 });
     } else {
         await gioHangService.xoaGHCT(idghct, token);
@@ -266,7 +360,7 @@ const onSizeChange = (id, isChecked) => {
     }
 };
 
-const dieuKien = ref(0);
+const giaTriGiam = ref(0);
 const tienGiam = ref(0);
 const TongTienCu = ref(0);
 
@@ -281,7 +375,6 @@ const increment = async (idGHCT) => {
                 // Cập nhật phần tử trong mảng
                 let so = array[i].soLuong + 1;
                 if (so > array[i].soLuongTon) {
-
                     toast.add({ severity: 'warn', summary: '', detail: 'Số lượng nhiều hơn số lượng tồn', life: 3000 });
                     return;
                 } else {
@@ -310,6 +403,7 @@ const increment = async (idGHCT) => {
                     break;
                 }
             }
+
             //   console.log(checkedValues)
             tinhTienKhiCongTru(checkedValues);
             return;
@@ -330,7 +424,7 @@ const decrement = async (idGHCT) => {
             if (array[i].idGHCT == idGHCT) {
                 // Cập nhật phần tử trong mảng
                 let so = array[i].soLuong - 1;
-                console.log(so);
+                //      console.log(so);
                 if (so <= 0) {
                     array.splice(i, 1);
                     loadDataGioHang();
@@ -349,6 +443,7 @@ const decrement = async (idGHCT) => {
         }
         localStorage.setItem('cart', JSON.stringify(array));
         loadDataGioHang();
+        demSLGH(token);
         tinhTienKhiCongTru(checkedValues);
     } else {
         await gioHangService.truSL(idGHCT, token);
@@ -361,9 +456,14 @@ const decrement = async (idGHCT) => {
                 break;
             }
         }
+
         // console.log( gioHangService.fakedata)
         tinhTienKhiCongTru(checkedValues);
     }
+};
+
+const demSLGH = async (token) => {
+    await gioHangService.countGHCT(token);
 };
 
 const tinhTienKhiCongTru = (data) => {
@@ -408,9 +508,9 @@ const tongTienKhiTruCongSoLuong = (array) => {
 
 const onloaiChange = () => {
     if (selectVoucher.value) {
-        dieuKien.value = selectVoucher.value.dieuKien;
+        giaTriGiam.value = selectVoucher.value.giaTriGiam;
     } else {
-        dieuKien.value = 0;
+        giaTriGiam.value = 0;
     }
 };
 
@@ -439,11 +539,11 @@ const apDung = () => {
     if (token == '' || token == null) {
         toast.add({ severity: 'warn', summary: '', detail: 'bạn cần đăng nhập  ', life: 3000 });
     } else {
-        console.log(dieuKien.value);
-        if (checkedValues.length == 0 || dieuKien.value == null || dieuKien.value == 0) {
+        if (checkedValues.length == 0 || giaTriGiam.value == null || giaTriGiam.value == 0) {
             toast.add({ severity: 'warn', summary: '', detail: 'bạn cần chọn sản phẩm hoặc voucher', life: 3000 });
         } else {
-            tienGiam.value = TongTien.value * ( dieuKien.value / 100 );
+            tienGiam.value = TongTien.value * (giaTriGiam.value / 100);
+
             TongTienCu.value = TongTien.value - tienGiam.value;
         }
     }
@@ -451,7 +551,7 @@ const apDung = () => {
 
 const reset = () => {
     selectVoucher.value = null;
-    dieuKien.value = 0;
+    giaTriGiam.value = 0;
     tienGiam.value = 0;
     TongTienCu.value = 0;
 };
@@ -462,6 +562,10 @@ const tinhTongTienChoTungSanPham = (soLuong, giaSauGiam, giaBan) => {
         return soLuong * giaSauGiam;
     }
 };
+
+// watch(() => dataGHCT.soLuong, (newSoLuong) => {
+//   soLuong.value = newSoLuong;
+// });
 </script>
 <template>
     <div class="grid">
@@ -469,14 +573,48 @@ const tinhTongTienChoTungSanPham = (soLuong, giaSauGiam, giaBan) => {
             <div class="p-fluid formgrid grid">
                 <div class="Field col-12 md:col-9">
                     <div class="trai">
-                        <DataTable :value="dataGHCT" v-model:selection="selectedGHCT" dataKey="id" :filters="filters"
+                        <div v-if="!dataGHCT || dataGHCT.length===0" style="text-align: center; margin-top: 50px; "  > 
+                                  
+                            <svg fill="#000000" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+	 width="100px" height="100px" viewBox="0 0 446.853 446.853"
+	 xml:space="preserve">
+<g>
+	<path d="M444.274,93.36c-2.558-3.666-6.674-5.932-11.145-6.123L155.942,75.289c-7.953-0.348-14.599,5.792-14.939,13.708
+		c-0.338,7.913,5.792,14.599,13.707,14.939l258.421,11.14L362.32,273.61H136.205L95.354,51.179
+		c-0.898-4.875-4.245-8.942-8.861-10.753L19.586,14.141c-7.374-2.887-15.695,0.735-18.591,8.1c-2.891,7.369,0.73,15.695,8.1,18.591
+		l59.491,23.371l41.572,226.335c1.253,6.804,7.183,11.746,14.104,11.746h6.896l-15.747,43.74c-1.318,3.664-0.775,7.733,1.468,10.916
+		c2.24,3.184,5.883,5.078,9.772,5.078h11.045c-6.844,7.617-11.045,17.646-11.045,28.675c0,23.718,19.299,43.012,43.012,43.012
+		s43.012-19.294,43.012-43.012c0-11.028-4.201-21.058-11.044-28.675h93.777c-6.847,7.617-11.047,17.646-11.047,28.675
+		c0,23.718,19.294,43.012,43.012,43.012c23.719,0,43.012-19.294,43.012-43.012c0-11.028-4.2-21.058-11.042-28.675h13.432
+		c6.6,0,11.948-5.349,11.948-11.947c0-6.6-5.349-11.948-11.948-11.948H143.651l12.902-35.843h216.221
+		c6.235,0,11.752-4.028,13.651-9.96l59.739-186.387C447.536,101.679,446.832,97.028,444.274,93.36z M169.664,409.814
+		c-10.543,0-19.117-8.573-19.117-19.116s8.574-19.117,19.117-19.117s19.116,8.574,19.116,19.117S180.207,409.814,169.664,409.814z
+		 M327.373,409.814c-10.543,0-19.116-8.573-19.116-19.116s8.573-19.117,19.116-19.117s19.116,8.574,19.116,19.117
+		S337.916,409.814,327.373,409.814z"/>
+</g>
+</svg>
+                       
+                            
+<h4  style="text-align: center;">Chưa có sản phẩm !</h4>
+                          </div>
+
+                        <DataTable  v-else
+                            :value="dataGHCT"
+                            v-model:selection="selectedGHCT"
+                            dataKey="id"
+                            :filters="filters"
                             paginatorTemplate="FirstPageLink Pr
-                            evPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown">
+                                evPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                        > 
+            
                             <Column headerStyle="width: 1rem">
                                 <template #body="slotProps">
-                                    <Checkbox v-model="checked[dataGHCT.indexOf(slotProps.data)]" :binary="true"
+                                    <Checkbox
+                                        v-model="checked[dataGHCT.indexOf(slotProps.data)]"
+                                        :binary="true"
                                         @change="onSizeChange(slotProps.data, checked[dataGHCT.indexOf(slotProps.data)])"
-                                        :disabled="slotProps.data.soLuongTon <= 0 || slotProps.data.soLuong > slotProps.data.soLuongTon" />
+                                        :disabled="slotProps.data.soLuongTon <= 0 || slotProps.data.soLuong > slotProps.data.soLuongTon || slotProps.data.trangThaiSP == 3 || slotProps.data.trangThaiSPCT == 3"
+                                    />
                                 </template>
                             </Column>
 
@@ -484,7 +622,7 @@ const tinhTongTienChoTungSanPham = (soLuong, giaSauGiam, giaBan) => {
                                 <template #body="slotProps">
                                     <div class="product-container">
                                         <div class="thumbnail">
-                                            <img :src="slotProps.data.anh" alt="Ảnh sản phẩm" class="shadow-2" width="50" />
+                                            <img :src="slotProps.data.anhMau" alt="Ảnh sản phẩm" class="shadow-2" width="50" />
                                         </div>
                                         <div class="details">
                                             <p style="margin-top: 10px; font-size: 15px">{{ slotProps.data.tenSP }}</p>
@@ -495,12 +633,10 @@ const tinhTongTienChoTungSanPham = (soLuong, giaSauGiam, giaBan) => {
 
                             <Column field="code" header="" headerStyle="width:10%; min-width:5rem;">
                                 <template #body="slotProps">
-                                    <div @click="slotProps.data.soLuongTon != 0 && editProduct(slotProps.data)"
-                                        style="width: 100px">
+                                    <div @click="slotProps.data.soLuongTon != 0 && editProduct(slotProps.data)" style="width: 100px">
                                         <p v-if="slotProps.data.soLuongTon != 0">Phân loại hàng:</p>
-                                        <p style="font-size: 13px; margin-top: -10px" v-if="slotProps.data.soLuongTon != 0">
-                                            {{ slotProps.data.tenMauSac }}, {{ slotProps.data.tenSize }}</p>
-                                        <p v-if="slotProps.data.soLuongTon == 0">Hết sản phẩm</p>
+                                        <p style="font-size: 13px; margin-top: -10px" v-if="slotProps.data.soLuongTon != 0">{{ slotProps.data.tenMauSac }}, {{ slotProps.data.tenSize }}</p>
+                                        <p style="color: red" v-if="slotProps.data.soLuongTon <= 0 || slotProps.data.trangThaiSP == 3 || slotProps.data.trangThaiSPCT == 3">Hết sản phẩm</p>
                                     </div>
                                 </template>
                             </Column>
@@ -509,12 +645,10 @@ const tinhTongTienChoTungSanPham = (soLuong, giaSauGiam, giaBan) => {
                                 <template #body="slotProps">
                                     <span class="p-column-title">Code</span>
 
-                                    <div v-if="slotProps.data.giaSPSauGiam === null">{{
-                                        formatCurrency(slotProps.data.giaBan) }}</div>
+                                    <div v-if="slotProps.data.giaSPSauGiam === null">{{ formatCurrency(slotProps.data.giaBan) }}</div>
                                     <div v-else>
                                         <div style="display: block">
-                                            <div :class="{ strikethrough: true }">{{ formatCurrency(slotProps.data.giaBan)
-                                            }}</div>
+                                            <div :class="{ strikethrough: true }">{{ formatCurrency(slotProps.data.giaBan) }}</div>
                                             <div>{{ formatCurrency(slotProps.data.giaSPSauGiam) }}</div>
                                         </div>
                                     </div>
@@ -525,15 +659,26 @@ const tinhTongTienChoTungSanPham = (soLuong, giaSauGiam, giaBan) => {
                                     <span class="p-column-title">Code</span>
 
                                     <div class="quantity">
-                                        <button @click="decrement(slotProps.data.idGHCT)" class="pi pi-minus"
+                                        <button
+                                            @click="decrement(slotProps.data.idGHCT)"
+                                            class="pi pi-minus"
                                             :disabled="slotProps.data.soLuongTon <= 0"
-                                            style="width: 30px; height: 30px; border-radius: 10px 0px 0px 10px; border: 1px solid rgb(177, 173, 173)"></button>
-                                        <input :value="slotProps.data.soLuong"
-                                            @input="updateSoLuong(slotProps.data, $event)" class="input-soluong"
-                                            style="width: 30px; height: 30px" :disabled="slotProps.data.soLuongTon == 0" />
-                                        <button @click="increment(slotProps.data.idGHCT)" class="pi pi-plus"
+                                            style="width: 30px; height: 30px; border-radius: 10px 0px 0px 10px; border: 1px solid rgb(177, 173, 173)"
+                                        ></button>
+                                        <input
+                                            :value="slotProps.data.soLuong"
+                                            @blur="updateSoLuongOnBlur(slotProps.data.idGHCT, $event.target.value, slotProps.data.soLuong)"
+                                            @input="updateSoLuong(slotProps.data.idGHCT, $event.target.value, slotProps.data.soLuong)"
+                                            class="input-soluong"
+                                            style="width: 30px; height: 30px"
+                                            :disabled="slotProps.data.soLuongTon <= 0"
+                                        />
+                                        <button
+                                            @click="increment(slotProps.data.idGHCT)"
+                                            class="pi pi-plus"
                                             style="width: 30px; height: 30px; border-radius: 0px 10px 10px 0px; border: 1px solid rgb(177, 173, 173)"
-                                            :disabled="slotProps.data.soLuongTon <= 0 || slotProps.data.soLuong > slotProps.data.soLuongTon"></button>
+                                            :disabled="slotProps.data.soLuongTon <= 0 || slotProps.data.soLuong > slotProps.data.soLuongTon || slotProps.data.trangThaiSP == 3 || slotProps.data.trangThaiSPCT == 3"
+                                        ></button>
                                     </div>
                                 </template>
                             </Column>
@@ -541,28 +686,24 @@ const tinhTongTienChoTungSanPham = (soLuong, giaSauGiam, giaBan) => {
                                 <template #body="slotProps">
                                     <span class="p-column-title">Code</span>
                                     <p style="font-size: 15px; color: red">
-                                        {{ formatCurrency(tinhTongTienChoTungSanPham(slotProps.data.soLuong,
-                                            slotProps.data.giaSPSauGiam, slotProps.data.giaBan)) }}
+                                        {{ formatCurrency(tinhTongTienChoTungSanPham(slotProps.data.soLuong, slotProps.data.giaSPSauGiam, slotProps.data.giaBan)) }}
                                     </p>
                                 </template>
                             </Column>
                             <Column headerStyle="min-width:2rem;">
                                 <template #body="slotProps">
-                                    <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2"
-                                        @click="deleteGioHang(slotProps.data.idGHCT)" />
+                                    <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2" @click="deleteGioHang(slotProps.data.idGHCT)" />
                                 </template>
                             </Column>
                         </DataTable>
 
-                        <Dialog v-model:visible="selectedSizeMauSac" :style="{ width: '450px' }"
-                            header="Cập nhật phân loại hàng" :modal="true">
+                        <Dialog v-model:visible="selectedSizeMauSac" :style="{ width: '450px' }" header="Cập nhật phân loại hàng" :modal="true">
                             <p class="ms" v-if="datagh == ''" style="color: red; font-size: 20px">Hết Hàng</p>
                             <label class="ms">Màu sắc</label>
                             <br />
 
                             <div class="rounded-content-list">
-                                <div v-for="(mauSacs, index) in dataMauSac" :key="index" class="rounded-content"
-                                    @click="selectMauSac(mauSacs)" :class="{ selected: isMauSacSelected(mauSacs) }">
+                                <div v-for="(mauSacs, index) in dataMauSac" :key="index" class="rounded-content" @click="selectMauSac(mauSacs)" :class="{ selected: isMauSacSelected(mauSacs) }">
                                     <img class="rounded-image" :src="mauSacs.anh" alt="Hình ảnh" />
                                     <a class="rounded-text">{{ mauSacs.ten }}</a>
                                 </div>
@@ -573,17 +714,14 @@ const tinhTongTienChoTungSanPham = (soLuong, giaSauGiam, giaBan) => {
                             <br />
                             <div class="rounded-content-list">
                                 <div v-for="(size, index) in dataSize" :key="index" style="margin-right: 10px">
-                                    <RadioButton v-model="getSize" inputId="ingredient2" name="pizza" :value="size.id"
-                                        style="margin-right: 10px; color: white" />
+                                    <RadioButton v-model="getSize" inputId="ingredient2" name="pizza" :value="size.id" style="margin-right: 10px; color: white" />
                                     <label>{{ size.ten }} </label>
                                 </div>
                             </div>
 
                             <template #footer>
                                 <Button label="Trở lại" icon="pi pi-times" class="p-button-text" @click="hideDialog" />
-                                <Button type="Xác nhận" label="Save" icon="pi pi-check" class="p-button-text"
-                                    @click="updateMauSacSize(ghct.idGHCT)"
-                                    :disabled="datagh == '' || idMau == '' || idMau == null" />
+                                <Button type="Xác nhận" label="Save" icon="pi pi-check" class="p-button-text" @click="updateMauSacSize(ghct.idGHCT)" :disabled="datagh == '' || idMau == '' || idMau == null" />
                             </template>
                         </Dialog>
                     </div>
@@ -597,30 +735,25 @@ const tinhTongTienChoTungSanPham = (soLuong, giaSauGiam, giaBan) => {
                             Tổng số lượng sản phẩm: <span style="font-size: 16px">{{ TongSoLuong }}</span>
                         </p>
                         <p class="content" style="font-size: 13px">
-                            Tổng tiền: <span style="text-align: right" class="gia">{{ formatCurrency(TongTien) == '' ? 0 :
-                                formatCurrency(TongTien) }}</span>
+                            Tổng tiền: <span style="text-align: right" class="gia">{{ formatCurrency(TongTien) == '' ? 0 : formatCurrency(TongTien) }}</span>
                         </p>
                         <p class="content" v-if="tienGiam !== 0" style="font-size: 13px">
                             số tiền giảm: <span style="color: red; font-size: 15px">- {{ formatCurrency(tienGiam) }}</span>
                         </p>
                         <p class="content" v-if="tienGiam !== 0" style="font-size: 13px">
-                            Tổng tiền giảm: <span style="text-align: right; font-size: 19px" class="gia">{{
-                                formatCurrency(TongTienCu) == '' ? 0 : formatCurrency(TongTienCu) }}</span>
+                            Tổng tiền giảm: <span style="text-align: right; font-size: 19px" class="gia">{{ formatCurrency(TongTienCu) == '' ? 0 : formatCurrency(TongTienCu) }}</span>
                         </p>
 
-                        <Button label="Thanh Toán" severity="danger" class="btn-thanh-toan"
-                            style="width: 110px; font-size: 13px; height: 40px; margin-left: 40px" @click="ThanhToan()" />
+                        <Button label="Thanh Toán" severity="danger" class="btn-thanh-toan" style="width: 110px; font-size: 13px; height: 40px; margin-left: 40px" @click="ThanhToan()" />
                         <div class="phieu-uu-dai">
                             <p class="tieu-de-phieu-uu-dai">Phiếu ưu đãi</p>
                             <hr class="gach-ngang" />
                             <div style="display: flex">
                                 <span class="p-float-label" style="width: 140px; margin-top: 20px">
-                                    <Dropdown id="dropdown" :options="dataVoucher" v-model="selectVoucher" optionLabel="ten"
-                                        :class="{ 'p-invalid': loaiError }" @change="onloaiChange"> </Dropdown>
+                                    <Dropdown id="dropdown" :options="dataVoucher" v-model="selectVoucher" optionLabel="ten" :class="{ 'p-invalid': loaiError }" @change="onloaiChange"> </Dropdown>
                                     <label for="dropdown">voucher</label>
                                 </span>
-                                <Button class="pi pi-refresh"
-                                    style="width: 50px; height: 40px; margin-top: 20px; margin-left: 10px" @click="reset" />
+                                <Button class="pi pi-refresh" style="width: 50px; height: 40px; margin-top: 20px; margin-left: 10px" @click="reset" />
                             </div>
 
                             <Button label="Áp dụng" severity="success" class="btn-ap-dung" @click="apDung" />

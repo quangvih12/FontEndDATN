@@ -14,7 +14,7 @@ import AppConfig from '@/layout/AppConfig.vue';
                         </div>
                         <h1 class="text-900 font-bold text-5xl mb-2">lỗi !</h1>
                         <span class="text-600 mb-5">Bạn không quyền truy cập !</span>
-                        <img src="/demo/images/error/asset-error.svg" alt="Error" class="mb-5" width="80%" />
+                        <!-- <img src="/demo/images/error/asset-error.svg" alt="Error" class="mb-5" width="80%" /> -->
                         <div class="col-12 mt-5 text-center">
                             <i class="pi pi-fw pi-arrow-left text-blue-500 mr-2" style="vertical-align: center"></i>
                             <router-link to="/" class="text-blue-500">quay lại trang chủ</router-link>

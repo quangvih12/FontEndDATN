@@ -101,7 +101,7 @@ const saveProduct = () => {
 };
 </script>
 <template>
-    <Button label="New" icon="pi pi-plus" class="p-button-success mr-2" @click="openNew" />
+    <Button label="Thêm mới" icon="pi pi-plus" class="p-button-success mr-2" @click="openNew" />
     <!-- <div class="grid">
         <div class="col-12">
             <div class="card"> -->

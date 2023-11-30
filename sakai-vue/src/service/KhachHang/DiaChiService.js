@@ -6,13 +6,13 @@ const baseUrl = 'https://online-gateway.ghn.vn/shiip/public-api/master-data/';
 const headers = {
     Token: 'fc6bed6e-7bd8-11ee-af43-6ead57e9219a'
 };
-export const useDiaChi = defineStore('diaChi',{
+export const useDiaChi = defineStore('diaChi', {
     state: () => ({
         user: [],
         diaChi: [],
         data: [],
         diaChiMacDinh: [],
-        diaChiThanhToan: [],
+        diaChiThanhToan: []
     }),
     actions: {
         async fetchData(id) {
@@ -36,15 +36,14 @@ export const useDiaChi = defineStore('diaChi',{
             try {
                 const response = await axios.get(api + '/thanh-toan/' + id);
                 this.diaChiThanhToan = response.data;
-                
             } catch (error) {
                 console.error('Error fetching users:', error);
             }
         },
 
-        async fetchDiaChiThanhToanModal(id,token) {
+        async fetchDiaChiThanhToanModal(id, token) {
             try {
-                const response = await axios.put(api + '/thiet-lap-mac-dinh/' + id +`?token=${token}`);
+                const response = await axios.put(api + '/thiet-lap-mac-dinh/' + id + `?token=${token}`);
                 // this.diaChiMacDinh = response.data;
                 return response.data;
             } catch (error) {
@@ -62,37 +61,43 @@ export const useDiaChi = defineStore('diaChi',{
                 console.error('Lỗi khi lấy danh sách địa chỉ:', error);
             }
         },
-        createDiaChi(form,token) {
-            axios.post(api + `/add?token=${token}`, form).then((response) => {
-                   this.diaChi.unshift(response.data);
-                }).catch((error) => {
+        createDiaChi(form, token) {
+            axios
+                .post(api + `/add?token=${token}`, form)
+                .then((response) => {
+                    this.diaChi.unshift(response.data);
+                })
+                .catch((error) => {
                     // console.error('Lỗi khi tạo:', error);
                 });
         },
         deleteDiaChi(id) {
-            axios.put(api + `/${id}/delete`)
-                .then(response => {
+            axios
+                .put(api + `/${id}/delete`)
+                .then((response) => {
                     // console.log("Đã xóa thành công");
                 })
-                .catch(error => {
+                .catch((error) => {
                     // Xử lý lỗi nếu có
                     // console.error("Lỗi khi xóa địa chỉ: ", error);
                 });
         },
-        async  updateDiaChi(id, form,token) {
-            await axios.put(api + '/update/' + id +`?token=${token}`, form);
-                for (let i = 0; i < this.diaChi.length; i++) {
-                    if (id == this.diaChi[i].id) {
-                        this.diaChi[i].idTinhThanh = form.idTinhThanh;
-                        this.diaChi[i].tinhThanh = form.tinhThanh;
-                        this.diaChi[i].idQuanHuyen = form.idQuanHuyen;
-                        this.diaChi[i].quanHuyen = form.quanHuyen;
-                        this.diaChi[i].idPhuongXa = form.idPhuongXa;
-                        this.diaChi[i].phuongXa = form.phuongXa;
-                        this.diaChi[i].diaChi = form.diaChi;
-                    }
+
+        async updateDiaChi(id, form, token) {
+            await axios.put(api + '/update/' + id + `?token=${token}`, form);
+            for (let i = 0; i < this.diaChi.length; i++) {
+                if (id == this.diaChi[i].id) {
+                    this.diaChi[i].idTinhThanh = form.idTinhThanh;
+                    this.diaChi[i].tenTinhThanh = form.tinhThanh;
+                    this.diaChi[i].idQuanHuyen = form.idQuanHuyen;
+                    this.diaChi[i].tenQuanHuyen = form.quanHuyen;
+                    this.diaChi[i].idPhuongXa = form.idPhuongXa;
+                    this.diaChi[i].tenphuongXa = form.phuongXa;
+                    this.diaChi[i].diaChi = form.diaChi;
+                    console.log(this.diaChi[i]);
                 }
-        
+            }
+
         },
         async fetchTinhThanh() {
             try {

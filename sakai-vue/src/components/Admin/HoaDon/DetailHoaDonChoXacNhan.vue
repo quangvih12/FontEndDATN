@@ -7,6 +7,8 @@ import { da } from 'date-fns/locale';
 import { HDStore } from '../../../service/Admin/HoaDon/HoaDonService';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 
 const toast = useToast();
 const useHD = HDStore();
@@ -35,12 +37,16 @@ const props = defineProps({
     myProp: {}
 });
 
-const tongTienThanhToan = ref(parseInt(props.myProp.tongTien) + parseInt(props.myProp.tienShip));
+const tongTienThanhToan = ref(props.myProp.tienSauKhiGiam == '' ? parseInt(props.myProp.tienSauKhiGiam) : parseInt(props.myProp.tongTien) + parseInt(props.myProp.tienShip));
 
 const editProduct = () => {
     code.value = 'Hoá đơn: ' + props.myProp.maHD;
     productDialog.value = true;
     loadDataHDCT(props.myProp.idHD);
+    ngayDat.value = props.myProp.ngayTao;
+    ngayThanhToan.value = props.myProp.ngayThanhToan;
+    ngayGiao.value = props.myProp.ngayShip;
+    ngayNhan.value = props.myProp.ngayNhan;
 };
 
 const ngayDat = ref('');
@@ -50,9 +56,9 @@ const ngayNhan = ref('');
 
 watch(ship, (newVal) => {
     if (ship.value === 'nguoiGui') {
-        tongTienThanhToan.value = parseInt(props.myProp.tongTien);
+        tongTienThanhToan.value = props.myProp.tienSauKhiGiam == null ? parseInt(props.myProp.tongTien) : parseInt(props.myProp.tienSauKhiGiam) - parseInt(props.myProp.tienShip);
     } else {
-        tongTienThanhToan.value = parseInt(props.myProp.tongTien) + parseInt(props.myProp.tienShip);
+        tongTienThanhToan.value = props.myProp.tienSauKhiGiam == null ? parseInt(props.myProp.tongTien) + parseInt(props.myProp.tienShip) : props.myProp.tienSauKhiGiam;
     }
 });
 
@@ -67,16 +73,29 @@ watch(productDialog, (newVal) => {
 });
 
 onMounted(() => {
-    ngayDat.value = props.myProp.ngayTao;
-    ngayThanhToan.value = props.myProp.ngayThanhToan;
-    ngayGiao.value = props.myProp.ngayShip;
-    ngayNhan.value = props.myProp.ngayNhan;
     ship.value = 'nguoiNhan';
+    openSocketConnection();
 });
 
 const giaoHangNhanh = async (idHD, hoaDon, formGHN) => {
     const responeGHN = await useHD.findHdctByIdHd(idHD);
     useHD.giaoHangNhanh(responeGHN, hoaDon, formGHN);
+};
+
+const stompClient = ref(null);
+const openSocketConnection = () => {
+    stompClient.value = new Client({
+        brokerURL: 'ws://localhost:8080/ws'
+    });
+
+    stompClient.value.activate();
+};
+
+const sendMessage = () => {
+    stompClient.value.publish({
+        destination: '/app/hoa-don/' + props.myProp.idUser,
+        body: ''
+    });
 };
 
 const btnXacNhan = () => {
@@ -104,7 +123,8 @@ const btnXacNhan = () => {
         addProductDialog.value = false;
     } else {
         const responeDCB = useHD.dangChuanBi(idHD.value, ngayDuKienGiao.value);
-        giaoHangNhanh(idHD.value, responeDCB, formGHN);
+        sendMessage();
+        // giaoHangNhanh(idHD.value, responeDCB, formGHN);
         toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Xác nhận thành công', life: 3000 });
         addProductDialog.value = false;
         productDialog.value = false;
@@ -123,7 +143,7 @@ const loadDataHDCT = async (idHD) => {
     const respone = await useHD.findHdctByIdHd(idHD);
     dataHDCT.value = respone;
     for (let i = 0; i < dataHDCT.value.length; i++) {
-        khoiLuong.value += dataHDCT.value[i].trongLuong;
+        khoiLuong.value += parseInt(dataHDCT.value[i].trongLuong);
     }
 };
 
@@ -173,6 +193,7 @@ const btnXacNhanHuy = () => {
         huyDialog.value = false;
     } else {
         useHD.huyHoaDon(idHD.value, lyDo.value, 2);
+        sendMessage();
         toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Huỷ thành công', life: 3000 });
         lyDo.value = '';
         huyDialog.value = false;
@@ -187,7 +208,6 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
     } else {
         return parseInt(tienSauGiam);
     }
-
 };
 </script>
 <template>
@@ -308,15 +328,12 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
                             </div>
                             <p>Tổng tiền các sản phẩm: {{ formatCurrency(props.myProp.tongTien) }}</p>
                             <p>Phí vận chuyển: {{ formatCurrency(props.myProp.tienShip) }}</p>
-                            <p>Tiền giảm: <span v-if="props.myProp.tienSauKhiGiam !== null" style="color: red;">- {{
-                                        formatCurrency(parseInt(props.myProp.tongTien) -
-                                            parseInt(props.myProp.tienSauKhiGiam)) }}</span>
-                                        <span v-else style="color: red;"> 0</span>
-                                    </p>
                             <p>
-                                Tổng tiền: <span style="color: #ff3333; font-size: 20px; font-weight: bold">{{
-                                            formatCurrency(tinhTongTien(props.myProp.tienShip,
-                                                props.myProp.tongTien, props.myProp.tienSauKhiGiam)) }}</span>
+                                Tiền giảm: <span v-if="props.myProp.tienSauKhiGiam !== null" style="color: red">- {{ formatCurrency(parseInt(props.myProp.tongTien) + parseInt(props.myProp.tienShip) - parseInt(props.myProp.tienSauKhiGiam)) }}</span>
+                                <span v-else style="color: red"> 0</span>
+                            </p>
+                            <p>
+                                Tổng tiền: <span style="color: #ff3333; font-size: 20px; font-weight: bold">{{ formatCurrency(tongTienThanhToan) }}</span>
                             </p>
                             <Button label="Giao Hàng" severity="success" class="btn-ap-dung" @click="confirmAddProduct(props.myProp.idHD)" style="margin-bottom: 20px" />
                             <Button label="Hủy" class="p-button-outlined p-button-info mr-2 mb-2" @click="showDialogLyDo(props.myProp.idHD)" />

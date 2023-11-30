@@ -37,20 +37,20 @@ const schema = yup.object().shape({
         .number()
         .required('Giá bán không được để trống')
         .min(50000, 'giá phải lớn hơn hoặc bằng 50.000 đ')
-        .max(10000000, 'Giá bán không lớn hơn 10.000.000 đ')
-        .when(['giaNhap'], (giaBan, schema) => {
-            return schema.test({
-                test: function (value) {
-                    const giaNhap = this.resolve(yup.ref('giaNhap'));
-                    if (value < giaNhap) {
-                        toast.add({ severity: 'error', summary: 'Error ', detail: 'Giá Nhập không được nhỏ hơn giá bán', life: 3000 });
-                    }
-                    return true;
-                },
-                message: 'Giá bán phải nhỏ hơn giá nhập'
-            });
-        }),
-    giaNhap: yup.number().required('Giá nhập không được để trống').min(50000, 'giá phải lớn hơn hoặc bằng 50.000 đ').max(10000000, 'Giá bán không lớn hơn  10.000.000 đ'),
+        .max(10000000, 'Giá bán không lớn hơn 10.000.000 đ'),
+        // .when(['giaNhap'], (giaBan, schema) => {
+        //     return schema.test({
+        //         test: function (value) {
+        //             const giaNhap = this.resolve(yup.ref('giaNhap'));
+        //             if (value < giaNhap) {
+        //                 toast.add({ severity: 'error', summary: 'Error ', detail: 'Giá Nhập không được nhỏ hơn giá bán', life: 3000 });
+        //             }
+        //             return true;
+        //         },
+        //         message: 'Giá bán phải nhỏ hơn giá nhập'
+        //     });
+        // }),
+    // giaNhap: yup.number().required('Giá nhập không được để trống').min(50000, 'giá phải lớn hơn hoặc bằng 50.000 đ').max(10000000, 'Giá bán không lớn hơn  10.000.000 đ'),
     quaiDeo: yup.string().required('Bạn cần chọn quai đeo cho sản phẩm'),
     loai: yup.number().required('loại sản phẩm không được để trống'),
     thuongHieu: yup.number().required('vui lòng chọn Thương hiệu sản phẩm '),
@@ -60,9 +60,7 @@ const schema = yup.object().shape({
     soLuongSize: yup.number().required(' vui lòng nhập số lượng').typeError('Số lượng size phải là một số').min(1, 'Số lượng phải lớn hơn hoặc bằng 1').nullable(),
     trongLuong: yup.string().required('vui lòng chọn trọng lượng sản phẩm'),
     imgMauSac: yup.array().required('vui lòng chọn ảnh màu sắc sản phẩm'),
-    trangThai: yup.number().required('vui lòng chọn trạng thái của sản phẩm'),
     moTa: yup.string().required('Vui lòng điền mô tả sản phẩm').min(10, 'Mô tả sản phẩm phải có ít nhất 10 ký tự'),
-    //   imagesProduct: yup.array().required('Vui lòng chọn ảnh cho sản phẩm'),
     anh: yup.string().required('vui lòng chọn ảnh chính cho sản phẩm')
 });
 
@@ -72,7 +70,7 @@ const { handleSubmit, resetForm } = useForm({
 
 const { value: name, errorMessage: nameError } = useField('ten');
 const { value: GiaBan, errorMessage: giaBanError } = useField('giaBan');
-const { value: GiaNhap, errorMessage: giaNhapError } = useField('giaNhap');
+// const { value: GiaNhap, errorMessage: giaNhapError } = useField('giaNhap');
 const { value: QuaiDeo, errorMessage: quaiDeoError } = useField('quaiDeo');
 const { value: Loai, errorMessage: loaiError } = useField('loai');
 const { value: ThuongHieu, errorMessage: thuongHieuError } = useField('thuongHieu');
@@ -102,7 +100,7 @@ const onSubmit = handleSubmit(async (values) => {
 
             for (let i = 0; i < values.giaBan.length; i++) {
                 let giaBan = values.giaBan[i];
-                let giaNhap = values.giaNhap[i];
+             //   let giaNhap = values.giaNhap[i];
                 let soLuong = values.soLuongSize[i];
                 if (soLuong <= 0) {
                     toast.add({ severity: 'error', summary: 'Error', detail: 'Số lượng sản phẩm phải lớn hơn 0', life: 3000 });
@@ -128,26 +126,26 @@ const onSubmit = handleSubmit(async (values) => {
                     toast.add({ severity: 'error', summary: 'Error', detail: 'Giá bán không lớn hơn 10.000.000 đ', life: 3000 });
                     return;
                 }
-                if (giaNhap <= 0) {
-                    toast.add({ severity: 'error', summary: 'Error', detail: 'Giá nhập sản phẩm phải lớn hơn 0', life: 3000 });
-                    return;
-                }
-                if (isNaN(giaNhap)) {
-                    toast.add({ severity: 'error', summary: 'Error', detail: 'Giá nhập phải là một số', life: 3000 });
-                    return;
-                }
-                if (giaNhap < 50000) {
-                    toast.add({ severity: 'error', summary: 'Error', detail: 'giá nhập phải lớn hơn 50.000 đ', life: 3000 });
-                    return;
-                }
-                if (giaNhap > 10000000) {
-                    toast.add({ severity: 'error', summary: 'Error', detail: 'Giá nhập không lớn hơn 10.000.000 đ', life: 3000 });
-                    return;
-                }
-                if (giaNhap > giaBan) {
-                    toast.add({ severity: 'error', summary: 'Error', detail: 'Giá nhập phải lớn hơn giá bán', life: 3000 });
-                    return;
-                }
+                // if (giaNhap <= 0) {
+                //     toast.add({ severity: 'error', summary: 'Error', detail: 'Giá nhập sản phẩm phải lớn hơn 0', life: 3000 });
+                //     return;
+                // }
+                // if (isNaN(giaNhap)) {
+                //     toast.add({ severity: 'error', summary: 'Error', detail: 'Giá nhập phải là một số', life: 3000 });
+                //     return;
+                // }
+                // if (giaNhap < 50000) {
+                //     toast.add({ severity: 'error', summary: 'Error', detail: 'giá nhập phải lớn hơn 50.000 đ', life: 3000 });
+                //     return;
+                // }
+                // if (giaNhap > 10000000) {
+                //     toast.add({ severity: 'error', summary: 'Error', detail: 'Giá nhập không lớn hơn 10.000.000 đ', life: 3000 });
+                //     return;
+                // }
+                // if (giaNhap > giaBan) {
+                //     toast.add({ severity: 'error', summary: 'Error', detail: 'Giá nhập phải lớn hơn giá bán', life: 3000 });
+                //     return;
+                // }
 
             }
             await productStore.add(values);
@@ -437,14 +435,12 @@ const openNew = () => {
 </script>
 
 <template>
-    <Button label="New" icon="pi pi-plus" class="p-button-success mr-2" @click="openNew" />
+    <Button label="Thêm mới" icon="pi pi-plus" class="p-button-success mr-2" @click="openNew" />
     <div>
-        <Dialog v-model:visible="productDialog" :style="{ width: '1100px' }" header="Product Details" :modal="true"
+        <Dialog v-model:visible="productDialog" :style="{ width: '1100px' }" header="Thêm Mới Sản Phẩm" :modal="true"
             class="p-fluid">
             <div class="col-12">
-                <div class="card" style="align-items: center; justify-content: center; height: 90px">
-                    <h1 style="margin-bottom: 30px; font-size: 50px; margin-top: 20px">Sản phẩm</h1>
-                </div>
+
                 <div class="card">
                     <form @submit="onSubmit">
                         <div class="p-fluid formgrid grid">
@@ -502,22 +498,22 @@ const openNew = () => {
                                     </div>
                                     <small class="p-error">{{ demLotError }}</small>
                                 </div>
-                                <div class="field col-12 md:col-8" style="margin-bottom: 30px">
-                                    <label for="address">Trạng thái</label>
-                                    <div class="flex flex-wrap gap-3" >
-                                        <div class="flex align-items-center">
-                                            <RadioButton v-model="TrangThai" inputId="ingredient1" name="pizza" value="1"
-                                                :class="{ 'p-invalid': TrangThaiSacError }" />
-                                            <label for="ingredient1" class="ml-2">Sẵn sàng để bán</label>
+                                <!-- <div class="field col-12 md:col-8" style="margin-bottom: 30px">
+                                        <label for="address">Trạng thái</label>
+                                        <div class="flex flex-wrap gap-3" >
+                                            <div class="flex align-items-center">
+                                                <RadioButton v-model="TrangThai" inputId="ingredient1" name="pizza" value="1"
+                                                    :class="{ 'p-invalid': TrangThaiSacError }" />
+                                                <label for="ingredient1" class="ml-2">Sẵn sàng để bán</label>
+                                            </div>
+                                            <div class="flex align-items-center" >
+                                                <RadioButton v-model="TrangThai" inputId="ingredient2" name="pizza" value="3"
+                                              :class="{ 'p-invalid': TrangThaiSacError }" />
+                                                <label for="ingredient2" class="ml-2">tồn kho</label>
+                                            </div>
                                         </div>
-                                        <div class="flex align-items-center" >
-                                            <RadioButton v-model="TrangThai" inputId="ingredient2" name="pizza" value="3"
-                                          :class="{ 'p-invalid': TrangThaiSacError }" />
-                                            <label for="ingredient2" class="ml-2">tồn kho</label>
-                                        </div>
-                                    </div>
-                                    <small class="p-error">{{ TrangThaiSacError }}</small>
-                                </div>
+                                        <small class="p-error">{{ TrangThaiSacError }}</small>
+                                    </div> -->
                                 <div class="p-fluid formgrid grid">
                                     <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
                                         <div style="display: flex">
@@ -669,40 +665,43 @@ const openNew = () => {
                                         <div style="width:75px">
                                             <p>Số lượng :</p>
                                         </div>
-                                        <div style="background: rgb(255, 255, 255); width: 20% ; height: 100%;">
+                                        <div style="width: 100%; height: 100%; display: flex; flex-wrap: wrap">
+                                            <div style=" width: 20% ; height: 100%;">
 
-                                            <div style="display: flex; flex-wrap: wrap">
-                                                <div v-for="(mau, index) in selectedSizes" :key="index"
-                                                    style="margin-top: 5px; margin-left: 30px;">
-                                                    <label :for="`input-${mau.id}`"
-                                                        style="margin-right: 5px; margin-left: 0px">{{
-                                                            mau.ten }}</label>
+                                                <div style="display: flex; flex-wrap: wrap">
+                                                    <div v-for="(mau, index) in selectedSizes" :key="index"
+                                                        style="margin-top: 5px; margin-left: 30px;">
+                                                        <label :for="`input-${mau.id}`"
+                                                            style="margin-right: 5px; margin-left: 0px">{{
+                                                                mau.ten }}</label>
+                                                    </div>
+
                                                 </div>
-
                                             </div>
-                                        </div>
-                                        <div style="background: rgb(255, 255, 255); width: 80% ; height: 100%;">
-                                            <div style="display: flex; flex-wrap: wrap">
-                                                <div v-for="(mau, index) in selectedMauSac" :key="index"
-                                                    style="margin-top: 5px">
-                                                    <label :for="`input-${mau.id}`"
-                                                        style="margin-right: 10px; margin-left: 10px">{{
-                                                            mau.ten }} <span v-if="mau.size !== null"> - {{ mau.size.ten
+                                            <div style=" width: 80% ; height: 100%;">
+                                                <div style="display: flex; flex-wrap: wrap">
+                                                    <div v-for="(mau, index) in selectedMauSac" :key="index"
+                                                        style="margin-top: 5px">
+                                                        <label :for="`input-${mau.id}`"
+                                                            style="margin-right: 10px; margin-left: 10px">{{
+                                                                mau.ten }} <span v-if="mau.size !== null"> - {{ mau.size.ten
     }}</span></label>
-                                                    <input type="number" :id="`input-${mau.id}`" v-model="array[index]"
-                                                        @change="handleInputChange(mau.id)"
-                                                        :class="{ 'p-invalid': soLuongSizeError }"
-                                                        style="height: 20px; width: 80px;border-radius: 5px ; border: 1px solid;" />
+                                                        <input type="number" :id="`input-${mau.id}`" v-model="array[index]"
+                                                            @change="handleInputChange(mau.id)"
+                                                            :class="{ 'p-invalid': soLuongSizeError }"
+                                                            style="height: 20px; width: 80px;border-radius: 5px ; border: 1px solid;" />
 
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
+
                                     </div>
                                     <small class="p-error">{{ soLuongSizeError }}</small>
                                 </div>
 
 
-                                <div class="field col-12 md:col-12">
+                                <!-- <div class="field col-12 md:col-12">
 
                                     <div style="background: rgb(255, 255, 255); width: 450px ;  display: flex;">
                                         <div style="width: 75px; ">
@@ -739,7 +738,7 @@ const openNew = () => {
                                     </div>
                                     <small class="p-error">{{ giaNhapError }}</small>
 
-                                </div>
+                                </div> -->
 
                                 <div class="field col-12 md:col-12">
 
@@ -783,11 +782,12 @@ const openNew = () => {
                             </div>
 
                             <div style="width: 1000px; text-align: center">
-                                <Button type="submit" class="p-button-outlined"
-                                    style="width: 200px; height: auto; margin: 10px" label="Lưu"></Button>
+
                                 <Button class="p-button-outlined" outlined severity="secondary"
                                     style="width: 200px; height: auto; margin: 10px" @click="reset()"
                                     label="clear"></Button>
+                                <Button type="submit" class="p-button-outlined"
+                                    style="width: 200px; height: auto; margin: 10px" label="Lưu"></Button>
                             </div>
                         </div>
                     </form>

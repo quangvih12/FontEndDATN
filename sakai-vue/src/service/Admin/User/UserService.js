@@ -191,5 +191,14 @@ export const userStore = defineStore('user', {
                 throw error; // You can handle the error in the component that calls this action
             }
         },
+        async sendOTP(form) {
+            try {
+                const response = await axios.post('http://localhost:8080/api/admin/mail/sendOTP', form);
+                return response.data;
+            } catch (error) {
+                console.error('Error sending mail:', error);
+                throw error; // You can handle the error in the component that calls this action
+            }
+        },
     }
 });

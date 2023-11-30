@@ -9,7 +9,9 @@ import { HDKHStore } from '../../../service/KhachHang/HoaDonKHService';
 import DetailHoaDon from './TrangThaiDonHang.vue';
 import { useRouter } from 'vue-router';
 import { gioHangStore } from '../../../service/KhachHang/Giohang/GiohangCTService';
+import { useDetailProductStore } from '../../../service/KhachHang/DetailService';
 
+const productStore = useDetailProductStore();
 const router = useRouter();
 const gioHangService = gioHangStore();
 const redirectToTrangThaiDonHang = (id) => {
@@ -146,13 +148,31 @@ const showDialogMuaLai = async (idHD) => {
     muaLaiDialog.value = true;
 };
 
-const addCart = async (soLuong, idCTSP) => {
+const dataGHCT = ref([]);
+const soLuongGH = ref(0);
+const dataListSPCT = ref([]);
+const loaddataListSPCT = async (idProduct, idSize, idMau) => {
+    await productStore.fetchIdSPCT(idProduct, idSize, idMau);
+    dataListSPCT.value = productStore.products;
+};
+const addCart = async (soLuong, idCTSP, idSize, idMau) => {
     const cartItem = {
         soLuong: soLuong,
         sanPhamChiTiet: idCTSP
     };
     const token = localStorage.getItem('token');
+    await loaddataListSPCT(idCTSP, idSize, idMau);
 
+    await gioHangService.getGHCTByIdctsp(token, idCTSP)
+    dataGHCT.value = gioHangService.data;
+
+    soLuongGH.value = parseInt(soLuong) + parseInt(dataGHCT.value.soLuong)
+
+
+        if (soLuongGH.value > dataListSPCT.value.soLuongTon) {
+            toast.add({ severity: 'warn', summary: '', detail: 'Số lượng bạn chọn đã đạt mức tối đa của sản phẩm', life: 5000 });
+            return;
+        }
     await gioHangService.addToCart(cartItem, token);
     router.push({ name: 'gio-hang' });
 
@@ -168,8 +188,17 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
 
 </script>
 <template>
-      <div style="height: 500px; font-size: 24px;" v-if="!data || data.length === 0"> Chưa có Đơn hàng !</div>
-    <div v-for="(hd, index) in data" :key="index">
+         <div v-if="!data || data.length===0" style="text-align: center; margin-top: 100px; "  > 
+                                  
+                                  <svg  width="100px" height="100px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#000000" class="bi bi-file-earmark-x">
+<path d="M6.854 7.146a.5.5 0 1 0-.708.708L7.293 9l-1.147 1.146a.5.5 0 0 0 .708.708L8 9.707l1.146 1.147a.5.5 0 0 0 .708-.708L8.707 9l1.147-1.146a.5.5 0 0 0-.708-.708L8 8.293 6.854 7.146z"/>
+<path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
+</svg>
+                       
+                            
+<h4  style="text-align: center;">Chưa có Đơn hàng !</h4>
+                          </div>
+    <div v-for="(hd, index) in  useHD.dataDangGiao" :key="index">
         <div style="width: 1060px; background: rgb(255, 255, 255); ">
 
             <div style="width: 1060px; background: rgb(252, 246, 246);  ">
@@ -286,7 +315,7 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
 
                         </div>
                         <Button icon="pi pi-shopping-cart" class="p-button-rounded p-button-warning mt-2" style=""
-                            @click="addCart(sp.soLuong, sp.idSPCT)" :disabled="sp.soLuongTon < sp.soLuong" />
+                            @click="addCart(sp.soLuong, sp.idSPCT, sp.idSize, sp.idMau)" :disabled="sp.soLuongTon < sp.soLuong" />
                     </div>
                 </div>
             </div>

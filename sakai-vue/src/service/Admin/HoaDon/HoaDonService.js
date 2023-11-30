@@ -99,8 +99,8 @@ export const HDStore = defineStore('hoaDon', {
             });
         },
 
-         //từ Xác nhận đổi tra -> hoàn thành đổi trả không cộng lại số lượng
-         hoanThanhDoiTraKhongCongSoLuong(id) {
+        //từ Xác nhận đổi tra -> hoàn thành đổi trả không cộng lại số lượng
+        hoanThanhDoiTraKhongCongSoLuong(id) {
             axios.put(apiHD + '/hoan-thanh-tra/' + id).then((response) => {
                 if (this.check == 1) {
                     if (this.dataXacNhanHoanTraHoanTien[0].trangThai == '8') {
@@ -118,10 +118,9 @@ export const HDStore = defineStore('hoaDon', {
             });
         },
 
-
         //từ trả hàng -> xác nhận trả hàng
-        traHang(id) {
-            axios.put(apiHD + '/xac-nhan-doi-tra/' + id).then((response) => {
+        traHang(id, idSPCT) {
+            axios.put(apiHD + '/xac-nhan-doi-tra/' + id + '?idSPCT=' + idSPCT).then((response) => {
                 if (this.check == 1) {
                     if (parseInt(this.dataHoanTraHoanTien[0].trangThai) == 7) {
                         let index = -1;
@@ -130,8 +129,8 @@ export const HDStore = defineStore('hoaDon', {
                                 index = i;
                             }
                         }
-                        this.dataHoanTraHoanTien[index].trangThai = 8;
-                        this.dataXacNhanHoanTraHoanTien.push(this.dataHoanTraHoanTien[index]);
+                        // this.dataHoanTraHoanTien[index].trangThai = 8;
+                        this.dataXacNhanHoanTraHoanTien.unshift(response.data);
                         this.dataHoanTraHoanTien.splice(index, 1);
                     }
                 }
@@ -186,8 +185,8 @@ export const HDStore = defineStore('hoaDon', {
         },
 
         //huỷ hoá đơn đổi trả
-        huyHoaDonDoiTra(id, lyDo, man) {
-            axios.put(apiHD + '/huy-doi-tra/' + id + '?lyDo=' + lyDo).then((response) => {
+        huyHoaDonDoiTra(id, lyDo, man, idSPCT) {
+            axios.put(apiHD + '/huy-doi-tra/' + id + '?lyDo=' + lyDo + '&idSPCT=' + idSPCT).then((response) => {
                 if (this.check == 1) {
                     if (this.dataHoanTraHoanTien.length > 0 && man == 7) {
                         if (this.dataHoanTraHoanTien[0].trangThai == '7') {
@@ -198,21 +197,9 @@ export const HDStore = defineStore('hoaDon', {
                                 }
                             }
                             this.dataHoanTraHoanTien[index].trangThai = 9;
-                            this.dataDaHuyDoiTra.unshift(response.data);
+                            this.dataHoanTraHoanTien[index].soLuong = response.data.soLuong;
+                            this.dataDaHuyDoiTra.unshift(this.dataHoanTraHoanTien[index]);
                             this.dataHoanTraHoanTien.splice(index, 1);
-                        }
-                    }
-                    if (this.dataXacNhanHoanTraHoanTien.length > 0 && man == 8) {
-                        if (this.dataXacNhanHoanTraHoanTien[0].trangThai == '8') {
-                            let index = -1;
-                            for (let i = 0; i < this.dataXacNhanHoanTraHoanTien.length; i++) {
-                                if (id == this.dataXacNhanHoanTraHoanTien[i].idHD) {
-                                    index = i;
-                                }
-                            }
-                            this.dataXacNhanHoanTraHoanTien[index].trangThai = 9;
-                            this.dataDaHuyDoiTra.unshift(response.data);
-                            this.dataXacNhanHoanTraHoanTien.splice(index, 1);
                         }
                     }
                 }
@@ -326,6 +313,7 @@ export const HDStore = defineStore('hoaDon', {
             try {
                 const response = await axios.get(apiHD);
                 this.dataAll = response.data;
+                return   this.dataAll;
             } catch (error) {
                 console.error('Error fetching users:', error);
             }
@@ -336,14 +324,22 @@ export const HDStore = defineStore('hoaDon', {
             try {
                 const response = await axios.get(apiHD + '/hoaDonTrangThai/' + status);
                 if (status == 2) this.dataChoXacNhan = response.data;
-                if (status == 8) this.dataXacNhanHoanTraHoanTien = response.data;
                 if (status == 0) this.dataDaHuy = response.data;
                 if (status == 4) this.dataDangChuanBi = response.data;
                 if (status == 5) this.dataDangGiao = response.data;
                 if (status == 3) this.dataHoanThanh = response.data;
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        },
+        //load data hd trả theo trạng thái
+        async fetchDataHDCTByStatus(status) {
+            this.check = 1;
+            try {
+                const response = await axios.get(apiHDCT + '/find-by-trang-thai/' + status);
+                if (status == 8) this.dataXacNhanHoanTraHoanTien = response.data;
                 if (status == 7) this.dataHoanTraHoanTien = response.data;
                 if (status == 9) this.dataDaHuyDoiTra = response.data;
-                if (status == 10) this.dataDaHoanTra = response.data;
             } catch (error) {
                 console.error('Error fetching users:', error);
             }

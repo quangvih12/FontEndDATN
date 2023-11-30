@@ -106,6 +106,25 @@ export const HDKHStore = defineStore('hoaDonKH', {
             }
         },
 
+        async findHdct(token) {
+            try {
+                const response = await axios.get(apiHDCT + '/find-by-id-hd-tra?token=' + token);
+                const hoaDonList = response.data;
+                for (const [key, product] of hoaDonList.entries()) {
+                    hoaDonList[key]['sanPhamChiTiet'] = null;
+                    const mau = await this.findHdctByIdHd(product.idHD);
+                  
+                    const doiTuong = mau.filter(item => item.trangThaiHDCT === 7 ||  item.trangThaiHDCT === 8  ||  item.trangThaiHDCT === 9);
+                   
+                    // mau.sort((a, b) => b.id - a.id);
+                    hoaDonList[key]['sanPhamChiTiet'] = doiTuong;
+                }
+                this.dataHoanTraHoanTien = hoaDonList;
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        },
+
         //lấy sp theo id hoá đơn
         async findHdByIdHd(idHD) {
             try {
@@ -137,6 +156,13 @@ export const HDKHStore = defineStore('hoaDonKH', {
                     const mau = await this.findHdctByIdHd(id);
                     // mau.sort((a, b) => b.id - a.id);
                     newProductData['sanPhamChiTiet'] = mau;
+                
+                    for (let i = 0; i <  this.dataAll.length; i++){
+                     if(this.dataAll[i].idHD == id){
+                        console.log(this.dataAll[i].id);
+                        this.dataAll[i].trangThai = 0;
+                     }
+                    }
                     this.dataDaHuy.unshift(newProductData);
                     this.dataDangChuanBi.splice(index, 1);
                 }
@@ -196,6 +222,7 @@ export const HDKHStore = defineStore('hoaDonKH', {
         async doiTra(token, newHoaDon) {
             try {
                 const response = await axios.post(apiHD + `/doi-tra?token=${token}`, newHoaDon);
+                console.log(response.data)
                 this.dataDaHoanTra.unshift(response.data);
             } catch (error) {
                 console.error('Error fetching users:', error);

@@ -185,7 +185,7 @@ function onFileInputImage(event) {
 }
 </script>
 <template>
-    <Button label="New" icon="pi pi-plus" class="p-button-success mr-2" @click="openNew" />
+    <Button label="Thêm mới" icon="pi pi-plus" class="p-button-success mr-2" @click="openNew" />
     <Dialog v-model:visible="productDialog" :style="{ width: '800px' }" header="Thêm nhân viên" :modal="true" class="p-fluid">
         <div class="card">
             <!-- <Button label="Toggle Camera" icon="pi pi-camera" class="p-button-success" @click="toggleCamera" /> -->
@@ -217,7 +217,7 @@ function onFileInputImage(event) {
                             </div>
                             <div class="field col-12" style="margin-bottom: 30px">
                                 <label for="ngaySinh">Ngày sinh</label>
-                                <InputText type="date" v-model.trim="ngaySinh" :class="{ 'p-invalid': ngaySinhError }" />
+                                <InputText type="date" v-model.trim="ngaySinh"   />
                                 <small class="p-error">{{ ngaySinhError }}</small>
                             </div>
                             <div class="field col-12" style="margin-bottom: 30px">

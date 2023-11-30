@@ -149,7 +149,7 @@ const formatDate = (dateTime) => {
     </div>
     <DataTable
         ref="dt"
-        :value="data"
+        :value="useHD.dataHoanThanh"
         v-model:selection="selectedProducts"
         dataKey="id"
         :paginator="true"
@@ -161,9 +161,9 @@ const formatDate = (dateTime) => {
         responsiveLayout="scroll"
     >
         <template #header>
-            <div class="col-12 flex">
+            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                 <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-                    <MultiSelect icon="pi pi-plus" placeholder="Select Columns" :modelValue="selectedColumns" :options="columns" optionLabel="header" @update:modelValue="onToggle" display="tag" />
+                    <MultiSelect icon="pi pi-plus" placeholder="Select Columns" :modelValue="selectedColumns" :options="columns" optionLabel="header" @update:modelValue="onToggle" display="chip" />
                 </div>
                 <span class="p-input-icon-left" style="margin-left: 20px">
                     <i class="pi pi-search" />
@@ -192,7 +192,7 @@ const formatDate = (dateTime) => {
         <Column field="tongTien" header="Tổng tiền" :sortable="true" headerStyle="width:14%; min-width:10rem;">
             <template #body="slotProps">
                 <span class="p-column-title">tongTien</span>
-                {{ formatCurrency(slotProps.data.tienSauKhiGiam==null?slotProps.data.tongTien: slotProps.data.tienSauKhiGiam) }}
+                {{ formatCurrency(slotProps.data.tienSauKhiGiam==null?parseInt(slotProps.data.tongTien)+parseInt(slotProps.data.tienShip): slotProps.data.tienSauKhiGiam) }}
             </template>
         </Column>
         <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;">

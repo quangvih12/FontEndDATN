@@ -134,7 +134,7 @@ const initFilters = () => {
                     <Column field="ma" header="Mã" :sortable="true" headerStyle="width:14%; min-width:10rem;">
                         <template #body="slotProps">
                             <span class="p-column-title">ma</span>
-                            {{ slotProps.data.ma.length == 0 ? 'Không có' : slotProps.data.ma }}
+                            {{ slotProps.data.ma }}
                         </template>
                     </Column>
                     <Column field="ten" header="Tên" :sortable="true" headerStyle="width:14%; min-width:10rem;">
