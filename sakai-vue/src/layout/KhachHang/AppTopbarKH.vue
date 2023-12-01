@@ -107,6 +107,10 @@ const getDem = async () => {
         return;
     } else {
         dem.value = await thongBaoStore.fetchdem(token);
+        if(dem.value == undefined){
+          dem.value = 0;
+          return;
+        }
     }
 };
 
