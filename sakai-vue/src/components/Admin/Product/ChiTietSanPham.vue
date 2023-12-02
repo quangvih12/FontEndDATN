@@ -374,7 +374,7 @@ const formatDate = (dateTime) => {
                                 {{ products.indexOf(slotProps.data) + 1 }}
                             </template>
                         </Column>
-                        <Column field="ma" header="Mã" :sortable="true" headerStyle="width:14%; min-width:5rem;">
+                        <Column field="ma" header="Mã" :sortable="true" headerStyle="width:5%; min-width:5rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">ma</span>
                                 {{ slotProps.data.ma }}
@@ -400,7 +400,7 @@ const formatDate = (dateTime) => {
                             </template>
                         </Column>
                         <Column field="thuongHieu" header="Thương Hiệu" :sortable="true"
-                            headerStyle="width:8%; min-width:5rem;">
+                            headerStyle="width:10%; min-width:5rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">Tên</span>
                                 {{ slotProps.data.thuongHieu }}
@@ -413,7 +413,7 @@ const formatDate = (dateTime) => {
                             </template>
                         </Column>
                         <Column field="soLuongTon" header="Số Lượng tồn" :sortable="true"
-                            headerStyle="width:8%; min-width:5rem;">
+                            headerStyle="width:10%; min-width:5rem;">
                             <template #body="slotProps">
                                 <span class="p-column-title">Tên</span>
                                 {{ slotProps.data.soLuongTon }}
@@ -425,7 +425,7 @@ const formatDate = (dateTime) => {
                                 slotProps.data[col.field] }}
                         </Column>
 
-                        <Column field="trangThai" header="Trạng Thái" sortable headerStyle="width: 5%; min-width: 8rem;">
+                        <Column field="trangThai" header="Trạng Thái" sortable headerStyle="width: 10%; min-width: 8rem;">
                             <template #body="slotProps">
                                 <Tag :value="getStatusLabel(slotProps.data.soLuongTon, slotProps.data.trangThai).text"
                                     :severity="getStatusLabel(slotProps.data.soLuongTon, slotProps.data.trangThai).severity" />

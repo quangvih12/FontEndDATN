@@ -19,7 +19,7 @@ const checked = ref(false);
 const toast = useToast();
 
 const gotoTrangChu = () => {
-    router.push({ name: 'thongKe' });
+    router.push({ name: 'ban-hang-tai-quay' });
 };
 
 const schema = Yup.object().shape({

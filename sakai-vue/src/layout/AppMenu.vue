@@ -4,9 +4,13 @@ import { ref } from 'vue';
 import AppMenuItem from './AppMenuItem.vue';
 
 const model = ref([
+{
+        label: 'Bán Hàng tại quầy',
+        items: [{ label: 'Bán Hàng', icon: 'pi pi-fw pi-home', to: '/ban-hang-tai-quay' }]
+    },
     {
         label: 'Thống Kê',
-        items: [{ label: 'Thống Kê', icon: 'pi pi-fw pi-home', to: '/thong-ke' }]
+        items: [{ label: 'Thống Kê', icon: 'pi pi-fw pi-chart-bar', to: '/thong-ke' }]
     },
     {
         label: 'Sản Phẩm',

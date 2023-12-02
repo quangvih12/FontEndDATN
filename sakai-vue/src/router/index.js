@@ -122,21 +122,26 @@ const router = createRouter({
                 }
             ]
         },
+        // {
+        //     path: '/nhan-vien',
+        //     component: AppLayoutBH,
+        //     children: [
+        //         {
+        //             path: '/ban-hang-tai-quay',
+        //             name: 'ban-hang-tai-quay',
+        //             component: () => import('@/components/Admin/BanHang/BanHangTaiQuay.vue')
+        //         }
+        //     ]
+        // },
         {
-            path: '/nhan-vien',
-            component: AppLayoutBH,
+            path: '/thong-ke',
+            component: AppLayout,
             children: [
                 {
                     path: '/ban-hang-tai-quay',
                     name: 'ban-hang-tai-quay',
                     component: () => import('@/components/Admin/BanHang/BanHangTaiQuay.vue')
-                }
-            ]
-        },
-        {
-            path: '/thong-ke',
-            component: AppLayout,
-            children: [
+                },
                 {
                     path: '/thong-ke',
                     name: 'thongKe',

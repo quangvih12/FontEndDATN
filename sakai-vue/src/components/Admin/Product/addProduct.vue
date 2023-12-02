@@ -38,18 +38,18 @@ const schema = yup.object().shape({
         .required('Giá bán không được để trống')
         .min(50000, 'giá phải lớn hơn hoặc bằng 50.000 đ')
         .max(10000000, 'Giá bán không lớn hơn 10.000.000 đ'),
-        // .when(['giaNhap'], (giaBan, schema) => {
-        //     return schema.test({
-        //         test: function (value) {
-        //             const giaNhap = this.resolve(yup.ref('giaNhap'));
-        //             if (value < giaNhap) {
-        //                 toast.add({ severity: 'error', summary: 'Error ', detail: 'Giá Nhập không được nhỏ hơn giá bán', life: 3000 });
-        //             }
-        //             return true;
-        //         },
-        //         message: 'Giá bán phải nhỏ hơn giá nhập'
-        //     });
-        // }),
+    // .when(['giaNhap'], (giaBan, schema) => {
+    //     return schema.test({
+    //         test: function (value) {
+    //             const giaNhap = this.resolve(yup.ref('giaNhap'));
+    //             if (value < giaNhap) {
+    //                 toast.add({ severity: 'error', summary: 'Error ', detail: 'Giá Nhập không được nhỏ hơn giá bán', life: 3000 });
+    //             }
+    //             return true;
+    //         },
+    //         message: 'Giá bán phải nhỏ hơn giá nhập'
+    //     });
+    // }),
     // giaNhap: yup.number().required('Giá nhập không được để trống').min(50000, 'giá phải lớn hơn hoặc bằng 50.000 đ').max(10000000, 'Giá bán không lớn hơn  10.000.000 đ'),
     quaiDeo: yup.string().required('Bạn cần chọn quai đeo cho sản phẩm'),
     loai: yup.number().required('loại sản phẩm không được để trống'),
@@ -100,7 +100,7 @@ const onSubmit = handleSubmit(async (values) => {
 
             for (let i = 0; i < values.giaBan.length; i++) {
                 let giaBan = values.giaBan[i];
-             //   let giaNhap = values.giaNhap[i];
+                //   let giaNhap = values.giaNhap[i];
                 let soLuong = values.soLuongSize[i];
                 if (soLuong <= 0) {
                     toast.add({ severity: 'error', summary: 'Error', detail: 'Số lượng sản phẩm phải lớn hơn 0', life: 3000 });
@@ -609,13 +609,15 @@ const openNew = () => {
                                     <small class="p-error">{{ MoTaSacError }}</small>
                                 </div>
                                 <div class="field col-12 md:col-12">
-                                    <file-upload :upload-url="uploadUrl" :multiple="true" :maxFileSize="2000000"
+                                    <file-upload :upload-url="uploadUrl" :pt="{buttonbar: {class: 'flex-nowrap'}}" :multiple="true" :maxFileSize="2000000"
                                         @input="onFileInputImageProduct"
                                         :class="{ 'p-invalid': imagesProductError }"></file-upload>
                                     <small class="p-error">{{ imagesProductError }}</small>
+                                    
                                 </div>
 
                             </div>
+
                             <div class="Field col-12 md:col-6">
                                 <div class="Field col-12 md:col-12"
                                     style="margin-bottom: 30px;margin-left: 60px; height: 300px; margin-top: 60px; display: inline-flex; justify-content: center; align-items: center;display: block">
@@ -701,44 +703,6 @@ const openNew = () => {
                                 </div>
 
 
-                                <!-- <div class="field col-12 md:col-12">
-
-                                    <div style="background: rgb(255, 255, 255); width: 450px ;  display: flex;">
-                                        <div style="width: 75px; ">
-                                            <p>Giá Nhập:</p>
-                                        </div>
-                                        <div style="background: rgb(255, 255, 255); width: 20% ; height: 100%;">
-
-                                            <div style="display: flex; flex-wrap: wrap">
-                                                <div v-for="(mau, index) in selectedSizes" :key="index"
-                                                    style="margin-top: 5px; margin-left: 30px;">
-                                                    <label :for="`input-${mau.id}`"
-                                                        style="margin-right: 5px; margin-left: 0px">{{
-                                                            mau.ten }}</label>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                        <div style="background: rgb(255, 255, 255); width: 80% ; height: 100%;">
-                                            <div style="display: flex; flex-wrap: wrap">
-                                                <div v-for="(mau, index) in selectedMauSac" :key="index"
-                                                    style="margin-top: 5px">
-                                                    <label :for="`input-${mau.id}`"
-                                                        style="margin-right: 10px; margin-left: 10px">{{
-                                                            mau.ten }}</label>
-                                                    <input type="number" :id="`input-${mau.id}`"
-                                                        v-model="arrayGiaNhap[index]"
-                                                        @change="handleInputChangeGiaNhap(mau.id)"
-                                                        :class="{ 'p-invalid': giaNhapError }"
-                                                        style="height: 20px; width: 80px; border-radius: 5px ; border: 1px solid;" />
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <small class="p-error">{{ giaNhapError }}</small>
-
-                                </div> -->
 
                                 <div class="field col-12 md:col-12">
 
