@@ -135,7 +135,7 @@ const updateKHForHD = () => {
 <template>
   <DataTable :value="dsKH" dataKey="id" editMode="row" v-model:selection="selectedKhachHang" selectionMode="single"
     v-model:editingRows="tableKHEditingRows" @rowEditInit="onRowEditInit" @rowEditSave="onRowEditSave"
-    @rowEditCancel="onRowEditCancel" showGridlines scrollable scrollHeight="500px">
+    @rowEditCancel="onRowEditCancel" showGridlines scrollable scrollHeight="500px" >
     <template #header>
       <div class="flex justify-content-between align-items-center">
         <Button label="Thêm mới" icon="pi pi-user-plus" outlined @click="addEmptyRowToTableKH" />

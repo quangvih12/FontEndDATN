@@ -15,6 +15,8 @@ import 'vue-loading-overlay/dist/css/index.css';
 import { useDialog } from "primevue/usedialog";
 import * as yup from 'yup';
 import { useForm, useField } from 'vee-validate';
+import { QrcodeStream } from 'vue3-qrcode-reader';
+
 
 const store = useBanHangTaiQuayStore();
 const BHTQKhachHangComponent = defineAsyncComponent(() => import('@/components/Admin/BanHang/BHTQKhachHangComponent.vue'));
@@ -83,6 +85,7 @@ const themSPVaoHDCT = async (soLuong) => {
   }
   soLuongError.value = '';
   await store.themSPVaoHDCT(selectedHoaDon.value.id, dataOverlay.value.id, soLuong);
+  soLuong = null;
 };
 
 const xoaHDCT = async (hdct) => {
@@ -110,9 +113,9 @@ const initSanPhamFilter = () => {
   sanPhamFilter.value = {
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     'mauSac.ten': { value: null, matchMode: FilterMatchMode.EQUALS },
-    'size.ten': {value: null, matchMode: FilterMatchMode.EQUALS},
-    'sanPham.loai.ten': {value: null, matchMode: FilterMatchMode.CONTAINS},
-    'sanPham.thuongHieu.ten': {value: null, matchMode: FilterMatchMode.CONTAINS}
+    'size.ten': { value: null, matchMode: FilterMatchMode.EQUALS },
+    'sanPham.loai.ten': { value: null, matchMode: FilterMatchMode.CONTAINS },
+    'sanPham.thuongHieu.ten': { value: null, matchMode: FilterMatchMode.CONTAINS }
   };
 };
 initSanPhamFilter();
@@ -140,10 +143,21 @@ const showKhachHangDialog = () => {
 }
 
 const dataOverlay = ref();
-const tableHoaDonRowSelected = (event) => {
+const addChonHoaDonDialog = ref(false);
+const tableHoaDonRowSelected = async (event) => {
   localStorage.setItem("selectedHDId", event.data.id);
   store.loadHDCT(event.data.id);
+ // console.log(idSPCT.value)
+  if (idSPCT.value != null) {
+    addChonHoaDonDialog.value = true;
+  }
 };
+
+const themSpQR = async () => {
+  await store.themSPVaoHDCT(selectedHoaDon.value.id, idSPCT.value, 1);
+  idSPCT.value = null;
+  addChonHoaDonDialog.value = false;
+}
 
 const tableHoaDonRowContextMenu = (event) => {
   cm.value.show(event.originalEvent);
@@ -179,7 +193,7 @@ const { value: moTa, errorMessage: moTaError } = useField('moTa');
 const onSubmit = handleSubmit(async (values) => {
   if (selectedHoaDon.value == null || selectedHoaDon.value == '') {
     soLuongError.value = '';
-    toast.add({ severity: 'success', summary: 'Success Message', detail: 'Hãy chọn hóa đơn trước khi thêm sản phẩm', life: 3000 });
+    toast.add({ severity: 'success', summary: 'Success Message', detail: 'Hãy chọn hóa đơn trước khi thanh toán', life: 3000 });
     return;
   }
   const hdModel = new BHTQHoaDonModel(values.hinhThucGiaoHangs, values.PhuongThucThanhToan, values.moTa, PhuongThucThanhToan.tienKhachDua);
@@ -218,8 +232,41 @@ const onProductSelect = (event) => {
 }
 const addDialog = ref(false);
 const onDialog = () => {
+  if (selectedHoaDon.value == null || selectedHoaDon.value == '') {
+    soLuongError.value = '';
+    toast.add({ severity: 'success', summary: 'Success Message', detail: 'Hãy chọn hóa đơn trước khi thanh toán', life: 3000 });
+    return;
+  }
   addDialog.value = true;
 }
+
+const error = ref('');
+const torch = ref(false);
+const idSPCT = ref(null);
+const onDecode = async (decodeString) => {
+  const data = dsSP.value.find(x => x.ma == decodeString);
+  if (data !== null) {
+    if (data.soLuongTon <= 0) {
+      toast.add({ severity: 'success', summary: 'Success Message', detail: 'Sản phẩm đã hết', life: 3000 });
+      return;
+    }
+    if (selectedHoaDon.value == null || selectedHoaDon.value == '') {
+      idSPCT.value = data.id;
+      toast.add({ severity: 'success', summary: 'Success Message', detail: 'Hãy chọn hóa đơn trước khi thêm sản phẩm', life: 3000 });
+      return;
+    }
+    await store.themSPVaoHDCT(selectedHoaDon.value.id, data.id, 1);
+  } else {
+    error.value = 'Dữ liệu không đủ hoặc không hợp lệ từ mã QR code.';
+  }
+};
+
+const onError = (error) => {
+  console.error('Lỗi quét mã QR:', error);
+  // Xử lý lỗi ở đây (nếu cần)
+};
+
+const checkedSwitch = ref(false);
 </script>
 
 <template>
@@ -230,12 +277,12 @@ const onDialog = () => {
     </template>
   </Loading>
   <Toast />
-  <div class="card">
+  <div class="card" style="">
     <div class="row">
-      <div class="col-9" style="margin-top: -20px">
-        <div class="card gap-3">
+      <div class="col-9" style="margin-top: -20px; height: 340px;">
+        <div class="card gap-3" style="height: 100%;">
           <ContextMenu ref="cm" class="w-16rem" :model="tableHoaDonContextMenuModel" @hide="selectedHoaDon = null" />
-          <DataTable :value="dsHDCho" dataKey="id" v-model:selection="selectedHoaDon"
+          <DataTable :value="dsHDCho" dataKey="id" v-model:selection="selectedHoaDon" tableStyle="height: 200px"
             v-model:contextMenuSelection="selectedHoaDon" selectionMode="single" @rowSelect="tableHoaDonRowSelected"
             contextMenu @rowContextmenu="tableHoaDonRowContextMenu" scrollable scrollHeight="205px" showGridlines>
             <template #header>
@@ -279,30 +326,36 @@ const onDialog = () => {
         </div>
 
       </div>
-      <div class="col-3" style="margin-top: -20px; ">
-        <div class="card">
-          <h5>Quét mã sản phẩm</h5>
-          <Image src="https://cdn-icons-png.flaticon.com/512/2956/2956744.png" alt="Image" width="170"
-            style="text-align: center" preview />
-        </div>
-        <!-- <div class="card mb-0">
-          <h5>Khách hàng</h5>
-          <div class="card m-0">
-            <div class="flex justify-content-between align-items-center">
-              <Button icon="pi pi-search" severity="info" outlined rounded></Button>
+      <div class="col-3" style="margin-top: -20px;  width: 350px;  height: 340px;">
+
+        <div class=" card " style=" width: 100%; height: 100%;">
+         
+          
+            <div style=" width: 290px; height:500px;">
+              <div  style="margin-left: 10px; margin-top: 0px;">
+                <div   v-show="checkedSwitch == true" style="width: 100%; height: 220px;">
+                  <qrcode-stream @decode="onDecode" @error="onError" :torch="torch"></qrcode-stream>
+                  <p>{{ error }}</p>
+                </div>
+              </div>
             </div>
-          </div>
-        </div> -->
+            <div class="flex" style="width: 200px; height: 100px; margin-top: 10px; margin-left: 70px;">
+              <label style="font-weight: 600; font-size: 17px; margin-right: 20px;">Bật/tắt: </label>
+              <InputSwitch v-model="checkedSwitch " />
+           
+            </div>
+      
+        </div>
+
       </div>
 
-      <div class="Field col-12 md:col-9" style="margin-top: -15px;">
-        <div class="card" style="width: 100%">
-          <DataTable :value="dsHDCT" dataKey="id" scrollable scrollHeight="270px" showGridlines>
+      <div class="Field col-12 md:col-9" style="margin-top: -15px; height: 340px; margin-bottom: 10px;">
+        <div class="card" style="width: 100% ; height: 100%;">
+          <DataTable  :value="dsHDCT" tableStyle="height: 200px" dataKey="id" scrollable scrollHeight="205px" showGridlines>
             <template #header>
               <div class="flex justify-content-between align-items-center">
                 <h5 class="m-0">Giỏ hàng</h5>
-                <Button type="button" icon="pi pi-search" @click="toggle1" aria-haspopup="true"
-                  aria-controls="overlay_panel" />
+               
               </div>
 
             </template>
@@ -314,7 +367,7 @@ const onDialog = () => {
               </div>
             </template>
             <Column field="sanPhamChiTiet.ma" header="Mã SP" style="width: 10%"></Column>
-            <Column field="sanPhamChiTiet.sanPham.ten" header="Tên sản phẩm" style="width: 200%">
+            <Column field="sanPhamChiTiet.sanPham.ten" header="Tên sản phẩm" >
               <template #body="slotProps"> Mũ bảo hiểm {{ slotProps.data.sanPhamChiTiet.sanPham.ten }} -
                 {{ slotProps.data.sanPhamChiTiet.mauSac.ten }} - size {{ slotProps.data.sanPhamChiTiet.size.ten }}
               </template>
@@ -342,7 +395,7 @@ const onDialog = () => {
             </Column>
             <Column header="Thành tiền">
               <template #body="slotProps">
-                {{ formatCurrency(parseInt(slotProps.data.donGia) * parseInt(slotProps.data.soLuong)) }} </template>
+                {{ formatCurrency((parseInt(slotProps.data.donGia) -parseInt(slotProps.data.chietKhau) ) * parseInt(slotProps.data.soLuong)) }} </template>
               <!--              todo-->
             </Column>
             <Column style="width: 8%" class="text-center">
@@ -354,8 +407,57 @@ const onDialog = () => {
           <!-- <Paginator :rows="5" :totalRecords="120" :rowsPerPageOptions="[5, 10, 15]"></Paginator> -->
 
           <OverlayPanel ref="op1" appendTo="body" showCloseIcon>
-            <DataTable :value="dsSP" v-model:filters="sanPhamFilter" dataKey="id" showGridlines scrollable
-              filterDisplay="menu"
+           
+          </OverlayPanel>
+        </div>
+      </div>
+      <div class="col-3" style="width: 350px; height: 340px;">
+        <div class="card" style="height:100%; margin-top: 0px;  margin-left: 0px; ">
+          <h3 >Thanh toán</h3>
+          <div style="display: flex; margin-bottom: 10px; margin-top: 10px;">
+            <div>
+              <h6>Mã hóa đơn: </h6>
+            </div>
+            <div style="margin-left: 80px;">
+              <h6 v-if="selectedHoaDon">{{ selectedHoaDon.ma }}</h6>
+            </div>
+
+          </div>
+          <div class="flex" style=" margin-bottom: 10px;">
+            <div>
+              <h6>Tổng tiền hàng: </h6>
+            </div>
+            <div style="margin-left: 60px;">
+              <h6 class="text-primary">{{ formatCurrency(tinhTien(dsHDCT).tongTienHang) }}</h6>
+            </div>
+
+          </div>
+          <div class="flex" style=" margin-bottom: 10px;">
+            <div>
+              <h6>Tổng chiết khấu:</h6>
+            </div>
+            <div style="margin-left: 55px;">
+              <h6 class="text-primary">{{ formatCurrency(tinhTien(dsHDCT).tongChietKhau) }}</h6>
+            </div>
+
+          </div>
+          <div class="flex"  style=" margin-bottom: 20px;">
+            <div>
+              <h6>Thành tiền:</h6>
+            </div>
+            <div style="margin-left: 90px;">
+              <h6 class="text-orange-500">{{ formatCurrency(thanhTien) }}</h6>
+            </div>
+
+          </div>
+          <Button label="Thanh toán" severity="warning" raised @click="onDialog" />
+
+        </div>
+      </div>
+      <div class="Field col-12 md:col-12" style="">
+        <div class="card" style="width: 100%">
+      <DataTable :value="dsSP" v-model:filters="sanPhamFilter" dataKey="id" showGridlines scrollable
+              filterDisplay="menu" 
               :globalFilterFields="['sanPham.ten', 'mauSac.ten', 'size.ten', 'sanPham.loai.ten', 'sanPham.thuongHieu.ten']"
               scrollHeight="325px">
               <template #header>
@@ -385,8 +487,9 @@ const onDialog = () => {
                   </div>
                 </template>
                 <template #filter="{ filterModel, filterCallback }">
-                  <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter" placeholder="Search by name" />
-                
+                  <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter"
+                    placeholder="Search by name" />
+
                 </template>
                 <template #filterapply="slotProps">
                 </template>
@@ -401,15 +504,16 @@ const onDialog = () => {
                   </div>
                 </template>
                 <template #filter="{ filterModel, filterCallback }">
-                  <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter" placeholder="Search by name" />
-                
+                  <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter"
+                    placeholder="Search by name" />
+
                 </template>
                 <template #filterapply="slotProps">
                 </template>
                 <template #filterclear="slotProps">
                 </template>
               </Column>
-             
+
               <Column filterField="sanPham.loai.ten" header="Loại" :showFilterMatchModes="false"
                 :filterMenuStyle="{ width: '14rem' }">
                 <template #body="{ data }">
@@ -418,8 +522,9 @@ const onDialog = () => {
                   </div>
                 </template>
                 <template #filter="{ filterModel, filterCallback }">
-                  <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter" placeholder="Search by name" />
-                
+                  <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter"
+                    placeholder="Search by name" />
+
                 </template>
                 <template #filterapply="slotProps">
                 </template>
@@ -434,8 +539,9 @@ const onDialog = () => {
                   </div>
                 </template>
                 <template #filter="{ filterModel, filterCallback }">
-                  <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter" placeholder="Search by name" />
-                
+                  <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter"
+                    placeholder="Search by name" />
+
                 </template>
                 <template #filterapply="slotProps">
                 </template>
@@ -468,60 +574,58 @@ const onDialog = () => {
                 </template>
               </Column>
 
-            </DataTable>
-          </OverlayPanel>
-        </div>
-      </div>
-      <div class="col-3">
-        <div class="card" style="height: 250px; margin-top: 0px; width: 240px; margin-left: -10px;">
-          <h3>Thanh toán</h3>
-          <div style="display: flex; margin-bottom: 0px;">
+            </DataTable> </div> </div>
+    </div>
+  </div>
+ <div>
+  
+ </div>
+
+  <Dialog v-model:visible="addDialog" :style="{ width: '500px' }" header="Thanh toán" :modal="true">
+  
+          <div style="display: flex; margin-bottom: 10px; margin-top: 10px;">
             <div>
               <h6>Mã hóa đơn: </h6>
             </div>
-            <div style="margin-left: 40px;">
+            <div style="margin-left: 80px;">
               <h6 v-if="selectedHoaDon">{{ selectedHoaDon.ma }}</h6>
             </div>
 
           </div>
-          <div class="flex" style=" margin-bottom: 0px;">
+          <div class="flex" style=" margin-bottom: 10px;">
             <div>
               <h6>Tổng tiền hàng: </h6>
             </div>
-            <div style="margin-left: 20px;">
+            <div style="margin-left: 60px;">
               <h6 class="text-primary">{{ formatCurrency(tinhTien(dsHDCT).tongTienHang) }}</h6>
             </div>
 
           </div>
-          <div class="flex" style=" margin-bottom: 0px;">
+          <div class="flex" style=" margin-bottom: 10px;">
             <div>
               <h6>Tổng chiết khấu:</h6>
             </div>
-            <div style="margin-left: 15px;">
+            <div style="margin-left: 55px;">
               <h6 class="text-primary">{{ formatCurrency(tinhTien(dsHDCT).tongChietKhau) }}</h6>
             </div>
 
           </div>
-          <div class="flex">
+          <div class="flex"  style=" margin-bottom: 20px;">
             <div>
               <h6>Thành tiền:</h6>
             </div>
-            <div style="margin-left: 50px;">
+            <div style="margin-left: 90px;">
               <h6 class="text-orange-500">{{ formatCurrency(thanhTien) }}</h6>
             </div>
 
           </div>
-          <Button label="Thanh toán" severity="warning" raised @click="onDialog" />
+          
 
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-  <Dialog v-model:visible="addDialog" :style="{ width: '500px' }" header="Thanh toán" :modal="true">
     <form @submit="onSubmit">
       <div class="flex align-items-center" style="margin-top: 20px;">
+        
+       
+
         <div>
           <h6>Tiền khách đưa:</h6>
         </div>
@@ -569,10 +673,47 @@ const onDialog = () => {
 
     </form>
   </Dialog>
+
+  <Dialog v-model:visible="addChonHoaDonDialog" :style="{ width: '500px' }" header="Confirm" :modal="true">
+    <h6>Bạn có muốn thêm sản phẩm vừa QR vào giỏ hàng không ?</h6>
+    <Button label="Không"  severity="secondary"  @click="addChonHoaDonDialog = false" raised
+      style="margin-top: 20px; margin-left: 150px;" />
+    <Button label="Có" class="mr-2" @click="themSpQR" raised style="margin-top: 20px; margin-left: 10px;" />
+
+  </Dialog>
 </template>
 
 <style scoped>
+@keyframes my-fadein {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes my-fadeout {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+.my-fadein {
+  animation: my-fadein 150ms linear;
+}
+
+.my-fadeout {
+  animation: my-fadeout 150ms linear;
+}
+
 .card {
   margin-top: 20px;
   padding: 1rem;
-}</style>
+}
+</style>
