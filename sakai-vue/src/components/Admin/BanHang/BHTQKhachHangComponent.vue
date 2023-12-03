@@ -125,7 +125,9 @@ const updateKHForHD = () => {
   });
   else {
     store.updateKHForHD(localStorage.getItem("selectedHDId"), selectedKhachHang.value.id);
-    dialogRef.value.close();
+    dialogRef.value.close({
+      idUser:  selectedKhachHang.value.id
+    });
     selectedKhachHang.value = null;
     toast.add({ severity: 'success', summary: 'Thành công', detail: 'HĐ đã được cập nhật khách hàng', life: 3000 });
   }
