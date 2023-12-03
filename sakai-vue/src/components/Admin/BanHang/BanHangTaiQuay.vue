@@ -16,8 +16,12 @@ import { useDialog } from "primevue/usedialog";
 import * as yup from 'yup';
 import { useForm, useField } from 'vee-validate';
 import { QrcodeStream } from 'vue3-qrcode-reader';
+import { userStore } from '../../../service/Admin/User/UserService';
+import ThemDiaChi from '../../Admin/DiaChi/ThemDiaChi.vue';
+import { phiShipStore } from '../../../service/KhachHang/PhiGiaoHangService';
 
-
+const phiGiaoHangService = phiShipStore();
+const userService = userStore();
 const store = useBanHangTaiQuayStore();
 const BHTQKhachHangComponent = defineAsyncComponent(() => import('@/components/Admin/BanHang/BHTQKhachHangComponent.vue'));
 const toast = useToast();
@@ -49,13 +53,17 @@ const tableHoaDonContextMenuModel = ref([
 const dsMauSac = ref([]);
 const bgColor = ref('#ffa854');
 
+
+
 onBeforeMount(() => {
   store.loadHDCho();
   store.loadSP();
   store.loadPTTT();
+
 });
 
 onMounted(() => {
+
   setTimeout(() => {
     uiBlock.value = !uiBlock.value;
   }, 3000);
@@ -66,6 +74,7 @@ const taoHDCho = async () => {
   await store.taoHDCho(localStorage.getItem("currentUserID"));
   loading.value = !loading.value;
   selectedHoaDon.value = dsHDCho.value[0];
+  userID.value = 1;
 };
 
 const huyHDCho = async (hd) => {
@@ -74,6 +83,10 @@ const huyHDCho = async (hd) => {
 
 const soLuongError = ref('');
 const themSPVaoHDCT = async (soLuong) => {
+  if (selectedHoaDon.value == null || selectedHoaDon.value == '') {
+      toast.add({ severity: 'success', summary: 'Success Message', detail: 'Hãy chọn hóa đơn trước khi thêm sản phẩm', life: 3000 });
+      return;
+    }
   if (soLuong == null || soLuong == '') {
     soLuongError.value = 'số lượng không được để trống';
     return;
@@ -95,11 +108,12 @@ const xoaHDCT = async (hdct) => {
 const tinhTien = (arr) => {
   let tongTienHang = 0;
   let tongChietKhau = 0;
+  phiShip.value =  phiShip.value??0;
   for (const item of arr) {
     tongTienHang += item.donGia * item.soLuong;
     tongChietKhau += item.chietKhau * item.soLuong;
   }
-  thanhTien.value = tongTienHang - tongChietKhau;
+  thanhTien.value = tongTienHang - tongChietKhau +phiShip.value;
   return { tongTienHang, tongChietKhau };
 };
 
@@ -138,16 +152,21 @@ const showKhachHangDialog = () => {
       modal: true,
       closeOnEscape: false,
       closable: true
-    }
+    },
+    onClose: (opt) => {
+      if( opt.data != undefined ) userID.value = opt.data.idUser;
+        }
+       
   });
 }
 
+const userID = ref(null);
 const dataOverlay = ref();
 const addChonHoaDonDialog = ref(false);
 const tableHoaDonRowSelected = async (event) => {
   localStorage.setItem("selectedHDId", event.data.id);
   store.loadHDCT(event.data.id);
- // console.log(idSPCT.value)
+  userID.value = event.data.user.id;
   if (idSPCT.value != null) {
     addChonHoaDonDialog.value = true;
   }
@@ -189,25 +208,43 @@ const { value: tienKhachDua, errorMessage: tienKhachDuaError } = useField('tienK
 const { value: hinhThucGiaoHangs, errorMessage: hinhThucThanhToanError } = useField('hinhThucGiaoHangs');
 const { value: PhuongThucThanhToan, errorMessage: PhuongThucThanhToanToanError } = useField('PhuongThucThanhToan');
 const { value: moTa, errorMessage: moTaError } = useField('moTa');
-
+const { value: idDiaChi, errorMessage: idDiaChiError } = useField('idDiaChi');
+const { value: phiShip, errorMessage: phiShipError } = useField('tienShip');
 const onSubmit = handleSubmit(async (values) => {
+           
   if (selectedHoaDon.value == null || selectedHoaDon.value == '') {
     soLuongError.value = '';
     toast.add({ severity: 'success', summary: 'Success Message', detail: 'Hãy chọn hóa đơn trước khi thanh toán', life: 3000 });
     return;
   }
-  const hdModel = new BHTQHoaDonModel(values.hinhThucGiaoHangs, values.PhuongThucThanhToan, values.moTa, PhuongThucThanhToan.tienKhachDua);
+  const hdModel = new BHTQHoaDonModel(values.hinhThucGiaoHangs, values.PhuongThucThanhToan, values.moTa, values.tienKhachDua, values.idDiaChi,values.tienShip);
   await store.thanhToanHD(selectedHoaDon.value.id, hdModel);
   toast.add({ severity: 'success', summary: 'Success Message', detail: 'Thanh toán thành công', life: 3000 });
-  resetForm();
+  resetForms();
+ addDialog.value = false;
 });
 
+const resetForms = () =>{
+  resetForm();
+  tinhTien(dsHDCT.value).tongTienHang = 0;
+  tinhTien(dsHDCT.value).tongChietKhau = 0;
+  thanhTien.value = 0;
+  phiShip.value = 0;
+  dsHDCT.value = [];
+}
 
-
-const onHinhThucGiaoHangChange = () => {
+const onHinhThucGiaoHangChange = async () => {
   if (hinhThucGiaoHang.value) {
     hinhThucGiaoHangs.value = hinhThucGiaoHang.value.id;
+    if (hinhThucGiaoHangs.value === 2) {
+      await loadDiaChis();
+      diaChiDialog.value = true;
 
+    }else{
+      phiShip.value = 0;
+      tinhTien(dsHDCT.value);
+      diaChiDialog.value = false;
+    }
   } else {
     hinhThucGiaoHangs.value = null;
   }
@@ -235,6 +272,15 @@ const onDialog = () => {
   if (selectedHoaDon.value == null || selectedHoaDon.value == '') {
     soLuongError.value = '';
     toast.add({ severity: 'success', summary: 'Success Message', detail: 'Hãy chọn hóa đơn trước khi thanh toán', life: 3000 });
+    return;
+  }
+  if( dsHDCT.value.length <= 0){
+    toast.add({ severity: 'success', summary: 'Success Message', detail: 'Hãy Thêm sản phẩm trước khi thanh toán', life: 3000 });
+    return;
+  }
+  if (userID.value == null || userID.value == '' || userID.value === 1) {
+    soLuongError.value = '';
+    toast.add({ severity: 'success', summary: 'Success Message', detail: 'Hãy chọn Khách hàng trước khi thanh toán', life: 3000 });
     return;
   }
   addDialog.value = true;
@@ -267,6 +313,30 @@ const onError = (error) => {
 };
 
 const checkedSwitch = ref(false);
+
+const diaChiDialog = ref(false)
+const userDiaChi = ref([]);
+const loadDiaChis = async () => {
+  await userService.fetchAllDiaChi(userID.value); // Gọi hàm fetchAll từ Store
+  userDiaChi.value = userService.diaChi;
+  idDiaChi.value =  userDiaChi.value[0].id;
+  const diaChiMacDinh =  userDiaChi.value.find(x => x.id === idDiaChi.value);
+  if (diaChiMacDinh == '' || diaChiMacDinh == null) {
+        phiShip.value = 0;
+    }else{
+        await phiGiaoHangService.phiShip(diaChiMacDinh);
+        phiShip.value = phiGiaoHangService.money;
+    }
+};
+const tinhPhiShip =async (idDiaChi)=>{
+  const diaChiMacDinh =  userDiaChi.value.find(x => x.id === idDiaChi);
+  if (diaChiMacDinh == '' || diaChiMacDinh == null) {
+        phiShip.value = 0;
+    }else{
+        await phiGiaoHangService.phiShip(diaChiMacDinh);
+        phiShip.value = phiGiaoHangService.money;
+    }
+}
 </script>
 
 <template>
@@ -329,33 +399,34 @@ const checkedSwitch = ref(false);
       <div class="col-3" style="margin-top: -20px;  width: 350px;  height: 340px;">
 
         <div class=" card " style=" width: 100%; height: 100%;">
-         
-          
-            <div style=" width: 290px; height:500px;">
-              <div  style="margin-left: 10px; margin-top: 0px;">
-                <div   v-show="checkedSwitch == true" style="width: 100%; height: 220px;">
-                  <qrcode-stream @decode="onDecode" @error="onError" :torch="torch"></qrcode-stream>
-                  <p>{{ error }}</p>
-                </div>
+
+
+          <div style=" width: 290px; height:500px;">
+            <div style="margin-left: 10px; margin-top: 0px;">
+              <div v-show="checkedSwitch == true" style="width: 100%; height: 220px;">
+                <qrcode-stream @decode="onDecode" @error="onError" :torch="torch"></qrcode-stream>
+                <p>{{ error }}</p>
               </div>
             </div>
-            <div class="flex" style="width: 200px; height: 100px; margin-top: 10px; margin-left: 70px;">
-              <label style="font-weight: 600; font-size: 17px; margin-right: 20px;">Bật/tắt: </label>
-              <InputSwitch v-model="checkedSwitch " />
-           
-            </div>
-      
+          </div>
+          <div class="flex" style="width: 200px; height: 100px; margin-top: 10px; margin-left: 70px;">
+            <label style="font-weight: 600; font-size: 17px; margin-right: 20px;">Bật/tắt: </label>
+            <InputSwitch v-model="checkedSwitch" />
+
+          </div>
+
         </div>
 
       </div>
 
       <div class="Field col-12 md:col-9" style="margin-top: -15px; height: 340px; margin-bottom: 10px;">
         <div class="card" style="width: 100% ; height: 100%;">
-          <DataTable  :value="dsHDCT" tableStyle="height: 200px" dataKey="id" scrollable scrollHeight="205px" showGridlines>
+          <DataTable :value="dsHDCT" tableStyle="height: 200px" dataKey="id" scrollable scrollHeight="205px"
+            showGridlines>
             <template #header>
               <div class="flex justify-content-between align-items-center">
                 <h5 class="m-0">Giỏ hàng</h5>
-               
+
               </div>
 
             </template>
@@ -367,7 +438,7 @@ const checkedSwitch = ref(false);
               </div>
             </template>
             <Column field="sanPhamChiTiet.ma" header="Mã SP" style="width: 10%"></Column>
-            <Column field="sanPhamChiTiet.sanPham.ten" header="Tên sản phẩm" >
+            <Column field="sanPhamChiTiet.sanPham.ten" header="Tên sản phẩm">
               <template #body="slotProps"> Mũ bảo hiểm {{ slotProps.data.sanPhamChiTiet.sanPham.ten }} -
                 {{ slotProps.data.sanPhamChiTiet.mauSac.ten }} - size {{ slotProps.data.sanPhamChiTiet.size.ten }}
               </template>
@@ -395,7 +466,8 @@ const checkedSwitch = ref(false);
             </Column>
             <Column header="Thành tiền">
               <template #body="slotProps">
-                {{ formatCurrency((parseInt(slotProps.data.donGia) -parseInt(slotProps.data.chietKhau) ) * parseInt(slotProps.data.soLuong)) }} </template>
+                {{ formatCurrency((parseInt(slotProps.data.donGia) - parseInt(slotProps.data.chietKhau)) *
+                  parseInt(slotProps.data.soLuong)) }} </template>
               <!--              todo-->
             </Column>
             <Column style="width: 8%" class="text-center">
@@ -407,13 +479,13 @@ const checkedSwitch = ref(false);
           <!-- <Paginator :rows="5" :totalRecords="120" :rowsPerPageOptions="[5, 10, 15]"></Paginator> -->
 
           <OverlayPanel ref="op1" appendTo="body" showCloseIcon>
-           
+
           </OverlayPanel>
         </div>
       </div>
       <div class="col-3" style="width: 350px; height: 340px;">
         <div class="card" style="height:100%; margin-top: 0px;  margin-left: 0px; ">
-          <h3 >Thanh toán</h3>
+          <h3>Thanh toán</h3>
           <div style="display: flex; margin-bottom: 10px; margin-top: 10px;">
             <div>
               <h6>Mã hóa đơn: </h6>
@@ -441,7 +513,7 @@ const checkedSwitch = ref(false);
             </div>
 
           </div>
-          <div class="flex"  style=" margin-bottom: 20px;">
+          <div class="flex" style=" margin-bottom: 20px;">
             <div>
               <h6>Thành tiền:</h6>
             </div>
@@ -456,175 +528,186 @@ const checkedSwitch = ref(false);
       </div>
       <div class="Field col-12 md:col-12" style="">
         <div class="card" style="width: 100%">
-      <DataTable :value="dsSP" v-model:filters="sanPhamFilter" dataKey="id" showGridlines scrollable
-              filterDisplay="menu" 
-              :globalFilterFields="['sanPham.ten', 'mauSac.ten', 'size.ten', 'sanPham.loai.ten', 'sanPham.thuongHieu.ten']"
-              scrollHeight="325px">
-              <template #header>
-                <div class="flex justify-content-between align-items-center">
-                  <h5 class="m-0">Sản phẩm</h5>
-                  <span class="p-input-icon-left">
-                    <i class="pi pi-search" />
-                    <InputText class="w-20rem" v-model="sanPhamFilter['global'].value"
-                      placeholder="Tìm kiếm theo từ khoá..." />
-                  </span>
-                  <Button size="small" severity="secondary" icon="pi pi-filter-slash" label="Xoá bộ lọc" outlined
-                    @click="clearSanPhamFilter" />
+          <DataTable :value="dsSP" v-model:filters="sanPhamFilter" dataKey="id" showGridlines scrollable
+            filterDisplay="menu"
+            :globalFilterFields="['sanPham.ten', 'mauSac.ten', 'size.ten', 'sanPham.loai.ten', 'sanPham.thuongHieu.ten']"
+            scrollHeight="325px">
+            <template #header>
+              <div class="flex justify-content-between align-items-center">
+                <h5 class="m-0">Sản phẩm</h5>
+                <span class="p-input-icon-left">
+                  <i class="pi pi-search" />
+                  <InputText class="w-20rem" v-model="sanPhamFilter['global'].value"
+                    placeholder="Tìm kiếm theo từ khoá..." />
+                </span>
+                <Button size="small" severity="secondary" icon="pi pi-filter-slash" label="Xoá bộ lọc" outlined
+                  @click="clearSanPhamFilter" />
+              </div>
+            </template>
+            <Column field="ma" header="Mã SP"></Column>
+            <Column field="sanPham.ten" header="Tên sản phẩm">
+              <template #body="slotProps"> Mũ bảo hiểm {{ slotProps.data.sanPham.thuongHieu.ten }}
+                {{ slotProps.data.sanPham.ten }}
+              </template>
+            </Column>
+
+            <Column header="Màu sắc" filterField="mauSac.ten" :showFilterMatchModes="false"
+              :filterMenuStyle="{ width: '14rem' }">
+              <template #body="{ data }">
+                <div class="flex align-items-center gap-2">
+                  <span>{{ data.mauSac.ten }}</span>
                 </div>
               </template>
-              <Column field="ma" header="Mã SP"></Column>
-              <Column field="sanPham.ten" header="Tên sản phẩm">
-                <template #body="slotProps"> Mũ bảo hiểm {{ slotProps.data.sanPham.thuongHieu.ten }}
-                  {{ slotProps.data.sanPham.ten }}
-                </template>
-              </Column>
+              <template #filter="{ filterModel, filterCallback }">
+                <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter"
+                  placeholder="Search by name" />
 
-              <Column header="Màu sắc" filterField="mauSac.ten" :showFilterMatchModes="false"
-                :filterMenuStyle="{ width: '14rem' }">
-                <template #body="{ data }">
-                  <div class="flex align-items-center gap-2">
-                    <span>{{ data.mauSac.ten }}</span>
-                  </div>
-                </template>
-                <template #filter="{ filterModel, filterCallback }">
-                  <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter"
-                    placeholder="Search by name" />
+              </template>
+              <template #filterapply="slotProps">
+              </template>
+              <template #filterclear="slotProps">
+              </template>
+            </Column>
+            <Column header="Size" filterField="size.ten" :showFilterMatchModes="false"
+              :filterMenuStyle="{ width: '14rem' }">
+              <template #body="{ data }">
+                <div class="flex align-items-center gap-2">
+                  <span>{{ data.size.ten }}</span>
+                </div>
+              </template>
+              <template #filter="{ filterModel, filterCallback }">
+                <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter"
+                  placeholder="Search by name" />
 
-                </template>
-                <template #filterapply="slotProps">
-                </template>
-                <template #filterclear="slotProps">
-                </template>
-              </Column>
-              <Column header="Size" filterField="size.ten" :showFilterMatchModes="false"
-                :filterMenuStyle="{ width: '14rem' }">
-                <template #body="{ data }">
-                  <div class="flex align-items-center gap-2">
-                    <span>{{ data.size.ten }}</span>
-                  </div>
-                </template>
-                <template #filter="{ filterModel, filterCallback }">
-                  <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter"
-                    placeholder="Search by name" />
+              </template>
+              <template #filterapply="slotProps">
+              </template>
+              <template #filterclear="slotProps">
+              </template>
+            </Column>
 
-                </template>
-                <template #filterapply="slotProps">
-                </template>
-                <template #filterclear="slotProps">
-                </template>
-              </Column>
+            <Column filterField="sanPham.loai.ten" header="Loại" :showFilterMatchModes="false"
+              :filterMenuStyle="{ width: '14rem' }">
+              <template #body="{ data }">
+                <div class="flex align-items-center gap-2">
+                  <span>{{ data.sanPham.loai.ten }}</span>
+                </div>
+              </template>
+              <template #filter="{ filterModel, filterCallback }">
+                <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter"
+                  placeholder="Search by name" />
 
-              <Column filterField="sanPham.loai.ten" header="Loại" :showFilterMatchModes="false"
-                :filterMenuStyle="{ width: '14rem' }">
-                <template #body="{ data }">
-                  <div class="flex align-items-center gap-2">
-                    <span>{{ data.sanPham.loai.ten }}</span>
-                  </div>
-                </template>
-                <template #filter="{ filterModel, filterCallback }">
-                  <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter"
-                    placeholder="Search by name" />
+              </template>
+              <template #filterapply="slotProps">
+              </template>
+              <template #filterclear="slotProps">
+              </template>
+            </Column>
+            <Column filterField="sanPham.thuongHieu.ten" header="Thương hiệu" :showFilterMatchModes="false"
+              :filterMenuStyle="{ width: '14rem' }">
+              <template #body="{ data }">
+                <div class="flex align-items-center gap-2">
+                  <span>{{ data.sanPham.thuongHieu.ten }}</span>
+                </div>
+              </template>
+              <template #filter="{ filterModel, filterCallback }">
+                <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter"
+                  placeholder="Search by name" />
 
-                </template>
-                <template #filterapply="slotProps">
-                </template>
-                <template #filterclear="slotProps">
-                </template>
-              </Column>
-              <Column filterField="sanPham.thuongHieu.ten" header="Thương hiệu" :showFilterMatchModes="false"
-                :filterMenuStyle="{ width: '14rem' }">
-                <template #body="{ data }">
-                  <div class="flex align-items-center gap-2">
-                    <span>{{ data.sanPham.thuongHieu.ten }}</span>
-                  </div>
-                </template>
-                <template #filter="{ filterModel, filterCallback }">
-                  <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter"
-                    placeholder="Search by name" />
-
-                </template>
-                <template #filterapply="slotProps">
-                </template>
-                <template #filterclear="slotProps">
-                </template>
-              </Column>
-              <Column field="soLuongTon" header="Số lượng"></Column>
-              <Column class="text-center">
-                <template #body="slotProps">
-                  <Button @click="toggle(slotProps.data)" icon="pi pi-plus" severity="info" outlined rounded></Button>
-                  <OverlayPanel ref="op">
+              </template>
+              <template #filterapply="slotProps">
+              </template>
+              <template #filterclear="slotProps">
+              </template>
+            </Column>
+            <Column field="soLuongTon" header="Số lượng"></Column>
+            <Column class="text-center">
+              <template #body="slotProps">
+                <Button @click="toggle(slotProps.data)" icon="pi pi-plus" severity="info" outlined rounded></Button>
+                <OverlayPanel ref="op">
 
 
-                    <div style="display: flex;">
-                      <div style="margin-top: 20px; margin-right: 10px;">
-                        <span class="p-float-label">
-                          <InputNumber id="number-input" v-model="soluong" :class="{ 'p-invalid': soLuongError }" :min="1"
-                            :max="dataOverlay.soLuongTon"></InputNumber>
-                          <label for="Field">Số lượng</label>
-                        </span>
-                        <small class="p-error">{{ soLuongError }}</small>
-                      </div>
-                      <div style="margin-top: 20px;">
-                        <Button label="Thêm" @click="themSPVaoHDCT(soluong)"></Button>
-                      </div>
-
+                  <div style="display: flex;">
+                    <div style="margin-top: 20px; margin-right: 10px;">
+                      <span class="p-float-label">
+                        <InputNumber id="number-input" v-model="soluong" :class="{ 'p-invalid': soLuongError }" :min="1"
+                          :max="dataOverlay.soLuongTon"></InputNumber>
+                        <label for="Field">Số lượng</label>
+                      </span>
+                      <small class="p-error">{{ soLuongError }}</small>
+                    </div>
+                    <div style="margin-top: 20px;">
+                      <Button label="Thêm" @click="themSPVaoHDCT(soluong)"></Button>
                     </div>
 
-                  </OverlayPanel>
-                </template>
-              </Column>
+                  </div>
 
-            </DataTable> </div> </div>
+                </OverlayPanel>
+              </template>
+            </Column>
+
+          </DataTable>
+        </div>
+      </div>
     </div>
   </div>
- <div>
-  
- </div>
+  <div>
+
+  </div>
 
   <Dialog v-model:visible="addDialog" :style="{ width: '500px' }" header="Thanh toán" :modal="true">
-  
-          <div style="display: flex; margin-bottom: 10px; margin-top: 10px;">
-            <div>
-              <h6>Mã hóa đơn: </h6>
-            </div>
-            <div style="margin-left: 80px;">
-              <h6 v-if="selectedHoaDon">{{ selectedHoaDon.ma }}</h6>
-            </div>
 
-          </div>
-          <div class="flex" style=" margin-bottom: 10px;">
-            <div>
-              <h6>Tổng tiền hàng: </h6>
-            </div>
-            <div style="margin-left: 60px;">
-              <h6 class="text-primary">{{ formatCurrency(tinhTien(dsHDCT).tongTienHang) }}</h6>
-            </div>
+    <div style="display: flex; margin-bottom: 10px; margin-top: 10px;">
+      <div>
+        <h6>Mã hóa đơn: </h6>
+      </div>
+      <div style="margin-left: 80px;">
+        <h6 v-if="selectedHoaDon">{{ selectedHoaDon.ma }}</h6>
+      </div>
 
-          </div>
-          <div class="flex" style=" margin-bottom: 10px;">
-            <div>
-              <h6>Tổng chiết khấu:</h6>
-            </div>
-            <div style="margin-left: 55px;">
-              <h6 class="text-primary">{{ formatCurrency(tinhTien(dsHDCT).tongChietKhau) }}</h6>
-            </div>
+    </div>
+    <div class="flex" style=" margin-bottom: 10px;">
+      <div>
+        <h6>Tổng tiền hàng: </h6>
+      </div>
+      <div style="margin-left: 60px;">
+        <h6 class="text-primary">{{ formatCurrency(tinhTien(dsHDCT).tongTienHang) }}</h6>
+      </div>
 
-          </div>
-          <div class="flex"  style=" margin-bottom: 20px;">
-            <div>
-              <h6>Thành tiền:</h6>
-            </div>
-            <div style="margin-left: 90px;">
-              <h6 class="text-orange-500">{{ formatCurrency(thanhTien) }}</h6>
-            </div>
+    </div>
+    <div class="flex" style=" margin-bottom: 10px;">
+      <div>
+        <h6>Tổng chiết khấu:</h6>
+      </div>
+      <div style="margin-left: 55px;">
+        <h6 class="text-primary">{{ formatCurrency(tinhTien(dsHDCT).tongChietKhau) }}</h6>
+      </div>
 
-          </div>
-          
+    </div>
+    <div class="flex" style=" margin-bottom: 10px;">
+      <div>
+        <h6>Phí ship:</h6>
+      </div>
+      <div style="margin-left: 110px;">
+        <h6 class="text-primary">{{ formatCurrency(phiShip) }}</h6>
+      </div>
+
+    </div>
+    <div class="flex" style=" margin-bottom: 20px;">
+      <div>
+        <h6>Thành tiền:</h6>
+      </div>
+      <div style="margin-left: 90px;">
+        <h6 class="text-orange-500">{{ formatCurrency(thanhTien) }}</h6>
+      </div>
+
+    </div>
+
 
     <form @submit="onSubmit">
       <div class="flex align-items-center" style="margin-top: 20px;">
-        
-       
+
+
 
         <div>
           <h6>Tiền khách đưa:</h6>
@@ -666,6 +749,53 @@ const checkedSwitch = ref(false);
         </div>
 
       </div>
+      <div class="card" v-if="diaChiDialog==true" style="overflow-y: scroll; width:95%; height: 200px;">
+        <div style="margin-left: 300px; height: 40px; width: 80px;  border: 1px solid blue; border-radius: 20px; text-align: center;">
+          <ThemDiaChi style="position: absolute; right: 0; width: 80px; margin-bottom: 5px" :idUser="userID"> </ThemDiaChi>
+        </div>
+      
+        <div v-if="!userDiaChi || userDiaChi.length === 0" style="text-align: center; margin-top: 50px;">
+
+          <svg width="100px" height="100px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#000000"
+            class="bi bi-file-earmark-x">
+            <path
+              d="M6.854 7.146a.5.5 0 1 0-.708.708L7.293 9l-1.147 1.146a.5.5 0 0 0 .708.708L8 9.707l1.146 1.147a.5.5 0 0 0 .708-.708L8.707 9l1.147-1.146a.5.5 0 0 0-.708-.708L8 8.293 6.854 7.146z" />
+            <path
+              d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+          </svg>
+
+
+          <h4 style="text-align: center;">Chưa có địa chỉ</h4>
+        </div>
+        <div v-for="(hd, index) in userDiaChi">
+          <div style="width: 100%; height: 70px; display: flex">
+            <div style="width: 90%; height: 50px; background: rgb(255, 255, 255)">
+              <div class="flex">
+                <label for="" style="margin-right: 10px">
+                  <span>{{ hd?.user?.ten }} </span></label>
+                <span style="margin-right: 10px"> | </span>
+                <label for="" style="color: rgb(0, 0, 0)"> {{ hd?.user?.sdt }}</label>
+                <label for="" style="color: rgb(255, 0, 0); margin-left: 10px"> {{ hd.trangThai == 1 ? 'Mặc định' : ''
+                }}</label>
+              </div>
+              <div style="margin-top: 10px">
+                <label for="" style="margin-right: 10px">
+                  <span>{{ hd.diaChi }} </span></label>
+              </div>
+              <div style="margin-top: 10px">
+                <label for="" style="margin-right: 10px">
+                  <span>{{ hd.tenphuongXa }}, {{ hd.tenQuanHuyen }}, {{ hd.tenTinhThanh }} </span></label>
+              </div>
+            </div>
+
+            <div style="width: 10%; height: 10px; background: rgb(255, 255, 255); display: flex; margin-top: 30px">
+              <RadioButton v-model="idDiaChi" inputId="ingredient1" name="pizza" :value="hd.id" @click="tinhPhiShip(hd.id)" />
+            </div>
+            
+          </div>
+          <Divider />
+        </div>
+      </div>
       <h6>Ghi chú</h6>
       <Textarea v-model="moTa" rows="4" cols="63" />
       <Button label="Thanh toán" severity="warning" raised type="submit" style="margin-top: 20px; margin-left: 150px;" />
@@ -676,11 +806,21 @@ const checkedSwitch = ref(false);
 
   <Dialog v-model:visible="addChonHoaDonDialog" :style="{ width: '500px' }" header="Confirm" :modal="true">
     <h6>Bạn có muốn thêm sản phẩm vừa QR vào giỏ hàng không ?</h6>
-    <Button label="Không"  severity="secondary"  @click="addChonHoaDonDialog = false" raised
+    <Button label="Không" severity="secondary" @click="addChonHoaDonDialog = false" raised
       style="margin-top: 20px; margin-left: 150px;" />
     <Button label="Có" class="mr-2" @click="themSpQR" raised style="margin-top: 20px; margin-left: 10px;" />
 
   </Dialog>
+
+  <!-- <Dialog v-model:visible="diaChiDialog" :style="{ width: '650px' }" header="Địa Chỉ" :modal="true" class="p-fluid">
+    <div style="position: relative; width: 80px; margin-left: 500px; margin-bottom: 20px">
+      <AddDiaChi style="position: absolute; right: 0; width: 80px; margin-bottom: 5px"></AddDiaChi>
+    </div>
+
+
+
+
+  </Dialog> -->
 </template>
 
 <style scoped>
@@ -715,5 +855,4 @@ const checkedSwitch = ref(false);
 .card {
   margin-top: 20px;
   padding: 1rem;
-}
-</style>
+}</style>
