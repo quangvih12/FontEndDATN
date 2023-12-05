@@ -52,6 +52,7 @@ const hienThiTrangThai = (trangThai) => {
 };
 
 const columns = ref([
+    { field: 'tenNguoiNhan', header: 'Người nhận' },
     { field: 'nguoiTao', header: 'Người tạo' },
     { field: 'ngayTao', header: 'Ngày tạo' },
     { field: 'ngaySua', header: 'Ngày sửa' },

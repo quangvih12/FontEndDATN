@@ -21,18 +21,21 @@ const dataSP = ref([]);
 const loadData = async () => {
     const token = localStorage.getItem('token');
     const arraySPDaXem = JSON.parse(localStorage.getItem('spDaXem'));
-    for (let i = 0; i < arraySPDaXem.length; i++) {
-        if (token == null || token.length <= 0) {
-            if (arraySPDaXem[i].idUser == -1) {
-                dataSP.value.unshift(arraySPDaXem[i]);
-            }
-        } else {
-            const responeKH = await spDaXemService.findByToken(token);
-            if (arraySPDaXem[i].idUser == responeKH.id) {
-                dataSP.value.unshift(arraySPDaXem[i]);
+    if (Array.isArray(arraySPDaXem)) {
+        for (let i = 0; i < arraySPDaXem.length; i++) {
+            if (token == null || token.length <= 0) {
+                if (arraySPDaXem[i].idUser == -1) {
+                    dataSP.value.unshift(arraySPDaXem[i]);
+                }
+            } else {
+                const responeKH = await spDaXemService.findByToken(token);
+                if (arraySPDaXem[i].idUser == responeKH.id) {
+                    dataSP.value.unshift(arraySPDaXem[i]);
+                }
             }
         }
     }
+    console.log(dataSP.value);
 };
 
 const uniqueTenLoai = computed(() => {
@@ -122,7 +125,7 @@ const filteredAndSortedProducts = computed(() => {
     if (selectedSortOption.value) {
         return sortProducts(filteredProducts, selectedSortOption.value);
     }
-  console.log(filteredProducts)
+
     return filteredProducts;
 });
 </script>
@@ -144,6 +147,7 @@ const filteredAndSortedProducts = computed(() => {
                 </span>
             </div> -->
             <br />
+
             <DataView
                 :value="dataSP"
                 :layout="layout"
@@ -236,9 +240,11 @@ const filteredAndSortedProducts = computed(() => {
                                 <p class="text-xl font-semibold" style="color: black; text-align: center" v-else>{{ formatCurrency(sp.giaBanMin) }} - {{ formatCurrency(sp.giaBanMax) }}</p>
                                 <Button icon="pi pi-shopping-cart" rounded  @click="goToProductDetail(sp.idSP)"></Button>
                             </div>
+
                             <div class="flex align-items-center justify-content-between">
                                
                               
+
                             </div>
                         </div>
                     </div>
@@ -281,6 +287,68 @@ const filteredAndSortedProducts = computed(() => {
 
 .container {
     width: 1100px;
+}
+.flex-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    width: 1100px;
+}
+
+.flex-item {
+    flex: 0 0 calc(20% - 10px);
+    /* 20% độ rộng cho mỗi cột và 10px là khoảng cách giữa các cột */
+    border: 1px solid #ccc;
+    padding: 10px;
+    box-sizing: border-box;
+    /* Đảm bảo rằng padding và border không làm tăng kích thước của các cột */
+    margin-bottom: 20px;
+    /* Khoảng cách giữa các dòng */
+    margin-right: 12px;
+}
+
+/* Đảm bảo chỉ 5 cột trên mỗi dòng */
+.flex-item:nth-child(5n) {
+    margin-right: 0;
+}
+
+.flex-item img {
+    max-width: 100%;
+    /* Đảm bảo ảnh không vượt quá kích thước của .flex-item */
+    height: auto;
+    /* Đảm bảo tỷ lệ hình ảnh được giữ nguyên khi giảm kích thước theo chiều rộng */
+    display: block;
+    /* Loại bỏ khoảng trắng dư thừa dưới ảnh */
+}
+
+.xct {
+    text-transform: uppercase;
+    text-decoration: none;
+    text-align: center;
+    display: block;
+    background-color: #446084;
+    color: #fff;
+    padding: 10px 0px;
+    position: absolute;
+    width: 100%;
+    bottom: -45px;
+}
+
+.product-top {
+    position: relative;
+    overflow: hidden;
+}
+
+.product-top .product-thumb {
+    display: block;
+}
+
+.product-top .product-thumb .product-image {
+    display: block;
+}
+
+.flex-item:hover .xct {
+    bottom: 0px;
 }
 
 /* Định dạng cho mỗi phần tử trong danh sách */

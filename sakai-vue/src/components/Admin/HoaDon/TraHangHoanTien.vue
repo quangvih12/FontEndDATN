@@ -48,6 +48,7 @@ const hienThiTrangThai = (trangThai) => {
 };
 
 const columns = ref([
+    { field: 'tenNguoiNhan', header: 'Người nhận' },
     { field: 'nguoiTao', header: 'Người tạo' },
     { field: 'ngayTao', header: 'Ngày tạo' },
     { field: 'ngaySua', header: 'Ngày sửa' },
@@ -57,6 +58,7 @@ const columns = ref([
     { field: 'ngayThanhToan', header: 'Ngày thanh toán' },
     { field: 'ngayShip', header: 'Ngày ship' },
     { field: 'ngayNhan', header: 'Ngày nhận' }
+    
 ]);
 
 const dataSearchDate = ref([
@@ -194,7 +196,6 @@ const tinhThanhTien = (soLuong, donGia) => {
         </Column>
         <Column field="tenMauSac" header="Màu sắc" :sortable="true" headerStyle="width:14%; min-width:7rem;">
             <template #body="slotProps">
-
                 <span class="p-column-title">tenMauSac</span>
                 {{ slotProps.data.tenMauSac }}
             </template>

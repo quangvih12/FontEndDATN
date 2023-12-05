@@ -19,7 +19,8 @@ const dataSP = ref([]);
 const loadData = async () => {
     await SanPhamService.fetchAll();
     dataSP.value = SanPhamService.dataSP;
-   // console.log(SanPhamService.dataSP);
+    // console.log(SanPhamService.dataSP);
+    // console.log(dataSP.value);
 };
 
 const uniqueTenLoai = computed(() => {
@@ -87,8 +88,7 @@ const filteredAndSortedProducts = computed(() => {
     if (selectedPriceRange.value) {
         const { min, max } = selectedPriceRange.value;
         filteredProducts = filteredProducts.filter((product) => {
-          
-            const productPrice = (parseInt( product.giaBanMin) + parseInt(product.giaBanMax)) / 2;
+            const productPrice = (parseInt(product.giaBanMin) + parseInt(product.giaBanMax)) / 2;
             return productPrice >= min && productPrice <= max;
         });
     }
@@ -120,7 +120,7 @@ const filteredAndSortedProducts = computed(() => {
         <div class="container">
             <Breadcrumb :home="home" :model="items" />
             <h1>Sản phẩm</h1>
-          
+
             <Divider />
             <div class="flex">
                 <Dropdown v-model="selectedSortOption" :options="sapXep" optionLabel="label" placeholder="Sắp xếp" class="w-full md:w-14rem" />
@@ -152,6 +152,7 @@ const filteredAndSortedProducts = computed(() => {
                 </template>
 
                 <template #list="slotProps">
+
 
 
 <div class="grid grid-nogutter">
@@ -236,6 +237,7 @@ const filteredAndSortedProducts = computed(() => {
 
 
 </template>
+
             </DataView>
             <Divider />
             <Carousel :value="dataSP" :numVisible="4" :numScroll="4" :responsiveOptions="responsiveOptions">

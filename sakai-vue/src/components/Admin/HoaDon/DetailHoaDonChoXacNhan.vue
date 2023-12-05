@@ -20,6 +20,7 @@ const idHD = ref(null);
 
 const ngayDuKienGiao = ref(null);
 const khoiLuong = ref(0);
+const inputKhoiLuong = ref(0);
 const dai = ref(null);
 const rong = ref(null);
 const cao = ref(null);
@@ -65,7 +66,7 @@ watch(ship, (newVal) => {
 watch(productDialog, (newVal) => {
     if (productDialog.value === false) {
         ngayDuKienGiao.value = null;
-        khoiLuong.value = null;
+        inputKhoiLuong.value = null;
         dai.value = null;
         rong.value = null;
         cao.value = null;
@@ -100,17 +101,25 @@ const sendMessage = () => {
 
 const btnXacNhan = () => {
     const formGHN = {
-        trongLuong: khoiLuong.value,
+        trongLuong: inputKhoiLuong.value,
         dai: dai.value,
         rong: rong.value,
         cao: cao.value,
         tongTien: tongTienThanhToan.value
     };
+    const ngayHienTai = new Date();
+    const ngayChon = new Date(ngayDuKienGiao.value);
     if (formGHN.trongLuong == null || formGHN.trongLuong.length <= 0) {
         toast.add({ severity: 'error', summary: 'error', detail: 'Khối lượng không được trống', life: 3000 });
         addProductDialog.value = false;
+    } else if (formGHN.trongLuong <= 0 || formGHN.trongLuong < khoiLuong.value) {
+        toast.add({ severity: 'error', summary: 'error', detail: 'Vui lòng nhập khối lượng phù hợp', life: 3000 });
+        addProductDialog.value = false;
     } else if (ngayDuKienGiao.value == null || ngayDuKienGiao.value.length <= 0) {
         toast.add({ severity: 'error', summary: 'error', detail: 'Ngày dự kiến giao không được trống', life: 3000 });
+        addProductDialog.value = false;
+    } else if (ngayChon < ngayHienTai) {
+        toast.add({ severity: 'error', summary: 'error', detail: 'Ngày dự kiến giao không được nhỏ hơn ngày hiện tại', life: 3000 });
         addProductDialog.value = false;
     } else if (formGHN.dai == null || formGHN.dai.length <= 0) {
         toast.add({ severity: 'error', summary: 'error', detail: 'Chiều dài không được trống', life: 3000 });
@@ -120,6 +129,9 @@ const btnXacNhan = () => {
         addProductDialog.value = false;
     } else if (formGHN.cao == null || formGHN.cao.length <= 0) {
         toast.add({ severity: 'error', summary: 'error', detail: 'Chiều cao không được trống', life: 3000 });
+        addProductDialog.value = false;
+    } else if (formGHN.cao <= 0 || formGHN.rong <= 0 || formGHN.dai <= 0) {
+        toast.add({ severity: 'error', summary: 'error', detail: 'Các kích thước phải lớn hơn 0', life: 3000 });
         addProductDialog.value = false;
     } else {
         const responeDCB = useHD.dangChuanBi(idHD.value, ngayDuKienGiao.value);
@@ -144,6 +156,7 @@ const loadDataHDCT = async (idHD) => {
     dataHDCT.value = respone;
     for (let i = 0; i < dataHDCT.value.length; i++) {
         khoiLuong.value += parseInt(dataHDCT.value[i].trongLuong);
+        inputKhoiLuong.value += parseInt(dataHDCT.value[i].trongLuong);
     }
 };
 
@@ -213,7 +226,7 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
 <template>
     <Toast />
     <Button label="Xem" class="p-button-outlined p-button-info mr-2 mb-2" @click="editProduct()" />
-    <Dialog v-model:visible="productDialog" :style="{ width: '1400px' }" :header="code" :modal="true" class="p-fluid">
+    <Dialog v-model:visible="productDialog" :style="{ width: '1500px' }" :header="code" :modal="true" class="p-fluid">
         <div class="flex">
             <div class="p-fluid formgrid grid">
                 <div class="Field col-12 md:col-8">
@@ -276,7 +289,7 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
 
                 <div class="Field col-12 md:col-4">
                     <div class="phai">
-                        <div class="card p-fluid">
+                        <div class="card p-fluid" style="width: 460px">
                             <div class="flex">
                                 <div class="p-col-6" style="width: 100%">
                                     <div class="row flex">
@@ -295,7 +308,6 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
                                             <p>
                                                 Địa chỉ: <span style="margin-left: 5px">{{ props.myProp.diaChiCuThe }}, {{ props.myProp.tenPhuongXa }}, {{ props.myProp.tenQuanHuyen }}, {{ props.myProp.tenTinhThanh }}</span>
                                             </p>
-                                            <!-- <p style="margin-left: 10px">{{ props.myProp.diaChiCuThe }}, {{ props.myProp.tenPhuongXa }}, {{ props.myProp.tenQuanHuyen }}, {{ props.myProp.tenTinhThanh }}</p> -->
                                         </div>
                                     </div>
                                 </div>
@@ -306,15 +318,15 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
                             </div>
                             <div>
                                 <p style="float: left; margin-right: 20px; margin-top: 5px">Khối lượng:</p>
-                                <InputText id="ten" name="ten" type="text" v-model.trim="khoiLuong" :class="{ 'p-invalid': tenError }" required="true" style="width: 80px; height: 30px" />
+                                <InputText id="ten" name="ten" type="number" v-model.trim="inputKhoiLuong" :class="{ 'p-invalid': tenError }" required="true" style="width: 80px; height: 30px" />
                             </div>
                             <div>
                                 <p style="float: left; margin-right: 15px; margin-top: 5px">Kích thước(cm):</p>
-                                <InputText id="ten" name="ten" type="text" v-model.trim="dai" :class="{ 'p-invalid': tenError }" required="true" style="width: 50px; height: 30px; float: left; margin-right: 5px" />
+                                <InputText id="ten" name="ten" type="number" v-model.trim="dai" :class="{ 'p-invalid': tenError }" required="true" style="width: 60px; height: 30px; float: left; margin-right: 5px" />
                                 <p style="float: left; margin-right: 5px; margin-top: 5px">Dài</p>
-                                <InputText id="ten" name="ten" type="text" v-model.trim="rong" :class="{ 'p-invalid': tenError }" required="true" style="width: 50px; height: 30px; float: left; margin-right: 5px" />
+                                <InputText id="ten" name="ten" type="number" v-model.trim="rong" :class="{ 'p-invalid': tenError }" required="true" style="width: 60px; height: 30px; float: left; margin-right: 5px" />
                                 <p style="float: left; margin-right: 5px; margin-top: 5px">Rộng</p>
-                                <InputText id="ten" name="ten" type="text" v-model.trim="cao" :class="{ 'p-invalid': tenError }" required="true" style="width: 50px; height: 30px; float: left; margin-right: 5px" />
+                                <InputText id="ten" name="ten" type="number" v-model.trim="cao" :class="{ 'p-invalid': tenError }" required="true" style="width: 60px; height: 30px; float: left; margin-right: 5px" />
                                 <p style="float: left; margin-right: 5px; margin-top: 5px">Cao</p>
                             </div>
                             <div>
