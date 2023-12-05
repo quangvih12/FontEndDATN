@@ -3,15 +3,15 @@
     <div class="form">
         <Toast />
         <div class="title">OTP</div>
-        <div class="title">Verification Code</div>
-        <p class="message">We have sent a verification code to your mobile number</p>
+        <div class="title">Mã xác nhận</div>
+        <p class="message">Chúng tôi đã gửi mã xác minh tới email của bạn</p>
         <div class="inputs">
             <input id="input1" type="text" maxlength="1" v-model="input1" /> 
             <input id="input2" type="text" maxlength="1" v-model="input2"/> 
             <input id="input3" type="text" maxlength="1" v-model="input3"/> 
             <input id="input4" type="text" maxlength="1" v-model="input4"/>
         </div>
-        <button class="action" @click="verify">verify me</button>
+        <button class="action" @click="verify">Xác minh</button>
     </div>
 </template>
 
@@ -20,7 +20,9 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
 import { userRegisterStore} from '@/service/KhachHang/RegisterService.js';
+import {useChatStore} from "../../service/Admin/Chat/ChatService";
 const registerService =  userRegisterStore();
+const chatStore = useChatStore();
 const router = useRouter();
 const toast = useToast();
 const input1 = ref('');
@@ -46,7 +48,8 @@ const verify = async () => {
     toast.add({ severity: 'success', summary: '', detail: 'Đăng ký thành công. Vui lòng đăng nhập', life: 6000 });
     localStorage.removeItem("otp");
     localStorage.removeItem("dangky");
-    router.push('/login');
+    await chatStore.createChatkittyUser(dataDangKy.value.email, dataDangKy.value.ten);
+    await router.push({ name: 'login' });
   } else {
    
     toast.add({ severity: 'warn', summary: '', detail: 'OTP không đúng. Vui lòng thử lại', life: 3000 });

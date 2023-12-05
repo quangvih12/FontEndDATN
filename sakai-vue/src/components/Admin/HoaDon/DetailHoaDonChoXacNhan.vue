@@ -38,7 +38,7 @@ const props = defineProps({
     myProp: {}
 });
 
-const tongTienThanhToan = ref(props.myProp.tienSauKhiGiam == '' ? parseInt(props.myProp.tienSauKhiGiam) : parseInt(props.myProp.tongTien) + parseInt(props.myProp.tienShip));
+const tongTienThanhToan = ref(props.myProp.tienSauKhiGiam == '' ? parseInt(props.myProp.tienSauKhiGiam) : parseInt(props.myProp.tongTien) + parseInt(props.myProp.tienShip == null ? 0:props.myProp.tienShip));
 
 const editProduct = () => {
     code.value = 'Hoá đơn: ' + props.myProp.maHD;
@@ -339,9 +339,9 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
                                 </div>
                             </div>
                             <p>Tổng tiền các sản phẩm: {{ formatCurrency(props.myProp.tongTien) }}</p>
-                            <p>Phí vận chuyển: {{ formatCurrency(props.myProp.tienShip) }}</p>
+                            <p>Phí vận chuyển: {{ formatCurrency(props.myProp.tienShip == null ? 0:props.myProp.tienShip) }}</p>
                             <p>
-                                Tiền giảm: <span v-if="props.myProp.tienSauKhiGiam !== null" style="color: red">- {{ formatCurrency(parseInt(props.myProp.tongTien) + parseInt(props.myProp.tienShip) - parseInt(props.myProp.tienSauKhiGiam)) }}</span>
+                                Tiền giảm: <span v-if="props.myProp.tienSauKhiGiam !== null" style="color: red">- {{ formatCurrency(parseInt(props.myProp.tongTien) + parseInt(props.myProp.tienShip == null ? 0:props.myProp.tienShip) - parseInt(props.myProp.tienSauKhiGiam)) }}</span>
                                 <span v-else style="color: red"> 0</span>
                             </p>
                             <p>

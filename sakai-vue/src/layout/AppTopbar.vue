@@ -9,7 +9,9 @@ import { Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import { HDStore } from '../service/Admin/HoaDon/HoaDonService';
+import { useBanHangTaiQuayStore } from '@/service/Admin/BanHangTaiQuay/BanHangTaiQuayService';
 
+const store = useBanHangTaiQuayStore();
 const useHD = HDStore();
 const thongBaoStore = ThongBaoStore();
 const userService = userStore();
@@ -48,6 +50,7 @@ const openSocketConnection = () => {
                 loadHDByTrangThaiTraHang(7);
                 loadHDByTrangThaiTraHang(8);
                 loadHDByTrangThaiTraHang(9);
+                loadSPBanHangTaiQuay();
             });
         }
     });
@@ -63,6 +66,10 @@ const getAllTB = async () => {
     await thongBaoStore.fetchData();
     data.value = thongBaoStore.data;
 };
+
+const loadSPBanHangTaiQuay = async()=>{
+    await  store.loadSP();
+}
 
 const loadHD = async () => {
     await useHD.fetchData();
@@ -85,7 +92,7 @@ const daXem = async (id) => {
     await thongBaoStore.daXem(id);
     getAllTB();
     getDem();
-    router.push({ name: 'quan-ly-hoa-don' });
+    router.push({ name: 'hoa-don' });
 };
 
 onBeforeUnmount(() => {
@@ -102,7 +109,7 @@ const onTopBarMenuButton = () => {
 
 const onSettingsClick = () => {
     topbarMenuActive.value = false;
-    router.push('/documentation');
+    // router.push('/documentation');
 };
 const topbarMenuClasses = computed(() => {
     return {
@@ -172,15 +179,15 @@ const toggle = (event) => {
 };
 
 const dangXuat = () => {
-    router.push(`/login-admin`);
+  router.push({ name: 'login-admin' });
     localStorage.removeItem('token');
 };
 
 const dangNhap = () => {
-    router.push(`/login-admin`);
+  router.push({ name: 'login-admin' });
 };
 const thongTinCaNhan = () => {
-    router.push(`/thong-tin-ca-nhan-ad`);
+  router.push({ name: 'ho-so-admin' });
 };
 </script>
 
@@ -190,8 +197,8 @@ const thongTinCaNhan = () => {
                 <img :src="logoUrl" alt="logo" />
                 <span>SAKAI</span>
             </router-link> -->
-        <router-link to="/" class="layout-topbar-logo" style="height: 60px; width: 120px">
-            <img src="../images/logo.png" alt="logo" style="height: 70px" />
+        <router-link :to="{ name: 'trang-chu' }" class="layout-topbar-logo" style="height: 60px; width: 120px">
+            <img src="../assets/images/logo.png" alt="logo" style="height: 70px" />
         </router-link>
 
         <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">
@@ -234,6 +241,16 @@ const thongTinCaNhan = () => {
 
                 <OverlayPanel ref="op" style="height: 300px; overflow: auto">
                     <H6>Thông báo </H6>
+                    <div v-if="!data || data.length===0" style="text-align: center; margin-top: 50px; "  > 
+                                  
+                                  <svg  width="50px" height="50px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#000000" class="bi bi-file-earmark-x">
+<path d="M6.854 7.146a.5.5 0 1 0-.708.708L7.293 9l-1.147 1.146a.5.5 0 0 0 .708.708L8 9.707l1.146 1.147a.5.5 0 0 0 .708-.708L8.707 9l1.147-1.146a.5.5 0 0 0-.708-.708L8 8.293 6.854 7.146z"/>
+<path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
+</svg>
+                       
+                            
+<h5  style="text-align: center;">Chưa có Thông báo !</h5>
+                          </div>
                     <div v-for="(o, index) in data">
                         <button class="p-link" aria-haspopup="true" aria-controls="overlay_tmenu">
                             <div class="flex align-items-center" style="height: 50px; margin-bottom: 10px; width: 240px"

@@ -1,13 +1,16 @@
 <script setup>
-import { computed, watch, ref } from 'vue';
+import {computed, watch, ref, onBeforeMount, onBeforeUnmount} from 'vue';
 import AppTopbar from './AppTopbar.vue';
 import AppFooter from './AppFooter.vue';
 import AppSidebar from './AppSidebar.vue';
 import AppConfig from './AppConfig.vue';
 import { useLayout } from '@/layout/composables/layout';
+import * as chatService from "@/service/chatkitty";
+import {verifyJwt} from "../service/common/JwtUtils";
+import {useChatStore} from "../service/Admin/Chat/ChatService";
 
+const chatStore = useChatStore();
 const { layoutConfig, layoutState, isSidebarActive } = useLayout();
-
 const outsideClickListener = ref(null);
 
 watch(isSidebarActive, (newVal) => {
@@ -55,6 +58,19 @@ const isOutsideClicked = (event) => {
 
     return !(sidebarEl.isSameNode(event.target) || sidebarEl.contains(event.target) || topbarEl.isSameNode(event.target) || topbarEl.contains(event.target));
 };
+
+onBeforeMount(async () => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    const payloadData = await verifyJwt(token);
+    await chatService.login(payloadData.sub, payloadData.id);
+    if (payloadData.role === 'USER') await chatStore.createDirectChannel(payloadData.sub);
+  }
+});
+
+onBeforeUnmount(async () => {
+  await chatStore.tearDown();
+});
 </script>
 
 <template>

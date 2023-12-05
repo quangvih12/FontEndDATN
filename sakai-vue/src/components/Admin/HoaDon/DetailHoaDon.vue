@@ -470,18 +470,18 @@ const btnXacNhanHuyGH = () => {
                             <div class="p-col-6" style="width: 100%">
                                 <div class="ben-phai">
                                     <p>Tổng tiền các sản phẩm: {{ formatCurrency(props.myProp.tongTien) }}</p>
-                                    <p>Phí vận chuyển: {{ formatCurrency(props.myProp.tienShip) }}</p>
+                                    <p>Phí vận chuyển: {{ formatCurrency(props.myProp.tienShip == null ? 0:props.myProp.tienShip) }}</p>
 
                                     <p>Tiền giảm:
                                           <span v-if="props.myProp.tienSauKhiGiam != null" style="color: red;">- {{
-                                        formatCurrency(parseInt(props.myProp.tongTien)+parseInt(props.myProp.tienShip) -
+                                        formatCurrency(parseInt(props.myProp.tongTien)+parseInt(props.myProp.tienShip == null ? 0:props.myProp.tienShip) -
                                             parseInt(tienGiam)) }}</span>
                                         <span v-else style="color: red;"> 0</span>
 
                                     </p>
                                     <p>
                                         Tổng tiền: <span style="color: #ff3333; font-size: 20px; font-weight: bold">{{
-                                            formatCurrency(tinhTongTien(props.myProp.tienShip,
+                                            formatCurrency(tinhTongTien(props.myProp.tienShip == null ? 0:props.myProp.tienShip,
                                                 props.myProp.tongTien, tienGiam)) }}</span>        
                                     </p>
                                 </div>

@@ -22,7 +22,7 @@ const onTopBarMenuButton = () => {
 };
 const onSettingsClick = () => {
     topbarMenuActive.value = false;
-    router.push('/documentation');
+    // router.push('/documentation');
 };
 const topbarMenuClasses = computed(() => {
     return {
@@ -56,8 +56,8 @@ const isOutsideClicked = (event) => {
 
 <template>
     <div class="layout-topbar">
-        <router-link to="/" class="layout-topbar-logo" style="height: 60px; width: 120px">
-            <img src="../../images/logo.png" alt="logo" style="height: 70px" />
+        <router-link :to="{ name: 'trang-chu' }" class="layout-topbar-logo" style="height: 60px; width: 120px">
+            <img src="../../assets/images/logo.png" alt="logo" style="height: 70px" />
         </router-link>
         <!-- <span class="p-input-icon-left">
             <i class="pi pi-search" />
@@ -65,8 +65,8 @@ const isOutsideClicked = (event) => {
         </span> -->
 
         <div class="layout-topbar-menu">
-            <label for="" style="margin-right: 50px">Nhân viên: <span>Nguyễn Long Vũ</span></label>
-            <span style="font-weight: bold">9:25:00</span>
+            <label for="" style="margin-right: 50px">Nhân viên: <span>Lê Văn B</span></label>
+<!--            <span style="font-weight: bold">9:25:00</span>-->
         </div>
     </div>
 </template>

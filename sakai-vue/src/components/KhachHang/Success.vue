@@ -55,7 +55,7 @@ const sendMessage = () => {
 };
 
 const goHome = () => {
-    router.push('/');
-    localStorage.removeItem('myForm');
+  router.push({ name: 'trang-chu' });
+  localStorage.removeItem('myForm');
 };
 </script>

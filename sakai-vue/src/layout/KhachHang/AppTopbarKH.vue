@@ -107,6 +107,10 @@ const getDem = async () => {
         return;
     } else {
         dem.value = await thongBaoStore.fetchdem(token);
+        if(dem.value == undefined){
+          dem.value = 0;
+          return;
+        }
     }
 };
 
@@ -114,7 +118,7 @@ const daXem = async (id) => {
     await thongBaoStore.daXem(id);
     getAllTB();
     getDem();
-    router.push({ name: 'lich-su-sp' });
+    router.push({ name: 'lich-su-san-pham' });
 };
 
 onBeforeUnmount(() => {
@@ -136,35 +140,35 @@ const selectedUserId = computed(() => {
 const onSettingsClick = (event) => {
     topbarMenuActive.value = false;
     if (event.item.label === 'Hồ sơ cá nhân') {
-        router.push(`/thong-tin-ca-nhan`);
+      router.push({ name: 'ho-so' });
     } else if (event.item.label === 'Lịch sử mua hàng') {
-        router.push('/lich-su-sp');
+      router.push({ name: 'lich-su-san-pham' });
     } else if (event.item.label === 'Địa chỉ') {
-        router.push(`/dia-chi`);
+      router.push({ name: 'dia-chi' });
     } else {
         // Xử lý trường hợp khác nếu cần
     }
 };
 
 const thongTinCaNhan = () => {
-    router.push(`/thong-tin-ca-nhan`);
+  router.push({ name: 'ho-so' });
 };
 
 const lichSuMuaHang = () => {
-    router.push('/lich-su-sp');
+  router.push({ name: 'lich-su-san-pham' });
 };
 
 const diaChi = () => {
-    router.push(`/dia-chi`);
+  router.push({ name: 'dia-chi' });
 };
 
 const dangXuat = () => {
-    router.push(`/login`);
+  router.push({ name: 'login' });
     localStorage.removeItem('token');
 };
 
 const dangNhap = () => {
-    router.push(`/login`);
+  router.push({ name: 'login' });
 };
 
 const topbarMenuClasses = computed(() => {
@@ -273,8 +277,8 @@ const toggle2 = (event) => {
 
 <template>
     <div class="layout-topbar">
-        <router-link to="/" class="layout-topbar-logo" style="height: 60px; width: 120px">
-            <img src="../../images/logo.png" alt="logo" style="height: 70px" />
+        <router-link :to="{ name: 'trang-chu' }" class="layout-topbar-logo" style="height: 60px; width: 120px">
+            <img src="../../assets/images/logo.png" alt="logo" style="height: 70px" />
         </router-link>
 
         <button class="p-link layout-topbar-menu-button layout-topbar-button" @click="onTopBarMenuButton()">
@@ -283,23 +287,23 @@ const toggle2 = (event) => {
 
         <Toast />
         <div class="layout-topbar-menu">
-            <router-link to="/" class="layout-topbar-logo" style="width: 100px; margin-left: 10px">
+            <router-link :to="{ name: 'trang-chu' }" class="layout-topbar-logo" style="width: 100px; margin-left: 10px">
                 <p style="font-size: 16px">Home</p>
             </router-link>
-            <router-link to="/san-pham" class="layout-topbar-logo" style="width: 100%; margin-left: 10px">
+            <router-link :to="{ name: 'san-pham' }" class="layout-topbar-logo" style="width: 100%; margin-left: 10px">
                 <p style="font-size: 16px">Sản phẩm</p>
             </router-link>
-            <router-link to="/gioi-thieu" class="layout-topbar-logo" style="width: 140%; margin-left: 10px">
+            <router-link :to="{ name: 'gioi-thieu' }" class="layout-topbar-logo" style="width: 140%; margin-left: 10px">
                 <p style="font-size: 16px">Về chúng tôi</p>
             </router-link>
-            <router-link to="/san-pham-da-xem" class="layout-topbar-logo" style="width: 150%; margin-right: 10px">
+            <router-link :to="{ name: 'san-pham-da-xem' }" class="layout-topbar-logo" style="width: 150%; margin-right: 10px">
                 <p style="font-size: 16px">Sản phẩm đã xem</p>
             </router-link>
             <!-- <router-link to="/thong-ke" class="layout-topbar-logo"
                 style="width: 90%; margin-left: 10px; margin-right: 15px">
                 <p style="font-size: 16px">Liên hệ</p>
             </router-link> -->
-            <router-link to="/gio-hang" class="layout-topbar-logo" style="width: 5%; margin-right: 3px">
+            <router-link :to="{ name: 'gio-hang' }" class="layout-topbar-logo" style="width: 5%; margin-right: 3px">
                 <i class="pi pi-shopping-cart p-text-secondary p-overlay-badge" style="font-size: 1.5rem" v-badge="gioHangService.soLuong"></i>
             </router-link>
             <div class="flex justify-content-center" style="margin-right: 10px; margin-left: 20px">
@@ -332,6 +336,17 @@ const toggle2 = (event) => {
 
                 <OverlayPanel ref="op" style="height: 300px; overflow: auto">
                     <H6>Thông báo </H6>
+
+                    <div v-if="!data || data.length===0" style="text-align: center; margin-top: 50px; "  > 
+                                  
+                                  <svg  width="50px" height="50px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#000000" class="bi bi-file-earmark-x">
+<path d="M6.854 7.146a.5.5 0 1 0-.708.708L7.293 9l-1.147 1.146a.5.5 0 0 0 .708.708L8 9.707l1.146 1.147a.5.5 0 0 0 .708-.708L8.707 9l1.147-1.146a.5.5 0 0 0-.708-.708L8 8.293 6.854 7.146z"/>
+<path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
+</svg>
+                       
+                            
+<h5  style="text-align: center;">Chưa có Thông báo !</h5>
+                          </div>
                     <div v-for="(o, index) in data">
                         <button class="p-link" aria-haspopup="true" aria-controls="overlay_tmenu">
                             <div class="flex align-items-center" style="height: 50px; margin-bottom: 10px; width: 240px" @click="daXem(o.id)">

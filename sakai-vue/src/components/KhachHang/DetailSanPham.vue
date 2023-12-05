@@ -156,9 +156,9 @@ const responsiveOptions = ref([
 ]);
 const home = ref({
     icon: 'pi pi-home',
-    to: '/'
+    to: { name: 'trang-chu' }
 });
-const items = ref([{ label: 'Sản phẩm', to: '/san-pham' }, { label: 'Sản phẩm chi tiết' }]);
+const items = ref([{ label: 'Sản phẩm', to: { name: 'san-pham' }}, { label: 'Sản phẩm chi tiết' }]);
 
 const formatCurrency = (value) => {
     if (!value) return '';
@@ -230,7 +230,7 @@ const addToCart = async () => {
         demSLGH(token);
 
         toast.add({ severity: 'success', summary: 'Successful', detail: 'Thêm vào giỏ hàng thành công', life: 3000 });
-        router.push({ name: 'gio-hang' });
+    //    router.push({ name: 'gio-hang' });
     }
 };
 
