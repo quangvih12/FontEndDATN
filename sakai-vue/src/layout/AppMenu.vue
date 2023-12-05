@@ -4,72 +4,91 @@ import { ref } from 'vue';
 import AppMenuItem from './AppMenuItem.vue';
 
 const model = ref([
-    {
-        label: 'Home',
-        items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/thong-ke' }]
+{
+        label: 'Bán Hàng tại quầy',
+        items: [{ label: 'Bán Hàng', icon: 'pi pi-fw pi-home', to: '/ban-hang-tai-quay' }]
     },
     {
-        label: 'UI Components',
+        label: 'Thống Kê',
+        items: [{ label: 'Thống Kê', icon: 'pi pi-fw pi-home', to: { name: 'thong-ke' } }]
+    },
+    {
+        label: 'Sản Phẩm',
         items: [
-            {
-                label: 'prodct',
-                icon: 'pi pi-fw pi-pencil',
-                to: '/pages/product'
-            },
-            {
-                label: 'Khuyến Mãi',
-                icon: 'pi pi-fw pi-circle-off',
-                to: '/pages/khuyenmai'
-            },
-            {
-                label: 'Voucher',
-                icon: 'pi pi-fw pi-circle-off',
-                to: '/pages/voucher'
-            },
-            {
-                label: 'Hóa Đơn',
-                icon: 'pi pi-fw pi-circle-off',
-                to: '/pages/quan-ly-hoa-don'
-            },
-            {
-                label: 'User',
-                icon: 'pi pi-fw pi-circle-off',
-                to: '/pages/user'
-            },
-            {
-                label: 'Thương Hiệu',
-                icon: 'pi pi-fw pi-circle-off',
-                to: '/pages/thuong-hieu'
-            },
-            {
-                label: 'Màu sắc',
-                icon: 'pi pi-fw pi-circle-off',
-                to: '/pages/mau-sac'
-            },
-            {
-                label: 'Size',
-                icon: 'pi pi-fw pi-circle-off',
-                to: '/pages/size'
-            },
-            {
-                label: 'Loại',
-                icon: 'pi pi-fw pi-circle-off',
-                to: '/pages/loai'
 
-            },
             {
-                label: 'Vật liệu',
-                icon: 'pi pi-fw pi-circle-off',
-                to: '/pages/vat-lieu'
+                label: 'Quản Lý Sản Phẩm',
+                icon: '',
+                items: [
+                    {
+                        label: 'Sản Phẩm',
+                        icon: 'pi pi-fw pi-circle-off',
+                        to: { name: 'quan-ly-san-pham' }
+                    }, {
+                        label: 'Thương Hiệu',
+                        icon: 'pi pi-fw pi-circle-off',
+                        to: { name: 'thuong-hieu' }
+                    },
+                    {
+                        label: 'Màu sắc',
+                        icon: 'pi pi-fw pi-circle-off',
+                        to: { name: 'mau-sac' }
+                    },
+                    {
+                        label: 'Size',
+                        icon: 'pi pi-fw pi-circle-off',
+                        to: { name: 'size' }
+                    },
+                    {
+                        label: 'Loại',
+                        icon: 'pi pi-fw pi-circle-off',
+                        to: { name: 'loai' }
+                    },
+                    {
+                        label: 'Vật liệu',
+                        icon: 'pi pi-fw pi-circle-off',
+                        to: { name: 'vat-lieu' }
+                    },
+                    {
+                        label: 'Trọng lượng',
+                        icon: 'pi pi-fw pi-circle-off',
+                        to: { name: 'trong-luong' }
+                    },
+                ]
             },
-            {
-                label: 'Trọng lượng',
-                icon: 'pi pi-fw pi-circle-off',
-                to: '/pages/trong-luong'
-            },
-
         ]
-    }
+    },
+    {
+        label: 'Vocher - Khuyễn Mãi',
+        items: [{
+            label: 'Quản lý Khuyến Mãi',
+            icon: 'pi pi-fw pi-circle-off',
+            to: { name: 'khuyen-mai' }
+        },
+        {
+            label: 'Quản lý Voucher',
+            icon: 'pi pi-fw pi-circle-off',
+            to: { name: 'voucher' }
+        },]
+    },
+    {
+        label: 'User',
+        items: [{
+            label: 'Quản lý User',
+            icon: 'pi pi-fw pi-circle-off',
+            to: { name: 'user' }
+        },]
+    },
+    {
+        label: 'Quản lý Hóa Đơn',
+        items: [{
+            label: 'Hóa Đơn',
+            icon: 'pi pi-fw pi-circle-off',
+            to: { name: 'hoa-don' }
+        },]
+    },
+
+
 ]);
 </script>
 

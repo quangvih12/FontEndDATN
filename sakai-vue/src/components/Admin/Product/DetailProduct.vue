@@ -1,7 +1,8 @@
 <script setup>
+import { FilterMatchMode } from 'primevue/api';
 import { useForm, useField, defineRule } from 'vee-validate';
 import * as yup from 'yup';
-import { reactive, ref, computed, onMounted } from 'vue';
+import { reactive, ref, computed, onMounted, onBeforeMount } from 'vue';
 import TableLoai from './DataTableLoai.vue';
 import TableThuongHieu from './DataTableThuongHieu.vue';
 import TableMauSac from './DataTableMauSac.vue';
@@ -71,7 +72,7 @@ const selectedvatLieu = ref(null);
 const selectedTrongLuong = ref(null);
 const selectedSizes = ref(null);
 const array = ref([]);
-
+const arrayMauSac = ref([]);
 
 
 
@@ -134,7 +135,7 @@ onMounted(() => {
 
 const arrayImageMauSac = ref([]);
 const arrayImage = ref([]);
-
+const lstChiTietSP = ref([]);
 const editProduct = () => {
     id.value = props.myProp.id;
     name.value = props.myProp.ten;
@@ -148,7 +149,7 @@ const editProduct = () => {
     imagesChinh.value = props.myProp.anh;
     selectedLoai.value = props.myProp.loai;
 
-    const selectedThuongHieu = dataThuongHieu.value.find(item => item.ten === props.myProp.thuongHieu);
+    const selectedThuongHieu = dataThuongHieu.value.find((item) => item.ten === props.myProp.thuongHieu);
     selectedCity.value = selectedThuongHieu;
     if (selectedCity.value) {
         //   console.log(selectedCity.value)
@@ -157,7 +158,7 @@ const editProduct = () => {
         ThuongHieu.value = null;
     }
 
-    const selectedLoais = dataLoai.value.find(item => item.ten === props.myProp.loai);
+    const selectedLoais = dataLoai.value.find((item) => item.ten === props.myProp.loai);
     selectedLoai.value = selectedLoais;
     if (selectedLoai.value) {
         //    console.log(selectedLoai.value)
@@ -166,104 +167,119 @@ const editProduct = () => {
         Loai.value = null;
     }
 
-    const selectedVatLieus = dataVatLieu.value.find(item => item.ten === props.myProp.vatLieu);
+    const selectedVatLieus = dataVatLieu.value.find((item) => item.ten === props.myProp.vatLieu);
     selectedvatLieu.value = selectedVatLieus;
     if (selectedvatLieu.value) {
         vatLieu.value = selectedvatLieu.value.id;
     } else {
         vatLieu.value = null;
     }
-
-    const selectedTrongLuongs = dataTrongLuong.value.find(item => item.value === parseInt(props.myProp.trongLuong, 10));
+    //   console.log(dataTrongLuong.value)
+    const selectedTrongLuongs = dataTrongLuong.value.find((item) => item.value === parseInt(props.myProp.trongLuong, 10));
     selectedTrongLuong.value = selectedTrongLuongs;
     if (selectedTrongLuong.value) {
         TrongLuong.value = selectedTrongLuong.value.id;
     } else {
         TrongLuong.value = null;
     }
-
-    const tenSize = props.myProp.size.map(size => size.size.ten);
-    const soLuongSize = props.myProp.size.map(size => size.soLuong);
-
-    //size và số lượng size
-    const selectedSizeIds = [];
-    for (const ten of tenSize) {
-        const selectedSizeId = dataSize.value.find(i => i.ten === ten);
-        if (selectedSizeId) {
-            selectedSizeIds.push(selectedSizeId);
-        }
-    }
-    selectedSizes.value = selectedSizeIds;
-    if (selectedSizes.value.length > 0) {
-        const selectedIds = selectedSizes.value.map(item => item.id);
-        Size.value = selectedIds.join(',').split(',').map(Number);
-    } else {
-        Size.value = null;
-    }
-    for (let i = 0; i < selectedSizes.value.length; i++) {
-        const size = selectedSizes.value[i].id;
-        const soLuong = soLuongSize[i];
-        array.value[i] = soLuong;
-        //   console.log(`Size: ${size}, Số lượng: ${soLuong}`);
-    }
-    if (array.value.length > 0) {
-        SoLuongSize.value = array.value.join(',').replace(/^,/, '').split(',').map(Number);
-    } else {
-        SoLuongSize.value = null;
-    }
-
-    //màu sắc và ảnh màu sắc
-    const tenMauSac = props.myProp.mauSac.map(s => s.mauSac.ten);
-    const anhMauSac = props.myProp.mauSac.map(s => s.anh);
-    const selectedMauSacTen = [];
-    for (const ten of tenMauSac) {
-        const selected = dataMauSac.value.find(i => i.ten === ten);
-        if (selected) {
-            selectedMauSacTen.push(selected);
-        }
-    }
-    selectedMauSac.value = selectedMauSacTen;
-    if (selectedMauSac.value.length > 0) {
-        const selectedIds = selectedMauSac.value.map(item => item.id);
-        idMauSac.value = selectedIds.join(',').split(',').map(Number);
-        //  console.log(idMauSac.value);
-    } else {
-        idMauSac.value = null;
-    }
-    for (let i = 0; i < selectedMauSac.value.length; i++) {
-        const mauSac = selectedMauSac.value[i].ten;
-        const anh = anhMauSac[i];
-        arrayImageMauSac.value[i] = anh;
-        selectedMauSac.value[i].anh = anh;
-    }
-
-    for (const img of selectedMauSac.value) {
-        arrayImgMauSac.value.push(img.anh);
-        imgMauSac.value = arrayImgMauSac.value.join(",").replace(/^,/, '').split(',');
-    }
-
-
-    // ảnh của sản phẩm
     arrayImage.value = props.myProp.img;
     for (const img of arrayImage.value) {
-        //  console.log(img.anh);
         ImagesProduct.value.push(img.anh);
-        imagesProduct.value = ImagesProduct.value.join(",").replace(/^,/, '').split(',');
-        //  console.log(imagesProduct.value)
+        imagesProduct.value = ImagesProduct.value.join(',').replace(/^,/, '').split(',');
     }
 
+    lstChiTietSP.value = props.myProp.sanPhamChiTiet;
+    // console.log(props.myProp)
     product.value = { ...editProduct };
+
     productDialog.value = true;
+};
+
+const getStatusLabel = (soLuong) => {
+    if (soLuong == 0) {
+        return { text: 'hết Hàng', severity: 'danger' };
+    } else if (soLuong == 1) {
+        return { text: 'Còn hàng', severity: 'success' };
+    } else {
+        return { text: 'Tồn kho', severity: 'war' };
+    }
+
+};
+
+const getStatusLabelKhuyenMai = (khuyenMai) => {
+    return { text: 'Khuyễn Mại', severity: 'warn' };
+};
+
+const formatCurrency = (value) => {
+    return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+};
+
+const filters = ref({});
+
+onBeforeMount(() => {
+    initFilters();
+});
+
+
+const initFilters = () => {
+    filters.value = {
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS }
+    };
 };
 
 
 
+
+const columns = ref([
+    { field: 'giaSauGiam', header: 'Giá giảm giá' },
+    { field: 'tenKM', header: 'Tên Khuyến Mãi' },
+    { field: 'thoiGianBatDau', header: 'Thời gian bắt đầu' },
+    { field: 'thoiGianKetThuc', header: 'Thời gian kết thúc' },
+    { field: 'giaTriGiam', header: 'Giá Trị (%)' },
+]);
+
+// hàm để tắt/mở cột
+const selectedColumns = ref(columns.value.soLuongTon);
+
+const onToggle = (val) => {
+    selectedColumns.value = columns.value.filter(col => val.includes(col));
+};
+
+const trangThaiselect = ref(null);
+const dataTrangThai = ref([
+    { label: 'Tất cả', value: -1 },
+    { label: 'Hết hàng', value: 0 },
+    { label: 'Còn hàng', value: 1 },
+    { label: 'khuyễn mại', value: 2 },
+    { label: 'Tồn kho', value: 3 },
+]);
+
+
+const loadDataTrangThai = () => {
+    lstChiTietSP.value = props.myProp.sanPhamChiTiet;
+    if (trangThaiselect.value.value == -1) {
+        lstChiTietSP.value = props.myProp.sanPhamChiTiet;
+        return lstChiTietSP.value;
+    } else if (trangThaiselect.value.value == 0) {
+        lstChiTietSP.value = lstChiTietSP.value.filter(item => item.trangThai == 0);
+        return lstChiTietSP.value;
+    } else if (trangThaiselect.value.value == 1) {
+        lstChiTietSP.value = lstChiTietSP.value.filter(item => item.trangThai == 1);
+        return lstChiTietSP.value;
+    } else if (trangThaiselect.value.value == 3) {
+        lstChiTietSP.value = lstChiTietSP.value.filter(item => item.trangThai == 3);
+        return lstChiTietSP.value;
+    } else {
+        lstChiTietSP.value = lstChiTietSP.value.filter(item => item.tenKM != null);
+        return lstChiTietSP.value;
+    }
+}
 </script>
 
 
 <template>
-    <Button icon="pi pi-eye" class="p-button-rounded p-button-success mr-2" @click="editProduct()" />
-    <Dialog v-model:visible="productDialog" :style="{ width: '1050px' }" header="Product Details" :modal="true"
+    <Button icon="pi pi-eye" severity="secondary" class="p-button-rounded  mr-2" @click="editProduct()" />
+    <Dialog v-model:visible="productDialog" :style="{ width: '1050px' }" header="Xem Chi Tiết Sản Phẩm" :modal="true"
         class="p-fluid">
         <form @submit="onSubmit" style="margin-top: 30px;">
             <div class="p-fluid formgrid grid">
@@ -271,55 +287,31 @@ const editProduct = () => {
                 <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
                     <div class="Field col-12 md:col-12" style="margin-bottom: 30px">
                         <span class="p-float-label">
-                            <InputText id="name" name="name" type="text" v-model="name" :class="{ 'p-invalid': nameError }" disabled>
+                            <InputText id="name" name="name" type="text" v-model="name" :class="{ 'p-invalid': nameError }"
+                                disabled>
                             </InputText>
                             <label for="username">Tên sản phẩm</label>
                         </span>
                         <small class="p-error">{{ nameError }}</small>
                     </div>
 
-                    <div class="Field col-12 md:col-12" style="margin-bottom: 30px">
-                        <span class="p-float-label">
-                            <InputNumber id="soluong" v-model="soluong" :class="{ 'p-invalid': soLuongError }" disabled>
-                            </InputNumber>
-                            <label for="SoLuongTon">Số lượng tồn</label>
-                        </span>
-                        <small class="p-error">{{ soLuongError }}</small>
-                    </div>
 
-                    <div class="Field col-12 md:col-12" style="margin-bottom: 30px">
-                        <span class="p-float-label">
-                            <InputNumber id="Field" v-model="GiaNhap" :class="{ 'p-invalid': giaNhapError }" disabled>
-                            </InputNumber>
-                            <label for="Field">Giá Nhập</label>
-                        </span>
-                        <small class="p-error">{{ giaNhapError }}</small>
-                    </div>
-                    <div class="Field col-12 md:col-12" style="margin-bottom: 30px">
-
-                        <span class="p-float-label">
-                            <InputNumber id="number-input" name="GiaBan" v-model="GiaBan"
-                                :class="{ 'p-invalid': giaBanError }" disabled></InputNumber>
-                            <label for="Field">Giá bán</label>
-                        </span>
-                        <small class="p-error">{{ giaBanError }}</small>
-                    </div>
                     <div class="Field col-12 md:col-12" style="margin-bottom: 30px">
                         <label for="address">Quai Đeo</label>
                         <div class="flex flex-wrap gap-3">
                             <div class="flex align-items-center">
                                 <RadioButton v-model="QuaiDeo" type="radio" inputId="ingredient1" name="QuaiDeo"
-                                    value="Quai đeo cố định" :class="{ 'p-invalid': quaiDeoError }" disabled/>
+                                    value="Quai đeo cố định" :class="{ 'p-invalid': quaiDeoError }" disabled />
                                 <label for="ingredient1" class="ml-2">Quai đeo cố định</label>
                             </div>
                             <div class="flex align-items-center">
                                 <RadioButton v-model="QuaiDeo" type="radio" inputId="ingredient2" name="QuaiDeo"
-                                    value="Quai đeo dạng Y" :class="{ 'p-invalid': quaiDeoError }" disabled/>
+                                    value="Quai đeo dạng Y" :class="{ 'p-invalid': quaiDeoError }" disabled />
                                 <label for="ingredient2" class="ml-2">Quai đeo dạng Y</label>
                             </div>
                             <div class="flex align-items-center">
                                 <RadioButton v-model="QuaiDeo" type="radio" inputId="ingredient3" name="QuaiDeo"
-                                    value="Quai đeo đặc biệt" :class="{ 'p-invalid': quaiDeoError }" disabled/>
+                                    value="Quai đeo đặc biệt" :class="{ 'p-invalid': quaiDeoError }" disabled />
                                 <label for="ingredient3" class="ml-2" :class="{ 'p-invalid': equaiDeoError }">Quai đeo
                                     đặc biệt</label>
                             </div>
@@ -332,17 +324,17 @@ const editProduct = () => {
                         <div class="flex flex-wrap gap-3">
                             <div class="flex align-items-center">
                                 <RadioButton v-model="DemLot" inputId="ingredient1" name="pizza" value="Bọt biển "
-                                    :class="{ 'p-invalid': demLotError }" disabled/>
+                                    :class="{ 'p-invalid': demLotError }" disabled />
                                 <label for="ingredient1" class="ml-2">Bọt biển </label>
                             </div>
                             <div class="flex align-items-center">
                                 <RadioButton v-model="DemLot" inputId="ingredient2" name="pizza" value="Vật liệu mềm"
-                                    :class="{ 'p-invalid': demLotError }" disabled/>
+                                    :class="{ 'p-invalid': demLotError }" disabled />
                                 <label for="ingredient2" class="ml-2">Vật liệu mềm</label>
                             </div>
                             <div class="flex align-items-center">
                                 <RadioButton v-model="DemLot" inputId="ingredient4" name="pizza"
-                                    value="Đệm lót chống xốp nhiễu" :class="{ 'p-invalid': demLotError }" disabled/>
+                                    value="Đệm lót chống xốp nhiễu" :class="{ 'p-invalid': demLotError }" disabled />
                                 <label for="ingredient4" class="ml-2">Đệm lót chống xốp nhiễu</label>
                             </div>
                         </div>
@@ -353,12 +345,12 @@ const editProduct = () => {
                         <div class="flex flex-wrap gap-3">
                             <div class="flex align-items-center">
                                 <RadioButton v-model="TrangThai" inputId="ingredient1" name="pizza" value="1"
-                                    :class="{ 'p-invalid': TrangThaiSacError }" disabled/>
+                                    :class="{ 'p-invalid': TrangThaiSacError }" disabled />
                                 <label for="ingredient1" class="ml-2">Sẵn sàng để bán</label>
                             </div>
                             <div class="flex align-items-center">
-                                <RadioButton v-model="TrangThai" inputId="ingredient2" name="pizza" value="2"
-                                    :class="{ 'p-invalid': TrangThaiSacError }" disabled/>
+                                <RadioButton v-model="TrangThai" inputId="ingredient2" name="pizza" value="3"
+                                    :class="{ 'p-invalid': TrangThaiSacError }" disabled />
                                 <label for="ingredient2" class="ml-2">tồn kho</label>
                             </div>
 
@@ -374,24 +366,10 @@ const editProduct = () => {
                                     </Dropdown>
                                     <label for="dropdown">Loại</label>
                                 </span>
-                               
+
                             </div>
 
                             <small class="p-error">{{ loaiError }}</small>
-                        </div>
-                        <div class="Field col-6 md:col-6" style="margin-bottom: 30px">
-                            <div style="display: flex">
-                                <span class="p-float-label" style="width: 239px">
-                                    <MultiSelect v-model="selectedMauSac" :options="dataMauSac" optionLabel="ten"
-                                        :filter="false" :maxSelectedLabels="3" :class="{ 'p-invalid': mauSacError }"
-                                        @change="onMauSacChange" disabled>
-                                    </MultiSelect> 
-                                    <label for="multiselect">Màu sắc</label>
-                                </span>
-
-                             
-                            </div>
-                            <small class="p-error">{{ mauSacError }}</small>
                         </div>
 
 
@@ -399,39 +377,14 @@ const editProduct = () => {
                             <div style="display: flex">
                                 <span class="p-float-label" style="width: 239px">
                                     <Dropdown id="dropdown" :options="dataVatLieu" v-model="selectedvatLieu"
-                                        :class="{ 'p-invalid': vatLieuError }" optionLabel="ten" @change="onvatLieuChange" disabled>
+                                        :class="{ 'p-invalid': vatLieuError }" optionLabel="ten" @change="onvatLieuChange"
+                                        disabled>
                                     </Dropdown>
                                     <label for="dropdown">Vật liệu</label>
                                 </span>
-                              
+
                             </div>
                             <small class="p-error">{{ vatLieuError }}</small>
-                        </div>
-                        <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
-                            <div style="display: flex">
-                                <span class="p-float-label" style="width: 239px">
-                                    <Dropdown id="dropdown" :options="dataTrongLuong" v-model="selectedTrongLuong" disabled
-                                        optionLabel="value" :class="{ 'p-invalid': trongLuongError }"
-                                        @change="onTrongLuongChange">
-                                    </Dropdown>
-                                    <label for="dropdown">Trọng Lượng</label>
-                                </span>
-                               
-                            </div>
-                            <small class="p-error">{{ trongLuongError }}</small>
-                        </div>
-                        <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
-                            <div style="display: flex">
-                                <span class="p-float-label" style="width: 150px">
-                                    <MultiSelect v-model="selectedSizes" :options="dataSize" optionLabel="ten"
-                                        :filter="false" :maxSelectedLabels="3" :class="{ 'p-invalid': SizeError }" disabled
-                                        @change="onSizeChange">
-                                    </MultiSelect>
-                                    <label for="multiselect">Size</label>
-                                </span>
-                            
-                            </div>
-                            <small class="p-error">{{ SizeError }}</small>
                         </div>
 
                         <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
@@ -442,86 +395,154 @@ const editProduct = () => {
                                     </Dropdown>
                                     <label for="dropdown">Thương Hiệu</label>
                                 </span>
-                               
+
                             </div>
 
                             <small class="p-error">{{ thuongHieuError }}</small>
                         </div>
-                        <div class="Field col-12 md:col-12" style="margin-bottom: 30px">
-                            <div style="display: flex;">
-                                <div style="width: 150px;">
-                                    <p>nhập số lượng size: </p>
-                                </div>
-                                <div style="display: flex; flex-wrap: wrap;">
-                                    <Div v-for="(size, index) in selectedSizes" :key="index" style="margin-top: 10px;">
-                                        <label :for="`input-${size.id}`" style="margin-right: 10px; margin-left: 10px;  ">{{
-                                            size.ten }}</label>
-                                        <input type="number" :id="`input-${size.id}`" v-model="array[index]"
-                                            @change="handleInputChange()" :class="{ 'p-invalid': soLuongSizeError }"
-                                            style="height: 20px; width: 60px; " disabled />
-                                    </Div>
-                                </div>
-                            </div>
-                            <small class="p-error">{{ soLuongSizeError }}</small>
-                        </div>
-                        <div class="field col-12 md:col-12" style="margin-bottom: 30px">
-                            <label for="address">Mô tả</label>
-                            <Textarea id="address" rows="4" v-model="MoTa"
-                                :class="{ 'p-invalid': MoTaSacError }" disabled></Textarea>
-                            <small class="p-error">{{ MoTaSacError }}</small>
-                        </div>
+
+
+
                     </div>
                 </div>
                 <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
                     <div class="p-fluid formgrid grid">
                         <div class="Field col-12 md:col-6"
-                            style="margin-bottom: 30px; height: 300px;margin-top: 10px; display: inline-flex; justify-content: center; align-items: center;">
-                            <div style="display: block; margin-left: 200px;">
-                                <div class="t"
-                                    style="border: 1px solid black; border-radius: 10px; width: 300px; height:240px; margin-top: -60px;">
-                                    <img :src="imagesChinh" alt=""
-                                        style="width: 275px; height: 230px; top: 50%; left: 50%;  transform: translate(4%, 2%);">
-                                </div>
-                                <div class="buton" style="margin-top: 10px;">
-                                  
-                                </div>
-                                <small class="p-error">{{ imagestError }}</small>
-                            </div>
+                            style="margin-bottom: 30px; height: 300px;margin-top: -30px; margin-left: 100px;display: inline-flex; justify-content: center; align-items: center;">
+                            <Galleria :value="arrayImage" :responsiveOptions="responsiveOptions" :numVisible="5"
+                                containerStyle="max-width: 340px" style="">
+                                <template #item="slotProps">
+                                    <img :src="imagesChinh" :alt="slotProps.item.alt" style="width: 70%; height: ;" />
+                                </template>
+                                <template #thumbnail="slotProps">
+                                    <img :src="slotProps.item.anh" :alt="slotProps.item.alt"
+                                        style="width: 80px; height:80px ;" />
+
+                                </template>
+                            </Galleria>
                         </div>
-                        <div class="field col-12 md:col-12">
-                            <div v-for="(img, index) in arrayImage" :key="index" class="mausac-container"
-                                style="display:  inline-block;margin-left: 30px; margin-bottom: 15px; height:90x ; width: 100px;">
-                                <div>
-                                    <img :src="img.anh" alt=""
-                                        style="width: 100px; height: 90px; top: 50%; left: 50%;  transform: translate(4%, 2%); margin: 10px 0px 15px 0px;">
-
-                                </div>
-
-                            </div>
-
-                        </div>
-                        <div class="field col-12 md:col-12" style="display:inline-block;">
-                            <div v-for="(color, index) in selectedMauSac" :key="index" class="mausac-container"
-                                style="display: inline-block;margin-left: 30px; margin-bottom: 15px; height:90x ; width: 100px;">
-                                <div>
-                                    Màu :
-                                    <span class="product-name">{{ color.ten }}</span>
-                                    <img :src="color.anh" alt=""
-                                        style="width: 50px; height: 50px; top: 50%; left: 50%;  transform: translate(4%, 2%); margin: 10px 0px 15px 0px;">
-                                
-                                </div>
-
-                             
-                            </div>
-
-                            <br />
-                            <small class="p-error">{{ ImgMauSacError }}</small>
-                        </div>
-
                     </div>
-                    <div class="field col-12 md:col-12">
-                      
+
+                    <div class="field col-12 md:col-12" style="margin-bottom: 30px; margin-top: 20px;">
+                        <label for="address">Mô tả</label>
+                        <Textarea id="address" rows="4" v-model="MoTa" :class="{ 'p-invalid': MoTaSacError }"
+                            disabled></Textarea>
+                        <small class="p-error">{{ MoTaSacError }}</small>
                     </div>
+                </div>
+
+                <div class="Field col-12 md:col-12" style="margin-bottom: 30px">
+                    <DataTable ref="dt" :value="lstChiTietSP" v-model:selection="selectedProducts" dataKey="id"
+                        :paginator="true" :rows="5" :filters="filters"
+                        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                        :rowsPerPageOptions="[5, 10, 25]"
+                        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
+                        responsiveLayout="scroll" showGridlines>
+                        <template #header>
+
+                            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                                <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                                    <MultiSelect icon="pi pi-plus" :modelValue="selectedColumns" :options="columns"
+                                        optionLabel="header" @update:modelValue="onToggle" display="chip"
+                                        placeholder="Select Columns" />
+                                </div>
+                                <div style="display: flex;">
+                                    <h5 class="m-0" style="margin-right: 0px;">Chi Tiết Sản Phẩm </h5>
+                                </div>
+
+                                <span class="block mt-2 md:mt-0 p-input-icon-left" style="width: 200px; left: 50px;">
+                                    <i class="pi pi-search" />
+                                    <InputText v-model="filters['global'].value" placeholder="Search..." />
+
+                                </span>
+                                <Dropdown v-model="trangThaiselect" :options="dataTrangThai" optionLabel="label"
+                                    :optionLabel="(option) => option.label" placeholder="Tất cả" class="w-full md:w-14rem"
+                                    style="margin-left: 20px" @change="loadDataTrangThai()">
+
+                                </Dropdown>
+
+                            </div>
+
+                        </template>
+
+
+                        <Column field="stt" header="STT" :sortable="true" style="width: 1px; padding: 5px;">
+                            <template #body="slotProps">
+                                <span class="p-column-title">STT</span>
+                                {{ lstChiTietSP.indexOf(slotProps.data) + 1 }}
+                            </template>
+                        </Column>
+                        <Column field="anh" header="Ảnh" :sortable="true" headerStyle="width:14%; min-width:5rem;">
+                            <template #body="slotProps">
+                                <span class="p-column-title">Ảnh</span>
+                                <img :src="slotProps.data.anh" :alt="i" class="shadow-2" width="50" />
+                            </template>
+                        </Column>
+                        <Column field="tenMauSac" header="Tên Màu Sắc" :sortable="true"
+                            headerStyle="width:14%; min-width:10rem;">
+                            <template #body="slotProps">
+                                <span class="p-column-title">Tên Màu Sắc</span>
+                                {{ slotProps.data.tenMauSac }}
+                            </template>
+                        </Column>
+                        <Column field="tenSize" header="Tên Size" :sortable="true" headerStyle="width:14%; min-width:8rem;">
+                            <template #body="slotProps">
+                                <span class="p-column-title">Size</span>
+                                {{ slotProps.data.tenSize === null ? "chưa có" : slotProps.data.tenSize }}
+                            </template>
+                        </Column>
+                        <Column field="soLuongTon" header="Số Lượng" :sortable="true"
+                            headerStyle="width:14%; min-width:8rem;">
+                            <template #body="slotProps">
+                                <span class="p-column-title">Số Lượng</span>
+                                {{ slotProps.data.soLuongTon }}
+                            </template>
+                        </Column>
+                        <!-- <Column field="giaNhap" header="Giá Nhập" :sortable="true" headerStyle="width:14%; min-width:8rem;">
+                            <template #body="slotProps">
+                                <span class="p-column-title">Số Lượng</span>
+                                {{ formatCurrency(slotProps.data.giaNhap) }}
+                            </template>
+                        </Column> -->
+                        <Column field="giaBan" header="Giá Bán" :sortable="true" headerStyle="width:14%; min-width:8rem;">
+                            <template #body="slotProps">
+                                <span class="p-column-title">Số Lượng</span>
+                                {{ formatCurrency(slotProps.data.giaBan) }}
+                            </template>
+                        </Column>
+                        <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header"
+                            :key="col.field + '_' + index" :sortable="true" headerStyle="width:8%; min-width:5rem;">
+                        </Column>
+                        <Column field="trongLuong" header="Trọng Lượng" :sortable="true"
+                            headerStyle="width:14%; min-width:8rem;">
+                            <template #body="slotProps">
+                                <span class="p-column-title">Số Lượng</span>
+                                {{ slotProps.data.trongLuong }}
+                            </template>
+                        </Column>
+                        <Column field="trangThai" header="Trạng Thái" sortable headerStyle="width: 4%; min-width: 5rem;">
+                            <template #body="slotProps">
+                                <!-- {{ slotProps.data.soLuong <= 0 ? "Hết":"còn hàng" }} -->
+                                <Tag :value="getStatusLabel(slotProps.data.trangThai).text"
+                                    v-if="slotProps.data.tenKM === null || slotProps.data.tenKM == ''"
+                                    :severity="getStatusLabel(slotProps.data.trangThai).severity" />
+                                <div v-else>
+                                    <Tag :value="getStatusLabelKhuyenMai(slotProps.data.tenKM).text"
+                                        :severity="getStatusLabelKhuyenMai(slotProps.data.tenKM).severity" />
+                                </div>
+
+                            </template>
+                        </Column>
+                        <!-- <Column header="Action" headerStyle="min-width:10rem;">
+                            <template #body="slotProps">
+                                <UpdateMauSacChiTiet :my-prop="slotProps.data" :idProduct="idProduct" :soLuongTong="soluong"
+                                    :lst="lstMauSac"></UpdateMauSacChiTiet>
+                                <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2"
+                                    @click="deleteMauSac(slotProps.data.id)" />
+                            </template>
+                        </Column> -->
+
+                    </DataTable>
                 </div>
                 <div style="width: 1000px; text-align: center;">
                     <Button class="p-button-outlined" outlined severity="secondary"
