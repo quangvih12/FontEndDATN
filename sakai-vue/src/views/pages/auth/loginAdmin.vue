@@ -24,7 +24,7 @@ const toast = useToast();
 
 
 const gotoTrangChu = () => {
-    router.push({ name: 'ban-hang-tai-quay' });
+    router.push({ name: 'ban-hang' });
 };
 
 
@@ -54,7 +54,8 @@ const dangNhapa = handleSubmit(async () => {
           id: data.userID,
           username: data.usernameOrEmail,
         }));
-        await router.push({ name: 'admin' });
+        gotoTrangChu();
+     //   await router.push({ name: 'admin' });
     }
 });
 

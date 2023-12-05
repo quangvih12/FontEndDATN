@@ -1,6 +1,6 @@
 import {createRouter, createWebHistory} from 'vue-router';
 import {authMiddleware} from "@/middleware";
-
+import ChatAdmin from '@/components/Admin/Chat/ChatAdmin.vue';
 const router = createRouter({
     history: createWebHistory(),
     routes: [
@@ -211,7 +211,7 @@ const router = createRouter({
                 {
                     path: 'chat',
                     name: 'chat-admin',
-                    component: () => import('@/components/Admin/Chat/ChatAdmin.vue')
+                    component: ChatAdmin
                 }
             ]
         },
@@ -223,7 +223,7 @@ const router = createRouter({
         {
             path: '/unauthorized',
             name: 'unauthorized',
-            component: () => import('@/views/pages/auth/Access.vue')
+            component: () => import('@/views/pages/auth/Error.vue')
         },
         {
             path: '/:pathMatch(.*)*',
