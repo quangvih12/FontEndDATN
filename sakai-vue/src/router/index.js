@@ -1,270 +1,222 @@
-import { createRouter, createWebHashHistory } from 'vue-router';
-import AppLayout from '@/layout/AppLayout.vue';
-import AppLayoutKH from '@/layout/KhachHang/AppLayoutKH.vue';
-import AppLayoutBH from '@/layout/BanHang/AppLayoutBH.vue';
-import { authMiddleware } from '@/service/Authentication/Middleware.js';
+import {createRouter, createWebHistory} from 'vue-router';
+import {authMiddleware} from "@/middleware";
 
 const router = createRouter({
-    history: createWebHashHistory(),
+    history: createWebHistory(),
     routes: [
         {
-            path: '/:pathMatch(.*)*',
-            component: () => import('@/views/pages/auth/Login.vue')
+            path: '',
+            component: () => import('@/layout/KhachHang/AppLayoutKH.vue'),
+            children: [
+                {
+                    path: '',
+                    name: 'trang-chu',
+                    component: () => import('@/components/KhachHang/TrangChu.vue')
+                },
+                {
+                    path: 'gioi-thieu',
+                    name: 'gioi-thieu',
+                    component: () => import('@/components/KhachHang/GioiThieu.vue'),
+                },
+                {
+                    path: 'san-pham-da-xem',
+                    name: 'san-pham-da-xem',
+                    component: () => import('@/components/KhachHang/SanPhamDaXem.vue'),
+                },
+                {
+                    path: 'lich-su-san-pham',
+                    name: 'lich-su-san-pham',
+                    beforeEnter: authMiddleware.requireAuth,
+                    component: () => import('@/components/KhachHang/LichSuSP/LichSuSP.vue'),
+                },
+                {
+                    path: 'ho-so',
+                    name: 'ho-so',
+                    beforeEnter: authMiddleware.requireAuth,
+                    component: () => import('@/components/KhachHang/ThongTinKhachHang.vue'),
+                },
+                {
+                    path: 'san-pham',
+                    name: 'san-pham',
+                    component: () => import('@/components/KhachHang/SanPham.vue'),
+                },
+                {
+                    path: 'san-pham/:id',
+                    name: 'chi-tiet-san-pham',
+                    component: () => import('@/components/KhachHang/DetailSanPham.vue'),
+                    props: true
+                },
+                {
+                    path: 'gio-hang',
+                    name: 'gio-hang',
+                    component: () => import('@/components/KhachHang/GioHang/GioHang.vue')
+                },
+                {
+                    path: 'gio-hang/thanh-toan',
+                    name: 'thanh-toan',
+                    component: () => import('@/components/KhachHang/ThanhToan.vue'),
+                    beforeEnter: authMiddleware.requireAuth
+                },
+                {
+                    path: 'gio-hang/thanh-toan/thanh-cong',
+                    name: 'thanh-cong',
+                    component: () => import('@/components/KhachHang/Success.vue'),
+                    beforeEnter: authMiddleware.requireAuth
+                },
+                {
+                    path: 'gio-hang/thanh-toan/that-bai',
+                    name: 'that-bai',
+                    component: () => import('@/components/KhachHang/PaymentFailled.vue'),
+                    beforeEnter: authMiddleware.requireAuth
+                },
+                {
+                    path: 'trang-thai-don-hang',
+                    name: 'trang-thai-don-hang',
+                    beforeEnter: authMiddleware.requireAuth,
+                    children: [
+                        {
+                            path: ':id',
+                            props: true,
+                            component: () => import('@/components/KhachHang/LichSuSP/TrangThaiDonHang.vue')
+                        }
+                    ]
+                },
+                {
+                    path: 'dia-chi',
+                    name: 'dia-chi',
+                    beforeEnter: authMiddleware.requireAuth,
+                    component: () => import('@/components/KhachHang/DiaChiKhachHang/Index.vue')
+                }
+            ]
+        },
+        {
+            path: '/dang-ky',
+            name: 'dang-ky',
+            component: () => import('@/components/KhachHang/Register.vue'),
+        },
+        {
+            path: '/dang-ky/xac-thuc',
+            name: 'xac-thuc',
+            component: () => import('@/components/KhachHang/OTP.vue')
         },
         {
             path: '/login',
             name: 'login',
             component: () => import('@/views/pages/auth/Login.vue')
         },
-
-        ,
-        // {
-        //     path: '/test',
-        //     name: 'test',
-        //     component: () => import('@/components/KhachHang/Test.vue')
-        // },
-
         {
-            path: '/khach-hang/dang-ky',
-            name: 'dangky',
-            component: () => import('@/components/KhachHang/Register.vue')
-            // beforeEnter: authMiddleware
-        },
-
-        {
-            path: '/otp',
-            name: 'otp',
-            component: () => import('@/components/KhachHang/OTP.vue')
-        },
-
-        {},
-        {
-            path: '/login-admin',
+            path: '/admin/login',
             name: 'login-admin',
             component: () => import('@/views/pages/auth/LoginAdmin.vue')
         },
         {
-            path: '/Error',
-            name: 'eror',
-            component: () => import('@/views/pages/auth/Error.vue')
-        },
-        {
-            path: '/',
-            component: AppLayoutKH,
+            path: '/admin',
+            component: () => import('@/layout/AppLayout.vue'),
+            beforeEnter: authMiddleware.requireAdmin,
             children: [
                 {
-                    path: '/',
-                    name: 'trang-chu',
-                    component: () => import('@/components/KhachHang/TrangChu.vue')
-                },
-
-                {
-                    path: '/gioi-thieu',
-                    name: 'gioi-thieu',
-                    component: () => import('@/components/KhachHang/GioiThieu.vue')
+                    path: '',
+                    name: 'admin',
+                    component: () => import('@/components/Admin/Product/ViewPlaceholder.vue')
                 },
                 {
-                    path: '/san-pham-da-xem',
-                    name: 'san-pham-da-xem',
-                    component: () => import('@/components/KhachHang/SanPhamDaXem.vue')
+                    path: 'san-pham',
+                    component: () => import('@/layout/LayoutSP.vue'),
+                    children: [
+                        {
+                            path: '',
+                            name: 'quan-ly-san-pham',
+                            component: () => import('@/components/Admin/Product/ChiTietSanPham.vue')
+                        },
+                        {
+                            path: 'mau-sac',
+                            name: 'mau-sac',
+                            component: () => import('@/components/Admin/MauSac/index.vue')
+                        },
+                        {
+                            path: 'loai',
+                            name: 'loai',
+                            component: () => import('@/components/Admin/Loai/index.vue')
+                        },
+                        {
+                            path: 'trong-luong',
+                            name: 'trong-luong',
+                            component: () => import('@/components/Admin/TrongLuong/Index.vue')
+                        },
+                        {
+                            path: 'vat-lieu',
+                            name: 'vat-lieu',
+                            component: () => import('@/components/Admin/VatLieu/Index.vue')
+                        },
+                        {
+                            path: 'size',
+                            name: 'size',
+                            component: () => import('@/components/Admin/QuanLySize/ViewSize.vue')
+                        },
+                        {
+                            path: 'thuong-hieu',
+                            name: 'thuong-hieu',
+                            component: () => import('@/components/Admin/QuanLyThuongHieu/ViewThuongHieu.vue')
+                        }
+                    ]
                 },
                 {
-                    path: '/success',
-                    name: 'success',
-                    component: () => import('@/components/KhachHang/Success.vue')
-                },
-                {
-                    path: '/failed',
-                    name: 'failed',
-                    component: () => import('@/components/KhachHang/PaymentFailled.vue')
-                },
-                {
-                    path: '/thong-tin-ca-nhan',
-                    name: 'thong-tin-ca-nhan',
-                    component: () => import('@/components/KhachHang/ThongTinKhachHang.vue')
-                },
-                {
-                    path: '/san-pham',
-                    name: 'san-pham',
-                    component: () => import('@/components/KhachHang/SanPham.vue')
-                },
-                {
-                    path: '/thanh-toan',
-                    name: 'thanh-toan',
-                    component: () => import('@/components/KhachHang/ThanhToan.vue')
-                },
-                {
-                    path: '/detail/:id', // Giả sử `id` là mã định danh duy nhất của sản phẩm
-                    name: 'ProductDetail',
-                    component: () => import('@/components/KhachHang/DetailSanPham.vue'),
-                    props: true // Cho phép các tham số route được truyền vào component như props
-                },
-                {
-                    path: '/gio-hang',
-                    name: 'gio-hang',
-                    component: () => import('@/components/KhachHang/GioHang/GioHang.vue')
-                },
-                {
-                    path: '/trang-thai-don-hang/:id',
-                    name: 'trangThaiDonHang',
-                    props: true, // Cho phép các tham số route được truyền vào component như props
-                    component: () => import('@/components/KhachHang/LichSuSP/TrangThaiDonHang.vue')
-                },
-                {
-                    path: '/dia-chi',
-                    name: 'dia-chi',
-                    component: () => import('@/components/KhachHang/DiaChiKhachHang/Index.vue')
-                },
-                {
-                    path: '/lich-su-sp',
-                    name: 'lich-su-sp',
-                    component: () => import('@/components/KhachHang/LichSuSP/LichSuSP.vue')
-                }
-            ]
-        },
-        {
-            path: '/nhan-vien',
-            component: AppLayoutBH,
-            children: [
-                {
-                    path: '/ban-hang-tai-quay',
-                    name: 'ban-hang-tai-quay',
-                    component: () => import('@/components/Admin/BanHang/BanHangTaiQuay.vue')
-                }
-            ]
-        },
-        {
-            path: '/thong-ke',
-            component: AppLayout,
-            children: [
-                {
-                    path: '/thong-ke',
-                    name: 'thongKe',
-                    component: () => import('@/components/Admin/ThongKe/index.vue'),
-                    beforeEnter: authMiddleware
-                },
-                {
-                    path: '/thong-tin-ca-nhan-ad',
-                    name: 'thong-tin-ca-nhan-ad',
-                    component: () => import('../components/Admin/ThongTinCaNhan/thongTinCaNhan.vue')
-                },
-                {
-                    path: '/pages/quan-ly-hoa-don',
-                    name: 'quan-ly-hoa-don',
-                    component: () => import('@/components/Admin/HoaDon/index.vue'),
-                    beforeEnter: authMiddleware
-                },
-
-                {
-                    path: '/pages/mau-sac',
-                    name: 'mausac',
-                    component: () => import('@/components/Admin/MauSac/index.vue'),
-                    beforeEnter: authMiddleware
-                },
-                {
-                    path: '/pages/khuyenmai',
-                    name: 'khuyenmai',
+                    path: 'khuyen-mai',
+                    name: 'khuyen-mai',
                     component: () => import('@/components/Admin/khuyenMai/KhuyenMai.vue')
                 },
                 {
-                    path: '/pages/voucher',
-                    name: 'Voucher',
+                    path: 'hoa-don',
+                    name: 'hoa-don',
+                    component: () => import('@/components/Admin/HoaDon/index.vue')
+                },
+                {
+                    path: 'ho-so',
+                    name: 'ho-so-admin',
+                    component: () => import('@/components/Admin/ThongTinCaNhan/thongTinCaNhan.vue')
+                },
+                {
+                    path: 'thong-ke',
+                    name: 'thong-ke',
+                    component: () => import('@/components/Admin/ThongKe/index.vue')
+                },
+                {
+                    path: 'ban-hang',
+                    name: 'ban-hang',
+                    component: () => import('@/components/Admin/BanHang/BanHangTaiQuay.vue')
+                },
+                {
+                    path: 'user',
+                    name: 'user',
+                    component: () => import('@/components/Admin/User/index.vue')
+                },
+                {
+                    path: 'voucher',
+                    name: 'voucher',
                     component: () => import('@/components/Admin/Voucher/Voucher.vue')
                 },
                 {
-                    path: '/pages/loai',
-                    name: 'loai',
-                    component: () => import('@/components/Admin/Loai/index.vue'),
-                    beforeEnter: authMiddleware
-                },
-
-                {
-                    path: '/pages/trong-luong',
-                    name: 'trongluong',
-                    component: () => import('@/components/Admin/TrongLuong/Index.vue'),
-                    beforeEnter: authMiddleware
-                },
-                {
-                    path: '/pages/vat-lieu',
-                    name: 'vatlieu',
-                    component: () => import('@/components/Admin/VatLieu/Index.vue'),
-                    beforeEnter: authMiddleware
-                },
-
-                {
-                    path: '/pages/product',
-                    name: 'product',
-                    component: () => import('@/components/Admin/Product/ChiTietSanPham.vue'),
-                    beforeEnter: authMiddleware
-                },
-                {
-                    path: '/pages/user',
-                    name: 'user',
-                    component: () => import('@/components/Admin/User/index.vue'),
-                    beforeEnter: authMiddleware
-                },
-                {
-                    path: '/pages/size',
-                    name: 'size',
-                    component: () => import('@/components/Admin/QuanLySize/ViewSize.vue'),
-                    beforeEnter: authMiddleware
-                },
-                {
-                    path: '/pages/thuong-hieu',
-                    name: 'thuong-hieu',
-                    component: () => import('@/components/Admin/QuanLyThuongHieu/ViewThuongHieu.vue'),
-                    beforeEnter: authMiddleware
+                    path: 'chat',
+                    name: 'chat-admin',
+                    component: () => import('@/components/Admin/Chat/ChatAdmin.vue')
                 }
-                // {
-                //     path: '/uikit/menu',
-                //     component: () => import('@/views/uikit/Menu.vue'),
-                //     children: [
-                //         {
-                //             path: '/uikit/menu',
-                //             component: () => import('@/views/uikit/menu/PersonalDemo.vue')
-                //         },
-                //         {
-                //             path: '/uikit/menu/seat',
-                //             component: () => import('@/views/uikit/menu/SeatDemo.vue')
-                //         },
-                //         {
-                //             path: '/uikit/menu/payment',
-                //             component: () => import('@/views/uikit/menu/PaymentDemo.vue')
-                //         },
-                //         {
-                //             path: '/uikit/menu/confirmation',
-                //             component: () => import('@/views/uikit/menu/ConfirmationDemo.vue')
-                //         }
-                //     ]
-                // },
             ]
+        },
+        {
+            path: '/error',
+            name: 'error',
+            component: () => import('@/views/pages/auth/Error.vue')
+        },
+        {
+            path: '/unauthorized',
+            name: 'unauthorized',
+            component: () => import('@/views/pages/auth/Access.vue')
+        },
+        {
+            path: '/:pathMatch(.*)*',
+            name: 'not-found',
+            component: () => import('@/views/pages/NotFound.vue')
         }
-        // {
-        //     path: '/landing',
-        //     name: 'landing',
-        //     component: () => import('@/views/pages/Landing.vue')
-        // },
-        // {
-        //     path: '/pages/notfound',
-        //     name: 'notfound',
-        //     component: () => import('@/views/pages/NotFound.vue')
-        // },
-
-        // {
-        //     path: '/auth/login',
-        //     name: 'login',
-        //     component: () => import('@/views/pages/auth/Login.vue')
-        // },
-        // {
-        //     path: '/auth/access',
-        //     name: 'accessDenied',
-        //     component: () => import('@/views/pages/auth/Access.vue')
-        // },
-        // {
-        //     path: '/auth/error',
-        //     name: 'error',
-        //     component: () => import('@/views/pages/auth/Error.vue')
-        // }
     ]
 });
 

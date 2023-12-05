@@ -6,7 +6,7 @@ import AppMenuItem from './AppMenuItem.vue';
 const model = ref([
     {
         label: 'Thống Kê',
-        items: [{ label: 'Thống Kê', icon: 'pi pi-fw pi-home', to: '/thong-ke' }]
+        items: [{ label: 'Thống Kê', icon: 'pi pi-fw pi-home', to: { name: 'thong-ke' } }]
     },
     {
         label: 'Sản Phẩm',
@@ -19,37 +19,36 @@ const model = ref([
                     {
                         label: 'Sản Phẩm',
                         icon: 'pi pi-fw pi-circle-off',
-                        to: '/pages/product'
+                        to: { name: 'quan-ly-san-pham' }
                     }, {
                         label: 'Thương Hiệu',
                         icon: 'pi pi-fw pi-circle-off',
-                        to: '/pages/thuong-hieu'
+                        to: { name: 'thuong-hieu' }
                     },
                     {
                         label: 'Màu sắc',
                         icon: 'pi pi-fw pi-circle-off',
-                        to: '/pages/mau-sac'
+                        to: { name: 'mau-sac' }
                     },
                     {
                         label: 'Size',
                         icon: 'pi pi-fw pi-circle-off',
-                        to: '/pages/size'
+                        to: { name: 'size' }
                     },
                     {
                         label: 'Loại',
                         icon: 'pi pi-fw pi-circle-off',
-                        to: '/pages/loai'
-
+                        to: { name: 'loai' }
                     },
                     {
                         label: 'Vật liệu',
                         icon: 'pi pi-fw pi-circle-off',
-                        to: '/pages/vat-lieu'
+                        to: { name: 'vat-lieu' }
                     },
                     {
                         label: 'Trọng lượng',
                         icon: 'pi pi-fw pi-circle-off',
-                        to: '/pages/trong-luong'
+                        to: { name: 'trong-luong' }
                     },
                 ]
             },
@@ -60,12 +59,12 @@ const model = ref([
         items: [{
             label: 'Quản lý Khuyến Mãi',
             icon: 'pi pi-fw pi-circle-off',
-            to: '/pages/khuyenmai'
+            to: { name: 'khuyen-mai' }
         },
         {
             label: 'Quản lý Voucher',
             icon: 'pi pi-fw pi-circle-off',
-            to: '/pages/voucher'
+            to: { name: 'voucher' }
         },]
     },
     {
@@ -73,7 +72,7 @@ const model = ref([
         items: [{
             label: 'Quản lý User',
             icon: 'pi pi-fw pi-circle-off',
-            to: '/pages/user'
+            to: { name: 'user' }
         },]
     },
     {
@@ -81,7 +80,7 @@ const model = ref([
         items: [{
             label: 'Hóa Đơn',
             icon: 'pi pi-fw pi-circle-off',
-            to: '/pages/quan-ly-hoa-don'
+            to: { name: 'hoa-don' }
         },]
     },
 

@@ -523,13 +523,13 @@ const ThanhToan = () => {
     const token = localStorage.getItem('token');
     if (token == '' || token == null) {
         toast.add({ severity: 'warn', summary: '', detail: 'bạn cần đăng nhập  ', life: 3000 });
-        router.push('/login');
+        router.push({ name: 'login' });
     } else if (checkedValues.length == 0) {
         localStorage.removeItem('gioHang');
         toast.add({ severity: 'warn', summary: '', detail: 'bạn cần chọn sản phẩm  ', life: 3000 });
     } else {
         localStorage.setItem('gioHang', JSON.stringify(checkedValues));
-        router.push('/thanh-toan');
+        router.push({ name: 'thanh-toan' });
     }
 
     // router.push({ name: 'thanh-toan',  params: { tongTien: totalPrice }  });
@@ -568,6 +568,7 @@ const tinhTongTienChoTungSanPham = (soLuong, giaSauGiam, giaBan) => {
 // });
 </script>
 <template>
+  <router-view></router-view>
     <div class="grid">
         <div class="col-12">
             <div class="p-fluid formgrid grid">

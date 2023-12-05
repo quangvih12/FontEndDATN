@@ -202,7 +202,7 @@ const thanhtoan = async () => {
         dataHoaDon.value = checkoutService.checkOut;
         sendMessage();
         toast.add({ severity: 'success', summary: '', detail: 'Thanh toán thành công', life: 3000 });
-        router.push('/success');
+        router.push({ name: 'thanh-cong' });
     }
 };
 

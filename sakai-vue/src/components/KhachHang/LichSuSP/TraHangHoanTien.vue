@@ -12,7 +12,7 @@ const router = useRouter();
 
 const redirectToTrangThaiDonHang = (idHDA) => {
     // Chuyển hướng đến trang trang-thai-don-hang và truyền ID của hóa đơn qua URL
-    router.push({ name: 'trangThaiDonHang', params: { id: idHDA } });
+    router.push({ name: 'trang-thai-don-hang', params: { id: idHDA } });
 };
 const useHD = HDKHStore();
 const customer1 = ref(null);

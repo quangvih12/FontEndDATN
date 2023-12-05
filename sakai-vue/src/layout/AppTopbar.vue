@@ -85,7 +85,7 @@ const daXem = async (id) => {
     await thongBaoStore.daXem(id);
     getAllTB();
     getDem();
-    router.push({ name: 'quan-ly-hoa-don' });
+    router.push({ name: 'hoa-don' });
 };
 
 onBeforeUnmount(() => {
@@ -102,7 +102,7 @@ const onTopBarMenuButton = () => {
 
 const onSettingsClick = () => {
     topbarMenuActive.value = false;
-    router.push('/documentation');
+    // router.push('/documentation');
 };
 const topbarMenuClasses = computed(() => {
     return {
@@ -172,15 +172,15 @@ const toggle = (event) => {
 };
 
 const dangXuat = () => {
-    router.push(`/login-admin`);
+  router.push({ name: 'login-admin' });
     localStorage.removeItem('token');
 };
 
 const dangNhap = () => {
-    router.push(`/login-admin`);
+  router.push({ name: 'login-admin' });
 };
 const thongTinCaNhan = () => {
-    router.push(`/thong-tin-ca-nhan-ad`);
+  router.push({ name: 'ho-so-admin' });
 };
 </script>
 
@@ -190,8 +190,8 @@ const thongTinCaNhan = () => {
                 <img :src="logoUrl" alt="logo" />
                 <span>SAKAI</span>
             </router-link> -->
-        <router-link to="/" class="layout-topbar-logo" style="height: 60px; width: 120px">
-            <img src="../images/logo.png" alt="logo" style="height: 70px" />
+        <router-link :to="{ name: 'trang-chu' }" class="layout-topbar-logo" style="height: 60px; width: 120px">
+            <img src="../assets/images/logo.png" alt="logo" style="height: 70px" />
         </router-link>
 
         <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">

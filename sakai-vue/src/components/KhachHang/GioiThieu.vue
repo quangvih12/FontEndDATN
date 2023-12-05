@@ -5,7 +5,7 @@ import { ref, onMounted } from 'vue';
 
 const home = ref({
     icon: 'pi pi-home',
-    to: '/'
+    to: { name: 'trang-chu' }
 });
 const items = ref([{ label: 'Computer' }, { label: 'Notebook' }, { label: 'Accessories' }, { label: 'Backpacks' }, { label: 'Item' }]);
 import Divider from 'primevue/divider';
