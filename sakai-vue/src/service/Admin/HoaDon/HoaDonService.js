@@ -313,7 +313,43 @@ export const HDStore = defineStore('hoaDon', {
             try {
                 const response = await axios.get(apiHD);
                 this.dataAll = response.data;
-                return   this.dataAll;
+                return this.dataAll;
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        },
+
+        //load tất cả data theo pttt
+        async fetchDataByPttt(pttt) {
+            this.check = 0;
+            try {
+                const response = await axios.get(apiHD + '/find-tat-ca-by-pttt?pttt=' + pttt);
+                this.dataAll = response.data;
+                return this.dataAll;
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        },
+
+        //load tất cả data theo hình thức giao
+        async fetchDataByHinhThucGiao(hinhThucGiao) {
+            this.check = 0;
+            try {
+                const response = await axios.get(apiHD + '/find-tat-ca-by-hinh-thuc-giao?hinhThucGiao=' + hinhThucGiao);
+                this.dataAll = response.data;
+                return this.dataAll;
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        },
+
+        //load tất cả data theo hình thức giao and pttt
+        async fetchDataByHinhThucGiaoAndPttt(hinhThucGiao, pttt) {
+            this.check = 0;
+            try {
+                const response = await axios.get(apiHD + '/find-tat-ca-by-hinh-thuc-giao-and_pttt?hinhThucGiao=' + hinhThucGiao + '&pttt=' + pttt);
+                this.dataAll = response.data;
+                return this.dataAll;
             } catch (error) {
                 console.error('Error fetching users:', error);
             }
@@ -323,6 +359,51 @@ export const HDStore = defineStore('hoaDon', {
             this.check = 1;
             try {
                 const response = await axios.get(apiHD + '/hoaDonTrangThai/' + status);
+                if (status == 2) this.dataChoXacNhan = response.data;
+                if (status == 0) this.dataDaHuy = response.data;
+                if (status == 4) this.dataDangChuanBi = response.data;
+                if (status == 5) this.dataDangGiao = response.data;
+                if (status == 3) this.dataHoanThanh = response.data;
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        },
+
+        //load data hd theo trạng thái and htgd
+        async fetchDataByStatusAndHinhThucGiao(status, hinhThucGiao) {
+            this.check = 1;
+            try {
+                const response = await axios.get(apiHD + '/hoaDonTrangThai/hinh-thuc-giao/' + status + '?hinhThucGiao=' + hinhThucGiao);
+                if (status == 2) this.dataChoXacNhan = response.data;
+                if (status == 0) this.dataDaHuy = response.data;
+                if (status == 4) this.dataDangChuanBi = response.data;
+                if (status == 5) this.dataDangGiao = response.data;
+                if (status == 3) this.dataHoanThanh = response.data;
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        },
+
+        //load data hd theo trạng thái and pttt
+        async fetchDataByStatusAndPttt(status, pttt) {
+            this.check = 1;
+            try {
+                const response = await axios.get(apiHD + '/hoaDonTrangThai/pttt/' + status + '?pttt=' + pttt);
+                if (status == 2) this.dataChoXacNhan = response.data;
+                if (status == 0) this.dataDaHuy = response.data;
+                if (status == 4) this.dataDangChuanBi = response.data;
+                if (status == 5) this.dataDangGiao = response.data;
+                if (status == 3) this.dataHoanThanh = response.data;
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        },
+
+        //load data hd theo trạng thái and pttt
+        async fetchDataByStatusAndPtttAndHtgh(status, pttt, htgh) {
+            this.check = 1;
+            try {
+                const response = await axios.get(apiHD + '/hoaDonTrangThai/pttt-and-htgh/' + status + '?pttt=' + pttt + '&htgh=' + htgh);
                 if (status == 2) this.dataChoXacNhan = response.data;
                 if (status == 0) this.dataDaHuy = response.data;
                 if (status == 4) this.dataDangChuanBi = response.data;
@@ -354,10 +435,133 @@ export const HDStore = defineStore('hoaDon', {
                 console.error('Error fetching users:', error);
             }
         },
+
+        //search date by hình thức giao
+        async searchDateByHinhThucGiao(startDate, endDate, cbbValue, hinhThucGiao) {
+            try {
+                const response = await axios.get(apiHD + '/search-date-by-hinh-thuc-giao?startDate=' + startDate + '&endDate=' + endDate + '&comboBoxValue=' + cbbValue + '&hinhThucGiao=' + hinhThucGiao);
+                this.dataAll = response.data;
+                return this.dataAll;
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        },
+
+        //search date by pttt
+        async searchDateByPttt(startDate, endDate, cbbValue, pttt) {
+            try {
+                const response = await axios.get(apiHD + '/search-date-by-pttt?startDate=' + startDate + '&endDate=' + endDate + '&comboBoxValue=' + cbbValue + '&pttt=' + pttt);
+                this.dataAll = response.data;
+                return this.dataAll;
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        },
+
+        //search date by pttt and htgh
+        async searchDateByPtttAndHtgh(startDate, endDate, cbbValue, pttt, htgh) {
+            try {
+                const response = await axios.get(apiHD + '/search-date-by-pttt-and-htgh?startDate=' + startDate + '&endDate=' + endDate + '&comboBoxValue=' + cbbValue + '&pttt=' + pttt + '&htgh=' + htgh);
+                this.dataAll = response.data;
+                return this.dataAll;
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        },
         //search date theo trạng thái
         async searchDateByTrangThai(startDate, endDate, cbbValue, trangThai) {
             try {
                 const response = await axios.get(apiHD + '/search-date-by-trang-thai?startDate=' + startDate + '&endDate=' + endDate + '&comboBoxValue=' + cbbValue + '&trangThai=' + trangThai);
+               
+                if (trangThai == 2) {
+                    this.dataChoXacNhan = response.data;
+                    return this.dataChoXacNhan;
+                }
+                if (trangThai == 10) {
+                    this.dataDaHoanTra = response.data;
+                    return this.dataDaHoanTra;
+                }
+                if (trangThai == 8) {
+                    this.dataXacNhanHoanTraHoanTien = response.data;
+                    return this.dataXacNhanHoanTraHoanTien;
+                }
+                if (trangThai == 9) {
+                    this.dataDaHuyDoiTra = response.data;
+                    return this.dataDaHuyDoiTra;
+                }
+                if (trangThai == 0) {
+                    this.dataDaHuy = response.data;
+                    return this.dataDaHuy;
+                }
+                if (trangThai == 4) {
+                    this.dataDangChuanBi = response.data;
+                    return this.dataDangChuanBi;
+                }
+                if (trangThai == 5) {
+                    this.dataDangGiao = response.data;
+                    return this.dataDangGiao;
+                }
+                if (trangThai == 3) {
+                    this.dataHoanThanh = response.data;
+                    return this.dataHoanThanh;
+                }
+                if (trangThai == 7) {
+                    this.dataHoanTraHoanTien = response.data;
+                    return this.dataHoanTraHoanTien;
+                }
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        },
+        //search date theo trạng thái
+        async searchDateByTrangThaiAndHinhThucGiao(startDate, endDate, cbbValue, trangThai, hinhThucGiao) {
+            try {
+                const response = await axios.get(apiHD + '/search-date-by-trang-thai-and-hinh-thuc-giao?startDate=' + startDate + '&endDate=' + endDate + '&comboBoxValue=' + cbbValue + '&trangThai=' + trangThai + '&hinhThucGiao=' + hinhThucGiao);
+                if (trangThai == 2) {
+                    this.dataChoXacNhan = response.data;
+                    return this.dataChoXacNhan;
+                }
+                if (trangThai == 10) {
+                    this.dataDaHoanTra = response.data;
+                    return this.dataDaHoanTra;
+                }
+                if (trangThai == 8) {
+                    this.dataXacNhanHoanTraHoanTien = response.data;
+                    return this.dataXacNhanHoanTraHoanTien;
+                }
+                if (trangThai == 9) {
+                    this.dataDaHuyDoiTra = response.data;
+                    return this.dataDaHuyDoiTra;
+                }
+                if (trangThai == 0) {
+                    this.dataDaHuy = response.data;
+                    return this.dataDaHuy;
+                }
+                if (trangThai == 4) {
+                    this.dataDangChuanBi = response.data;
+                    return this.dataDangChuanBi;
+                }
+                if (trangThai == 5) {
+                    this.dataDangGiao = response.data;
+                    return this.dataDangGiao;
+                }
+                if (trangThai == 3) {
+                    this.dataHoanThanh = response.data;
+                    return this.dataHoanThanh;
+                }
+                if (trangThai == 7) {
+                    this.dataHoanTraHoanTien = response.data;
+                    return this.dataHoanTraHoanTien;
+                }
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        },
+
+        //search date theo trạng thái
+        async searchDateByTrangThaiAndPttt(startDate, endDate, cbbValue, trangThai, pttt) {
+            try {
+                const response = await axios.get(apiHD + '/search-date-by-trang-thai-and-pttt?startDate=' + startDate + '&endDate=' + endDate + '&comboBoxValue=' + cbbValue + '&trangThai=' + trangThai + '&pttt=' + pttt);
                 if (trangThai == 2) {
                     this.dataChoXacNhan = response.data;
                     return this.dataChoXacNhan;

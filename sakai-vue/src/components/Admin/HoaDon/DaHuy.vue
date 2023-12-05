@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
 import CustomerService from '@/service/CustomerService';
 import ProductService from '@/service/ProductService';
-import { ref, onBeforeMount, onMounted } from 'vue';
+import { ref, onBeforeMount, onMounted, watch } from 'vue';
 import DetailHoaDon from './DetailHoaDon.vue';
 import { HDStore } from '../../../service/Admin/HoaDon/HoaDonService';
 
@@ -70,12 +70,50 @@ const endDate = ref([null]);
 const typeSearchDate = ref(null);
 
 const searchDate = async () => {
-    if (typeSearchDate.value == null) {
-        const respone = await useHD.searchDateByTrangThai(startDate.value, endDate.value, 'ngayTao', 0);
-        data.value = respone;
+    if ((hinhThucGiao.value == 'tatCa' || hinhThucGiao.value == null) && (phuongThucThanhToan.value == 'tatCa' || phuongThucThanhToan.value == null)) {
+        if (startDate.value == null || startDate.value.length <= 0 || endDate.value == null || endDate.value.length <= 0) {
+            loadData();
+        } else if (typeSearchDate.value == null) {
+            const respone = await useHD.searchDate(startDate.value, endDate.value, 'ngayTao');
+            data.value = respone;
+        } else {
+            const respone = await useHD.searchDate(startDate.value, endDate.value, typeSearchDate.value.value);
+            data.value = respone;
+        }
+        console.log('cả 2 null');
+    } else if (phuongThucThanhToan.value == 'tatCa' || phuongThucThanhToan.value == null) {
+        console.log('phuongThucThanhToan null');
+        if (startDate.value == null || startDate.value.length <= 0 || endDate.value == null || endDate.value.length <= 0) {
+            loadDataByHinhThucGiao(parseInt(hinhThucGiao.value.value));
+        } else if (typeSearchDate.value == null) {
+            const respone = await useHD.searchDateByHinhThucGiao(startDate.value, endDate.value, 'ngayTao', parseInt(hinhThucGiao.value.value));
+            data.value = respone;
+        } else {
+            const respone = await useHD.searchDateByHinhThucGiao(startDate.value, endDate.value, typeSearchDate.value.value, parseInt(hinhThucGiao.value.value));
+            data.value = respone;
+        }
+    } else if (hinhThucGiao.value == 'tatCa' || hinhThucGiao.value == null) {
+        console.log('hinhThucGiao null');
+        if (startDate.value == null || startDate.value.length <= 0 || endDate.value == null || endDate.value.length <= 0) {
+            loadDataByPttt(parseInt(phuongThucThanhToan.value.value));
+        } else if (typeSearchDate.value == null) {
+            const respone = await useHD.searchDateByPttt(startDate.value, endDate.value, 'ngayTao', parseInt(phuongThucThanhToan.value.value));
+            data.value = respone;
+        } else {
+            const respone = await useHD.searchDateByPttt(startDate.value, endDate.value, typeSearchDate.value.value, parseInt(phuongThucThanhToan.value.value));
+            data.value = respone;
+        }
     } else {
-        const respone = await useHD.searchDateByTrangThai(startDate.value, endDate.value, typeSearchDate.value.value, 0);
-        data.value = respone;
+        console.log('cả 2 k null');
+        if (startDate.value == null || startDate.value.length <= 0 || endDate.value == null || endDate.value.length <= 0) {
+            loadDataByHinhThucGiaoAndPttt(parseInt(hinhThucGiao.value.value), parseInt(phuongThucThanhToan.value.value));
+        } else if (typeSearchDate.value == null) {
+            const respone = await useHD.searchDateByPtttAndHtgh(startDate.value, endDate.value, 'ngayTao', parseInt(phuongThucThanhToan.value.value), parseInt(hinhThucGiao.value.value));
+            data.value = respone;
+        } else {
+            const respone = await useHD.searchDateByPtttAndHtgh(startDate.value, endDate.value, typeSearchDate.value.value, parseInt(phuongThucThanhToan.value.value), parseInt(hinhThucGiao.value.value));
+            data.value = respone;
+        }
     }
 };
 
@@ -123,6 +161,75 @@ const formatDate = (dateTime) => {
         return format(new Date(dateTime), 'yyyy/MM/dd HH:mm:ss');
     }
 };
+
+const loadDataByHinhThucGiao = async (data) => {
+    await useHD.fetchDataByStatusAndHinhThucGiao(0, data);
+};
+
+const loadDataByPttt = async (pttt) => {
+    await useHD.fetchDataByStatusAndPttt(0, pttt);
+};
+
+const loadDataByHinhThucGiaoAndPttt = async (data, pttt) => {
+    await useHD.fetchDataByStatusAndPtttAndHtgh(0, data, pttt);
+};
+
+const dataComboBoxHinhThucGiao = ref([
+    { label: 'Tất cả', value: 'tatCa' },
+    { label: 'Tại quầy', value: '1' },
+    { label: 'Giao hàng', value: '2' }
+]);
+
+const dataPhuongThucThanhToan = ref([
+    { label: 'Tất cả', value: 'tatCa' },
+    { label: 'Tiền mặt', value: '1' },
+    { label: 'Chuyển khoản', value: '2' }
+]);
+
+const hinhThucGiao = ref();
+//thay đổi cbb
+watch(hinhThucGiao, (newVal) => {
+    if (phuongThucThanhToan.value == null || phuongThucThanhToan.value.value == 'tatCa') {
+        if (hinhThucGiao.value.value == 'tatCa') {
+            loadData();
+        } else if (hinhThucGiao.value.value == '1') {
+            loadDataByHinhThucGiao(1);
+        } else {
+            loadDataByHinhThucGiao(2);
+        }
+    } else {
+        if (hinhThucGiao.value.value == 'tatCa') {
+            loadDataByPttt(phuongThucThanhToan.value.value);
+        } else if (hinhThucGiao.value.value == '1') {
+            loadDataByHinhThucGiaoAndPttt(1, parseInt(phuongThucThanhToan.value.value));
+        } else {
+            console.log(phuongThucThanhToan.value);
+            loadDataByHinhThucGiaoAndPttt(2, parseInt(phuongThucThanhToan.value.value));
+        }
+    }
+});
+
+//phương thức thanh toán
+const phuongThucThanhToan = ref();
+watch(phuongThucThanhToan, (newVal) => {
+    if (hinhThucGiao.value == null || hinhThucGiao.value.value == 'tatCa') {
+        if (phuongThucThanhToan.value.value == 'tatCa') {
+            loadData();
+        } else if (phuongThucThanhToan.value.value == '1') {
+            loadDataByPttt(phuongThucThanhToan.value.value);
+        } else {
+            loadDataByPttt(phuongThucThanhToan.value.value);
+        }
+    } else {
+        if (phuongThucThanhToan.value.value == 'tatCa') {
+            loadDataByHinhThucGiao(hinhThucGiao.value.value);
+        } else if (phuongThucThanhToan.value.value == '1') {
+            loadDataByHinhThucGiaoAndPttt(hinhThucGiao.value.value, parseInt(phuongThucThanhToan.value.value));
+        } else {
+            loadDataByHinhThucGiaoAndPttt(hinhThucGiao.value.value, parseInt(phuongThucThanhToan.value.value));
+        }
+    }
+});
 </script>
 <template>
     <div class="col-12 flex" style="margin-right: 10px; padding-left: 0">
@@ -156,6 +263,8 @@ const formatDate = (dateTime) => {
             <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                 <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                     <MultiSelect icon="pi pi-plus" placeholder="Select Columns" :modelValue="selectedColumns" :options="columns" optionLabel="header" @update:modelValue="onToggle" display="chip" />
+                    <Dropdown v-model="hinhThucGiao" :options="dataComboBoxHinhThucGiao" optionLabel="label" placeholder="Hình thức thanh toán" class="w-full md:w-14rem" style="height: 40px; margin-left: 20px" />
+                    <Dropdown v-model="phuongThucThanhToan" :options="dataPhuongThucThanhToan" optionLabel="label" placeholder="Phương thức thanh toán" class="w-full md:w-14rem" style="margin-left: 20px" />
                 </div>
                 <span class="p-input-icon-left" style="margin-left: 20px">
                     <i class="pi pi-search" />
@@ -163,13 +272,13 @@ const formatDate = (dateTime) => {
                 </span>
             </div>
         </template>
-        <Column field="stt" header="STT" :sortable="true" headerStyle="width:14%; min-width:1rem;">
+        <Column field="stt" header="STT" :sortable="true" headerStyle="width:5%; min-width:1rem;">
             <template #body="slotProps">
                 <span class="p-column-title">stt</span>
                 {{ slotProps.data.stt }}
             </template>
         </Column>
-        <Column field="maHD" header="Mã hoá đơn" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+        <Column field="maHD" header="Mã hoá đơn" :sortable="true" headerStyle="width:10%; min-width:8rem;">
             <template #body="slotProps">
                 <span class="p-column-title">maHD</span>
                 {{ slotProps.data.maHD }}
@@ -181,10 +290,11 @@ const formatDate = (dateTime) => {
                 {{ slotProps.data.tenNguoiNhan }}
             </template>
         </Column>
-        <Column field="tongTien" header="Tổng tiền" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+        <Column field="tongTien" header="Tổng tiền" :sortable="true" headerStyle="width:10%; min-width:9rem;">
             <template #body="slotProps">
                 <span class="p-column-title">tongTien</span>
-                {{ formatCurrency(slotProps.data.tienSauKhiGiam==null?parseInt(slotProps.data.tongTien)+parseInt(slotProps.data.tienShip): slotProps.data.tienSauKhiGiam) }}
+
+                {{ formatCurrency(slotProps.data.tienSauKhiGiam == null ? parseInt(slotProps.data.tongTien) + parseInt(slotProps.data.tienShip) : slotProps.data.tienSauKhiGiam) }}
             </template>
         </Column>
         <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;">
@@ -199,10 +309,17 @@ const formatDate = (dateTime) => {
                 }}
             </template>
         </Column>
-        <Column field="diaChi" header="Địa chỉ" :sortable="false" headerStyle="width:14%; min-width:10rem;">
+
+        <Column field="hinhThucGiaoHang" header="Hình thức giao" :sortable="false" headerStyle="width:10%; min-width:9rem;">
             <template #body="slotProps">
                 <span class="p-column-title">diaChi</span>
-                {{ slotProps.data.diaChiCuThe }}, {{ slotProps.data.tenPhuongXa }}, {{ slotProps.data.tenQuanHuyen }}, {{ slotProps.data.tenTinhThanh }}
+                {{ slotProps.data.hinhThucGiaoHang == 1 ? 'Tại quầy' : 'Giao hàng' }}
+            </template>
+        </Column>
+        <Column field="tenPTTT" header="Phương thức thanh toán" :sortable="false" headerStyle="width:10%; min-width:9rem;">
+            <template #body="slotProps">
+                <span class="p-column-title">diaChi</span>
+                {{ slotProps.data.tenPTTT }}
             </template>
         </Column>
         <Column field="trangThai" header="Trạng thái" :sortable="false" headerStyle="width:14%; min-width:10rem;">

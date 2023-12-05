@@ -108,18 +108,40 @@ const endDate = ref(null);
 const typeSearchDate = ref(null);
 
 const searchDate = async () => {
-    if (startDate.value == null || endDate.value == null) {
-        await useHD.fetchDataByStatus(10);
-        data.value = useHD.dataDaHoanTra;
-    } else if (startDate.value.length <= 0 || endDate.value.length <= 0) {
-        await useHD.fetchDataByStatus(10);
-        data.value = useHD.dataDaHoanTra;
-    } else if (typeSearchDate.value == null) {
-        const respone = await useHD.searchDateByTrangThai(startDate.value, endDate.value, 'ngayTao', 5);
-        data.value = respone;
+    // if (startDate.value == null || endDate.value == null) {
+    //     await useHD.fetchDataByStatus(10);
+    //     data.value = useHD.dataDaHoanTra;
+    // } else if (startDate.value.length <= 0 || endDate.value.length <= 0) {
+    //     await useHD.fetchDataByStatus(10);
+    //     data.value = useHD.dataDaHoanTra;
+    // } else if (typeSearchDate.value == null) {
+    //     const respone = await useHD.searchDateByTrangThai(startDate.value, endDate.value, 'ngayTao', 5);
+    //     data.value = respone;
+    // } else {
+    //     const respone = await useHD.searchDateByTrangThai(startDate.value, endDate.value, typeSearchDate.value.value, 5);
+    //     data.value = respone;
+    // }
+    if (phuongThucThanhToan.value == 'tatCa' || phuongThucThanhToan.value == null) {
+        if (startDate.value == null || startDate.value.length <= 0 || endDate.value == null || endDate.value.length <= 0) {
+            loadData();
+        } else if (typeSearchDate.value == null) {
+            const respone = await useHD.searchDateByTrangThai(startDate.value, endDate.value, 'ngayTao', 5);
+            data.value = respone;
+        } else {
+            const respone = await useHD.searchDateByTrangThai(startDate.value, endDate.value, typeSearchDate.value.value, 5);
+            data.value = respone;
+        }
     } else {
-        const respone = await useHD.searchDateByTrangThai(startDate.value, endDate.value, typeSearchDate.value.value, 5);
-        data.value = respone;
+        console.log('k tất cả');
+        if (startDate.value == null || startDate.value.length <= 0 || endDate.value == null || endDate.value.length <= 0) {
+            loadDataByPttt(parseInt(phuongThucThanhToan.value.value));
+        } else if (typeSearchDate.value == null) {
+            const respone = await useHD.searchDateByTrangThaiAndPttt(startDate.value, endDate.value, 'ngayTao', 5, parseInt(phuongThucThanhToan.value.value));
+            data.value = respone;
+        } else {
+            const respone = await useHD.searchDateByTrangThaiAndPttt(startDate.value, endDate.value, typeSearchDate.value.value, 5, parseInt(phuongThucThanhToan.value.value));
+            data.value = respone;
+        }
     }
 };
 
@@ -167,6 +189,27 @@ const formatDate = (dateTime) => {
         return format(new Date(dateTime), 'yyyy/MM/dd HH:mm:ss');
     }
 };
+
+const dataPhuongThucThanhToan = ref([
+    { label: 'Tất cả', value: 'tatCa' },
+    { label: 'Tiền mặt', value: '1' },
+    { label: 'Chuyển khoản', value: '2' }
+]);
+
+const loadDataByPttt = async (pttt) => {
+    await useHD.fetchDataByStatusAndPttt(5, pttt);
+};
+
+const phuongThucThanhToan = ref();
+watch(phuongThucThanhToan, (newVal) => {
+    if (phuongThucThanhToan.value.value == 'tatCa') {
+        loadData();
+    } else if (phuongThucThanhToan.value.value == '1') {
+        loadDataByPttt(phuongThucThanhToan.value.value);
+    } else {
+        loadDataByPttt(phuongThucThanhToan.value.value);
+    }
+});
 </script>
 <template>
     <Toast />
@@ -201,6 +244,7 @@ const formatDate = (dateTime) => {
             <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                 <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                     <MultiSelect icon="pi pi-plus" placeholder="Select Columns" :modelValue="selectedColumns" :options="columns" optionLabel="header" @update:modelValue="onToggle" display="chip" />
+                    <Dropdown v-model="phuongThucThanhToan" :options="dataPhuongThucThanhToan" optionLabel="label" placeholder="Phương thức thanh toán" class="w-full md:w-14rem" style="margin-left: 20px" />
                 </div>
                 <span class="p-input-icon-left" style="margin-left: 20px">
                     <i class="pi pi-search" />
@@ -208,13 +252,13 @@ const formatDate = (dateTime) => {
                 </span>
             </div>
         </template>
-        <Column field="stt" header="STT" :sortable="true" headerStyle="width:14%; min-width:1rem;">
+        <Column field="stt" header="STT" :sortable="true" headerStyle="width:5%; min-width:1rem;">
             <template #body="slotProps">
                 <span class="p-column-title">stt</span>
                 {{ slotProps.data.stt }}
             </template>
         </Column>
-        <Column field="maHD" header="Mã hoá đơn" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+        <Column field="maHD" header="Mã hoá đơn" :sortable="true" headerStyle="width:10%; min-width:8rem;">
             <template #body="slotProps">
                 <span class="p-column-title">maHD</span>
                 {{ slotProps.data.maHD }}
@@ -226,10 +270,11 @@ const formatDate = (dateTime) => {
                 {{ slotProps.data.tenNguoiNhan }}
             </template>
         </Column>
-        <Column field="tongTien" header="Tổng tiền" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+        <Column field="tongTien" header="Tổng tiền" :sortable="true" headerStyle="width:10%; min-width:9rem;">
             <template #body="slotProps">
                 <span class="p-column-title">tongTien</span>
-                {{ formatCurrency(slotProps.data.tienSauKhiGiam==null?parseInt(slotProps.data.tongTien)+parseInt(slotProps.data.tienShip): slotProps.data.tienSauKhiGiam) }}
+
+                {{ formatCurrency(slotProps.data.tienSauKhiGiam == null ? parseInt(slotProps.data.tongTien) + parseInt(slotProps.data.tienShip) : slotProps.data.tienSauKhiGiam) }}
             </template>
         </Column>
         <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;">
@@ -244,10 +289,17 @@ const formatDate = (dateTime) => {
                 }}
             </template>
         </Column>
-        <Column field="diaChi" header="Địa chỉ" :sortable="false" headerStyle="width:14%; min-width:10rem;">
+
+        <Column field="hinhThucGiaoHang" header="Hình thức giao" :sortable="false" headerStyle="width:10%; min-width:9rem;">
             <template #body="slotProps">
                 <span class="p-column-title">diaChi</span>
-                {{ slotProps.data.diaChiCuThe }}, {{ slotProps.data.tenPhuongXa }}, {{ slotProps.data.tenQuanHuyen }}, {{ slotProps.data.tenTinhThanh }}
+                {{ slotProps.data.hinhThucGiaoHang == 1 ? 'Tại quầy' : 'Giao hàng' }}
+            </template>
+        </Column>
+        <Column field="tenPTTT" header="Phương thức thanh toán" :sortable="false" headerStyle="width:10%; min-width:9rem;">
+            <template #body="slotProps">
+                <span class="p-column-title">diaChi</span>
+                {{ slotProps.data.tenPTTT }}
             </template>
         </Column>
         <Column field="trangThai" header="Trạng thái" :sortable="false" headerStyle="width:14%; min-width:10rem;">

@@ -94,6 +94,7 @@ const updateProduct = async () => {
         toast.add({ severity: 'error', summary: 'Thông báo', detail: 'Sửa địa chỉ thất bại', life: 3000 });
     }
     productDialog.value = false;
+    updateProductDialog.value = false;
 };
 
 const clearForm = () => {

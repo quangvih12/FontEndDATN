@@ -19,7 +19,8 @@ const dataSP = ref([]);
 const loadData = async () => {
     await SanPhamService.fetchAll();
     dataSP.value = SanPhamService.dataSP;
-   // console.log(SanPhamService.dataSP);
+    // console.log(SanPhamService.dataSP);
+    // console.log(dataSP.value);
 };
 
 const uniqueTenLoai = computed(() => {
@@ -87,8 +88,7 @@ const filteredAndSortedProducts = computed(() => {
     if (selectedPriceRange.value) {
         const { min, max } = selectedPriceRange.value;
         filteredProducts = filteredProducts.filter((product) => {
-          
-            const productPrice = (parseInt( product.giaBanMin) + parseInt(product.giaBanMax)) / 2;
+            const productPrice = (parseInt(product.giaBanMin) + parseInt(product.giaBanMax)) / 2;
             return productPrice >= min && productPrice <= max;
         });
     }
@@ -120,7 +120,7 @@ const filteredAndSortedProducts = computed(() => {
         <div class="container">
             <Breadcrumb :home="home" :model="items" />
             <h1>Sản phẩm</h1>
-          
+
             <Divider />
             <div class="flex">
                 <Dropdown v-model="selectedSortOption" :options="sapXep" optionLabel="label" placeholder="Sắp xếp" class="w-full md:w-14rem" />
@@ -181,17 +181,17 @@ const filteredAndSortedProducts = computed(() => {
                 </template>
 
                 <template #grid="slotProps">
-                    <div class="col-12 sm:col-6 lg:col-12 xl:col-3 p-2" style="margin-right: 0px;">
-                        <div class="p-4 border-1 surface-border surface-card border-round"  style="height:380px; width: 260px; margin-right:10px ;">
+                    <div class="col-12 sm:col-6 lg:col-12 xl:col-3 p-2" style="margin-right: 0px">
+                        <div class="p-4 border-1 surface-border surface-card border-round" style="height: 380px; width: 260px; margin-right: 10px">
                             <div class="flex flex-column align-items-center gap-3 py-4">
                                 <img class="w-9 shadow-2 border-round" :src="`${slotProps.data.anh}`" :alt="slotProps.data.tenSP" />
-                                <div style="font-size: 20px; font-weight: 700;">{{ slotProps.data.tenSP }}</div>
+                                <div style="font-size: 20px; font-weight: 700">{{ slotProps.data.tenSP }}</div>
                             </div>
-                            <div class="flex sm:flex-column align-items-center  gap-3 sm:gap-2">
-                                <p class="text-xl font-semibold" style="color: black; text-align: center;  " v-if="slotProps.data.giaBanMin == slotProps.data.giaBanMax">{{ formatCurrency(slotProps.data.giaBanMax) }}</p>
+                            <div class="flex sm:flex-column align-items-center gap-3 sm:gap-2">
+                                <p class="text-xl font-semibold" style="color: black; text-align: center" v-if="slotProps.data.giaBanMin == slotProps.data.giaBanMax">{{ formatCurrency(slotProps.data.giaBanMax) }}</p>
                                 <p
                                     class="text-xl font-semibold"
-                                    style="color: black; text-align: center ; "
+                                    style="color: black; text-align: center"
                                     v-else-if="slotProps.data.giaSauGiamMax != null && slotProps.data.giaSauGiamMin != null && slotProps.data.giaSauGiamMax != slotProps.data.giaSauGiamMin"
                                 >
                                     {{ formatCurrency(slotProps.data.giaSauGiamMin) }} - {{ formatCurrency(slotProps.data.giaSauGiamMax) }}
@@ -199,11 +199,10 @@ const filteredAndSortedProducts = computed(() => {
                                 <p class="text-xl font-semibold" style="color: black; text-align: center" v-else-if="slotProps.data.giaSauGiamMax == null && slotProps.data.giaSauGiamMin == null">
                                     {{ formatCurrency(slotProps.data.giaBanMin) }} - {{ formatCurrency(slotProps.data.giaBanMax) }}
                                 </p>
-                                <p class="text-xl font-semibold" style="color: black;  text-align: center" v-else-if="slotProps.data.giaSauGiamMax == slotProps.data.giaSauGiamMin">{{ formatCurrency(slotProps.data.giaSauGiamMax) }}</p>
-                                <p class="text-xl font-semibold" style="color: black;  text-align: center" v-else>{{ formatCurrency(slotProps.data.giaBanMin) }} - {{ formatCurrency(slotProps.data.giaBanMax) }}</p>
-                                <Button  icon="pi pi-shopping-cart" rounded @click="goToProductDetail(slotProps.data.idSP)"></Button>    
+                                <p class="text-xl font-semibold" style="color: black; text-align: center" v-else-if="slotProps.data.giaSauGiamMax == slotProps.data.giaSauGiamMin">{{ formatCurrency(slotProps.data.giaSauGiamMax) }}</p>
+                                <p class="text-xl font-semibold" style="color: black; text-align: center" v-else>{{ formatCurrency(slotProps.data.giaBanMin) }} - {{ formatCurrency(slotProps.data.giaBanMax) }}</p>
+                                <Button icon="pi pi-shopping-cart" rounded @click="goToProductDetail(slotProps.data.idSP)"></Button>
                             </div>
-                          
                         </div>
                     </div>
                 </template>
