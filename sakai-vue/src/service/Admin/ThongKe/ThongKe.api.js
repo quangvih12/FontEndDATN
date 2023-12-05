@@ -22,7 +22,14 @@ export const ThongKeStore = defineStore('thongKe', {
         lstAdminThongKeThuongHieuResponses: [],
         lstAdminThongKeThangNamResponses:[],
         lstAdminThongKeLoiNhuanSanPhamResponse:[],
-        lstAdminThongKeLoiNhuanHoaDonResponse:[]
+        lstAdminThongKeLoiNhuanHoaDonResponse:[],
+
+          doanhThu: 0,
+          doanhThuTaiQuay: 0,
+          doanhThuOnline: 0,
+          donMua: 0,
+          donTra: 0,
+          donHuy: 0,
     }),
     actions: {
 
@@ -40,6 +47,21 @@ export const ThongKeStore = defineStore('thongKe', {
                 this.lstAdminThongKeThangResponses =  response.data.lstAdminThongKeThangResponses;
                 this.lstAdminThongKeThuongHieuResponses =  response.data.lstAdminThongKeThuongHieuResponses;
                 this.lstAdminThongKeThangNamResponses = response.data.lstAdminThongKeThangNamResponses;
+            } catch (error) {
+                console.error('Lỗi khi get sản phẩm:', error);
+            }
+        },
+
+        async fetchAllByDay() {
+            try {
+                const response = await axios.get(apiThongKe+`/day`);
+               
+                this.doanhThu = response.data.doanhThu;
+                this.doanhThuTaiQuay = response.data.doanhThuTaiQuay;
+                this.donMua = response.data.donMua;
+                this.doanhThuOnline = response.data.doanhThuOnline;
+                this.donTra = response.data.donTra;
+                this.donHuy = response.data.donHuy;
             } catch (error) {
                 console.error('Lỗi khi get sản phẩm:', error);
             }

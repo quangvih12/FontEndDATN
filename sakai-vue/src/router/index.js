@@ -89,7 +89,19 @@ const router = createRouter({
                 }
             ]
         },
+        // {
+        //     path: '/nhan-vien',
+        //     component: AppLayoutBH,
+        //     children: [
+        //         {
+        //             path: '/ban-hang-tai-quay',
+        //             name: 'ban-hang-tai-quay',
+        //             component: () => import('@/components/Admin/BanHang/BanHangTaiQuay.vue')
+        //         }
+        //     ]
+        // },
         {
+
             path: '/dang-ky',
             name: 'dang-ky',
             component: () => import('@/components/KhachHang/Register.vue'),
@@ -114,6 +126,7 @@ const router = createRouter({
             component: () => import('@/layout/AppLayout.vue'),
             beforeEnter: authMiddleware.requireAdmin,
             children: [
+
                 {
                     path: '',
                     name: 'admin',

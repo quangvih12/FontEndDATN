@@ -9,7 +9,9 @@ import { Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import { HDStore } from '../service/Admin/HoaDon/HoaDonService';
+import { useBanHangTaiQuayStore } from '@/service/Admin/BanHangTaiQuay/BanHangTaiQuayService';
 
+const store = useBanHangTaiQuayStore();
 const useHD = HDStore();
 const thongBaoStore = ThongBaoStore();
 const userService = userStore();
@@ -48,6 +50,7 @@ const openSocketConnection = () => {
                 loadHDByTrangThaiTraHang(7);
                 loadHDByTrangThaiTraHang(8);
                 loadHDByTrangThaiTraHang(9);
+                loadSPBanHangTaiQuay();
             });
         }
     });
@@ -63,6 +66,10 @@ const getAllTB = async () => {
     await thongBaoStore.fetchData();
     data.value = thongBaoStore.data;
 };
+
+const loadSPBanHangTaiQuay = async()=>{
+    await  store.loadSP();
+}
 
 const loadHD = async () => {
     await useHD.fetchData();

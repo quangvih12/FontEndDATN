@@ -81,6 +81,13 @@ export const userStore = defineStore('user', {
                 }
             });
         },
+
+        createDiaChi(form) {
+            // console.log(form)
+            axios.post('http://localhost:8080/api/admin/user/add-dia-chi', form).then((response) => {
+                this.diaChi.unshift(response.data);
+            });
+        },
         updateUser(id, form) {
             axios.put(apiUser + id, form).then((response) => {
                 if(response.data.role == 'NHANVIEN'){

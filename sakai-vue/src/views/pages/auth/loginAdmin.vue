@@ -22,6 +22,12 @@ const { layoutConfig } = useLayout();
 const checked = ref(false);
 const toast = useToast();
 
+
+const gotoTrangChu = () => {
+    router.push({ name: 'ban-hang-tai-quay' });
+};
+
+
 const schema = Yup.object().shape({
     email: Yup.string().required('Email không được để trống').email('Email không đúng định dạng'),
     password: Yup.string().required('Mật khẩu không được để trống').min(5, 'Mật khẩu phải trên 5 ký tự')
