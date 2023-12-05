@@ -6,7 +6,7 @@ import AppMenuItem from './AppMenuItem.vue';
 const model = ref([
 {
         label: 'Bán Hàng tại quầy',
-        items: [{ label: 'Bán Hàng', icon: 'pi pi-fw pi-home', to: '/ban-hang-tai-quay' }]
+        items: [{ label: 'Bán Hàng', icon: 'pi pi-fw pi-home', to: { name: 'ban-hang' } }]
     },
     {
         label: 'Thống Kê',

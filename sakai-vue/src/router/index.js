@@ -223,7 +223,7 @@ const router = createRouter({
         {
             path: '/unauthorized',
             name: 'unauthorized',
-            component: () => import('@/views/pages/auth/Access.vue')
+            component: () => import('@/views/pages/auth/Error.vue')
         },
         {
             path: '/:pathMatch(.*)*',
