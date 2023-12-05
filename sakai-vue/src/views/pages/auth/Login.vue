@@ -10,10 +10,14 @@ import { dangNhapStore } from '../../../service/KhachHang/DangNhapService';
 import { useToast } from 'primevue/usetoast';
 import { useRouter } from 'vue-router';
 import { gioHangStore } from '../../../service/KhachHang/Giohang/GiohangCTService.js';
+import {verifyJwt} from "../../../service/common/JwtUtils";
+import {useChatStore} from "../../../service/Admin/Chat/ChatService";
+import * as chatService from "@/service/chatkitty";
 
-const gioHangService = gioHangStore();
 const router = useRouter();
+const gioHangService = gioHangStore();
 const dnService = dangNhapStore();
+const chatStore = useChatStore();
 const { layoutConfig } = useLayout();
 const checked = ref(false);
 const toast = useToast();
@@ -58,12 +62,15 @@ const dangNhapa = handleSubmit(async () => {
         toast.add({ severity: 'error', summary: 'Thông báo', detail: 'Sai tài khoản hoặc mật khẩu', life: 3000 });
     } else {
         localStorage.setItem('token', data.accessToken);
-        localStorage.setItem('currentUserID', data.userID);
+        localStorage.setItem('currentUserInformation', JSON.stringify({
+          id: data.userID,
+          username: data.usernameOrEmail,
+        }));
         gotoTrangChu();
         // khi dang nhap thanh cong thi add sp gio hang vao db
         if (localStorage.getItem('cart')) {
             let array = JSON.parse(localStorage.getItem('cart'));
-            await gioHangService.addToCartWhenLogin(array, token);
+            await gioHangService.addToCartWhenLogin(array, data.accessToken);
             localStorage.removeItem('cart');
         }
     }
@@ -74,7 +81,7 @@ const logoUrl = computed(() => {
 });
 
 const dangKy = () => {
-    router.push({ name: 'dangky' });
+    router.push({ name: 'dang-ky' });
 };
 </script>
 
@@ -82,7 +89,7 @@ const dangKy = () => {
     <div class="surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden">
         <Toast />
         <div class="flex flex-column align-items-center justify-content-center">
-            <img src="../../../images/logo.png" alt="Sakai logo" class="mb-5 w-6rem flex-shrink-0" />
+            <img src="../../../assets/images/logo.png" alt="Sakai logo" class="mb-5 w-6rem flex-shrink-0" />
             <div
                 style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
                 <div class="w-full surface-card py-8 px-5 sm:px-8" style="border-radius: 53px; margin-bottom: 20px">

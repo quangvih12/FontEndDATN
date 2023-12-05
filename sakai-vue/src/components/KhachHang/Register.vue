@@ -84,17 +84,15 @@ const onSubmit = handleSubmit(async () => {
 
   await registerService.sendOTP(mailData);
   toast.add({ severity: 'success', summary: '', detail: 'OTP được gửi trong mail của bạn', life: 7000 });
-  router.push('/otp');
-
-
-})
+  await router.push({ name: 'xac-thuc' });
+});
 
 </script>
 <template>
   <div class="surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden">
     <Toast />
     <div class="flex flex-column align-items-center justify-content-center ">
-      <img src="../../images/logo.png" alt="Sakai logo" class="mb-5 w-6rem flex-shrink-0" />
+      <img src="../../assets/images/logo.png" alt="Sakai logo" class="mb-5 w-6rem flex-shrink-0" />
       <div
         style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
         <div class="w-full surface-card py-8 px-5 sm:px-8" style="border-radius: 53px; margin-bottom: 20px">

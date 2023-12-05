@@ -16,7 +16,7 @@ const router = useRouter();
 const gioHangService = gioHangStore();
 const redirectToTrangThaiDonHang = (id) => {
     // Chuyển hướng đến trang trang-thai-don-hang và truyền ID của hóa đơn qua URL
-    router.push({ name: 'trangThaiDonHang', params: { id: id } });
+    router.push({ name: 'trang-thai-don-hang', params: { id: id } });
 };
 const useHD = HDKHStore();
 const customer1 = ref(null);

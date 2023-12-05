@@ -13,7 +13,7 @@ const router = useRouter();
 const productStore = useDetailProductStore();
 const redirectToTrangThaiDonHang = (idHDA) => {
     // Chuyển hướng đến trang trang-thai-don-hang và truyền ID của hóa đơn qua URL
-    router.push({ name: 'trangThaiDonHang', params: { id: idHDA } });
+    router.push({ name: 'trang-thai-don-hang', params: { id: idHDA } });
 };
 const gioHangService = gioHangStore();
 const useHD = HDKHStore();
@@ -67,7 +67,7 @@ const hienThiTrangThai = (trangThai) => {
 };
 
 const goToProductDetail = (productId) => {
-    router.push({ name: 'ProductDetail', params: { id: productId } });
+    router.push({ name: 'chi-tiet-san-pham', params: { id: productId } });
 };
 
 

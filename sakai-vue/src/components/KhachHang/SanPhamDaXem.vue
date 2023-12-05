@@ -8,13 +8,13 @@ import { SPDaXemStore } from '../../service/KhachHang/SanPhamDaXem.js';
 const spDaXemService = SPDaXemStore();
 const home = ref({
     icon: 'pi pi-home',
-    to: '/'
+    to: { name: 'trang-chu' }
 });
 
 const router = useRouter();
 
 const goToProductDetail = (productId) => {
-    router.push({ name: 'ProductDetail', params: { id: productId } });
+    router.push({ name: 'chi-tiet-san-pham', params: { id: productId } });
 };
 
 const dataSP = ref([]);
@@ -46,7 +46,7 @@ onMounted(() => {
 
 const layout = ref('grid');
 
-const items = ref([{ label: 'Tất cả sản phẩm', to: '/san-pham' }]);
+const items = ref([{ label: 'Tất cả sản phẩm', to: { name: 'san-pham' }}]);
 
 const formatCurrency = (value) => {
     return parseInt(value).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });

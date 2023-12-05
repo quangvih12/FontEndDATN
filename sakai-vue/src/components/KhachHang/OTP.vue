@@ -20,7 +20,9 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
 import { userRegisterStore} from '@/service/KhachHang/RegisterService.js';
+import {useChatStore} from "../../service/Admin/Chat/ChatService";
 const registerService =  userRegisterStore();
+const chatStore = useChatStore();
 const router = useRouter();
 const toast = useToast();
 const input1 = ref('');
@@ -46,7 +48,8 @@ const verify = async () => {
     toast.add({ severity: 'success', summary: '', detail: 'Đăng ký thành công. Vui lòng đăng nhập', life: 6000 });
     localStorage.removeItem("otp");
     localStorage.removeItem("dangky");
-    router.push('/login');
+    await chatStore.createChatkittyUser(dataDangKy.value.email, dataDangKy.value.ten);
+    await router.push({ name: 'login' });
   } else {
    
     toast.add({ severity: 'warn', summary: '', detail: 'OTP không đúng. Vui lòng thử lại', life: 3000 });

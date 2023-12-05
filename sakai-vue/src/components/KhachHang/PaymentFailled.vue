@@ -21,8 +21,7 @@ onMounted(async () => {
 });
 const goHome = () => {
   localStorage.removeItem("myForm");
-  router.push('/gio-hang');
-
+  router.push({ name: 'gio-hang' });
 }
 </script>
 
