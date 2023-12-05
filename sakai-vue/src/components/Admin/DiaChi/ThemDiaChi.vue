@@ -1,16 +1,60 @@
 <script setup>
-import { ref, onMounted, onBeforeMount } from 'vue';
-import ViewChucVu from '../ChucVu/ViewChucVu.vue';
+import { useToast } from 'primevue/usetoast';
+import { useForm, useField } from 'vee-validate';
+import { onMounted, ref, watch } from 'vue';
+import * as yup from 'yup';
+import { useDiaChi } from '../../../service/KhachHang/DiaChiService';
+import { useRoute } from 'vue-router';
+import { userStore } from '../../../service/Admin/User/UserService';
 
+const props = defineProps({
+    idUser: Number
+});
+
+const route = useRoute();
+const diaChiService = useDiaChi();
+const userService = userStore();
 const product = ref({});
+const toast = useToast();
 const submitted = ref(false);
 const productDialog = ref(false);
+// confirm thêm
+const addProductDialog = ref(false);
 
-const valueChucVu = ref([
-    { label: 'Nhân viên', value: 'Nhân viên' },
-    { label: 'Quản lý', value: 'Quản lý' },
-    { label: 'Khách hàng', value: 'Khách hàng' }
-]);
+const diaChi = ref('');
+const addProduct = async () => {
+    submitted.value = true;
+   
+    if (!selectedTinhThanh.value || !selectedQuanHuyen.value || !selectedPhuongXa.value || !diaChi.value) {
+        toast.add({ severity: 'error', summary: 'Thông báo', detail: 'Vui lòng nhập đầy đủ thông tin', life: 3000 });
+        return;
+    } else {
+        const form = {
+            idUser: props.idUser,
+        idTinhThanh: selectedTinhThanh.value.ProvinceID,
+        tinhThanh: selectedTinhThanh.value.ProvinceName,
+        idQuanHuyen: selectedQuanHuyen.value.DistrictID,
+        quanHuyen: selectedQuanHuyen.value.DistrictName,
+        idPhuongXa: selectedPhuongXa.value.WardCode,
+        phuongXa: selectedPhuongXa.value.WardName,
+        diaChi: diaChi.value
+    };
+
+       await userService.createDiaChi(form);
+      //  window.location.reload();
+       productDialog.value = false;
+       toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Thêm địa chỉ thành công', life: 3000 });
+       clearForm();
+    }
+    addProductDialog.value = false;
+};
+
+const clearForm = () => {
+    selectedTinhThanh.value = null;
+    selectedQuanHuyen.value = null;
+    selectedPhuongXa.value = null;
+    diaChi.value = null;
+};
 // mở form
 const openNew = () => {
     product.value = {};
@@ -26,91 +70,98 @@ const hideDialog = () => {
 
 //save
 const saveProduct = () => {
-    submitted.value = true;
-    if (product.value.name && product.value.name.trim() && product.value.price) {
-        if (product.value.id) {
-            product.value.inventoryStatus = product.value.inventoryStatus.value ? product.value.inventoryStatus.value : product.value.inventoryStatus;
-            products.value[findIndexById(product.value.id)] = product.value;
-            toast.add({ severity: 'success', summary: 'Successful', detail: 'Product Updated', life: 3000 });
-        } else {
-            product.value.id = createId();
-            product.value.code = createId();
-            product.value.image = 'product-placeholder.svg';
-            product.value.inventoryStatus = product.value.inventoryStatus ? product.value.inventoryStatus.value : 'INSTOCK';
-            products.value.push(product.value);
-            toast.add({ severity: 'success', summary: 'Successful', detail: 'Product Created', life: 3000 });
+    addProductDialog.value = true;
+};
+
+const selectedTinhThanh = ref(null);
+const selectedQuanHuyen = ref(null);
+const selectedPhuongXa = ref(null);
+const tinhThanhList = ref([]);
+const quanHuyenList = ref([]);
+const phuongXaList = ref([]);
+// Fetch data when component is mounted
+onMounted(async () => {
+    try {
+        const response = await diaChiService.fetchTinhThanh();
+        tinhThanhList.value = response;
+        // console.log(tinhThanhList.value);
+    } catch (error) {
+        console.error('Error fetching tinhThanhList:', error);
+    }
+});
+
+// X? lý s? ki?n khi t?nh/thành ph? thay d?i
+const onTinhThanhChange = async () => {
+    // console.log('Tinh Thanh ID:', selectedTinhThanh.value); // Ki?m tra giá tr? c?a tinhThanhId
+    if (selectedTinhThanh.value) {
+        try {
+            // G?i hàm fetchQuanHuyen v?i giá tr? tinhThanhId
+            const quanHuyenData = await diaChiService.fetchQuanHuyen(selectedTinhThanh.value.ProvinceID);
+            quanHuyenList.value = quanHuyenData;
+            // console.log('Danh sách qu?n/huy?n:', quanHuyenData); // Ki?m tra d? li?u tr? v? t? API
+            // ...
+        } catch (error) {
+            console.error('L?i khi l?y danh sách qu?n/huy?n:', error);
         }
-        productDialog.value = false;
-        product.value = {};
+    }
+};
+
+// Function to fetch Phu?ng/Xã based on the selected Qu?n/Huy?n
+const onQuanHuyenChange = async () => {
+    if (selectedQuanHuyen.value) {
+        try {
+            // Fetch data for the third dropdown (Phu?ng/Xã) based on the selected Qu?n/Huy?n
+            const phuongXaData = await diaChiService.fetchPhuongXa(selectedQuanHuyen.value.DistrictID);
+            phuongXaList.value = phuongXaData;
+            // console.log('Danh sách xã: ', phuongXaData);
+        } catch (error) {
+            console.error('L?i khi l?y danh sách phu?ng/xã:', error);
+        }
     }
 };
 </script>
 <template>
-    <Button label="New" icon="pi pi-plus" class="p-button-success mr-2" @click="openNew" />
+    <a label="thêm mới"   @click="openNew" style="color: blue;" >Thêm mới</a>
     <!-- <div class="grid">
         <div class="col-12">
             <div class="card"> -->
-    <Dialog v-model:visible="productDialog" :style="{ width: '450px' }" header="Thêm địa chỉ" :modal="true" class="p-fluid">
-        <div class="field">
-            <label for="inventoryStatus" class="mb-3">Thành phố/Tỉnh</label>
-            <div class="flex">
-                <Dropdown id="inventoryStatus" v-model="product.inventoryStatus" :options="valueChucVu" optionLabel="label" placeholder="Select a Status" style="width: 100%">
-                    <template #value="slotProps">
-                        <div v-if="slotProps.value && slotProps.value.value">
-                            <span :class="'product-badge status-' + slotProps.value.value">{{ slotProps.value.label }}</span>
-                        </div>
-                        <div v-else-if="slotProps.value && !slotProps.value.value">
-                            <span :class="'product-badge status-' + slotProps.value.toLowerCase()">{{ slotProps.value }}</span>
-                        </div>
-                        <span v-else>
-                            {{ slotProps.placeholder }}
-                        </span>
-                    </template>
-                </Dropdown>
-            </div>
-        </div>
-        <div class="field">
-            <label for="inventoryStatus" class="mb-3">Quận/Huyện</label>
-            <div class="flex">
-                <Dropdown id="inventoryStatus" v-model="product.inventoryStatus" :options="valueChucVu" optionLabel="label" placeholder="Select a Status" style="width: 100%">
-                    <template #value="slotProps">
-                        <div v-if="slotProps.value && slotProps.value.value">
-                            <span :class="'product-badge status-' + slotProps.value.value">{{ slotProps.value.label }}</span>
-                        </div>
-                        <div v-else-if="slotProps.value && !slotProps.value.value">
-                            <span :class="'product-badge status-' + slotProps.value.toLowerCase()">{{ slotProps.value }}</span>
-                        </div>
-                        <span v-else>
-                            {{ slotProps.placeholder }}
-                        </span>
-                    </template>
-                </Dropdown>
-            </div>
-        </div>
-        <div class="field">
-            <label for="inventoryStatus" class="mb-3">Phường/Xã</label>
-            <div class="flex">
-                <Dropdown id="inventoryStatus" v-model="product.inventoryStatus" :options="valueChucVu" optionLabel="label" placeholder="Select a Status" style="width: 100%">
-                    <template #value="slotProps">
-                        <div v-if="slotProps.value && slotProps.value.value">
-                            <span :class="'product-badge status-' + slotProps.value.value">{{ slotProps.value.label }}</span>
-                        </div>
-                        <div v-else-if="slotProps.value && !slotProps.value.value">
-                            <span :class="'product-badge status-' + slotProps.value.toLowerCase()">{{ slotProps.value }}</span>
-                        </div>
-                        <span v-else>
-                            {{ slotProps.placeholder }}
-                        </span>
-                    </template>
-                </Dropdown>
-            </div>
-        </div>
-        <div class="field">
-            <label for="name">Số nhà</label>
-            <InputText id="name" v-model.trim="product.name" required="true" autofocus :class="{ 'p-invalid': submitted && !product.name }" />
-            <small class="p-invalid" v-if="submitted && !product.name">Số nhà không được trống.</small>
-        </div>
+    <Dialog v-model:visible="productDialog" :style="{ width: '600px' }" header="Thêm địa chỉ" :modal="true" class="p-fluid">
+        <div class="card">
+            <form @submit="onSubmit">
+                <div class="p-fluid formgrid grid">
+                    <div class="field col-12" style="margin-bottom: 30px">
+                        <label for="tinhThanh">Tỉnh/Thành phố</label>
+                        <Dropdown v-model="selectedTinhThanh" :options="tinhThanhList" optionLabel="ProvinceName" placeholder="Chọn tỉnh/thành phố" @change="onTinhThanhChange"></Dropdown>
+                    </div>
 
+                    <!-- Quận/Huyện combobox -->
+                    <div class="field col-12" style="margin-bottom: 30px">
+                        <label for="quanHuyen">Quận/Huyện</label>
+                        <Dropdown v-model="selectedQuanHuyen" :options="quanHuyenList" optionLabel="DistrictName" placeholder="Chọn quận/huyện" @change="onQuanHuyenChange"></Dropdown>
+                    </div>
+
+                    <!-- Phường/Xã combobox -->
+                    <div class="field col-12" style="margin-bottom: 30px">
+                        <label for="phuongXa">Phường/Xã</label>
+                        <Dropdown v-model="selectedPhuongXa" :options="phuongXaList" optionLabel="WardName" placeholder="Chọn phường/xã"></Dropdown>
+                    </div>
+                    <div class="field col-12" style="margin-bottom: 30px">
+                        <label for="address">Địa chỉ cụ thể</label>
+                        <InputText id="diaChi" rows="4" v-model.trim="diaChi" :class="{ 'p-invalid': MoTaSacError }" required="false" autofocus></InputText>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <Dialog v-model:visible="addProductDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
+            <div class="flex align-items-center justify-content-center">
+                <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+                <span v-if="product">Bạn có chắc chắn muốn thêm không ?</span>
+            </div>
+            <template #footer>
+                <Button label="No" icon="pi pi-times" class="p-button-text" @click="addProductDialog = false" />
+                <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="addProduct" />
+            </template>
+        </Dialog>
         <template #footer>
             <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="hideDialog" />
             <Button label="Save" icon="pi pi-check" class="p-button-text" @click="saveProduct" />

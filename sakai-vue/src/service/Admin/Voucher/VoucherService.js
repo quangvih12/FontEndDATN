@@ -1,50 +1,78 @@
-import axios from 'axios';
-const VOUCHER_API_BASE_URL = 'http://localhost:8080/api/voucher';
+import { defineStore } from 'pinia';
+import axios from '@/service/Authentication/http.js';
 
- class VoucherService{
-    
-    async getVoucher(){
-        // return axios.get(VOUCHER_API_BASE_URL);
-       
+const apiVoucher = 'http://localhost:8080/api/admin/voucher';
+const apiUserVoucher = 'http://localhost:8080/api/admin/user-voucher';
+const apiUser = 'http://localhost:8080/api/admin/user';
+
+export const voucherStore = defineStore('voucher', {
+    state: () => ({
+        data: [],
+        dataUser: [],
+        excels:[]
+    }),
+    actions: {
+        async getVoucher() {
+            this.check = 0;
             try {
-              const response = await axios.get('http://localhost:8080/api/voucher/getall');
-              console.log(response)
-              return response?.data.data?.content;
-            } catch (error) {
-              console.error(error);
-              throw error;
-            }
-          
-        // axios.get(http://localhost:8080/api/voucher/index)
-    }
-     createVoucher(voucher){
-   
-        try {
-            const response =  axios.post('http://localhost:8080/api/voucher/add', voucher);
+                const response = await axios.get(apiVoucher + '/getAllVoucher');
+                this.data = response.data;
+            } catch (error) {}
+        },
+        async getUserByTongTien(valueCbb) {
+            this.check = 0;
+            try {
+                const response = await axios.get(apiUser + '/get-user-by-tong-tien?cbbValue=' + valueCbb);
+                this.dataUser = response.data;
+            } catch (error) {}
+        },
+        createVoucher(form) {
+            axios.post(apiVoucher + '/add', form).then((response) => {
+                this.data.unshift(response.data.data);
+            });
+        },
+        addUserWithVoucher(form) {
+            axios.post(apiUserVoucher + '/add', form).then((response) => {
+                // this.data.unshift(response.data.data);
+            });
+        },
+        async getUserByVoucher(idVoucher) {
+            const response = await axios.get(apiVoucher + '/get-user-by-voucher/' + idVoucher);
             return response.data;
-          } catch (error) {
-            console.error(error);
-              throw error;
-          }
+            // this.data.unshift(response.data.data);
+        },
+        updateVoucher(form, id) {
+            axios.put(apiVoucher + '/update/' + id, form).then((response) => {
+                for (let i = 0; i < this.data.length; i++) {
+                    if (id == this.data[i].id) {
+                        this.data[i].ten = form.ten;
+                        this.data[i].thoiGianBatDau = form.thoiGianBatDau;
+                        this.data[i].thoiGianKetThuc = form.thoiGianKetThuc;
+                        this.data[i].soLuong = form.soLuong;
+                        this.data[i].moTa = form.moTa;
+                        this.data[i].giamToiDa = form.giamToiDa;
+                        this.data[i].trangThai = response.data.data.trangThai;
+                    }
+                }
+            });
+        },
+        async uploadFile(formData) {
+            const response = await axios.post(apiVoucher+"/view-data", formData);
+            const newProductData = response.data;
+            this.excels.unshift(newProductData); 
+        },
+        deleteVoucher(form, id) {
+            axios.put(apiVoucher + '/delete/' + id, form).then((response) => {
+                if (this.data[0].trangThai != response.data.data.trangThai) {
+                    let index = -1;
+                    for (let i = 0; i < this.data.length; i++) {
+                        if (id == this.data[i].id) {
+                            index = i;
+                        }
+                    }
+                    this.data.splice(index, 1);
+                }
+            });
+        }
     }
-
-    getVoucherId(voucherId){
-        return axios.get(VOUCHER_API_BASE_URL + '/' + voucherId);
-    }
-
-    updateVoucher(voucher, voucherId){
-      try {
-        const response = axios.put(VOUCHER_API_BASE_URL + '/update/' + voucherId, voucher);
-        return response.data;
-      } catch (error) {
-        console.error(error);
-          throw error;
-      }
-      
-    }
-
-    deleteVoucher(voucherId){
-        return axios.delete(VOUCHER_API_BASE_URL + '/' + voucherId);
-    }
-}
-export default new VoucherService();
+});

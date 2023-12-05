@@ -12,6 +12,8 @@ import HoanThanhVue from './HoanThanh.vue';
 import DaHuyVue from './DaHuy.vue';
 import TraHangHoanTienVue from './TraHangHoanTien.vue';
 import DaHoanTraVue from './DaHoanTra.vue';
+import XacNhanTraHangHoanTien from './XacNhanTraHangHoanTien.vue';
+import DaHuyTraHang from './DaHuyTraHang.vue';
 
 const customer1 = ref(null);
 const customer2 = ref(null);
@@ -90,9 +92,6 @@ const formatDate = (value) => {
                         <TabPanel header="Chờ xác nhận">
                             <ChoXacNhanVue> </ChoXacNhanVue>
                         </TabPanel>
-                        <TabPanel header="Đang chuẩn bị">
-                            <DangChuanBiVue> </DangChuanBiVue>
-                        </TabPanel>
                         <TabPanel header="Đang giao">
                             <DangGiaoVue> </DangGiaoVue>
                         </TabPanel>
@@ -102,11 +101,14 @@ const formatDate = (value) => {
                         <TabPanel header="Đã hủy">
                             <DaHuyVue> </DaHuyVue>
                         </TabPanel>
-                        <TabPanel header="Trả hàng/Hoàn tiền">
+                        <TabPanel header="Trả hàng">
                             <TraHangHoanTienVue> </TraHangHoanTienVue>
                         </TabPanel>
-                        <TabPanel header="Đã hoàn trả">
+                        <TabPanel header="Xác nhận trả hàng">
                             <DaHoanTraVue> </DaHoanTraVue>
+                        </TabPanel>
+                        <TabPanel header="Huỷ trả hàng">
+                            <DaHuyTraHang> </DaHuyTraHang>
                         </TabPanel>
                     </TabView>
                 </div>

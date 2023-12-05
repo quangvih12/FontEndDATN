@@ -1,6 +1,7 @@
 <script setup>
 import ProductService from '@/service/ProductService';
 import { ref, defineProps, onMounted } from 'vue';
+import View from '../VatLieu/Index.vue';
 
 const props = defineProps({
     tableId: String,
@@ -57,19 +58,15 @@ const products = ref(null);
 
 <template>
     <div>
-        <Dialog header="Vật liệu" v-model:visible="display" :breakpoints="{ '960px': '75vw' }" :style="{ width: '1000px' }"
-            :modal="true">
-            <section :class="tableClass" :id="tableId">
+        <Dialog header="Vật liệu" v-model:visible="display" :breakpoints="{ '960px': '75vw' }" :style="{ width: '1000px' }" :modal="true">
+            <!-- <section :class="tableClass" :id="tableId">
                 <div :class="{ hidden: !isRightGhLoaiVisible }">
-                    <Button label="New" icon="pi pi-plus" class="p-button-success mr-2" @click="chuyenPhanTus(rightGhId)"
-                        style="margin-bottom: 10px" />
-                    <DataTable :value="products" v-model:selection="selectedProduct" selectionMode="single"
-                        :paginator="true" :rows="5" @row-select="onProductSelect" responsiveLayout="scroll">
+                    <Button label="New" icon="pi pi-plus" class="p-button-success mr-2" @click="chuyenPhanTus(rightGhId)" style="margin-bottom: 10px" />
+                    <DataTable :value="products" v-model:selection="selectedProduct" selectionMode="single" :paginator="true" :rows="5" @row-select="onProductSelect" responsiveLayout="scroll">
                         <Column field="name" header="Name" :sortable="true" headerStyle="min-width:12rem;"></Column>
                         <Column header="Image" headerStyle="min-width:5rem;">
                             <template #body="slotProps">
-                                <img :src="'demo/images/product/' + slotProps.data.image" :alt="slotProps.data.image"
-                                    width="50" class="shadow-2" />
+                                <img :src="'demo/images/product/' + slotProps.data.image" :alt="slotProps.data.image" width="50" class="shadow-2" />
                             </template>
                         </Column>
                         <Column field="price" header="Price" :sortable="true" headerStyle="min-width:8rem;">
@@ -88,22 +85,17 @@ const products = ref(null);
             </section>
             <section :class="rightGhClass" :id="rightGhId">
                 <div :class="{ hidden: isRightGhLoaiVisible }">
-                    <Button icon="pi pi-angle-double-left" label="  " class="p-button-outlined"
-                        @click="vePhanTus(tableId)" />
-                    <div class="tong" style="position: relative;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, 0%);    width: 500px;
-    height: 270px;">
-                        <div class="ten" style="    margin: 20px 0px 20px 0px;">
+                    <Button icon="pi pi-angle-double-left" label="  " class="p-button-outlined" @click="vePhanTus(tableId)" />
+                    <div class="tong" style="position: relative; top: 50%; left: 50%; transform: translate(-50%, 0%); width: 500px; height: 270px">
+                        <div class="ten" style="margin: 20px 0px 20px 0px">
                             <span class="p-float-label">
                                 <InputNumber id="inputnumber"></InputNumber>
                                 <label for="inputnumber">Tên</label>
                             </span>
                         </div>
-                        <div class="trangThai" style="    margin: 20px 0px 20px 0px;">
+                        <div class="trangThai" style="margin: 20px 0px 20px 0px">
                             <label for="address">Trạng thái</label>
-                            <div class="flex flex-wrap gap-3" style="margin-top: 10px;">
+                            <div class="flex flex-wrap gap-3" style="margin-top: 10px">
                                 <div class="flex align-items-center">
                                     <RadioButton v-model="ingredient" inputId="ingredient1" name="pizza" value="Cheese" />
                                     <label for="ingredient1" class="ml-2">Cheese</label>
@@ -115,24 +107,17 @@ const products = ref(null);
                             </div>
                         </div>
 
-                        <div class="moTa" style="    margin: 20px 0px 20px 0px;">
+                        <div class="moTa" style="margin: 20px 0px 20px 0px">
                             <label for="address">Mô tả</label>
-                            <Textarea id="address" rows="4" style="width: 500px;" />
+                            <Textarea id="address" rows="4" style="width: 500px" />
                         </div>
-
-
                     </div>
-                    <Button label="Lưu" @click="close" icon="pi pi-check" class="p-button-outlined"
-                        style="margin-left: 400px;" />
+                    <Button label="Lưu" @click="close" icon="pi pi-check" class="p-button-outlined" style="margin-left: 400px" />
                 </div>
-
-            </section>
-
-            <template #footer>
-
-            </template>
+            </section> -->
+            <View></View>
+            <template #footer> </template>
         </Dialog>
-        <Button type="button" icon="pi pi-pencil" @click="open" class="p-button-success"
-            style="width: 50px; height: 40px; margin-left: 20px" />
+        <Button type="button" icon="pi pi-pencil" @click="open" class="p-button-success" style="width: 50px; height: 40px; margin-left: 20px" />
     </div>
 </template>

@@ -1,13 +1,17 @@
 <script setup>
-import { computed, watch, ref } from 'vue';
+import {computed, watch, ref, onBeforeUnmount, onBeforeMount} from 'vue';
 import AppTopbar from '../KhachHang/AppTopbarKH.vue';
 import AppFooter from '../KhachHang/AppFooterKH.vue';
 import AppSidebar from '../AppSidebar.vue';
 import AppConfig from '../AppConfig.vue';
 import { useLayout } from '@/layout/composables/layout';
+import ChatButton from "../../components/KhachHang/Chat/ChatButton.vue";
+import {useChatStore} from "../../service/Admin/Chat/ChatService";
+import {verifyJwt} from "../../service/common/JwtUtils";
+import * as chatService from "@/service/chatkitty";
 
+const chatStore = useChatStore();
 const { layoutConfig, layoutState, isSidebarActive } = useLayout();
-
 const outsideClickListener = ref(null);
 
 watch(isSidebarActive, (newVal) => {
@@ -55,6 +59,19 @@ const isOutsideClicked = (event) => {
 
     return !(sidebarEl.isSameNode(event.target) || sidebarEl.contains(event.target) || topbarEl.isSameNode(event.target) || topbarEl.contains(event.target));
 };
+
+onBeforeMount(async () => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    const payloadData = await verifyJwt(token);
+    await chatService.login(payloadData.sub, payloadData.id);
+    if (payloadData.role === 'USER') await chatStore.createDirectChannel(payloadData.sub);
+  }
+});
+
+onBeforeUnmount(async () => {
+  await chatStore.tearDown();
+});
 </script>
 
 <template>
@@ -77,6 +94,7 @@ const isOutsideClicked = (event) => {
         <!-- <app-config></app-config> -->
         <div class="layout-mask"></div>
     </div>
+  <ChatButton/>
 </template>
 
 <style lang="scss" scoped>

@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useForm, useField } from 'vee-validate';
 import * as yup from 'yup';
 import { TrongLuongStore } from '../../../service/Admin/TrongLuong/TrongLuong.api';
@@ -20,14 +20,19 @@ const props = defineProps({
 const schema = yup.object().shape({
     donVi: yup
         .string()
+
         .required('Tên không được để trống!')
         .max(30, 'Tên giới hạn 30 ký tự')
-        .matches(/^[a-zA-Z0-9đĐáÁàÀảẢãÃạẠăĂắẮằẰẳẲẵẴặẶâÂấẤầẦẩẨẫẪậẬêÊếẾềỀểỂễỄệỆôÔốỐồỒổỔỗỖộỘỏỎóÓòÒõÕọỌẻẺéÉèÈẽẼẹẸỉỈíÍìÌĩĨịỊơƠớỚờỜởỞỡỠợỢùÙúÚụỤủỦũŨưỨỨửỬữỮựỰýÝỳỲỷỶỹỸỵỴ\s]*$/, 'Tên không được chứa kí tự đặc biệt!')
+        .matches(/^[a-zA-Z0-9đĐáÁàÀảẢãÃạẠăĂắẮằẰẳẲẵẴặẶâÂấẤầẦẩẨẫẪậẬêÊếẾềỀểỂễỄệỆôÔốỐồỒổỔỗỖộỘỏỎóÓòÒõÕọỌẻẺéÉèÈẽẼẹẸỉỈíÍìÌĩĨịỊơƠớỚờỜởỞỡỠợỢùÙúÚụỤủỦũŨưỨỨửỬữỮựỰýÝỳỲỷỶỹỸỵỴ\s]*$/, 'Tên không được chứa kí tự đặc biệt!'),
+    giaTri: yup.number().required('Vui lòng nhập giá trị.').min(100, 'Giá trị phải lớn hơn hoặc bằng 100.').max(5000, 'Giá trị phải nhỏ hơn hoặc bằng 5000.')
 });
 const { handleSubmit, resetForm } = useForm({
     validationSchema: schema
 });
 const { value: donVi, errorMessage: donViError } = useField('donVi');
+
+const { value: giaTri, errorMessage: giaTriError } = useField('giaTri');
+
 const onSubmit = handleSubmit(async (values) => {
     try {
         console.log('Dữ liệu đã gửi:', values);
@@ -52,17 +57,25 @@ const confirmUpdateProduct = () => {
 // mở form
 const editProduct = () => {
     donVi.value = props.myProp.donVi;
+
+    giaTri.value = props.myProp.value;
+
     product.value = { ...editProduct };
     productDialog.value = true;
 };
-
 //đóng form
 const hideDialog = () => {
     donVi.value = props.myProp.donVi;
+    value.value = props.myProp.value;
     productDialog.value = false;
     submitted.value = false;
 };
-
+watch(giaTri, (newVal) => {
+    if (giaTri.value.length <= 0) {
+        giaTri.value = 0;
+        giaTriError.value = 'Giá trị không được để trống.';
+    }
+});
 //save
 const saveProduct = () => {
     confirmUpdateProduct();
@@ -75,17 +88,22 @@ const containsSpecialCharacters = (donVi) => {
 const isDonViTooLong = (donVi) => {
     return donVi.length > 30;
 };
+
 const updateProduct = () => {
     submitted.value = true;
     const form = {
         donVi: donVi.value,
+
+        value: giaTri.value
     };
-    if (form.donVi === null || form.donVi.trim() === '') {
+    if (form.donVi == null || form.donVi.length <= 0) {
         donVi.value = '';
         toast.add({ severity: 'error', summary: 'Thông báo', detail: 'Sửa thất bại', life: 3000 });
     } else if (containsSpecialCharacters(form.donVi)) {
         toast.add({ severity: 'error', summary: 'Thông báo', detail: 'Sửa thất bại', life: 3000 });
     } else if (isDonViTooLong(form.donVi)) {
+        toast.add({ severity: 'error', summary: 'Thông báo', detail: 'Sửa thất bại', life: 3000 });
+    } else if (form.value == 0 || form.value < 100 || form.value > 5000) {
         toast.add({ severity: 'error', summary: 'Thông báo', detail: 'Sửa thất bại', life: 3000 });
     } else {
         const update = TrongLuongService.updateTrongLuong(props.myProp.id, form);
@@ -108,6 +126,13 @@ const updateProduct = () => {
                             <label for="username">Đơn vị</label>
                         </span>
                         <small class="p-error">{{ donViError }}</small>
+                    </div>
+                    <div class="Field col-12" style="margin-bottom: 30px">
+                        <span class="p-float-label">
+                            <InputText id="giaTri" name="giaTri" type="number" v-model.trim="giaTri" :class="{ 'p-invalid': giaTriError }" required="true" autofocus />
+                            <label for="username">Giá trị</label>
+                        </span>
+                        <small class="p-error">{{ giaTriError }}</small>
                     </div>
                 </div>
             </form>

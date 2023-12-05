@@ -1,40 +1,73 @@
 <script setup>
 import { TrangChuStore } from '../../service/KhachHang/TrangChuService';
-import { ref, onMounted, onBeforeMount, watch } from 'vue';
-
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { SPDaXemStore } from '../../service/KhachHang/SanPhamDaXem.js';
+import ChatButton from "./Chat/ChatButton.vue";
+const spDaXemService = SPDaXemStore();
+const router = useRouter();
 const useTrangChuService = TrangChuStore();
 const dataHangMoi = ref([]);
 const dataFullrace = ref([]);
 const dataTreEm = ref([]);
+const dataSPBanChay = ref([]);
 
-//load data 3/4
+const goToProductDetail = (productId) => {
+    themSPDaXem(productId);
+    router.push({ name: 'chi-tiet-san-pham', params: { id: productId } });
+};
+
+//load data full
 const loadData = async () => {
-    await useTrangChuService.fetchDataByTenLoai('Fullrace');
-    dataFullrace.value = useTrangChuService.data3Phan4;
-    // console.log(dataFullrace.value);
+    await useTrangChuService.fetchDataByTenLoai(2);
+    dataFullrace.value = useTrangChuService.dataFullface;
 };
 
 //load data hang moi
 const loadDataHangMoi = async () => {
-    await useTrangChuService.fetchDataByNgayTao();
+    await useTrangChuService.fetchDataHangMoi();
     dataHangMoi.value = useTrangChuService.dataHangMoi;
-    // console.log(dataHangMoi.value);
+};
+
+//load data sp bán chạy
+const loadDataSPBanChay = async () => {
+    await useTrangChuService.fetchDataBanChay();
+    dataSPBanChay.value = useTrangChuService.dataSPBanChay;
 };
 
 //load data hang moi
 const loadDataTreEm = async () => {
-    await useTrangChuService.fetchDataByTreEm('Trẻ em');
+    await useTrangChuService.fetchDataByTenLoai(5);
     dataTreEm.value = useTrangChuService.dataTreEm;
-    console.log(dataTreEm.value);
+};
+
+const formatCurrency = (value) => {
+    return parseInt(value).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+};
+
+const hienGiaGoc = (value) => {
+    if (value != null) {
+        return false;
+    } else {
+        return true;
+    }
+};
+const hienGiaGiam = (value) => {
+    if (value != null) {
+        return true;
+    } else {
+        return false;
+    }
 };
 
 onMounted(() => {
     loadData();
+    loadDataSPBanChay();
     loadDataHangMoi();
     loadDataTreEm();
 });
 
-const banner1 = 'https://nontrum.vn/wp-content/uploads/2023/05/18.5-BANNER-NONTRUM.jpg';
+const banner1 = '../../images/banner.jpg';
 const thumbnails = [
     {
         imageUrl: 'https://nontrum.vn/wp-content/uploads/2019/10/non-balder-vang-1-e1583121638578.jpg',
@@ -90,45 +123,132 @@ const thumbnailsSP = [
     },
     {
         imageUrl: 'https://nontrum.vn/wp-content/uploads/2019/10/non-balder-vang-1-e1583121638578.jpg',
+        name: 'ROC R43 Frozen Xanh abc',
+        price: '320,000 ₫'
+    },
+
+    {
+        imageUrl: 'https://nontrum.vn/wp-content/uploads/2019/10/non-balder-vang-1-e1583121638578.jpg',
         name: 'ROC R43 Frozen Xanh',
         price: '320,000 ₫'
     },
     {
         imageUrl: 'https://nontrum.vn/wp-content/uploads/2019/10/non-balder-vang-1-e1583121638578.jpg',
-        name: 'NÓN TRẺ EM',
+        name: 'ROC R43 Frozen Xanh',
         price: '320,000 ₫'
     }
     // Thêm các đối tượng khác nếu cần
 ];
 //sp hot
 const banner2 =
-    'https://scontent.xx.fbcdn.net/v/t1.15752-9/384494576_212944041799990_6536877871085600694_n.jpg?stp=dst-jpg_p403x403&_nc_cat=100&ccb=1-7&_nc_sid=aee45a&_nc_ohc=SzY5XaMxudkAX-v7Aos&_nc_ad=z-m&_nc_cid=0&_nc_ht=scontent.xx&oh=03_AdQqRGWBwHIp5mz_NXSZwzps60Kio19-HrCV9ifan2GMdA&oe=6540DB9E';
+    'https://scontent.xx.fbcdn.net/v/t1.15752-9/384494576_212944041799990_6536877871085600694_n.jpg?stp=dst-jpg_s1080x2048&_nc_cat=100&ccb=1-7&_nc_sid=510075&_nc_ohc=CBKQdqsgXOwAX8fYuuX&_nc_ad=z-m&_nc_cid=0&_nc_ht=scontent.xx&oh=03_AdREjH2b3LqpYhiC0dFqK-EDrJwPhnwR0pxyUQxipcou9w&oe=6572841E';
 const banner3 =
-    'https://scontent-hkt1-2.xx.fbcdn.net/v/t1.15752-9/384495534_246446494627006_6844178457291330656_n.png?_nc_cat=107&ccb=1-7&_nc_sid=ae9488&_nc_ohc=hXv34rh4wsoAX8uvziX&_nc_ht=scontent-hkt1-2.xx&oh=03_AdT6WK-EX8szm_64bSlFxqdLenzaCYlpQ2ThD65Z0spJiA&oe=6540FA58';
+    'https://scontent.xx.fbcdn.net/v/t1.15752-9/384495534_246446494627006_6844178457291330656_n.png?_nc_cat=107&ccb=1-7&_nc_sid=510075&_nc_ohc=cO2KzVhSOtgAX9CX4lV&_nc_ad=z-m&_nc_cid=0&_nc_ht=scontent.xx&oh=03_AdT-I5MJyt7UQ5wMxpWJf93pktpDOFy0SmdrK6cxujiHjQ&oe=6572A2D8';
 
 //sp mới
 const banner4 =
-    'https://scontent-hkt1-1.xx.fbcdn.net/v/t1.15752-9/384496062_1460325597842976_2086340908356909333_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=ae9488&_nc_ohc=Amhlz69XEdYAX_Modsq&_nc_ht=scontent-hkt1-1.xx&oh=03_AdRhVdQ_9jQ8NmYPFk8kSV5KwU0ea7_yNA5Yyz-N8uN9NA&oe=6540D714';
+    'https://scontent.xx.fbcdn.net/v/t1.15752-9/384494576_212944041799990_6536877871085600694_n.jpg?stp=dst-jpg_s1080x2048&_nc_cat=100&ccb=1-7&_nc_sid=510075&_nc_ohc=CBKQdqsgXOwAX8fYuuX&_nc_ad=z-m&_nc_cid=0&_nc_ht=scontent.xx&oh=03_AdREjH2b3LqpYhiC0dFqK-EDrJwPhnwR0pxyUQxipcou9w&oe=6572841E';
 const banner5 =
-    'https://scontent-hkt1-1.xx.fbcdn.net/v/t1.15752-9/384494625_283927074496518_5310764482955667432_n.png?_nc_cat=101&ccb=1-7&_nc_sid=ae9488&_nc_ohc=-hQ8pfc7uagAX9TQf34&_nc_ht=scontent-hkt1-1.xx&oh=03_AdRDQena56LvsE0NB9HONjwjBjE3ZplaZRmdkwNENRQQzA&oe=654106F8';
+    'https://scontent.xx.fbcdn.net/v/t1.15752-9/384495534_246446494627006_6844178457291330656_n.png?_nc_cat=107&ccb=1-7&_nc_sid=510075&_nc_ohc=cO2KzVhSOtgAX9CX4lV&_nc_ad=z-m&_nc_cid=0&_nc_ht=scontent.xx&oh=03_AdT-I5MJyt7UQ5wMxpWJf93pktpDOFy0SmdrK6cxujiHjQ&oe=6572A2D8';
 
 // nón full
 const banner6 =
-    'https://scontent-hkt1-2.xx.fbcdn.net/v/t1.15752-9/384501546_1927582690974983_8338975671902500498_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=ae9488&_nc_ohc=s50HT8ZUaQsAX9zTPVQ&_nc_ht=scontent-hkt1-2.xx&oh=03_AdTw4TNugYgFiA0gtaNzsidgUYXC19jDmBh_2-46oK5vpQ&oe=65411851';
+    'https://scontent.xx.fbcdn.net/v/t1.15752-9/384494576_212944041799990_6536877871085600694_n.jpg?stp=dst-jpg_s1080x2048&_nc_cat=100&ccb=1-7&_nc_sid=510075&_nc_ohc=CBKQdqsgXOwAX8fYuuX&_nc_ad=z-m&_nc_cid=0&_nc_ht=scontent.xx&oh=03_AdREjH2b3LqpYhiC0dFqK-EDrJwPhnwR0pxyUQxipcou9w&oe=6572841E';
 const banner7 =
-    'https://scontent-hkt1-2.xx.fbcdn.net/v/t1.15752-9/384508783_682595837264062_9068137747578974452_n.png?_nc_cat=100&ccb=1-7&_nc_sid=ae9488&_nc_ohc=8MSCY_88DbcAX_iD2bh&_nc_ht=scontent-hkt1-2.xx&oh=03_AdQenrMEiZfapWu_15ln-GlR9KZgRG5Ym7cUrwR1MHpcVg&oe=6541055E';
+    'https://scontent.xx.fbcdn.net/v/t1.15752-9/384495534_246446494627006_6844178457291330656_n.png?_nc_cat=107&ccb=1-7&_nc_sid=510075&_nc_ohc=cO2KzVhSOtgAX9CX4lV&_nc_ad=z-m&_nc_cid=0&_nc_ht=scontent.xx&oh=03_AdT-I5MJyt7UQ5wMxpWJf93pktpDOFy0SmdrK6cxujiHjQ&oe=6572A2D8';
 // nón trẻ em
 const banner8 =
-    'https://scontent-hkt1-2.xx.fbcdn.net/v/t1.15752-9/384510790_6774536735973404_6113643327841253266_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=ae9488&_nc_ohc=mpCCo36VqagAX-i4xgj&_nc_ht=scontent-hkt1-2.xx&oh=03_AdQu-36-DfWyJtO_4R_Lg0RBeG9bkg0AErHzarMcG44C4w&oe=6541091D';
+    'https://scontent.xx.fbcdn.net/v/t1.15752-9/384494576_212944041799990_6536877871085600694_n.jpg?stp=dst-jpg_s1080x2048&_nc_cat=100&ccb=1-7&_nc_sid=510075&_nc_ohc=CBKQdqsgXOwAX8fYuuX&_nc_ad=z-m&_nc_cid=0&_nc_ht=scontent.xx&oh=03_AdREjH2b3LqpYhiC0dFqK-EDrJwPhnwR0pxyUQxipcou9w&oe=6572841E';
 const banner9 =
-    'https://scontent-hkt1-2.xx.fbcdn.net/v/t1.15752-9/385551368_1347620079295120_1833156698455445217_n.png?_nc_cat=100&ccb=1-7&_nc_sid=ae9488&_nc_ohc=4vnmABrI3PwAX93KwyX&_nc_ht=scontent-hkt1-2.xx&oh=03_AdQdNEi5lSi7WNUzhlN8gpiEdDOxwarIGY5Q0AuIkbcaYw&oe=6541079A';
+    'https://scontent.xx.fbcdn.net/v/t1.15752-9/384495534_246446494627006_6844178457291330656_n.png?_nc_cat=107&ccb=1-7&_nc_sid=510075&_nc_ohc=cO2KzVhSOtgAX9CX4lV&_nc_ad=z-m&_nc_cid=0&_nc_ht=scontent.xx&oh=03_AdT-I5MJyt7UQ5wMxpWJf93pktpDOFy0SmdrK6cxujiHjQ&oe=6572A2D8';
+
+if (!localStorage.getItem('spDaXem')) {
+    let array = [];
+    localStorage.setItem('spDaXem', JSON.stringify(array));
+}
+
+const themSPDaXem = async (idSP) => {
+    const token = localStorage.getItem('token');
+    const respone = await spDaXemService.themSPDaXem(idSP);
+    let array = JSON.parse(localStorage.getItem('spDaXem')); // Phân tích chuỗi JSON thành mảng
+    if (token == null) {
+        const form = {
+            idUser: -1,
+            anh: respone.anh,
+            demLot: respone.demLot,
+            giaBanMax: respone.giaBanMax,
+            giaBanMin: respone.giaBanMin,
+            giaSauGiamMax: respone.giaSauGiamMax,
+            giaSauGiamMin: respone.giaSauGiamMin,
+            idSP: respone.idSP,
+            ma: respone.ma,
+            moTa: respone.moTa,
+            ngayTao: respone.ngayTao,
+            quaiDeo: respone.quaiDeo,
+            tenLoai: respone.tenLoai,
+            tenSP: respone.tenSP,
+            tenThuongHieu: respone.tenThuongHieu,
+            trangThai: respone.trangThai
+        };
+        if (array.length <= 0) {
+            array.unshift(form);
+            localStorage.setItem('spDaXem', JSON.stringify(array));
+        } else {
+            let check = ref(0);
+            for (let i = 0; i < array.length; i++) {
+                if (array[i].idSP == idSP) {
+                    check.value = 1;
+                }
+            }
+            if (check.value == 0) {
+                array.unshift(form);
+                localStorage.setItem('spDaXem', JSON.stringify(array));
+            }
+        }
+    } else {
+        const responeKH = await spDaXemService.findByToken(token);
+        const form = {
+            idUser: responeKH.id,
+            anh: respone.anh,
+            demLot: respone.demLot,
+            giaBanMax: respone.giaBanMax,
+            giaBanMin: respone.giaBanMin,
+            giaSauGiamMax: respone.giaSauGiamMax,
+            giaSauGiamMin: respone.giaSauGiamMin,
+            idSP: respone.idSP,
+            ma: respone.ma,
+            moTa: respone.moTa,
+            ngayTao: respone.ngayTao,
+            quaiDeo: respone.quaiDeo,
+            tenLoai: respone.tenLoai,
+            tenSP: respone.tenSP,
+            tenThuongHieu: respone.tenThuongHieu,
+            trangThai: respone.trangThai
+        };
+        if (array.length <= 0) {
+            array.unshift(form);
+            localStorage.setItem('spDaXem', JSON.stringify(array));
+        } else {
+            let check = ref(0);
+            for (let i = 0; i < array.length; i++) {
+                if (array[i].idSP == idSP) {
+                    check.value = 1;
+                }
+            }
+            if (check.value == 0) {
+                array.unshift(form);
+                localStorage.setItem('spDaXem', JSON.stringify(array));
+            }
+        }
+    }
+};
 </script>
 
 <template>
     <div class="grid">
         <div class="image-container">
             <div class="nav-button left-button" @click="previousImage">&lt;</div>
-            <img :src="banner1" class="centered-image" />
+            <img src="../../assets/images/banner.jpg" class="centered-image" />
             <div class="nav-button right-button" @click="nextImage">&gt;</div>
         </div>
         <div class="main-sp">
@@ -141,70 +261,93 @@ const banner9 =
                 </div>
             </div>
             <!-- SP hot -->
-            <div class="sp">
-                <div><img :src="banner2" alt="Thumbnail" class="banner2" /></div>
-                <div><img :src="banner3" alt="Thumbnail" class="banner3" /></div>
-                <div>
-                    <div class="thumbnail-list-sp">
-                        <div class="thumbnail-sp" v-for="(thumbnail, index) in thumbnailsSP" :key="index">
-                            <a href="http://localhost:5173/#/trang-chu">
-                                <img :src="thumbnail.imageUrl" alt="Thumbnail" class="anh-sp" />
-                                <p class="ten-sp">{{ thumbnail.name }}</p>
-                                <p class="gia-sp">{{ thumbnail.price }}</p>
-                            </a>
-                        </div>
+            <div><img src="../../assets/images/bannerSPBC.jpg" alt="Thumbnail" class="banner2" /></div>
+            <div><img src="../../assets/images/tenSP_BanChay.png" alt="Thumbnail" class="banner3" /></div>
+            <div class="flex-container">
+                <div class="flex-item" v-for="(spct, index) in dataSPBanChay" :key="index">
+                    <div class="product-top">
+                        <a href="" class="product-thumb">
+                            <img :src="spct.anh" alt="Thumbnail" class="product-image" />
+                        </a>
+                        <a class="xct" @click="goToProductDetail(spct.idSP)">Xem chi tiết</a>
                     </div>
+                    <p class="ten-sp">{{ spct.tenSP }}</p>
+                    <br />
+                    <p class="gia-sp" style="color: black; text-align: center" v-if="spct.giaBanMin == spct.giaBanMax">{{ formatCurrency(spct.giaBanMax) }}</p>
+                    <p class="gia-sp" style="color: black; text-align: center" v-else-if="spct.giaSauGiamMax != null && spct.giaSauGiamMin != null && spct.giaSauGiamMax != spct.giaSauGiamMin">
+                        {{ formatCurrency(spct.giaSauGiamMin) }} - {{ formatCurrency(spct.giaSauGiamMax) }}
+                    </p>
+                    <p class="gia-sp" style="color: black; text-align: center" v-else-if="spct.giaSauGiamMax == null && spct.giaSauGiamMin == null">{{ formatCurrency(spct.giaBanMin) }} - {{ formatCurrency(spct.giaBanMax) }}</p>
+                    <p class="gia-sp" style="color: black; text-align: center" v-else-if="spct.giaSauGiamMax == spct.giaSauGiamMin">{{ formatCurrency(spct.giaSauGiamMax) }}</p>
+                    <p class="gia-sp" style="color: black; text-align: center" v-else>{{ formatCurrency(spct.giaBanMin) }} - {{ formatCurrency(spct.giaBanMax) }}</p>
                 </div>
             </div>
-
             <!-- SP mới -->
-            <div class="sp">
-                <div><img :src="banner4" alt="Thumbnail" class="banner2" /></div>
-                <div><img :src="banner5" alt="Thumbnail" class="banner3" /></div>
-                <div>
-                    <div class="thumbnail-list-sp">
-                        <div class="thumbnail-sp" v-for="(spct, index) in dataHangMoi" :key="index">
-                            <a href="http://localhost:5173/#/trang-chu">
-                                <img :src="spct.sanPham.anh" alt="Thumbnail" />
-                                <p class="ten-sp">{{ spct.sanPham.ten }}</p>
-                                <p class="gia-sp">{{ spct.giaBan }}đ</p>
-                            </a>
-                        </div>
+            <div><img src="../../assets/images/HANG-MOI.jpg" alt="Thumbnail" class="banner2" /></div>
+            <div><img src="../../assets/images/hangMoi.png" alt="Thumbnail" class="banner3" /></div>
+            <div class="flex-container">
+                <div class="flex-item" v-for="(spct, index) in dataHangMoi" :key="index">
+                    <div class="product-top">
+                        <a href="" class="product-thumb">
+                            <img :src="spct.anh" alt="Thumbnail" class="product-image" />
+                        </a>
+                        <a class="xct" @click="goToProductDetail(spct.idSP)">Xem chi tiết</a>
                     </div>
+                    <p class="ten-sp">{{ spct.tenSP }}</p>
+                    <br />
+                    <p class="gia-sp" style="color: black; text-align: center" v-if="spct.giaBanMin == spct.giaBanMax">{{ formatCurrency(spct.giaBanMax) }}</p>
+                    <p class="gia-sp" style="color: black; text-align: center" v-else-if="spct.giaSauGiamMax != null && spct.giaSauGiamMin != null && spct.giaSauGiamMax != spct.giaSauGiamMin">
+                        {{ formatCurrency(spct.giaSauGiamMin) }} - {{ formatCurrency(spct.giaSauGiamMax) }}
+                    </p>
+                    <p class="gia-sp" style="color: black; text-align: center" v-else-if="spct.giaSauGiamMax == null && spct.giaSauGiamMin == null">{{ formatCurrency(spct.giaBanMin) }} - {{ formatCurrency(spct.giaBanMax) }}</p>
+                    <p class="gia-sp" style="color: black; text-align: center" v-else-if="spct.giaSauGiamMax == spct.giaSauGiamMin">{{ formatCurrency(spct.giaSauGiamMax) }}</p>
+                    <p class="gia-sp" style="color: black; text-align: center" v-else>{{ formatCurrency(spct.giaBanMin) }} - {{ formatCurrency(spct.giaBanMax) }}</p>
                 </div>
             </div>
-
             <!-- Nón full -->
-            <div class="sp">
-                <div><img :src="banner6" alt="Thumbnail" class="banner2" /></div>
-                <div><img :src="banner7" alt="Thumbnail" class="banner3" /></div>
-                <div>
-                    <div class="thumbnail-list-sp">
-                        <div class="thumbnail-sp" v-for="(ctsp, index) in dataFullrace" :key="index">
-                            <a href="http://localhost:5173/#/trang-chu">
-                                <img :src="ctsp.sanPham.anh" alt="Thumbnail" />
-                                <p class="ten-sp">{{ ctsp.sanPham.ten }}</p>
-                                <p class="gia-sp">{{ ctsp.giaBan }}đ</p>
-                            </a>
-                        </div>
+            <div><img src="../../assets/images/fullFace.jpg" alt="Thumbnail" class="banner2" /></div>
+            <div><img src="../../assets/images/full.png" alt="Thumbnail" class="banner3" /></div>
+            <div class="flex-container">
+                <div class="flex-item" v-for="(spct, index) in dataFullrace" :key="index">
+                    <div class="product-top">
+                        <a href="" class="product-thumb">
+                            <img :src="spct.anh" alt="Thumbnail" class="product-image" />
+                        </a>
+                        <a class="xct" @click="goToProductDetail(spct.idSP)">Xem chi tiết</a>
                     </div>
+                    <p class="ten-sp">{{ spct.tenSP }}</p>
+                    <br />
+                    <p class="gia-sp" style="color: black; text-align: center" v-if="spct.giaBanMin == spct.giaBanMax">{{ formatCurrency(spct.giaBanMax) }}</p>
+                    <p class="gia-sp" style="color: black; text-align: center" v-else-if="spct.giaSauGiamMax != null && spct.giaSauGiamMin != null && spct.giaSauGiamMax != spct.giaSauGiamMin">
+                        {{ formatCurrency(spct.giaSauGiamMin) }} - {{ formatCurrency(spct.giaSauGiamMax) }}
+                    </p>
+                    <p class="gia-sp" style="color: black; text-align: center" v-else-if="spct.giaSauGiamMax == null && spct.giaSauGiamMin == null">{{ formatCurrency(spct.giaBanMin) }} - {{ formatCurrency(spct.giaBanMax) }}</p>
+                    <p class="gia-sp" style="color: black; text-align: center" v-else-if="spct.giaSauGiamMax == spct.giaSauGiamMin">{{ formatCurrency(spct.giaSauGiamMax) }}</p>
+                    <p class="gia-sp" style="color: black; text-align: center" v-else>{{ formatCurrency(spct.giaBanMin) }} - {{ formatCurrency(spct.giaBanMax) }}</p>
                 </div>
             </div>
 
             <!-- Nón trẻ em -->
-            <div class="sp">
-                <div><img :src="banner8" alt="Thumbnail" class="banner2" /></div>
-                <div><img :src="banner9" alt="Thumbnail" class="banner3" /></div>
-                <div>
-                    <div class="thumbnail-list-sp">
-                        <div class="thumbnail-sp" v-for="(ctsp, index) in dataTreEm" :key="index">
-                            <a href="http://localhost:5173/#/trang-chu">
-                                <img :src="ctsp.sanPham.anh" alt="Thumbnail" />
-                                <p class="ten-sp">{{ ctsp.sanPham.ten }}</p>
-                                <p class="gia-sp">{{ ctsp.giaBan }}đ</p>
-                            </a>
-                        </div>
+            <div><img src="../../assets/images/non-tre-em-scaled.jpg" alt="Thumbnail" class="banner2" /></div>
+            <div><img src="../../assets/images/Banner-non-tre-em.png" alt="Thumbnail" class="banner3" /></div>
+            <div class="flex-container">
+                <div class="flex-item" v-for="(spct, index) in dataTreEm" :key="index">
+                    <div class="product-top">
+                        <a href="" class="product-thumb">
+                            <img :src="spct.anh" alt="Thumbnail" class="product-image" />
+                        </a>
+                        <a class="xct" @click="goToProductDetail(spct.idSP)">Xem chi tiết</a>
                     </div>
+                    <p class="ten-sp">{{ spct.tenSP }}</p>
+                    <br />
+
+                    <p class="gia-sp" style="color: black; text-align: center" v-if="spct.giaBanMin == spct.giaBanMax">{{ formatCurrency(spct.giaBanMax) }}</p>
+                    <p class="gia-sp" style="color: black; text-align: center" v-else-if="spct.giaSauGiamMax != null && spct.giaSauGiamMin != null && spct.giaSauGiamMax != spct.giaSauGiamMin">
+                        {{ formatCurrency(spct.giaSauGiamMin) }} - {{ formatCurrency(spct.giaSauGiamMax) }}
+                    </p>
+                    <p class="gia-sp" style="color: black; text-align: center" v-else-if="spct.giaSauGiamMax == null && spct.giaSauGiamMin == null">{{ formatCurrency(spct.giaBanMin) }} - {{ formatCurrency(spct.giaBanMax) }}</p>
+                    <p class="gia-sp" style="color: black; text-align: center" v-else-if="spct.giaSauGiamMax == spct.giaSauGiamMin">{{ formatCurrency(spct.giaSauGiamMax) }}</p>
+                    <p class="gia-sp" style="color: black; text-align: center" v-else>{{ formatCurrency(spct.giaBanMin) }} - {{ formatCurrency(spct.giaBanMax) }}</p>
                 </div>
             </div>
             <div class="thong-tin">
@@ -249,9 +392,7 @@ const banner9 =
     justify-content: center;
     align-items: center;
     width: 100vw;
-
-    background: rgb(239, 243, 248);
-    margin-bottom: 40px;
+    background: rgb(253, 253, 254);
 }
 
 .image-container {
@@ -306,9 +447,11 @@ const banner9 =
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-direction: column; /* Để căn giữa theo chiều dọc */
+    flex-direction: column;
+    /* Để căn giữa theo chiều dọc */
     width: 1200px;
 }
+
 .thumbnail {
     margin-top: 50px;
     /* margin-left: 50px;
@@ -321,12 +464,13 @@ const banner9 =
     width: 200px;
     height: 200px;
     object-fit: cover;
-    border: 1px solid #ccc;
 }
+
 .banner2 {
     width: 100%;
     max-width: 1100px;
 }
+
 .banner3 {
     width: 100%;
     max-width: 1100px;
@@ -362,30 +506,25 @@ const banner9 =
     flex-wrap: wrap;
     padding: 0 40px 0 40px;
 }
+
 .ten-sp {
     text-align: left;
     font-size: 17px;
     margin-left: 10px;
     margin-top: 10px;
     margin-bottom: -5px;
-}
-.gia-sp {
-    text-align: left;
-    font-size: 17px;
-    margin-left: 10px;
-    font-weight: bold;
+    color: black;
+    height: 35px;
 }
 
-.thumbnail img,
-.thumbnail-sp img,
-.anh-sp {
-    /* thêm class .anh-sp để loại bỏ viền của ảnh */
-    width: 200px;
-    height: 200px;
-    object-fit: cover;
-    border: none; /* Loại bỏ đường viền */
-    padding: 0; /* Loại bỏ padding (nếu có) */
+.gia-sp {
+    text-align: left;
+    font-size: 13px;
+    margin-left: 10px;
+    font-weight: bold;
+    color: red;
 }
+
 .thong-tin {
     margin-top: 20px;
     padding-bottom: 60px;
@@ -393,32 +532,102 @@ const banner9 =
     text-align: center;
     width: 100%;
     max-width: 1100px;
-    background: green;
+    background: rgb(74, 83, 74);
 }
+
 .tieu-de {
     font-weight: bold;
     font-size: 18px;
 }
+
 .content {
     font-size: 16px;
 }
+
 .colum-gioi-thieu {
     width: 33.3%;
     padding: 0 10px 0 10px;
 }
+
 .tieu-de-to {
     margin-top: 20px;
     font-size: 22px;
     font-weight: bold;
 }
+
 .cot1 {
     /* margin-right: 50px; */
     border-right: 1px solid white;
 }
+
 .cot2 {
     /* margin-right: 50; */
     border-right: 1px solid white;
 }
+
 .cot3 {
+}
+
+.flex-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    width: 1100px;
+}
+
+.flex-item {
+    flex: 0 0 calc(20% - 10px);
+    /* 20% độ rộng cho mỗi cột và 10px là khoảng cách giữa các cột */
+    border: 1px solid #ccc;
+    padding: 10px;
+    box-sizing: border-box;
+    /* Đảm bảo rằng padding và border không làm tăng kích thước của các cột */
+    margin-bottom: 20px;
+    /* Khoảng cách giữa các dòng */
+    margin-right: 12px;
+}
+
+/* Đảm bảo chỉ 5 cột trên mỗi dòng */
+.flex-item:nth-child(5n) {
+    margin-right: 0;
+}
+
+.flex-item img {
+    max-width: 100%;
+    /* Đảm bảo ảnh không vượt quá kích thước của .flex-item */
+    height: auto;
+    /* Đảm bảo tỷ lệ hình ảnh được giữ nguyên khi giảm kích thước theo chiều rộng */
+    display: block;
+    /* Loại bỏ khoảng trắng dư thừa dưới ảnh */
+}
+
+.xct {
+    text-transform: uppercase;
+    text-decoration: none;
+    text-align: center;
+    display: block;
+    background-color: #446084;
+    color: #fff;
+    padding: 10px 0px;
+    position: absolute;
+    width: 100%;
+    bottom: -45px;
+}
+
+.product-top {
+    position: relative;
+    overflow: hidden;
+}
+
+.product-top .product-thumb {
+    display: block;
+}
+
+.product-top .product-thumb .product-image {
+    display: block;
+}
+
+.flex-item:hover .xct {
+    bottom: 0px;
 }
 </style>

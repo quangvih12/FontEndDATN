@@ -80,7 +80,7 @@ const nestedMenuitems = ref([
         icon: 'pi pi-fw pi-sign-out'
     }
 ]);
-const breadcrumbHome = ref({ icon: 'pi pi-home', to: '/' });
+const breadcrumbHome = ref({ icon: 'pi pi-home', to: { name: 'trang-chu' }});
 const breadcrumbItems = ref([{ label: 'Computer' }, { label: 'Notebook' }, { label: 'Accessories' }, { label: 'Backpacks' }, { label: 'Item' }]);
 const nestedRouteItems = ref([
     {
