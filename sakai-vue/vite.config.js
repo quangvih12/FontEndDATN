@@ -25,5 +25,8 @@ export default defineConfig(() => {
         build: {
             target: 'esnext'
         }
+       , define: {
+            __APP_ENV__: process.env.VITE_VERCEL_API_KEY,
+          },
     };
 });
