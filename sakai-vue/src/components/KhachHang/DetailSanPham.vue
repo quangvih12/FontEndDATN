@@ -5,7 +5,7 @@ import { PhotoService } from '@/service/KhachHang/PhotoService';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
 import Carousel from 'primevue/carousel';
-import Editor from 'primevue/editor';
+// import Editor from 'primevue/editor';
 onMounted(() => {
     PhotoService.getImages().then((data) => (images.value = data));
 });
