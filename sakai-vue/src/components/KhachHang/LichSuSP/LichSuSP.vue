@@ -48,7 +48,7 @@ import HoanTra from './TraHangHoanTien.vue';
     margin-top: 80px;
     margin-bottom: 30px;
     width: 1100px;
-    background: rgb(133, 10, 10);
+    background: rgb(255, 255, 255);
     display: flex;
     justify-content: center;
 

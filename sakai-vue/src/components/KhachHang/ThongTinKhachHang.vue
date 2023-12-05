@@ -41,7 +41,7 @@ const schema = yup.object().shape({
         .string()
         .required('Tên người dùng không được để trống')
         .min(4, 'Tên phải có ít nhất 4 ký tự')
-        .matches(/^[a-zA-Z0-9đĐáÁàÀảẢãÃạẠăĂắẮằẰẳẲẵẴặẶâÂấẤầẦẩẨẫẪậẬêÊếẾềỀểỂễỄệỆôÔốỐồỒổỔỗỖộỘơƠớỚờỜởỞỡỠợỢùÙúÚụỤủỦũŨưỨỨửỬữỮựỰýÝỳỲỷỶỹỸỵỴ\s]*$/, 'Tên không được chứa kí tự đặc biệt!'),
+        ,
     sdt: yup
         .string()
         .required('Số điện thoại không được để trống')
@@ -219,7 +219,7 @@ function onFileInputImage(event) {
                         </div>
                     </div>
                     <div class="item" style="margin-left: 500px">
-                        <Button label="Update" icon="pi pi-check" size="small" @click="updateProduct" />
+                        <Button label="Sửa" icon="pi pi-check" size="small" @click="updateProduct" />
                     </div>
                 </form>
             </div>
