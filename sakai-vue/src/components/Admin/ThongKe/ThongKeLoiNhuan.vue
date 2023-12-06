@@ -1,6 +1,6 @@
 <script setup>
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
-import CustomerService from '@/service/CustomerService';
+
 import { ThongKeStore } from "../../../service/Admin/ThongKe/ThongKe.api";
 import { ref, onMounted, watch,onBeforeMount } from 'vue';
 import OverlayPanel from 'primevue/overlaypanel';
