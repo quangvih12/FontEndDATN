@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
-const apiDangNhap = 'http://localhost:8080/api/khach-hang/user';
+const apiDangNhap = `${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/user`;
 
 export const dangNhapStore = defineStore('dangNhap', {
     // state: () => ({

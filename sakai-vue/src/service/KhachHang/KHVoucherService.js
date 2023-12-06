@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
-const apiVoucher = 'http://localhost:8080/api/khach-hang/voucher';
+const apiVoucher = `${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/voucher`;
 
 
 
