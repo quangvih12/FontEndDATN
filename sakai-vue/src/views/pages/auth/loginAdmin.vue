@@ -24,7 +24,7 @@ const toast = useToast();
 
 
 const gotoTrangChu = () => {
-    router.push({ name: 'ban-hang-tai-quay' });
+    router.push({ name: 'ban-hang' });
 };
 
 
@@ -49,12 +49,15 @@ const dangNhapa = handleSubmit(async () => {
     if (data.accessToken == null || data.accessToken.length <= 0) {
         toast.add({ severity: 'error', summary: 'Thông báo', detail: 'Sai tài khoản hoặc mật khẩu', life: 3000 });
     } else {
+       
         localStorage.setItem('token', data.accessToken);
         localStorage.setItem('currentUserInformation', JSON.stringify({
           id: data.userID,
           username: data.usernameOrEmail,
         }));
-        await router.push({ name: 'admin' });
+      
+        gotoTrangChu();
+      
     }
 });
 

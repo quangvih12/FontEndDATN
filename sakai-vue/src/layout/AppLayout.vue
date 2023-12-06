@@ -60,12 +60,12 @@ const isOutsideClicked = (event) => {
 };
 
 onBeforeMount(async () => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    const payloadData = await verifyJwt(token);
-    await chatService.login(payloadData.sub, payloadData.id);
-    if (payloadData.role === 'USER') await chatStore.createDirectChannel(payloadData.sub);
-  }
+//   const token = localStorage.getItem('token');
+//   if (token) {
+//     const payloadData = await verifyJwt(token);
+//     await chatService.login(payloadData.sub, payloadData.id);
+//     if (payloadData.role === 'USER') await chatStore.createDirectChannel(payloadData.sub);
+//   }
 });
 
 onBeforeUnmount(async () => {

@@ -3,7 +3,7 @@ import ChatComponent from "@/components/Admin/Chat/ChatComponent.vue";
 
 </script>
 
-<template>
+<template> 
   <div class="h-full">
 <!--    <Button label="Search" severity="success" icon="pi pi-search" />-->
     <!--    <span class="user-logged" :class="{ 'user-logged-dark': theme === 'dark' }">-->
@@ -20,7 +20,7 @@ import ChatComponent from "@/components/Admin/Chat/ChatComponent.vue";
     <!--      <button class="button-dark" @click="theme = 'dark'">Dark</button>-->
     <!--    </div>-->
 
-    <ChatComponent height="100%" :single-room="false"/>
+    <ChatComponent height="890px" :single-room="false"/>
   </div>
 </template>
 

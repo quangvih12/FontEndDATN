@@ -11,6 +11,7 @@ export const useLoaiService = defineStore('loai', {
         check: 0
     }),
     actions: {
+        
         //load tất cả data
         async fetchData() {
             this.check = 0;
