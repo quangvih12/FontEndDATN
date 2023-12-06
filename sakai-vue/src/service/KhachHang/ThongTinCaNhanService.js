@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
-const api = 'http://localhost:8080/api/khach-hang/thong-tin-ca-nhan';
+const api = `${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/thong-tin-ca-nhan`;
 
 export const useThongTin = defineStore('thongTin',{
     id: 'user',

@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import axios from 'axios';
 
 
-const api = 'http://localhost:8080/api/khach-hang/register';
+const api = `${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/register`;
 
 export const userRegisterStore = defineStore('register',{
     id: 'register',
@@ -20,7 +20,7 @@ export const userRegisterStore = defineStore('register',{
         },
         async getUserByEmail(email) {
             try {
-            const response = await axios.get(`http://localhost:8080/api/khach-hang/user/find-email?email=${email}`);
+            const response = await axios.get(`${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/user/find-email?email=${email}`);
             this.data  =  response.data;
         } catch (error) {
             console.error('Error fetching users:', error);
@@ -28,7 +28,7 @@ export const userRegisterStore = defineStore('register',{
         },
         async sendOTP(form) {
             try {
-                const response = await axios.post('http://localhost:8080/api/khach-hang/mail/sendOTP', form);
+                const response = await axios.post(`${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/mail/sendOTP`, form);
                 return response.data;
             } catch (error) {
                 console.error('Error sending mail:', error);

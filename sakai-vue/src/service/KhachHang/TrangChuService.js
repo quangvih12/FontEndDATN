@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import axios from 'axios';
 import { te } from 'date-fns/locale';
 
-const apiTrangChu = 'http://localhost:8080/api/khach-hang/trang-chu';
+const apiTrangChu = `${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/trang-chu`;
 
 export const TrangChuStore = defineStore('trangChu', {
     state: () => ({
