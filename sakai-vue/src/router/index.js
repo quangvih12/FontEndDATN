@@ -1,6 +1,6 @@
 import {createRouter, createWebHistory} from 'vue-router';
-import {authMiddleware} from "@/middleware";
-import ChatAdmin from '@/components/Admin/Chat/ChatAdmin.vue';
+import {requireAdmin, requireAuth} from "../middleware";
+
 const router = createRouter({
     history: createWebHistory(),
     routes: [
@@ -26,13 +26,13 @@ const router = createRouter({
                 {
                     path: 'lich-su-san-pham',
                     name: 'lich-su-san-pham',
-                    beforeEnter: authMiddleware.requireAuth,
+                    beforeEnter: requireAuth,
                     component: () => import('@/components/KhachHang/LichSuSP/LichSuSP.vue'),
                 },
                 {
                     path: 'ho-so',
                     name: 'ho-so',
-                    beforeEnter: authMiddleware.requireAuth,
+                    beforeEnter: requireAuth,
                     component: () => import('@/components/KhachHang/ThongTinKhachHang.vue'),
                 },
                 {
@@ -55,55 +55,35 @@ const router = createRouter({
                     path: 'gio-hang/thanh-toan',
                     name: 'thanh-toan',
                     component: () => import('@/components/KhachHang/ThanhToan.vue'),
-                    beforeEnter: authMiddleware.requireAuth
+                    beforeEnter: requireAuth
                 },
                 {
                     path: 'gio-hang/thanh-toan/thanh-cong',
                     name: 'thanh-cong',
                     component: () => import('@/components/KhachHang/Success.vue'),
-                    beforeEnter: authMiddleware.requireAuth
+                    beforeEnter: requireAuth
                 },
                 {
                     path: 'gio-hang/thanh-toan/that-bai',
                     name: 'that-bai',
                     component: () => import('@/components/KhachHang/PaymentFailled.vue'),
-                    beforeEnter: authMiddleware.requireAuth
+                    beforeEnter: requireAuth
                 },
                 {
                     path: 'trang-thai-don-hang/:id',
                     name: 'trang-thai-don-hang',
+                    beforeEnter: requireAuth,
                     component: () => import('@/components/KhachHang/LichSuSP/TrangThaiDonHang.vue'),
-                    beforeEnter: authMiddleware.requireAuth,
-                    
-                    // children: [
-                    //     {
-                    //         path: ':id',
-                    //         props: true,
-                    //         component: () => import('@/components/KhachHang/LichSuSP/TrangThaiDonHang.vue')
-                    //     }
-                    // ]
                 },
                 {
                     path: 'dia-chi',
                     name: 'dia-chi',
-                    beforeEnter: authMiddleware.requireAuth,
+                    beforeEnter: requireAuth,
                     component: () => import('@/components/KhachHang/DiaChiKhachHang/Index.vue')
                 }
             ]
         },
-        // {
-        //     path: '/nhan-vien',
-        //     component: AppLayoutBH,
-        //     children: [
-        //         {
-        //             path: '/ban-hang-tai-quay',
-        //             name: 'ban-hang-tai-quay',
-        //             component: () => import('@/components/Admin/BanHang/BanHangTaiQuay.vue')
-        //         }
-        //     ]
-        // },
         {
-
             path: '/dang-ky',
             name: 'dang-ky',
             component: () => import('@/components/KhachHang/Register.vue'),
@@ -124,11 +104,10 @@ const router = createRouter({
             component: () => import('@/views/pages/auth/LoginAdmin.vue')
         },
         {
-            path: '',
+            path: '/admin',
             component: () => import('@/layout/AppLayout.vue'),
-            beforeEnter: authMiddleware.requireAdmin,
+            beforeEnter: requireAdmin,
             children: [
-
                 {
                     path: '',
                     name: 'admin',
@@ -213,7 +192,7 @@ const router = createRouter({
                 {
                     path: 'chat',
                     name: 'chat-admin',
-                    component: ChatAdmin
+                    component: () => import('@/components/Admin/Chat/ChatAdmin.vue')
                 }
             ]
         },
