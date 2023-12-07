@@ -69,8 +69,8 @@ const loadDataHDCT = async (idHD) => {
     dataHDCT.value = respone;
 };
 
-const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
-    if (tienSauGiam == '' || tienSauGiam == null) {
+const tinhTongTien = (tienShip, tongTien, tienSauGiam,idVoucher) => {
+    if (idVoucher === '' || idVoucher === null) {
         return parseInt(tongTien) + parseInt(tienShip);
     } else {
         return parseInt(tienSauGiam);
@@ -473,16 +473,16 @@ const btnXacNhanHuyGH = () => {
                                     <p>Phí vận chuyển: {{ formatCurrency(props.myProp.tienShip == null ? 0:props.myProp.tienShip) }}</p>
 
                                     <p>Tiền giảm:
-                                          <span v-if="props.myProp.tienSauKhiGiam != null" style="color: red;">- {{
+                                          <span v-if="props.myProp.idVoucher != null" style="color: red;">- {{
                                         formatCurrency(parseInt(props.myProp.tongTien)+parseInt(props.myProp.tienShip == null ? 0:props.myProp.tienShip) -
                                             parseInt(tienGiam)) }}</span>
-                                        <span v-else style="color: red;"> 0</span>
+                                        <span v-else style="color: red;">0</span>
 
                                     </p>
                                     <p>
                                         Tổng tiền: <span style="color: #ff3333; font-size: 20px; font-weight: bold">{{
                                             formatCurrency(tinhTongTien(props.myProp.tienShip == null ? 0:props.myProp.tienShip,
-                                                props.myProp.tongTien, tienGiam)) }}</span>        
+                                                props.myProp.tongTien, tienGiam ,props.myProp.idVoucher )) }}</span>        
                                     </p>
                                 </div>
                             </div>

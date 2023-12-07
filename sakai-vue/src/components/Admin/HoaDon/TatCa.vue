@@ -335,7 +335,7 @@ watch(phuongThucThanhToan, (newVal) => {
                 {{ slotProps.data.tenNguoiNhan }}
             </template>
         </Column>
-        <Column field="tenNguoiNhan" header="Người nhận" :sortable="true" headerStyle="width:10%; min-width:10rem;">
+        <Column field="sdt" header="Số Điện thoại" :sortable="true" headerStyle="width:10%; min-width:10rem;">
             <template #body="slotProps">
                 <span class="p-column-title">số điện thoại</span>
                 {{ slotProps.data.sdt }}
@@ -347,7 +347,7 @@ watch(phuongThucThanhToan, (newVal) => {
                 {{ formatCurrency(slotProps.data.tienSauKhiGiam == null ? parseInt(slotProps.data.tongTien) + parseInt(slotProps.data.tienShip == null ? 0 : slotProps.data.tienShip) : slotProps.data.tienSauKhiGiam) }}
             </template>
         </Column>
-        <Column field="tongTien" header="Tổng tiền" :sortable="true" headerStyle="width:10%; min-width:9rem;">
+        <Column field="tienShip" header="Tiền ship" :sortable="true" headerStyle="width:10%; min-width:9rem;">
             <template #body="slotProps">
                 <span class="p-column-title">tongTien</span>
                 {{ formatCurrency(slotProps.data.tienShip) }}

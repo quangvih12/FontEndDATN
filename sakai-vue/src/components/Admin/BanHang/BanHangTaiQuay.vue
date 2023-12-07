@@ -97,8 +97,9 @@ const huyHDCho = async (hd) => {
   selectedHoaDon.value = null;
 };
 
+const soLuong = ref(null);
 const soLuongError = ref('');
-const themSPVaoHDCT = async (soLuong) => {
+const themSPVaoHDCT = async () => {
   if (selectedHoaDon.value == null || selectedHoaDon.value == '') {
     toast.add({
       severity: 'error',
@@ -108,14 +109,14 @@ const themSPVaoHDCT = async (soLuong) => {
     });
     return;
   }
-  if (soLuong == null || soLuong == '') {
+  if ( soLuong.value == null ||  soLuong.value == '') {
     soLuongError.value = 'Không được để trống';
     return;
   }
   soLuongError.value = '';
-  await store.themSPVaoHDCT(selectedHoaDon.value.id, dataOverlay.value.id, soLuong);
+  await store.themSPVaoHDCT(selectedHoaDon.value.id, dataOverlay.value.id,  soLuong.value);
   op.value.hide();
-  soLuong = null;
+  soLuong.value = null;
 };
 
 const xoaHDCT = async (hdct) => {
@@ -250,7 +251,7 @@ const resetForms = () => {
   tinhTien(dsHDCT.value).tongChietKhau = 0;
   thanhTien.value = 0;
   phiShip.value = 0;
-  dsHDCT.value = [];
+ // dsHDCT.value = [];
 }
 
 const onHinhThucGiaoHangChange = async () => {
@@ -764,7 +765,7 @@ const exportToPDF = async () => {
                       <small class="p-error">{{ soLuongError }}</small>
                     </div>
                     <div style="margin-top: 20px;">
-                      <Button label="Thêm" @click="themSPVaoHDCT(soLuong)"></Button>
+                      <Button label="Thêm" @click="themSPVaoHDCT()"></Button>
                     </div>
                   </div>
                 </OverlayPanel>
@@ -838,9 +839,13 @@ const exportToPDF = async () => {
 
         <div style="margin-left: 60px;">
           <InputNumber v-model="tienKhachDua" inputId="integeronly" @input="tienKhachDuaInputEvent"
-                       :class="{ 'p-invalid': tienKhachDuaError }" :min="thanhTien"/>
+                       :class="{ 'p-invalid': tienKhachDuaError }"/>
+                      
           <br/>
           <small class="p-error">{{ tienKhachDuaError }}</small>
+          <small v-if="tienKhachDua === null || tienKhachDua === ''"></small>
+          <small class="p-error" v-else-if="tienKhachDua < thanhTien">Tiền khách đưa không đủ</small>
+      
         </div>
 
 
@@ -921,7 +926,7 @@ const exportToPDF = async () => {
       </div>
       <h6>Ghi chú</h6>
       <Textarea v-model="moTa" rows="4" cols="63"/>
-      <Button label="Thanh toán" severity="warning" raised type="submit" style="margin-top: 20px; margin-left: 150px;"/>
+      <Button :disabled="tienKhachDua < thanhTien" label="Thanh toán" severity="warning" raised type="submit" style="margin-top: 20px; margin-left: 150px;"/>
 
 
     </form>

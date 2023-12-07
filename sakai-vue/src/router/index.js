@@ -72,7 +72,8 @@ const router = createRouter({
                 {
                     path: 'trang-thai-don-hang/:id',
                     name: 'trang-thai-don-hang',
-                    beforeEnter: requireAuth
+                    beforeEnter: requireAuth,
+                    component: () => import('@/components/KhachHang/LichSuSP/TrangThaiDonHang.vue'),
                 },
                 {
                     path: 'dia-chi',

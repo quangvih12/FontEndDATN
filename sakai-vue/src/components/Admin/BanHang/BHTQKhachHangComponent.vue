@@ -34,6 +34,7 @@ const onRowEditInit = (event) => {
 const tenError = ref('');
 const sdtError = ref('');
 const onRowEditSave = async (event) => {
+  
   if (event.data.ten == null || event.data.ten == '') {
     tenError.value = 'tên không được để trống';
     tableKHEditingRows.value = [store.dsKH[event.index]];
@@ -48,6 +49,15 @@ const onRowEditSave = async (event) => {
   } else {
     sdtError.value = null;
   }
+
+  const res = dsKH.value.find(x=> x.sdt === event.data.sdt && x.id != null);
+   if(res != null) {
+    sdtError.value = 'số điện thoại đã tồn tại';
+    tableKHEditingRows.value = [store.dsKH[event.index]];
+    return;
+   }else{
+    sdtError.value = null;
+   }
   let regex = /^(0|\+84)[-.\d]{9,10}$/;
   if (regex.test(event.data.sdt)) {
     sdtError.value = null;
@@ -176,13 +186,13 @@ const updateKHForHD = () => {
     <Column header="Mã KH" field="ma" bodyClass="text-center"></Column>
     <Column header="Tên khách hàng" field="ten" class="w-16rem">
       <template #editor>
-        <InputText v-model="tableKHEditingRows[0].ten" class="w-auto"/>
+        <InputText v-model="tableKHEditingRows[0].ten" class="w-auto" :class="{ 'p-invalid': tenError }"/>
         <small class="p-error">{{ tenError }}</small>
       </template>
     </Column>
     <Column header="Số điện thoại" field="sdt" class="w-16rem">
       <template #editor>
-        <InputText v-model="tableKHEditingRows[0].sdt" class="w-auto"/>
+        <InputText v-model="tableKHEditingRows[0].sdt" class="w-auto" :class="{ 'p-invalid': sdtError }"/>
         <br>
         <small class="p-error">{{ sdtError }}</small>
       </template>
