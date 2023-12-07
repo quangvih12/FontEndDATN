@@ -357,7 +357,7 @@ const resetNoiDung = () => {
 };
 
 const resetPhanHoi = () => {
-    phanhoi.value = '';
+    traLoi.value = '';
 };
 
 const addComment = async () => {
@@ -432,6 +432,7 @@ const commentId = ref(null);
 const phanHoi = (id) => {
     phanHoiDialog.value = true;
     commentId.value = id;
+
 };
 
 const xoaPhanHoi = async (phanhoi) => {
@@ -696,6 +697,11 @@ const menu = ref();
                                         </h6>
                                         <span>{{ cm.noiDung }}</span>
 
+                                        <div class="flex flex-wrap  align-items-center gap-3" style="margin-left: 700px">
+                                                <a @click="phanHoi(cm.id)" style="color: blue; margin-right: 5px;">Phản hồi</a>
+                                                <a @click="xoa(cm)" style="color: red">Xoá</a>
+                                        </div>
+
                                         <!-- Phản hồi -->
                                         <div v-for="(ph, index) in phanHois.filter((item) => item.idPhanHoi === cm.id)" :key="index" style="margin-top: 15px; margin-left: 30px" class="flex">
                                             <div>
@@ -714,10 +720,10 @@ const menu = ref();
                                             </div>
                                         </div>
                                         <div class="flex flex-wrap justify-content-between align-items-center gap-3 mt-3" style="margin-left: 660px">
-                                            <Button type="submit" label="Phản hồi" @click="phanHoi(cm.id)" class="ph-button" />
-                                            <Button severity="danger" label="Xoá" @click="xoa(cm)" class="small-button" />
+                                            <!-- <Button type="submit" label="Phản hồi" @click="phanHoi(cm.id)" class="ph-button" />
+                                            <Button severity="danger" label="Xoá" @click="xoa(cm)" class="small-button" /> -->
 
-                                            <Dialog v-model:visible="phanHoiDialog" modal header="Phản hổi" :style="{ width: '50rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+                                            <Dialog v-model:visible="phanHoiDialog" modal header="Phản hồi" :style="{ width: '50rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
                                                 <Textarea v-model="traLoi" rows="5" cols="90" />
                                                 <template #footer>
                                                     <Button label="Ok" icon="pi pi-check" @click="phanHoiComment" autofocus />

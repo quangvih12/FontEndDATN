@@ -28,8 +28,8 @@
         </div>
 
         <template #footer>
-            <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="hide" />
-            <Button label="Save" icon="pi pi-check" @click="applyKhuyenMai" />
+            <Button label="Huỷ" icon="pi pi-times" class="p-button-text" @click="hide" />
+            <Button label="Áp dụng" icon="pi pi-check" @click="applyKhuyenMai" />
         </template>
     </Dialog>
 </template>

@@ -3,7 +3,7 @@
     <Dialog v-model:visible="addKhuyenMaiDialog" header="Flex Scroll" :style="{ width: '75vw' }" maximizable modal :contentStyle="{ height: '300px' }" class="p-fluid">
         <template #header>
             <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-                <h5 class="m-0">Khuyến Mãi</h5>
+                <h5 class="m-0">Khuyến Mại</h5>
             
             </div>
         </template>
@@ -55,8 +55,8 @@
         </div>
 
         <template #footer>
-            <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="hideDialog" />
-            <Button type="submit" label="Save" class="p-button-text" icon="pi pi-check" @click="save" />
+            <Button label="Huỷ" icon="pi pi-times" class="p-button-text" @click="hideDialog" />
+            <Button type="submit" label="Lưu" class="p-button-text" icon="pi pi-check" @click="save" />
         </template>
     </Dialog>
 </template>
@@ -87,7 +87,7 @@ const hideDialog = () => {
 
 const schema = Yup.object().shape({
     ma: Yup.string().required('Mã khuyến mại không được để trống').min(4, 'Tên khuyến mại phải có ít nhất 4 ký tự'),
-    ten: Yup.string().required('Tên khuyến mại không được để trống').min(4, 'Tên khuyến mại phải có ít nhất 4 ký tự'),
+    ten: Yup.string().required('Tên khuyến mại không được để trống').min(4, 'Tên khuyến mại phải có ít nhất 4 ký tự').max(100, 'Tên giới hạn 100 ký tự'),
     moTa: Yup.string().required('Vui lòng điền mô tả khuyến mại').min(10, 'Mô tả khuyến mại phải có ít nhất 10 ký tự'),
     thoiGianBatDau: Yup.date().nullable().required('Thời gian bắt đầu là bắt buộc').typeError('Vui lòng chọn ngày hợp lệ'),
     thoiGianKetThuc: Yup.date().nullable().min(Yup.ref('thoiGianBatDau'), 'Ngày kết thúc phải sau ngày bắt đầu').required('Thời gian kết thúc là bắt buộc').typeError('Vui lòng chọn ngày hợp lệ'),

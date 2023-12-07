@@ -200,10 +200,11 @@ const thanhtoan = async () => {
     } else {
         await checkoutService.checkout(form);
         dataHoaDon.value = checkoutService.checkOut;
+      
         sendMessage();
         toast.add({ severity: 'success', summary: '', detail: 'Thanh toán thành công', life: 3000 });
         router.push({ name: 'thanh-cong' });
-    }
+    }   
 };
 
 const selectedVoucherDialog = ref(false);
