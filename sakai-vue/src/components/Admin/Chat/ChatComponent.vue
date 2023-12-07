@@ -4,6 +4,7 @@ import {register, VueAdvancedChat} from "vue-advanced-chat";
 import {useChatStore} from "../../../service/Admin/Chat/ChatService";
 import {verifyJwt} from "../../../service/common/JwtUtils";
 
+
 const store = useChatStore();
 const rooms = computed(() => store.rooms);
 const roomsLoaded = computed(() => store.roomsLoaded);
@@ -48,15 +49,19 @@ const sendMessages = async (event) => {
 }
 
 onBeforeMount(async () => {
-  //console.log("on before mount");
+ 
   const token = localStorage.getItem('token');
   
   if (token) {
   const payloadData = await verifyJwt(token);
   currentUsername.value = payloadData.sub;
-  await store.setup(payloadData.sub, payloadData.id);}
+  await store.setup(payloadData.sub, payloadData.id);
 
+}
+ 
 });
+
+
 </script>
 
 <template>

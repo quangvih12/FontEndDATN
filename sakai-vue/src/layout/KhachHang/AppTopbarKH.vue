@@ -165,6 +165,7 @@ const diaChi = () => {
 const dangXuat = () => {
   router.push({ name: 'login' });
     localStorage.removeItem('token');
+    localStorage.removeItem('currentUserInformation');
 };
 
 const dangNhap = () => {

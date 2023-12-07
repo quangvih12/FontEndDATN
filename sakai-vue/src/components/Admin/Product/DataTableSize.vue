@@ -1,5 +1,5 @@
 <script setup>
-import ProductService from '@/service/ProductService';
+
 import { ref, defineProps, onMounted } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import View from '../QuanLySize/ViewSize.vue';
@@ -35,7 +35,7 @@ const isRightGhLoaiVisible = ref(true);
 
 const tableClass = ref(props.tableClass);
 const rightGhClass = ref(props.rightGhClass);
-const productService = new ProductService();
+
 
 const formatCurrency = (value) => {
     return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });

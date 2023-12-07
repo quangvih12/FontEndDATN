@@ -46,8 +46,7 @@ export const useChatStore = defineStore('chat', () => {
     }
 
     const setup = async (username,id) => {
-        await chatService.login(username,id);
-        currentUsername.value = username;
+       await chatService.login(username,id);
         loadingRooms.value = true;
         rooms.value = await chatService.fetchRooms();
         loadingRooms.value = false;

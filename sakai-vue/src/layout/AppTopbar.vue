@@ -181,6 +181,7 @@ const toggle = (event) => {
 const dangXuat = () => {
   router.push({ name: 'login-admin' });
     localStorage.removeItem('token');
+    localStorage.removeItem('currentUserInformation');
 };
 
 const dangNhap = () => {
