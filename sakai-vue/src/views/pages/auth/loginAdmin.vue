@@ -24,7 +24,7 @@ const toast = useToast();
 
 
 const gotoTrangChu = () => {
-    router.push({ name: 'ban-hang' });
+    router.push({ name: 'admin' });
 };
 
 

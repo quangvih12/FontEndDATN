@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watchEffect } from 'vue';
+import { ref, onMounted,computed, watchEffect } from 'vue';
 import { useRoute } from 'vue-router';
 import { useCartStore } from '@/service/KhachHang/GioHang/useCartStore.js';
 import { useDiaChi } from '@/service/KhachHang/DiaChiService.js';
@@ -94,11 +94,11 @@ const formatCurrency = (value) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
 };
 
-const diaChiMacDinh = ref();
+const diaChiMacDinh = computed(() => diaChiService.diaChiMacDinh);
 const loadUser = async () => {
     const token = localStorage.getItem('token');
     await diaChiService.findDiaChiByIdUserAndTrangThai(token);
-    diaChiMacDinh.value = diaChiService.diaChiMacDinh;
+   // diaChiMacDinh.value = diaChiService.diaChiMacDinh;
   
     if (diaChiMacDinh.value == '' || diaChiMacDinh.value == null) {
         phiShip.value = -1;
@@ -200,10 +200,11 @@ const thanhtoan = async () => {
     } else {
         await checkoutService.checkout(form);
         dataHoaDon.value = checkoutService.checkOut;
+      
         sendMessage();
         toast.add({ severity: 'success', summary: '', detail: 'Thanh toán thành công', life: 3000 });
         router.push({ name: 'thanh-cong' });
-    }
+    }   
 };
 
 const selectedVoucherDialog = ref(false);

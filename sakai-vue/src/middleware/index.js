@@ -5,7 +5,7 @@ const payloadData = token ? await verifyJwt(token) : null;
 
 export const authMiddleware = {
     requireAuth: (to, from, next) => {
-        console.log("undf");
+     //   console.log("undf");
         if (payloadData) next();
         else next({ name: 'login' });
     },
