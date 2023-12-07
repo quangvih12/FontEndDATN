@@ -25,7 +25,7 @@ export const gioHangStore = defineStore('gioHang', {
             const response = await axios.post(`${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/giohang/addGiohang-session?token=${token}`, form);
             this.dataSessions = response.data;
             this.dataSPDaXem = response.data;
-            console.log(this.dataSPDaXem);
+     //       console.log(this.dataSPDaXem);
         },
 
         async addToCartWhenLogin(form, token) {

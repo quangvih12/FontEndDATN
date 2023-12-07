@@ -50,10 +50,9 @@ const callback = async (response) => {
         }));
         
     }
-
     if (localStorage.getItem('cart')) {
         let array = JSON.parse(localStorage.getItem('cart'));
-        await gioHangService.addToCartWhenLogin(array, token);
+        await gioHangService.addToCartWhenLogin(array, localStorage.getItem('token'));
         localStorage.removeItem('cart');
     }
 
