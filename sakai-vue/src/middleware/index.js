@@ -10,7 +10,7 @@ export const requireAuth = async (to, from, next) => {
 }
 
 export const requireAdmin = async (to, from, next) => {
-    console.log(to);
+   // console.log(to);
     if (payloadData) {
         if (payloadData.role === "ADMIN") await next();
         else await next({ name: 'unauthorized' });
