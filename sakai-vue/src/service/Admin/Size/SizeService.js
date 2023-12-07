@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 //  import axios from 'axios';
 import instance from '@/service/Authentication/http.js';
-const apiSize = 'http://localhost:8080/api/admin/size';
+const apiSize = `${import.meta.env.VITE_BASE_API_ENDPOINT}/admin/size`;
 
 export const SizeStore = defineStore('size', {
     state: () => ({
@@ -152,7 +152,7 @@ export const SizeStore = defineStore('size', {
 
 // //add
 // const createSize = (form) => {
-//     const response = axios.post('http://localhost:8080/api/size/add', form);
+//     const response = axios.post('${import.meta.env.VITE_BASE_API_ENDPOINT}/size/add', form);
 //     fetchData();
 // };
 

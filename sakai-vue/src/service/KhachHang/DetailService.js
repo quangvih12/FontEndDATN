@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
-const apiDetail = 'http://localhost:8080/api/khach-hang/detail';
+const apiDetail = `${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/detail`;
 
 
 export const useDetailProductStore = defineStore('detail', {
@@ -84,7 +84,7 @@ export const useDetailProductStore = defineStore('detail', {
 
     async getSizeByMauSac(idCTSP, idMS) {
       try {
-        const response = await axios.get(`http://localhost:8080/api/khach-hang/detail/getSizeByMS/${idCTSP}?idms=${idMS}`); // Thay đổi URL dựa trên API của bạn
+        const response = await axios.get(`${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/detail/getSizeByMS/${idCTSP}?idms=${idMS}`); // Thay đổi URL dựa trên API của bạn
         this.sizes = response.data;
         return this.sizes;
       } catch (error) {
@@ -93,7 +93,7 @@ export const useDetailProductStore = defineStore('detail', {
     },
     async getMauSacBySize(idCTSP, idSizeCT) {
       try {
-        const response = await axios.get(`http://localhost:8080/api/khach-hang/detail/getMauSacBySize/${idCTSP}?idsizect=${idSizeCT}`); // Thay đổi URL dựa trên API của bạn
+        const response = await axios.get(`${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/detail/getMauSacBySize/${idCTSP}?idsizect=${idSizeCT}`); // Thay đổi URL dựa trên API của bạn
         this.mauSacs = response.data;
         return this.mauSacs;
       } catch (error) {
@@ -102,7 +102,7 @@ export const useDetailProductStore = defineStore('detail', {
     },
     async getSanPhamSelected(idCTSP, idMS, idSizeCT) {
       try {
-        const response = await axios.get(`http://localhost:8080/api/khach-hang/detail/getSanPhamSelected/${idCTSP}?idms=${idMS}&idsizect=${idSizeCT}`); // Thay đổi URL dựa trên API của bạn
+        const response = await axios.get(`${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/detail/getSanPhamSelected/${idCTSP}?idms=${idMS}&idsizect=${idSizeCT}`); // Thay đổi URL dựa trên API của bạn
         this.data = response.data;
         return this.data;
       } catch (error) {

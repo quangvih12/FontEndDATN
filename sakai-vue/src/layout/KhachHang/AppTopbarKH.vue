@@ -38,7 +38,7 @@ const stompClient = ref(null);
 
 const openSocketConnection = () => {
     stompClient.value = new Client({
-        brokerURL: 'ws://localhost:8080/ws',
+        brokerURL: `${import.meta.env.VITE_BASE_WEBSOCKET_ENDPOINT}/ws`,
         onConnect: async () => {
             // console.log('Đã kết nối');
             // findUserByToken();

@@ -2,7 +2,7 @@
 import { defineStore } from 'pinia';
 import axios from '@/service/Authentication/http.js';
 
-const apiKhuyenMai = 'http://localhost:8080/api/admin/khuyenMai';
+const apiKhuyenMai = `${import.meta.env.VITE_BASE_API_ENDPOINT}/admin/khuyenMai`;
 
 export const khuyenMaiStore = defineStore('khuyenmai', {
     state: () => ({
@@ -66,7 +66,7 @@ export const khuyenMaiStore = defineStore('khuyenmai', {
         },
 
         updateCTSP(idctsp, idkm) {
-            axios.put(`http://localhost:8080/api/admin/khuyenMai/applyKM/${idctsp}?idkm=${idkm}`).then((response) => {
+            axios.put(`${import.meta.env.VITE_BASE_API_ENDPOINT}/admin/khuyenMai/applyKM/${idctsp}?idkm=${idkm}`).then((response) => {
                 let index = -1;
                 for (let i = 0; i < this.data.length; i++) {
                     if (idctsp == this.data[i].id) {

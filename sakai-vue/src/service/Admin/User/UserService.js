@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import axios from '@/service/Authentication/http.js';
 
-const apiUser = 'http://localhost:8080/api/admin/user/';
+const apiUser = `${import.meta.env.VITE_BASE_API_ENDPOINT}/admin/user/`;
 
 export const userStore = defineStore('user', {
     state: () => ({
@@ -70,7 +70,7 @@ export const userStore = defineStore('user', {
         },
         createUser(form) {
             // console.log(form)
-            axios.post('http://localhost:8080/api/admin/user', form).then((response) => {
+            axios.post(`${import.meta.env.VITE_BASE_API_ENDPOINT}/admin/user`, form).then((response) => {
                 if(response.data.role == 'ADMIN'){
                     this.dataAdmin.unshift(response.data);
                     this.data.unshift(response.data);
@@ -84,7 +84,7 @@ export const userStore = defineStore('user', {
 
         createDiaChi(form) {
             // console.log(form)
-            axios.post('http://localhost:8080/api/admin/user/add-dia-chi', form).then((response) => {
+            axios.post(`${import.meta.env.VITE_BASE_API_ENDPOINT}/admin/user/add-dia-chi`, form).then((response) => {
                 this.diaChi.unshift(response.data);
             });
         },
@@ -191,7 +191,7 @@ export const userStore = defineStore('user', {
         },
         async sendMail(form) {
             try {
-                const response = await axios.post('http://localhost:8080/api/admin/mail/send', form);
+                const response = await axios.post(`${import.meta.env.VITE_BASE_API_ENDPOINT}/admin/mail/send`, form);
                 return response.data;
             } catch (error) {
                 console.error('Error sending mail:', error);
@@ -200,7 +200,7 @@ export const userStore = defineStore('user', {
         },
         async sendOTP(form) {
             try {
-                const response = await axios.post('http://localhost:8080/api/admin/mail/sendOTP', form);
+                const response = await axios.post(`${import.meta.env.VITE_BASE_API_ENDPOINT}/admin/mail/sendOTP`, form);
                 return response.data;
             } catch (error) {
                 console.error('Error sending mail:', error);

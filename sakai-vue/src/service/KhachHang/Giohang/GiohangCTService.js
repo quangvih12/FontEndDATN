@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
-const apiGiohang = 'http://localhost:8080/api/khach-hang/giohang';
+const apiGiohang = `${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/giohang`;
 
 export const gioHangStore = defineStore('gioHang', {
     state: () => ({
@@ -15,21 +15,21 @@ export const gioHangStore = defineStore('gioHang', {
     // this.data.unshift(response.data.data);
     actions: {
         async addToCart(form, token) {
-            const response = await axios.post(`http://localhost:8080/api/khach-hang/giohang/addGiohang?token=${token}`, form);
+            const response = await axios.post(`${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/giohang/addGiohang?token=${token}`, form);
             await this.countGHCT(token);
             // this.data.unshift(response.data);
             return response.data;
         },
 
         async addToCartSesion(form, token) {
-            const response = await axios.post(`http://localhost:8080/api/khach-hang/giohang/addGiohang-session?token=${token}`, form);
+            const response = await axios.post(`${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/giohang/addGiohang-session?token=${token}`, form);
             this.dataSessions = response.data;
             this.dataSPDaXem = response.data;
             console.log(this.dataSPDaXem);
         },
 
         async addToCartWhenLogin(form, token) {
-            const response = await axios.post(`http://localhost:8080/api/khach-hang/giohang/addGiohang-when-login?token=${token}`, form);
+            const response = await axios.post(`${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/giohang/addGiohang-when-login?token=${token}`, form);
             await this.countGHCT(token);
             this.dataSessions = response.data;
         },
@@ -145,7 +145,7 @@ export const gioHangStore = defineStore('gioHang', {
 
         async updateMauSacSize(idGHCT, idSPCT, token) {
             try {
-                const response = await axios.post(`http://localhost:8080/api/khach-hang/giohang/updateMauSacSize/${idGHCT}?idSPCT=${idSPCT}&token=${token}`);
+                const response = await axios.post(`${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/giohang/updateMauSacSize/${idGHCT}?idSPCT=${idSPCT}&token=${token}`);
                 this.data = response.data;
             } catch (error) {}
         },
@@ -157,7 +157,7 @@ export const gioHangStore = defineStore('gioHang', {
                     this.soLuong = array.length;
                     return this.soLuong;
                 } else {
-                    const response = await axios.get(`http://localhost:8080/api/khach-hang/giohang/countGHCT?token=${token}`);
+                    const response = await axios.get(`${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/giohang/countGHCT?token=${token}`);
                     this.soLuong = parseInt(response.data);
                     return this.soLuong;
                 }

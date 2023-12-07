@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import axios from '@/service/Authentication/http.js';
 
-const apiMauSac = 'http://localhost:8080/api/admin/mau-sac';
+const apiMauSac = `${import.meta.env.VITE_BASE_API_ENDPOINT}/admin/mau-sac`;
 
 export const useMauSacService = defineStore('mau-sac', {
     state: () => ({
@@ -152,7 +152,7 @@ export const useMauSacService = defineStore('mau-sac', {
 
 // //add
 // const createSize = (form) => {
-//     const response = axios.post('http://localhost:8080/api/size/add', form);
+//     const response = axios.post('${import.meta.env.VITE_BASE_API_ENDPOINT}/size/add', form);
 //     fetchData();
 // };
 
