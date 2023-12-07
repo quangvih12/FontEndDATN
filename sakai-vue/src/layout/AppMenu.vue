@@ -59,9 +59,9 @@ const model = ref([
         ]
     },
     {
-        label: 'Vocher - Khuyễn Mãi',
+        label: 'Vocher - Khuyễn Mại',
         items: [{
-            label: 'Quản lý Khuyến Mãi',
+            label: 'Quản lý Khuyến Mại',
             icon: 'pi pi-fw pi-circle-off',
             to: { name: 'khuyen-mai' }
         },

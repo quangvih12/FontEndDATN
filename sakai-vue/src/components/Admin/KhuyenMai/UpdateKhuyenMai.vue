@@ -3,7 +3,7 @@
     <Dialog v-model:visible="updateKhuyenMaiDialog" header="Flex Scroll" :style="{ width: '75vw' }" maximizable modal :contentStyle="{ height: '300px' }" class="p-fluid">
         <template #header>
             <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-                <h5 class="m-0">Update Khuyến Mãi</h5>
+                <h5 class="m-0">Cập nhật Khuyến Mại</h5>
             </div>
         </template>
         <div class="card p-fluid">
@@ -52,8 +52,8 @@
         </div>
 
         <template #footer>
-            <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="hideDialog" />
-            <Button label="Update" icon="pi pi-check" @click="update" />
+            <Button label="Huỷ" icon="pi pi-times" class="p-button-text" @click="hideDialog" />
+            <Button label="Cập nhật" icon="pi pi-check" @click="update" />
         </template>
     </Dialog>
 </template>

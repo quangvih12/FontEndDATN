@@ -75,7 +75,7 @@ const update = handleSubmit(async () => {
 </script>
 <template>
     <Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" @click="openUpdateDialog()" />
-    <Dialog v-model:visible="updatevoucherDialog" :style="{ width: '450px' }" header="Update Voucher" :modal="true" class="p-fluid">
+    <Dialog v-model:visible="updatevoucherDialog" :style="{ width: '450px' }" header="Cập nhật Voucher" :modal="true" class="p-fluid">
         <div class="field">
             <label for="ten">Tên</label>
             <InputText id="ten" v-model="ten" :class="{ 'p-invalid': tenError }" required="true" />
@@ -122,8 +122,8 @@ const update = handleSubmit(async () => {
         </div>
 
         <template #footer>
-            <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="hideDialogVoucher" />
-            <Button type="submit" label="Save" icon="pi pi-check" class="p-button-text" @click="update" />
+            <Button label="Huỷ" icon="pi pi-times" class="p-button-text" @click="hideDialogVoucher" />
+            <Button type="submit" label="Cập nhật" icon="pi pi-check" class="p-button-text" @click="update" />
         </template>
     </Dialog>
 </template>

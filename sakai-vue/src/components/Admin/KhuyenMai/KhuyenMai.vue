@@ -1,6 +1,6 @@
 <script setup>
 import { format } from 'date-fns';
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted,  onBeforeMount,computed } from 'vue';
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
 import { khuyenMaiStore } from '@/service/Admin/KhuyenMai/KhuyenMaiService.js';
 import { useToast } from 'primevue/usetoast';
@@ -13,7 +13,7 @@ import ExcelJS from 'exceljs';
 
 
 const toast = useToast();
-const filters = ref();
+const filters = ref({});
 const khuyenmais = ref([]);
 const khuyenmai = ref({});
 const selectedKhuyenMai = ref([]);
@@ -102,12 +102,23 @@ const getStatusLabel = (trangThai) => {
             return null;
     }
 };
+
+// onBeforeMount(() => {
+//     initFilters();
+// });
+
 const formatDate = (dateTime) => {
     if (dateTime == null || dateTime.length <= 0) {
         return null;
     } else {
         return format(new Date(dateTime), 'yyyy/MM/dd HH:mm:ss');
     }
+};
+
+const initFilters = () => {
+    filters.value = {
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS }
+    };
 };
 
 const position = ref('center');
@@ -260,6 +271,7 @@ const handImportExcel = async (event) => {
                     :rows="5" filterDisplay="menu"
                     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                     :rowsPerPageOptions="[5, 10, 25]"
+                    :filters="filters"
                     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
                     responsiveLayout="scroll" :globalFilterFields="['thoiGianBatDau', 'thoiGianKetThuc', 'trangThai']">
                     <template #header>

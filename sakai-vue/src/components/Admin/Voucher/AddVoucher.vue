@@ -76,7 +76,7 @@ const save = handleSubmit(async () => {
 
 <template>
     <Button label="Thêm mới" icon="pi pi-plus" class="p-button-success mr-2" @click="openNew" />
-    <Dialog v-model:visible="voucherDialog" :style="{ width: '450px' }" header="Add Voucher" :modal="false" class="p-fluid">
+    <Dialog v-model:visible="voucherDialog" :style="{ width: '450px' }" header="Thêm Voucher" :modal="false" class="p-fluid">
         <div class="field">
             <label for="ten">Tên</label>
             <InputText id="ten" v-model.trim="ten" :class="{ 'p-invalid': tenError }" autofocus />
@@ -123,8 +123,8 @@ const save = handleSubmit(async () => {
         </div>
 
         <template #footer>
-            <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="hideDialog" />
-            <Button type="submit" label="Save" icon="pi pi-check" class="p-button-text" @click="save" />
+            <Button label="Huỷ" icon="pi pi-times" class="p-button-text" @click="hideDialog" />
+            <Button type="submit" label="Lưu" icon="pi pi-check" class="p-button-text" @click="save" />
         </template>
     </Dialog>
 </template>
