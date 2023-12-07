@@ -26,7 +26,8 @@ export const useBanHangTaiQuayStore = defineStore('banHangTaiQuay', () => {
     }
 
     const huyHDCho = async (idHoaDon) => {
-        await axios.delete(`${API_ENDPOINT}/hoa-don/${idHoaDon}`);
+        const response = await axios.delete(`${API_ENDPOINT}/hoa-don/${idHoaDon}`);
+        dsSP.value = response.data;
         dsHDCho.value = dsHDCho.value.filter(hdCho => hdCho.id !== idHoaDon);
     }
 
@@ -62,6 +63,16 @@ export const useBanHangTaiQuayStore = defineStore('banHangTaiQuay', () => {
         });
         dsHDCT.value = response.data.allHDCT;
         dsSP.value = response.data.allSP;
+    }
+
+    const updateSLSPCuaHDCT = async (idHDCT, soLuong) => {
+        const response = await axios.put(`${API_ENDPOINT}/hoa-don-chi-tiet/${idHDCT}`, null, {
+            params: {
+                so_luong: soLuong
+            }
+        });
+        dsHDCT.value = response.data.allHDCT;
+        dsSP.value = response.data.allCTSP;
     }
 
     const xoaHDCT = async (idHDCT) => {
@@ -104,6 +115,7 @@ export const useBanHangTaiQuayStore = defineStore('banHangTaiQuay', () => {
         taoHDCho,
         huyHDCho,
         themSPVaoHDCT,
+        updateSLSPCuaHDCT,
         xoaHDCT,
         thanhToanHD,
         addOrUpdateKH,
