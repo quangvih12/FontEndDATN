@@ -2,8 +2,6 @@
 <script setup>
 import * as yup from 'yup';
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
-import CustomerService from '@/service/CustomerService';
-import ProductService from '@/service/ProductService';
 import { useForm, useField } from 'vee-validate';
 import { ref, onBeforeMount, onMounted, watch } from 'vue';
 import { useToast } from 'primevue/usetoast';
@@ -20,13 +18,7 @@ const redirectToTrangThaiDonHang = (id) => {
 };
 const toast = useToast();
 const useHD = HDKHStore();
-const customer1 = ref(null);
-const customer2 = ref(null);
-const customer3 = ref(null);
 const filters1 = ref(null);
-const loading1 = ref(null);
-const loading2 = ref(null);
-const products = ref(null);
 const idHD = ref(null);
 const data = ref([]);
 
@@ -169,19 +161,10 @@ const onToggle = (val) => {
     selectedColumns.value = columns.value.filter((col) => val.includes(col));
 };
 
-const customerService = new CustomerService();
-const productService = new ProductService();
+
 
 onBeforeMount(() => {
-    productService.getProductsWithOrdersSmall().then((data) => (products.value = data));
-    customerService.getCustomersLarge().then((data) => {
-        customer1.value = data;
-        loading1.value = false;
-        customer1.value.forEach((customer) => (customer.date = new Date(customer.date)));
-    });
-    customerService.getCustomersLarge().then((data) => (customer2.value = data));
-    customerService.getCustomersMedium().then((data) => (customer3.value = data));
-    loading2.value = false;
+
 
     initFilters1();
 });

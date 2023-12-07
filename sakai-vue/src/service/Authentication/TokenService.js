@@ -21,6 +21,11 @@ class TokenService {
         return response.data;
     }
 
+    async createAccountGoogle(email, name, anh) {
+        const response = await axios.post(`${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/user/createAccountGG/` + email + '?username=' + name + '&anh=' + anh);
+        return response.data;
+    }
+
     async findByToken(token) {
         const response = await axios.get(`${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/user/find-by-token?token=` + token);
         return response.data;

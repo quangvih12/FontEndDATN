@@ -1,8 +1,6 @@
 <!-- eslint-disable no-unused-vars -->
 <script setup>
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
-import CustomerService from '@/service/CustomerService';
-import ProductService from '@/service/ProductService';
 import { ref, onBeforeMount, onMounted } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { HDKHStore } from '../../../service/KhachHang/HoaDonKHService';
@@ -19,13 +17,7 @@ const redirectToTrangThaiDonHang = (id) => {
     router.push({ name: 'trang-thai-don-hang', params: { id: id } });
 };
 const useHD = HDKHStore();
-const customer1 = ref(null);
-const customer2 = ref(null);
-const customer3 = ref(null);
 const filters1 = ref(null);
-const loading1 = ref(null);
-const loading2 = ref(null);
-const products = ref(null);
 const data = ref([]);
 
 const loadData = async () => {
@@ -86,19 +78,9 @@ const onToggle = (val) => {
     selectedColumns.value = columns.value.filter((col) => val.includes(col));
 };
 
-const customerService = new CustomerService();
-const productService = new ProductService();
 
 onBeforeMount(() => {
-    productService.getProductsWithOrdersSmall().then((data) => (products.value = data));
-    customerService.getCustomersLarge().then((data) => {
-        customer1.value = data;
-        loading1.value = false;
-        customer1.value.forEach((customer) => (customer.date = new Date(customer.date)));
-    });
-    customerService.getCustomersLarge().then((data) => (customer2.value = data));
-    customerService.getCustomersMedium().then((data) => (customer3.value = data));
-    loading2.value = false;
+ 
 
     initFilters1();
 });

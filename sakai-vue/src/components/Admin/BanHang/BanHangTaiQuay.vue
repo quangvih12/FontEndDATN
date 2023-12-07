@@ -237,10 +237,11 @@ const onHinhThucGiaoHangChange = async () => {
   if (hinhThucGiaoHang.value) {
     hinhThucGiaoHangs.value = hinhThucGiaoHang.value.id;
     if (hinhThucGiaoHangs.value === 2) {
-      await loadDiaChis();
-      diaChiDialog.value = true;
+     await loadDiaChis();
+       diaChiDialog.value = true;
 
-    }else{
+    }
+   else{
       phiShip.value = 0;
       tinhTien(dsHDCT.value);
       diaChiDialog.value = false;
@@ -319,7 +320,6 @@ const userDiaChi = ref([]);
 const loadDiaChis = async () => {
   await userService.fetchAllDiaChi(userID.value); // Gọi hàm fetchAll từ Store
   userDiaChi.value = userService.diaChi;
-  idDiaChi.value =  userDiaChi.value[0].id;
   const diaChiMacDinh =  userDiaChi.value.find(x => x.id === idDiaChi.value);
   if (diaChiMacDinh == '' || diaChiMacDinh == null) {
         phiShip.value = 0;
@@ -327,6 +327,11 @@ const loadDiaChis = async () => {
         await phiGiaoHangService.phiShip(diaChiMacDinh);
         phiShip.value = phiGiaoHangService.money;
     }
+  if(userDiaChi.value.length != 0){
+    idDiaChi.value =  userDiaChi.value[0].id;
+  } 
+ 
+ 
 };
 const tinhPhiShip =async (idDiaChi)=>{
   const diaChiMacDinh =  userDiaChi.value.find(x => x.id === idDiaChi);
@@ -751,7 +756,7 @@ const tinhPhiShip =async (idDiaChi)=>{
       </div>
       <div class="card" v-if="diaChiDialog==true" style="overflow-y: scroll; width:95%; height: 200px;">
         <div style="margin-left: 300px; height: 40px; width: 80px;  border: 1px solid blue; border-radius: 20px; text-align: center;">
-          <ThemDiaChi style="position: absolute; right: 0; width: 80px; margin-bottom: 5px" :idUser="userID"> </ThemDiaChi>
+          <ThemDiaChi  :idUser="userID"> </ThemDiaChi>
         </div>
       
         <div v-if="!userDiaChi || userDiaChi.length === 0" style="text-align: center; margin-top: 50px;">
