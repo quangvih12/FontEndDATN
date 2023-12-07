@@ -2,8 +2,6 @@
 <script setup>
 import * as yup from 'yup';
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
-import CustomerService from '@/service/CustomerService';
-import ProductService from '@/service/ProductService';
 import { useForm, useField } from 'vee-validate';
 import { ref, onBeforeMount, onMounted, watch } from 'vue';
 import { useToast } from 'primevue/usetoast';
@@ -20,13 +18,7 @@ const redirectToTrangThaiDonHang = (id) => {
 };
 const toast = useToast();
 const useHD = HDKHStore();
-const customer1 = ref(null);
-const customer2 = ref(null);
-const customer3 = ref(null);
 const filters1 = ref(null);
-const loading1 = ref(null);
-const loading2 = ref(null);
-const products = ref(null);
 const idHD = ref(null);
 const data = ref([]);
 
@@ -79,7 +71,7 @@ onMounted(() => {
 const stompClient = ref(null);
 const openSocketConnection = () => {
     stompClient.value = new Client({
-        brokerURL: 'ws://localhost:8080/ws'
+        brokerURL: `${import.meta.env.VITE_BASE_WEBSOCKET_ENDPOINT}/ws`
     });
 
     stompClient.value.activate();
@@ -169,19 +161,10 @@ const onToggle = (val) => {
     selectedColumns.value = columns.value.filter((col) => val.includes(col));
 };
 
-const customerService = new CustomerService();
-const productService = new ProductService();
+
 
 onBeforeMount(() => {
-    productService.getProductsWithOrdersSmall().then((data) => (products.value = data));
-    customerService.getCustomersLarge().then((data) => {
-        customer1.value = data;
-        loading1.value = false;
-        customer1.value.forEach((customer) => (customer.date = new Date(customer.date)));
-    });
-    customerService.getCustomersLarge().then((data) => (customer2.value = data));
-    customerService.getCustomersMedium().then((data) => (customer3.value = data));
-    loading2.value = false;
+
 
     initFilters1();
 });
@@ -213,7 +196,7 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
 };
 </script>
 <template>
-      <div v-if="!data || data.length===0" style="text-align: center; margin-top: 100px;"  > 
+      <div v-if="!useHD.dataDangChuanBi || useHD.dataDangChuanBi.length===0" style="text-align: center; margin-top: 100px;"  > 
                                   
                                   <svg  width="100px" height="100px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#000000" class="bi bi-file-earmark-x">
 <path d="M6.854 7.146a.5.5 0 1 0-.708.708L7.293 9l-1.147 1.146a.5.5 0 0 0 .708.708L8 9.707l1.146 1.147a.5.5 0 0 0 .708-.708L8.707 9l1.147-1.146a.5.5 0 0 0-.708-.708L8 8.293 6.854 7.146z"/>

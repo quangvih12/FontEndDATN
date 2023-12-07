@@ -164,7 +164,7 @@ const home = ref({
     icon: 'pi pi-home',
     to: { name: 'trang-chu' }
 });
-const items = ref([{ label: 'Sản phẩm', to: { name: 'san-pham' }}, { label: 'Sản phẩm chi tiết' }]);
+const items = ref([{ label: 'Sản phẩm', to: { name: 'san-pham' } }, { label: 'Sản phẩm chi tiết' }]);
 
 const formatCurrency = (value) => {
     if (!value) return '';
@@ -236,7 +236,7 @@ const addToCart = async () => {
         demSLGH(token);
 
         toast.add({ severity: 'success', summary: 'Successful', detail: 'Thêm vào giỏ hàng thành công', life: 3000 });
-    //    router.push({ name: 'gio-hang' });
+        //    router.push({ name: 'gio-hang' });
     }
 };
 
@@ -363,7 +363,7 @@ const resetNoiDung = () => {
 };
 
 const resetPhanHoi = () => {
-    phanhoi.value = '';
+    traLoi.value = '';
 };
 
 const addComment = async () => {
@@ -438,6 +438,7 @@ const commentId = ref(null);
 const phanHoi = (id) => {
     phanHoiDialog.value = true;
     commentId.value = id;
+
 };
 
 const xoaPhanHoi = async (phanhoi) => {
@@ -510,7 +511,10 @@ const menu = ref();
                             >
                             <div class="gb" style="display: flex">
                                 <h2 s v-if="dataListSPCT.soLuongTon > 0 || dataListSPCT.soLuongTon == null">
-                                    <p tyle="color: rgb(0, 0, 0)">{{ formatCurrency(dataListSPCT.giaBan) !== '' ? formatCurrency(dataListSPCT.giaBan) : 'Hết hàng' }}</p>
+                                    <!-- <p tyle="color: rgb(0, 0, 0)">{{ formatCurrency(dataListSPCT.giaBan) !== '' ? formatCurrency(dataListSPCT.giaBan) : 'Hết hàng' }}</p> -->
+                                    <p tyle="color: rgb(0, 0, 0)" style="text-decoration: line-through" v-if="dataListSPCT.tenKM !== null && dataListSPCT.tenKM !== undefined">{{ formatCurrency(dataListSPCT.giaBan) }}</p>
+                                    <p tyle="color: rgb(0, 0, 0)" v-else-if="formatCurrency(dataListSPCT.giaBan) !== ''">{{ formatCurrency(dataListSPCT.giaBan) }}</p>
+                                    <p tyle="color: rgb(0, 0, 0)" v-else>Hết hàng</p>
                                 </h2>
                                 <p style="color: red; font-size: 25px" v-else>Hết hàng</p>
                                 <div>
@@ -699,6 +703,11 @@ const menu = ref();
                                         </h6>
                                         <span>{{ cm.noiDung }}</span>
 
+                                        <div class="flex flex-wrap  align-items-center gap-3" style="margin-left: 700px">
+                                                <a @click="phanHoi(cm.id)" style="color: blue; margin-right: 5px;">Phản hồi</a>
+                                                <a @click="xoa(cm)" style="color: red">Xoá</a>
+                                        </div>
+
                                         <!-- Phản hồi -->
                                         <div v-for="(ph, index) in phanHois.filter((item) => item.idPhanHoi === cm.id)" :key="index" style="margin-top: 15px; margin-left: 30px" class="flex">
                                             <div>
@@ -717,10 +726,10 @@ const menu = ref();
                                             </div>
                                         </div>
                                         <div class="flex flex-wrap justify-content-between align-items-center gap-3 mt-3" style="margin-left: 660px">
-                                            <Button type="submit" label="Phản hồi" @click="phanHoi(cm.id)" class="ph-button" />
-                                            <Button severity="danger" label="Xoá" @click="xoa(cm)" class="small-button" />
+                                            <!-- <Button type="submit" label="Phản hồi" @click="phanHoi(cm.id)" class="ph-button" />
+                                            <Button severity="danger" label="Xoá" @click="xoa(cm)" class="small-button" /> -->
 
-                                            <Dialog v-model:visible="phanHoiDialog" modal header="Phản hổi" :style="{ width: '50rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+                                            <Dialog v-model:visible="phanHoiDialog" modal header="Phản hồi" :style="{ width: '50rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
                                                 <Textarea v-model="traLoi" rows="5" cols="90" />
                                                 <template #footer>
                                                     <Button label="Ok" icon="pi pi-check" @click="phanHoiComment" autofocus />

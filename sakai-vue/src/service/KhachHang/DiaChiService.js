@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
-const api = 'http://localhost:8080/api/khach-hang/dia-chi';
+const api = `${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/dia-chi`;
 const baseUrl = 'https://online-gateway.ghn.vn/shiip/public-api/master-data/';
 const headers = {
     Token: 'fc6bed6e-7bd8-11ee-af43-6ead57e9219a'
@@ -66,6 +66,9 @@ export const useDiaChi = defineStore('diaChi', {
                 .post(api + `/add?token=${token}`, form)
                 .then((response) => {
                     this.diaChi.unshift(response.data);
+                    if(response.data.trangThai === 1){
+                        this.diaChiMacDinh = response.data;
+                    }
                 })
                 .catch((error) => {
                     // console.error('Lỗi khi tạo:', error);
@@ -94,7 +97,16 @@ export const useDiaChi = defineStore('diaChi', {
                     this.diaChi[i].idPhuongXa = form.idPhuongXa;
                     this.diaChi[i].tenphuongXa = form.phuongXa;
                     this.diaChi[i].diaChi = form.diaChi;
-                    console.log(this.diaChi[i]);
+                    if(this.diaChi[i].trangThai === 1){
+                     
+                        this.diaChiMacDinh.idTinhThanh = form.idTinhThanh;
+                        this.diaChiMacDinh.tenTinhThanh = form.tinhThanh;
+                        this.diaChiMacDinh.idQuanHuyen = form.idQuanHuyen;
+                        this.diaChiMacDinh.tenQuanHuyen = form.quanHuyen;
+                        this.diaChiMacDinh.idPhuongXa = form.idPhuongXa;
+                        this.diaChiMacDinh.tenphuongXa = form.phuongXa;
+                        this.diaChiMacDinh.diaChi = form.diaChi;
+                    }
                 }
             }
 

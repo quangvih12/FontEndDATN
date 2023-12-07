@@ -38,7 +38,7 @@ const props = defineProps({
     myProp: {}
 });
 
-const tongTienThanhToan = ref(props.myProp.tienSauKhiGiam == '' ? parseInt(props.myProp.tienSauKhiGiam) : parseInt(props.myProp.tongTien) + parseInt(props.myProp.tienShip == null ? 0:props.myProp.tienShip));
+const tongTienThanhToan = ref(props.myProp.idVoucher != null ? parseInt(props.myProp.tienSauKhiGiam) : parseInt(props.myProp.tongTien) + parseInt(props.myProp.tienShip == null ? 0:props.myProp.tienShip));
 
 const editProduct = () => {
     code.value = 'Hoá đơn: ' + props.myProp.maHD;
@@ -48,6 +48,7 @@ const editProduct = () => {
     ngayThanhToan.value = props.myProp.ngayThanhToan;
     ngayGiao.value = props.myProp.ngayShip;
     ngayNhan.value = props.myProp.ngayNhan;
+    inputKhoiLuong.value = khoiLuong.value
 };
 
 const ngayDat = ref('');
@@ -57,9 +58,9 @@ const ngayNhan = ref('');
 
 watch(ship, (newVal) => {
     if (ship.value === 'nguoiGui') {
-        tongTienThanhToan.value = props.myProp.tienSauKhiGiam == null ? parseInt(props.myProp.tongTien) : parseInt(props.myProp.tienSauKhiGiam) - parseInt(props.myProp.tienShip);
+        tongTienThanhToan.value = props.myProp.idVoucher === null ? parseInt(props.myProp.tongTien) : parseInt(props.myProp.tienSauKhiGiam) - parseInt(props.myProp.tienShip);
     } else {
-        tongTienThanhToan.value = props.myProp.tienSauKhiGiam == null ? parseInt(props.myProp.tongTien) + parseInt(props.myProp.tienShip) : props.myProp.tienSauKhiGiam;
+        tongTienThanhToan.value = props.myProp.idVoucher === null ? parseInt(props.myProp.tongTien) + parseInt(props.myProp.tienShip) : props.myProp.tienSauKhiGiam;
     }
 });
 
@@ -86,7 +87,7 @@ const giaoHangNhanh = async (idHD, hoaDon, formGHN) => {
 const stompClient = ref(null);
 const openSocketConnection = () => {
     stompClient.value = new Client({
-        brokerURL: 'ws://localhost:8080/ws'
+        brokerURL: `${import.meta.env.VITE_BASE_WEBSOCKET_ENDPOINT}/ws`
     });
 
     stompClient.value.activate();
@@ -341,7 +342,7 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
                             <p>Tổng tiền các sản phẩm: {{ formatCurrency(props.myProp.tongTien) }}</p>
                             <p>Phí vận chuyển: {{ formatCurrency(props.myProp.tienShip == null ? 0:props.myProp.tienShip) }}</p>
                             <p>
-                                Tiền giảm: <span v-if="props.myProp.tienSauKhiGiam !== null" style="color: red">- {{ formatCurrency(parseInt(props.myProp.tongTien) + parseInt(props.myProp.tienShip == null ? 0:props.myProp.tienShip) - parseInt(props.myProp.tienSauKhiGiam)) }}</span>
+                                Tiền giảm: <span v-if="props.myProp.idVoucher !== null" style="color: red">- {{ formatCurrency(parseInt(props.myProp.tongTien) + parseInt(props.myProp.tienShip == null ? 0:props.myProp.tienShip) - parseInt(props.myProp.tienSauKhiGiam)) }}</span>
                                 <span v-else style="color: red"> 0</span>
                             </p>
                             <p>

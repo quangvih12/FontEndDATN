@@ -2,28 +2,19 @@
 <script setup>
 import { format } from 'date-fns';
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
-import CustomerService from '@/service/CustomerService';
-import ProductService from '@/service/ProductService';
 import { ref, onBeforeMount, onMounted, watch } from 'vue';
 import DetailHoaDon from './DetailHoaDon.vue';
 import { HDStore } from '../../../service/Admin/HoaDon/HoaDonService';
 
 const useHD = HDStore();
-const customer1 = ref(null);
-const customer2 = ref(null);
-const customer3 = ref(null);
 const filters1 = ref(null);
-const loading1 = ref(null);
-const loading2 = ref(null);
-const products = ref(null);
 
-const customerService = new CustomerService();
-const productService = new ProductService();
 const data = ref([]);
 
 const loadData = async () => {
     await useHD.fetchData();
     data.value = useHD.dataAll;
+    useHD.dataAll = useHD.dataAll;
 };
 
 //chạy cái hiện data luôn
@@ -109,68 +100,82 @@ const typeSearchDate = ref(null);
 const selectedColumns = ref(null);
 
 const searchDate = async () => {
+    let date = new Date(startDate.value);
+    let year = date.getFullYear();
+    let month = String(date.getMonth() + 1).padStart(2, '0');
+    let day = String(date.getDate()).padStart(2, '0');
+    let hours = String(date.getHours()).padStart(2, '0');
+    let minutes = String(date.getMinutes()).padStart(2, '0');
+
+    let startDates = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+    let date2 = new Date(endDate.value);
+    let year2 = date2.getFullYear();
+    let month2 = String(date2.getMonth() + 1).padStart(2, '0');
+    let day2 = String(date2.getDate()).padStart(2, '0');
+    let hours2 = String(date2.getHours()).padStart(2, '0');
+    let minutes2 = String(date2.getMinutes()).padStart(2, '0');
+
+    let endDates = `${year2}-${month2}-${day2}T${hours2}:${minutes2}`;
     if ((hinhThucGiao.value == 'tatCa' || hinhThucGiao.value == null) && (phuongThucThanhToan.value == 'tatCa' || phuongThucThanhToan.value == null)) {
-        if (startDate.value == null || startDate.value.length <= 0 || endDate.value == null || endDate.value.length <= 0) {
+        if (startDates == null || startDates.length <= 0 || endDates == null || endDates.length <= 0) {
             loadData();
         } else if (typeSearchDate.value == null) {
-            const respone = await useHD.searchDate(startDate.value, endDate.value, 'ngayTao');
+            const respone = await useHD.searchDate(startDates, endDates, 'ngayTao');
             data.value = respone;
         } else {
-            const respone = await useHD.searchDate(startDate.value, endDate.value, typeSearchDate.value.value);
+            const respone = await useHD.searchDate(startDates, endDates, typeSearchDate.value.value);
             data.value = respone;
         }
-        console.log('cả 2 null');
+        //       console.log('cả 2 null');
     } else if (phuongThucThanhToan.value == 'tatCa' || phuongThucThanhToan.value == null) {
-        console.log('phuongThucThanhToan null');
-        if (startDate.value == null || startDate.value.length <= 0 || endDate.value == null || endDate.value.length <= 0) {
+        //   console.log('phuongThucThanhToan null');
+        if (startDates == null || startDates.length <= 0 || endDates == null || endDates.length <= 0) {
             loadDataByHinhThucGiao(parseInt(hinhThucGiao.value.value));
         } else if (typeSearchDate.value == null) {
-            const respone = await useHD.searchDateByHinhThucGiao(startDate.value, endDate.value, 'ngayTao', parseInt(hinhThucGiao.value.value));
+            const respone = await useHD.searchDateByHinhThucGiao(startDates, endDates, 'ngayTao', parseInt(hinhThucGiao.value.value));
             data.value = respone;
         } else {
-            const respone = await useHD.searchDateByHinhThucGiao(startDate.value, endDate.value, typeSearchDate.value.value, parseInt(hinhThucGiao.value.value));
+            const respone = await useHD.searchDateByHinhThucGiao(startDates, endDates, typeSearchDate.value.value, parseInt(hinhThucGiao.value.value));
             data.value = respone;
         }
     } else if (hinhThucGiao.value == 'tatCa' || hinhThucGiao.value == null) {
-        console.log('hinhThucGiao null');
-        if (startDate.value == null || startDate.value.length <= 0 || endDate.value == null || endDate.value.length <= 0) {
+        //   console.log('hinhThucGiao null');
+        if (startDates == null || startDates.length <= 0 || endDates == null || endDates.length <= 0) {
             loadDataByPttt(parseInt(phuongThucThanhToan.value.value));
         } else if (typeSearchDate.value == null) {
-            const respone = await useHD.searchDateByPttt(startDate.value, endDate.value, 'ngayTao', parseInt(phuongThucThanhToan.value.value));
+            const respone = await useHD.searchDateByPttt(startDates, endDates, 'ngayTao', parseInt(phuongThucThanhToan.value.value));
             data.value = respone;
         } else {
-            const respone = await useHD.searchDateByPttt(startDate.value, endDate.value, typeSearchDate.value.value, parseInt(phuongThucThanhToan.value.value));
+            const respone = await useHD.searchDateByPttt(startDates, endDates, typeSearchDate.value.value, parseInt(phuongThucThanhToan.value.value));
             data.value = respone;
         }
     } else {
-        console.log('cả 2 k null');
-        if (startDate.value == null || startDate.value.length <= 0 || endDate.value == null || endDate.value.length <= 0) {
+        //     console.log('cả 2 k null');
+        if (startDates == null || startDates.length <= 0 || endDates == null || endDates.length <= 0) {
             loadDataByHinhThucGiaoAndPttt(parseInt(hinhThucGiao.value.value), parseInt(phuongThucThanhToan.value.value));
         } else if (typeSearchDate.value == null) {
-            const respone = await useHD.searchDateByPtttAndHtgh(startDate.value, endDate.value, 'ngayTao', parseInt(phuongThucThanhToan.value.value), parseInt(hinhThucGiao.value.value));
+            const respone = await useHD.searchDateByPtttAndHtgh(startDates, endDates, 'ngayTao', parseInt(phuongThucThanhToan.value.value), parseInt(hinhThucGiao.value.value));
             data.value = respone;
         } else {
-            const respone = await useHD.searchDateByPtttAndHtgh(startDate.value, endDate.value, typeSearchDate.value.value, parseInt(phuongThucThanhToan.value.value), parseInt(hinhThucGiao.value.value));
+            const respone = await useHD.searchDateByPtttAndHtgh(startDates, endDates, typeSearchDate.value.value, parseInt(phuongThucThanhToan.value.value), parseInt(hinhThucGiao.value.value));
             data.value = respone;
         }
     }
 };
 
+const resetSearch = () => {
+    loadData();
+    startDate.value = null;
+    endDate.value = null;
+    hinhThucGiao.value = null;
+    phuongThucThanhToan.value = null;
+};
 const onToggle = (val) => {
     selectedColumns.value = columns.value.filter((col) => val.includes(col));
 };
 
 onBeforeMount(() => {
-    productService.getProductsWithOrdersSmall().then((data) => (products.value = data));
-    customerService.getCustomersLarge().then((data) => {
-        customer1.value = data;
-        loading1.value = false;
-        customer1.value.forEach((customer) => (customer.date = new Date(customer.date)));
-    });
-    customerService.getCustomersLarge().then((data) => (customer2.value = data));
-    customerService.getCustomersMedium().then((data) => (customer3.value = data));
-    loading2.value = false;
-
     initFilters1();
 });
 
@@ -253,19 +258,28 @@ watch(phuongThucThanhToan, (newVal) => {
 });
 </script>
 <template>
-    <div class="col-12 flex" style="padding-left: 0">
-        <Dropdown v-model="typeSearchDate" :options="dataSearchDate" optionLabel="label" placeholder="Ngày tạo" class="w-full md:w-14rem" style="height: 40px" />
-        <div class="p-inputgroup flex-1" style="margin-left: 20px">
-            <span class="p-inputgroup-addon" style="height: 40px">Ngày bắt đầu</span>
-            <input type="datetime-local" v-model="startDate" style="min-width: 13rem; height: 40px" />
+    <div class="col-12 flex" style="padding-left: 10px">
+        <Dropdown v-model="typeSearchDate" :options="dataSearchDate" optionLabel="label" placeholder="Ngày tạo" class="w-full md:w-12rem" style="height: 40px" />
+
+        <div class="" style="margin-bottom: 0px; margin-left: 20px">
+            <span class="p-float-label">
+                <Calendar id="calendar-24h" v-model="startDate" showTime hourFormat="12" />
+                <label for="Field">Ngày bắt đầu</label>
+            </span>
         </div>
-        <div class="p-inputgroup flex-1">
-            <span class="p-inputgroup-addon" style="height: 40px">Ngày kết thúc</span>
-            <input type="datetime-local" v-model="endDate" style="min-width: 13rem; height: 40px" />
+        <div class="" style="margin-bottom: 0px; margin-left: 20px">
+            <span class="p-float-label">
+                <Calendar id="calendar-24h" v-model="endDate" showTime hourFormat="12" />
+                <label for="Field">Ngày kết thúc</label>
+            </span>
         </div>
-        <div style="margin-left: 5px">
-            <Button label="Seach" @click="searchDate()" icon="pi pi-search" class="p-button-rounded p-button-primary mr-2 mb-2" />
+
+        <div style="margin-left: 20px">
+            <Button type="button" @click="searchDate()" icon="pi pi-search" style="width: 50px; height: 40px; background: none; color: black"></Button>
         </div>
+        <Button type="button" label="Tháng" @click="resetSearch()" style="width: 50px; height: 40px; background: none; color: black; margin-left: 20px">
+            <i class="pi pi-replay" style="font-size: 1.8rem; margin-right: 00px; margin-left: -5px"></i
+        ></Button>
     </div>
     <DataTable
         ref="dt"
@@ -294,6 +308,15 @@ watch(phuongThucThanhToan, (newVal) => {
                 </span>
             </div>
         </template>
+        <template #empty>
+            <div class="flex flex-column justify-content-center align-items-center" style="height: 300px">
+                <svg width="100px" height="100px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#000000" class="bi bi-file-earmark-x">
+                    <path d="M6.854 7.146a.5.5 0 1 0-.708.708L7.293 9l-1.147 1.146a.5.5 0 0 0 .708.708L8 9.707l1.146 1.147a.5.5 0 0 0 .708-.708L8.707 9l1.147-1.146a.5.5 0 0 0-.708-.708L8 8.293 6.854 7.146z" />
+                    <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                </svg>
+                <h6>Không có dữ liệu.</h6>
+            </div>
+        </template>
         <Column field="stt" header="STT" :sortable="true" headerStyle="width:5%; min-width:1rem;">
             <template #body="slotProps">
                 <span class="p-column-title">stt</span>
@@ -312,10 +335,22 @@ watch(phuongThucThanhToan, (newVal) => {
                 {{ slotProps.data.tenNguoiNhan }}
             </template>
         </Column>
+        <Column field="sdt" header="Số Điện thoại" :sortable="true" headerStyle="width:10%; min-width:10rem;">
+            <template #body="slotProps">
+                <span class="p-column-title">số điện thoại</span>
+                {{ slotProps.data.sdt }}
+            </template>
+        </Column>
         <Column field="tongTien" header="Tổng tiền" :sortable="true" headerStyle="width:10%; min-width:9rem;">
             <template #body="slotProps">
                 <span class="p-column-title">tongTien</span>
-                {{ formatCurrency(slotProps.data.tienSauKhiGiam == null ? parseInt(slotProps.data.tongTien) + parseInt(slotProps.data.tienShip == null ? 0:slotProps.data.tienShip) : slotProps.data.tienSauKhiGiam) }}
+                {{ formatCurrency(slotProps.data.tienSauKhiGiam == null ? parseInt(slotProps.data.tongTien) + parseInt(slotProps.data.tienShip == null ? 0 : slotProps.data.tienShip) : slotProps.data.tienSauKhiGiam) }}
+            </template>
+        </Column>
+        <Column field="tienShip" header="Tiền ship" :sortable="true" headerStyle="width:10%; min-width:9rem;">
+            <template #body="slotProps">
+                <span class="p-column-title">tongTien</span>
+                {{ formatCurrency(slotProps.data.tienShip) }}
             </template>
         </Column>
         <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;">

@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, reactive, ref, watch } from 'vue';
-import ProductService from '@/service/ProductService';
+
 import { useLayout } from '@/layout/composables/layout';
 // import ThongKeHoaDon from './ThongKeHoaDon.vue';
 import ThongKeSanPham from './ThongKeLoiNhuan.vue';
@@ -13,10 +13,10 @@ const { isDarkTheme } = useLayout();
 const products = ref(null);
 
 const lineOptions = ref(null);
-const productService = new ProductService();
+
 
 onMounted(() => {
-    productService.getProductsSmall().then((data) => (products.value = data));
+   // productService.getProductsSmall().then((data) => (products.value = data));
 });
 
 const formatCurrency = (value) => {

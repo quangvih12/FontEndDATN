@@ -41,7 +41,7 @@ const schema = yup.object().shape({
         .string()
         .required('Tên người dùng không được để trống')
         .min(4, 'Tên phải có ít nhất 4 ký tự')
-        .matches(/^[a-zA-Z0-9đĐáÁàÀảẢãÃạẠăĂắẮằẰẳẲẵẴặẶâÂấẤầẦẩẨẫẪậẬêÊếẾềỀểỂễỄệỆôÔốỐồỒổỔỗỖộỘơƠớỚờỜởỞỡỠợỢùÙúÚụỤủỦũŨưỨỨửỬữỮựỰýÝỳỲỷỶỹỸỵỴ\s]*$/, 'Tên không được chứa kí tự đặc biệt!'),
+        ,
     sdt: yup
         .string()
         .required('Số điện thoại không được để trống')
@@ -96,6 +96,7 @@ const updateProduct = () => {
         // diaChi: diaChi.value,
         image: image.value,
     };
+  
     schema
         .validate(form)
         .then(() => {
@@ -104,7 +105,7 @@ const updateProduct = () => {
             productDialog.value = false;
             toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Sửa thành công', life: 3000 });
             reset();
-            loadData();
+           // loadData();
             // Cập nhật giá trị của các biến với dữ liệu mới
             ten.value = form.ten;
             email.value = form.email;
@@ -178,9 +179,9 @@ function onFileInputImage(event) {
                                 <InputText id="sdt" v-model.trim="sdt" required="true" autofocus :class="{ 'p-invalid': sdtError }" />
                                 <small class="p-error">{{ sdtError }}</small>
                             </div>
-                            <div class="flex">
+                            <div class="s" style="display: flex;">
                                 <label>Giới tính: </label>
-                                <div class="flex flex-wrap gap-3" style="margin-left: 120px; margin-bottom: 20px">
+                                <div class="flex flex-wrap gap-3" style=" margin-left: 120px; margin-bottom: 20px">
                                     <div class="flex align-items-center">
                                         <RadioButton id="nam" value="1" v-model.trim="gioiTinh" />
                                         <label for="nam" class="ml-2">Nam</label>
@@ -219,7 +220,7 @@ function onFileInputImage(event) {
                         </div>
                     </div>
                     <div class="item" style="margin-left: 500px">
-                        <Button label="Update" icon="pi pi-check" size="small" @click="updateProduct" />
+                        <Button label="Sửa" icon="pi pi-check" size="small" @click="updateProduct" />
                     </div>
                 </form>
             </div>

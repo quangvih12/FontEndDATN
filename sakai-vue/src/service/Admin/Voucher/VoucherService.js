@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia';
 import axios from '@/service/Authentication/http.js';
 
-const apiVoucher = 'http://localhost:8080/api/admin/voucher';
-const apiUserVoucher = 'http://localhost:8080/api/admin/user-voucher';
-const apiUser = 'http://localhost:8080/api/admin/user';
+const apiVoucher = `${import.meta.env.VITE_BASE_API_ENDPOINT}/admin/voucher`;
+const apiUserVoucher = `${import.meta.env.VITE_BASE_API_ENDPOINT}/admin/user-voucher`;
+const apiUser = `${import.meta.env.VITE_BASE_API_ENDPOINT}/admin/user`;
 
 export const voucherStore = defineStore('voucher', {
     state: () => ({

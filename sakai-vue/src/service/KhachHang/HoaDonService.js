@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
-const api = 'http://localhost:8080/api/khach-hang/checkout';
+const api = `${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/checkout`;
 
 export const checkoutStore = defineStore('checkOut', {
     state: () => ({

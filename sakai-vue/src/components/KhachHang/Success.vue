@@ -24,10 +24,14 @@ import { Client } from '@stomp/stompjs';
 import { ref, onMounted } from 'vue';
 import { checkoutStore } from '@/service/KhachHang/HoaDonService.js';
 import { useRouter } from 'vue-router';
+import { gioHangStore } from '../../service/KhachHang/Giohang/GiohangCTService';
+
 const router = useRouter();
 const checkoutService = checkoutStore();
 const dataHoaDon = ref([]);
+const gioHangService = gioHangStore();
 onMounted(async () => {
+    const token = localStorage.getItem('token');
     const storedFormString = localStorage.getItem('myForm');
     const storedForm = JSON.parse(storedFormString);
     localStorage.removeItem('gioHang');
@@ -37,11 +41,16 @@ onMounted(async () => {
         dataHoaDon.value = checkoutService.checkOut;
         sendMessage();
     }
+    demSLGH(token);
 });
+
+const demSLGH = async (token) => {
+    await gioHangService.countGHCT(token);
+};
 const stompClient = ref(null);
 const openSocketConnection = () => {
     stompClient.value = new Client({
-        brokerURL: 'ws://localhost:8080/ws'
+        brokerURL: `${import.meta.env.VITE_BASE_WEBSOCKET_ENDPOINT}/ws`
     });
 
     stompClient.value.activate();

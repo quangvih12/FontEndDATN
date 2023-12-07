@@ -7,7 +7,7 @@ import axios from 'axios';
 //   }),
 //   actions: {
 //        async getUserByUsername(username){
-//           const response = await axios.get(`http://localhost:8080/api/khach-hang/user?username=${username}`)
+//           const response = await axios.get(`${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/user?username=${username}`)
 //           this.data  =  response.data;
 //        }
 
@@ -16,12 +16,12 @@ import axios from 'axios';
 
 class UserService {
     async getUserByUsername(username) {
-        const response = await axios.get(`http://localhost:8080/api/khach-hang/user?username=${username}`);
+        const response = await axios.get(`${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/user?username=${username}`);
         return response.data;
     }
 
     async getUserByEmail(email) {
-        const response = await axios.get(`http://localhost:8080/api/khach-hang/user/find-email?email=${email}`);
+        const response = await axios.get(`${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/user/find-email?email=${email}`);
         return response.data;
     }
 }

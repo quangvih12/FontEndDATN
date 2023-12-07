@@ -6,7 +6,7 @@ import AppMenuItem from './AppMenuItem.vue';
 const model = ref([
 {
         label: 'Bán Hàng tại quầy',
-        items: [{ label: 'Bán Hàng', icon: 'pi pi-fw pi-home', to: '/ban-hang-tai-quay' }]
+        items: [{ label: 'Bán Hàng', icon: 'pi pi-fw pi-home', to: { name: 'ban-hang' } }]
     },
     {
         label: 'Thống Kê',
@@ -59,9 +59,9 @@ const model = ref([
         ]
     },
     {
-        label: 'Vocher - Khuyễn Mãi',
+        label: 'Vocher - Khuyễn Mại',
         items: [{
-            label: 'Quản lý Khuyến Mãi',
+            label: 'Quản lý Khuyến Mại',
             icon: 'pi pi-fw pi-circle-off',
             to: { name: 'khuyen-mai' }
         },
@@ -85,6 +85,15 @@ const model = ref([
             label: 'Hóa Đơn',
             icon: 'pi pi-fw pi-circle-off',
             to: { name: 'hoa-don' }
+        },]
+    },
+
+    {
+        label: 'Chat',
+        items: [{
+            label: 'Chat',
+            icon: 'pi pi-fw pi-circle-off',
+            to: { name: 'chat-admin' }
         },]
     },
 

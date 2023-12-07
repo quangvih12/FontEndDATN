@@ -1,7 +1,9 @@
 <script setup>
-import {computed, onBeforeMount, onMounted} from "vue";
+import {computed, onBeforeMount, onMounted,ref} from "vue";
 import {register, VueAdvancedChat} from "vue-advanced-chat";
 import {useChatStore} from "../../../service/Admin/Chat/ChatService";
+import {verifyJwt} from "../../../service/common/JwtUtils";
+
 
 const store = useChatStore();
 const rooms = computed(() => store.rooms);
@@ -9,7 +11,7 @@ const roomsLoaded = computed(() => store.roomsLoaded);
 const loadingRooms = computed(() => store.loadingRooms);
 const messages = computed(() => store.messages);
 const messagesLoaded = computed(() => store.messagesLoaded);
-const currentUsername = computed(() => store.currentUsername);
+const currentUsername = ref(null);
 
 register();
 
@@ -38,7 +40,7 @@ const props = defineProps({
 });
 
 const fetchMessages = async (event) => {
-  console.log("log");
+  //console.log("log");
   await store.fetchMessages(event);
 }
 
@@ -47,9 +49,19 @@ const sendMessages = async (event) => {
 }
 
 onBeforeMount(async () => {
-  console.log("on before mount");
-  await store.setup(currentUsername.value);
+ 
+  const token = localStorage.getItem('token');
+  
+  if (token) {
+  const payloadData = await verifyJwt(token);
+  currentUsername.value = payloadData.sub;
+  await store.setup(payloadData.sub, payloadData.id);
+
+}
+ 
 });
+
+
 </script>
 
 <template>
@@ -66,12 +78,15 @@ onBeforeMount(async () => {
                      :show-add-room="false"
                      :show-files="false"
                      :show-audio="false"
-                     :show-emojis="false"
+                      :show-emojis="false"
                      :show-reaction-emojis="false"
-                     :messages="messages"
-                     :rooms="rooms"
+                   
+                     .messages="messages"  .rooms="rooms"
+                    
                      @fetch-messages="fetchMessages($event.detail[0])"
                      @send-message="sendMessages($event.detail[0])"/>
 </template>
 
+
+<!--    -->
 <style scoped></style>

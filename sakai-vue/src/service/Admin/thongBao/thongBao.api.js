@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import axios from '@/service/Authentication/http.js';
 
-const api = 'http://localhost:8080/api/admin/thong-bao';
+const api = `${import.meta.env.VITE_BASE_API_ENDPOINT}/admin/thong-bao`;
 
 export const ThongBaoStore = defineStore('thongbao', {
     state: () => ({

@@ -157,8 +157,8 @@ const onQuanHuyenChange = async () => {
             </template>
         </Dialog>
         <template #footer>
-            <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="hideDialog" />
-            <Button label="Save" icon="pi pi-check" class="p-button-text" @click="saveProduct" />
+            <Button label="Thoát" icon="pi pi-times" class="p-button-text" @click="hideDialog" />
+            <Button label="Lưu" icon="pi pi-check" class="p-button-text" @click="saveProduct" />
         </template>
     </Dialog>
     <!-- </div>

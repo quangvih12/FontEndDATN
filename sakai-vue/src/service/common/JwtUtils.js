@@ -1,6 +1,6 @@
 import * as jose from "jose";
 
-const jwtSecretKey = import.meta.env.VITE_JWT_SECRET_KEY;
+const jwtSecretKey = await import.meta.env.VITE_JWT_SECRET_KEY;
 export const verifyJwt = async (token) => {
     try {
         const key = await jose.importJWK({

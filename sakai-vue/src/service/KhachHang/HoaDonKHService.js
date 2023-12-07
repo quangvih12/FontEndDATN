@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
-const apiHD = 'http://localhost:8080/api/khach-hang/hoa-don';
-const apiHDCT = 'http://localhost:8080/api/khach-hang/hoa-don-chi-tiet';
+const apiHD = `${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/hoa-don`;
+const apiHDCT = `${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/hoa-don-chi-tiet`;
 
 export const HDKHStore = defineStore('hoaDonKH', {
     state: () => ({

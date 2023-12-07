@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
-const apiComment = 'http://localhost:8080/api/khach-hang/comment';
+const apiComment = `${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/comment`;
 
 export const commentStore = defineStore('comment',{
     state: () => ({     
@@ -55,7 +55,7 @@ export const commentStore = defineStore('comment',{
         },
         async findByToken(token) {
             try {
-                const response = await axios.get(`http://localhost:8080/api/khach-hang/user/find-by-token?token=` + token);         
+                const response = await axios.get(`${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/user/find-by-token?token=` + token);         
                 this.user = response.data;
              
             } catch (error) {

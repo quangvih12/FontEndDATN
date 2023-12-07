@@ -24,7 +24,7 @@ const toast = useToast();
 
 
 const gotoTrangChu = () => {
-    router.push({ name: 'ban-hang-tai-quay' });
+    router.push({ name: 'admin' });
 };
 
 
@@ -46,15 +46,18 @@ const dangNhapa = handleSubmit(async () => {
     };
     const data = await dnService.dangNhap(login);
 
-    if (data.accessToken == null || data.accessToken.length <= 0) {
+    if (data == null || data === undefined|| data.length <= 0 ) {
         toast.add({ severity: 'error', summary: 'Thông báo', detail: 'Sai tài khoản hoặc mật khẩu', life: 3000 });
     } else {
+       
         localStorage.setItem('token', data.accessToken);
         localStorage.setItem('currentUserInformation', JSON.stringify({
           id: data.userID,
           username: data.usernameOrEmail,
         }));
-        await router.push({ name: 'admin' });
+      
+        gotoTrangChu();
+      
     }
 });
 

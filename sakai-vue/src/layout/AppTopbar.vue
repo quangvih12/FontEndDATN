@@ -33,7 +33,7 @@ const stompClient = ref(null);
 
 const openSocketConnection = () => {
     stompClient.value = new Client({
-        brokerURL: 'ws://localhost:8080/ws',
+        brokerURL: `${import.meta.env.VITE_BASE_WEBSOCKET_ENDPOINT}/ws`,
         onConnect: async () => {
             // findUserByToken();
             // const token = localStorage.getItem('token');
@@ -181,6 +181,7 @@ const toggle = (event) => {
 const dangXuat = () => {
   router.push({ name: 'login-admin' });
     localStorage.removeItem('token');
+    localStorage.removeItem('currentUserInformation');
 };
 
 const dangNhap = () => {
