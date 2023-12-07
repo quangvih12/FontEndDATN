@@ -56,7 +56,7 @@ watch(lyDoDialog, (newVal) => {
 const loadData = async () => {
     await useHD.fetchDataByStatus(2);
     data.value = useHD.dataChoXacNhan;
-    useHD.dataChoXacNhan =useHD.dataChoXacNhan;
+    useHD.dataChoXacNhan = useHD.dataChoXacNhan;
 };
 //chạy cái hiện data luôn
 onMounted(() => {
@@ -165,24 +165,23 @@ const searchDate = async () => {
     // }
 
     if (phuongThucThanhToan.value == 'tatCa' || phuongThucThanhToan.value == null) {
-        if (startDates == null || startDates.length <= 0 ||endDates == null ||endDates.length <= 0) {
+        if (startDates == null || startDates.length <= 0 || endDates == null || endDates.length <= 0) {
             loadData();
         } else if (typeSearchDate.value == null) {
-            const respone = await useHD.searchDateByTrangThai(startDates,endDates, 'ngayTao', 2);
+            const respone = await useHD.searchDateByTrangThai(startDates, endDates, 'ngayTao', 2);
             data.value = respone;
         } else {
-            const respone = await useHD.searchDateByTrangThai(startDates,endDates, typeSearchDate.value.value, 2);
+            const respone = await useHD.searchDateByTrangThai(startDates, endDates, typeSearchDate.value.value, 2);
             data.value = respone;
         }
     } else {
-        console.log('k tất cả');
-        if (startDates == null || startDates.length <= 0 ||endDates == null ||endDates.length <= 0) {
+        if (startDates == null || startDates.length <= 0 || endDates == null || endDates.length <= 0) {
             loadDataByPttt(parseInt(phuongThucThanhToan.value.value));
         } else if (typeSearchDate.value == null) {
-            const respone = await useHD.searchDateByTrangThaiAndPttt(startDates,endDates, 'ngayTao', 2, parseInt(phuongThucThanhToan.value.value));
+            const respone = await useHD.searchDateByTrangThaiAndPttt(startDates, endDates, 'ngayTao', 2, parseInt(phuongThucThanhToan.value.value));
             data.value = respone;
         } else {
-            const respone = await useHD.searchDateByTrangThaiAndPttt(startDates,endDates, typeSearchDate.value.value, 2, parseInt(phuongThucThanhToan.value.value));
+            const respone = await useHD.searchDateByTrangThaiAndPttt(startDates, endDates, typeSearchDate.value.value, 2, parseInt(phuongThucThanhToan.value.value));
             data.value = respone;
         }
     }
@@ -191,18 +190,15 @@ const resetSearch = () => {
     loadData();
     startDate.value = null;
     endDate.value = null;
-}
+    phuongThucThanhToan.value = null;
+};
 const selectedColumns = ref(null);
 
 const onToggle = (val) => {
     selectedColumns.value = columns.value.filter((col) => val.includes(col));
 };
 
-
-
 onBeforeMount(() => {
-  
-
     initFilters1();
 });
 
@@ -253,31 +249,26 @@ watch(phuongThucThanhToan, (newVal) => {
     <Toast />
     <div class="col-12 flex" style="padding-left: 10px">
         <Dropdown v-model="typeSearchDate" :options="dataSearchDate" optionLabel="label" placeholder="Ngày tạo" class="w-full md:w-12rem" style="height: 40px" />
-       
-        <div class="" style="margin-bottom: 0px; margin-left: 20px;">
-                            <span class="p-float-label">
-                                <Calendar id="calendar-24h" v-model="startDate" showTime hourFormat="12" />
-                                <label for="Field">Ngày bắt đầu</label>
-                            </span>
-                           
-                        </div>
-        <div class="" style="margin-bottom: 0px; margin-left: 20px;">
-                            <span class="p-float-label">
-                                <Calendar id="calendar-24h" v-model="endDate" showTime hourFormat="12" />
-                                <label for="Field">Ngày kết thúc</label>
-                            </span>
-                           
-                        </div>
-       
-        <div style="margin-left: 20px">
-            
-            <Button type="button"   @click="searchDate()" icon="pi pi-search"
-                            style="width: 50px; height: 40px;background: none;    color: black;"></Button>
-          
+
+        <div class="" style="margin-bottom: 0px; margin-left: 20px">
+            <span class="p-float-label">
+                <Calendar id="calendar-24h" v-model="startDate" showTime hourFormat="12" />
+                <label for="Field">Ngày bắt đầu</label>
+            </span>
         </div>
-        <Button type="button" label="Tháng" @click="resetSearch()"
-                            style="width: 50px; height: 40px;background: none;    color: black; margin-left: 20px;"> <i class="pi pi-replay"
-                                style="font-size: 1.8rem; margin-right: 00px; margin-left: -5px;"></i></Button>
+        <div class="" style="margin-bottom: 0px; margin-left: 20px">
+            <span class="p-float-label">
+                <Calendar id="calendar-24h" v-model="endDate" showTime hourFormat="12" />
+                <label for="Field">Ngày kết thúc</label>
+            </span>
+        </div>
+
+        <div style="margin-left: 20px">
+            <Button type="button" @click="searchDate()" icon="pi pi-search" style="width: 50px; height: 40px; background: none; color: black"></Button>
+        </div>
+        <Button type="button" label="Tháng" @click="resetSearch()" style="width: 50px; height: 40px; background: none; color: black; margin-left: 20px">
+            <i class="pi pi-replay" style="font-size: 1.8rem; margin-right: 00px; margin-left: -5px"></i
+        ></Button>
     </div>
     <DataTable
         ref="dt"
@@ -305,13 +296,10 @@ watch(phuongThucThanhToan, (newVal) => {
             </div>
         </template>
         <template #empty>
-            <div class="flex flex-column justify-content-center align-items-center" style="height: 300px;">
-                <svg width="100px" height="100px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#000000"
-                    class="bi bi-file-earmark-x">
-                    <path
-                        d="M6.854 7.146a.5.5 0 1 0-.708.708L7.293 9l-1.147 1.146a.5.5 0 0 0 .708.708L8 9.707l1.146 1.147a.5.5 0 0 0 .708-.708L8.707 9l1.147-1.146a.5.5 0 0 0-.708-.708L8 8.293 6.854 7.146z" />
-                    <path
-                        d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+            <div class="flex flex-column justify-content-center align-items-center" style="height: 300px">
+                <svg width="100px" height="100px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#000000" class="bi bi-file-earmark-x">
+                    <path d="M6.854 7.146a.5.5 0 1 0-.708.708L7.293 9l-1.147 1.146a.5.5 0 0 0 .708.708L8 9.707l1.146 1.147a.5.5 0 0 0 .708-.708L8.707 9l1.147-1.146a.5.5 0 0 0-.708-.708L8 8.293 6.854 7.146z" />
+                    <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
                 </svg>
                 <h6>Không có dữ liệu.</h6>
             </div>
@@ -338,8 +326,7 @@ watch(phuongThucThanhToan, (newVal) => {
             <template #body="slotProps">
                 <span class="p-column-title">tongTien</span>
 
-                {{ formatCurrency(slotProps.data.tienSauKhiGiam==null?parseInt(slotProps.data.tongTien)+parseInt(slotProps.data.tienShip == null ? 0:slotProps.data.tienShip): slotProps.data.tienSauKhiGiam) }}
-
+                {{ formatCurrency(slotProps.data.tienSauKhiGiam == null ? parseInt(slotProps.data.tongTien) + parseInt(slotProps.data.tienShip == null ? 0 : slotProps.data.tienShip) : slotProps.data.tienSauKhiGiam) }}
             </template>
         </Column>
         <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;">
