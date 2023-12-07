@@ -504,7 +504,10 @@ const menu = ref();
                             >
                             <div class="gb" style="display: flex">
                                 <h2 s v-if="dataListSPCT.soLuongTon > 0 || dataListSPCT.soLuongTon == null">
-                                    <p tyle="color: rgb(0, 0, 0)" style="text-decoration: line-through;">{{ formatCurrency(dataListSPCT.giaBan) !== '' ? formatCurrency(dataListSPCT.giaBan) : 'Hết hàng' }}</p>
+                                    <!-- <p tyle="color: rgb(0, 0, 0)">{{ formatCurrency(dataListSPCT.giaBan) !== '' ? formatCurrency(dataListSPCT.giaBan) : 'Hết hàng' }}</p> -->
+                                    <p tyle="color: rgb(0, 0, 0)" style="text-decoration: line-through" v-if="dataListSPCT.tenKM !== null && dataListSPCT.tenKM !== undefined">{{ formatCurrency(dataListSPCT.giaBan) }}</p>
+                                    <p tyle="color: rgb(0, 0, 0)" v-else-if="formatCurrency(dataListSPCT.giaBan) !== ''">{{ formatCurrency(dataListSPCT.giaBan) }}</p>
+                                    <p tyle="color: rgb(0, 0, 0)" v-else>Hết hàng</p>
                                 </h2>
                                 <p style="color: red; font-size: 25px" v-else>Hết hàng</p>
                                 <div>

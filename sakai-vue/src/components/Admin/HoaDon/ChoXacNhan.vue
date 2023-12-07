@@ -175,7 +175,6 @@ const searchDate = async () => {
             data.value = respone;
         }
     } else {
-        console.log('k tất cả');
         if (startDates == null || startDates.length <= 0 || endDates == null || endDates.length <= 0) {
             loadDataByPttt(parseInt(phuongThucThanhToan.value.value));
         } else if (typeSearchDate.value == null) {
