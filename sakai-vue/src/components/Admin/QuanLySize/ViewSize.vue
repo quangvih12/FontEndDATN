@@ -1,7 +1,6 @@
 <script setup>
 import { FilterMatchMode } from 'primevue/api';
 import { ref, onMounted, onBeforeMount, watch } from 'vue';
-import ProductService from '@/service/ProductService';
 import { useToast } from 'primevue/usetoast';
 import ThemSize from './ThemSize.vue';
 import DetailSize from './DetailSize.vue';

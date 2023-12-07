@@ -75,7 +75,7 @@ export const login = async (usernames, userIds) => {
     };
  
     const session = await chatkitty.startSession(form);
-  //  console.log(session);
+//   console.log(session);
 };
 
 export const logout = async () => {
