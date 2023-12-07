@@ -70,16 +70,18 @@ const router = createRouter({
                     beforeEnter: authMiddleware.requireAuth
                 },
                 {
-                    path: 'trang-thai-don-hang',
+                    path: 'trang-thai-don-hang/:id',
                     name: 'trang-thai-don-hang',
+                    component: () => import('@/components/KhachHang/LichSuSP/TrangThaiDonHang.vue'),
                     beforeEnter: authMiddleware.requireAuth,
-                    children: [
-                        {
-                            path: ':id',
-                            props: true,
-                            component: () => import('@/components/KhachHang/LichSuSP/TrangThaiDonHang.vue')
-                        }
-                    ]
+                    
+                    // children: [
+                    //     {
+                    //         path: ':id',
+                    //         props: true,
+                    //         component: () => import('@/components/KhachHang/LichSuSP/TrangThaiDonHang.vue')
+                    //     }
+                    // ]
                 },
                 {
                     path: 'dia-chi',

@@ -293,11 +293,23 @@ watch(phuongThucThanhToan, (newVal) => {
                 {{ slotProps.data.tenNguoiNhan }}
             </template>
         </Column>
+        <Column field="sdt" header="Số Điện thoại" :sortable="true" headerStyle="width:10%; min-width:10rem;">
+            <template #body="slotProps">
+                <span class="p-column-title">số điện thoại</span>
+                {{ slotProps.data.sdt }}
+            </template>
+        </Column>
         <Column field="tongTien" header="Tổng tiền" :sortable="true" headerStyle="width:10%; min-width:9rem;">
             <template #body="slotProps">
                 <span class="p-column-title">tongTien</span>
 
                 {{ formatCurrency(slotProps.data.tienSauKhiGiam == null ? parseInt(slotProps.data.tongTien) + parseInt(slotProps.data.tienShip == null ? 0 : slotProps.data.tienShip) : slotProps.data.tienSauKhiGiam) }}
+            </template>
+        </Column>
+        <Column field="tienShip" header="Tiền ship" :sortable="true" headerStyle="width:10%; min-width:9rem;">
+            <template #body="slotProps">
+                <span class="p-column-title">tongTien</span>
+                {{ formatCurrency(slotProps.data.tienShip) }}
             </template>
         </Column>
         <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;">
