@@ -22,7 +22,7 @@ class TokenService {
     }
 
     async createAccountGoogle(email, name, anh) {
-        const response = await axios.post(`http://localhost:8080/api/khach-hang/user/createAccountGG/` + email + '?username=' + name + '&anh=' + anh);
+        const response = await axios.post(`${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/user/createAccountGG/` + email + '?username=' + name + '&anh=' + anh);
         return response.data;
     }
 
