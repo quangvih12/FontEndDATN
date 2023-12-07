@@ -105,7 +105,7 @@ const updateProduct = () => {
             productDialog.value = false;
             toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Sửa thành công', life: 3000 });
             reset();
-            loadData();
+       //     loadData();
             // Cập nhật giá trị của các biến với dữ liệu mới
             ten.value = form.ten;
             email.value = form.email;
