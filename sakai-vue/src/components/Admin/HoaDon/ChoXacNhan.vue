@@ -57,6 +57,7 @@ const loadData = async () => {
     await useHD.fetchDataByStatus(2);
     data.value = useHD.dataChoXacNhan;
     useHD.dataChoXacNhan = useHD.dataChoXacNhan;
+
 };
 //chạy cái hiện data luôn
 onMounted(() => {

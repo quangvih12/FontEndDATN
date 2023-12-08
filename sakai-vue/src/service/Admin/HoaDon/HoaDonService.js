@@ -42,8 +42,8 @@ export const HDStore = defineStore('hoaDon', {
             });
         },
         //từ chờ đang chuẩn bị -> đang giao
-        dangChuanBi(id, ngayShip, maGHN) {
-            axios.put(apiHD + '/XacNhanGiaoHang/' + id + '?ngayShip=' + ngayShip + '&maGHN' + maGHN).then((response) => {
+        dangChuanBi(id, ngayShip,tongTien,tienShip) {
+            axios.put(apiHD + '/XacNhanGiaoHang/' + id + '?ngayShip=' + ngayShip  +`&tongTien=`+tongTien+`&tienShip=`+tienShip).then((response) => {
                 if (this.check == 1) {
                     if (this.dataChoXacNhan[0].trangThai == '2') {
                         let index = -1;

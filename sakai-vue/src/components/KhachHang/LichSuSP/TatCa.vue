@@ -25,7 +25,7 @@ const loadData = async () => {
     if (token.length > 0 || token != null) {
         await useHD.fetchData(token);
         data.value = useHD.dataAll;
-        console.log(data.value)
+      //  console.log(data.value)
     }
 };
 

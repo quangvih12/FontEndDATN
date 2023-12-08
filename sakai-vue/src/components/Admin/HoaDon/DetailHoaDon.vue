@@ -70,7 +70,7 @@ const loadDataHDCT = async (idHD) => {
 };
 
 const tinhTongTien = (tienShip, tongTien, tienSauGiam,idVoucher) => {
-    if (idVoucher === '' || idVoucher === null) {
+    if (idVoucher === '' || idVoucher === null  || idVoucher === undefined) {
         return parseInt(tongTien) + parseInt(tienShip);
     } else {
         return parseInt(tienSauGiam);
@@ -529,8 +529,8 @@ const btnXacNhanHuyGH = () => {
             <span>Bạn có chắc chắn muốn xác nhận không ?</span>
         </div>
         <template #footer>
-            <Button label="No" icon="pi pi-times" class="p-button-text" @click="addProductDialogDoiTra = false" />
-            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhanDoiTra()" />
+            <Button label="Không" icon="pi pi-times" class="p-button-text" @click="addProductDialogDoiTra = false" />
+            <Button label="Có" icon="pi pi-check" class="p-button-text" @click="btnXacNhanDoiTra()" />
         </template>
     </Dialog>
     <Dialog v-model:visible="lyDoDialogDoiTra" :style="{ width: '450px' }" header="Huỷ hoá đơn" :modal="true">
@@ -546,8 +546,8 @@ const btnXacNhanHuyGH = () => {
             </form>
         </div>
         <template #footer>
-            <Button label="No" icon="pi pi-times" class="p-button-text" @click="lyDoDialogDoiTra = false" />
-            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="confirmHuyDoiTra" />
+            <Button label="Không" icon="pi pi-times" class="p-button-text" @click="lyDoDialogDoiTra = false" />
+            <Button label="Có" icon="pi pi-check" class="p-button-text" @click="confirmHuyDoiTra" />
         </template>
     </Dialog>
     <!-- comfirm huỷ -->
@@ -557,8 +557,8 @@ const btnXacNhanHuyGH = () => {
             <span>Bạn có chắc chắn muốn huỷ không ?</span>
         </div>
         <template #footer>
-            <Button label="No" icon="pi pi-times" class="p-button-text" @click="huyDialogDoiTra = false" />
-            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhanHuyDoiTra()" />
+            <Button label="Không" icon="pi pi-times" class="p-button-text" @click="huyDialogDoiTra = false" />
+            <Button label="Có" icon="pi pi-check" class="p-button-text" @click="btnXacNhanHuyDoiTra()" />
         </template>
     </Dialog>
 
@@ -569,8 +569,8 @@ const btnXacNhanHuyGH = () => {
             <span>Bạn có muốn cộng lại số lượng cho sản phẩm không ?</span>
         </div>
         <template #footer>
-            <Button label="No" icon="pi pi-times" class="p-button-text" @click="btnHoanThanhDoiTraKhongCongSoLuong()" />
-            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhanXNDoiTra()" />
+            <Button label="Không" icon="pi pi-times" class="p-button-text" @click="btnHoanThanhDoiTraKhongCongSoLuong()" />
+            <Button label="Có" icon="pi pi-check" class="p-button-text" @click="btnXacNhanXNDoiTra()" />
         </template>
     </Dialog>
     <Dialog v-model:visible="lyDoDialogXNDoiTra" :style="{ width: '450px' }" header="Huỷ hoá đơn" :modal="true">
@@ -586,8 +586,8 @@ const btnXacNhanHuyGH = () => {
             </form>
         </div>
         <template #footer>
-            <Button label="No" icon="pi pi-times" class="p-button-text" @click="lyDoDialogXNDoiTra = false" />
-            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="confirmHuyXNDoiTra" />
+            <Button label="Không" icon="pi pi-times" class="p-button-text" @click="lyDoDialogXNDoiTra = false" />
+            <Button label="Có" icon="pi pi-check" class="p-button-text" @click="confirmHuyXNDoiTra" />
         </template>
     </Dialog>
     <!-- comfirm huỷ -->
@@ -597,8 +597,8 @@ const btnXacNhanHuyGH = () => {
             <span>Bạn có chắc chắn muốn huỷ không ?</span>
         </div>
         <template #footer>
-            <Button label="No" icon="pi pi-times" class="p-button-text" @click="huyDialogXNDoiTra = false" />
-            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhanHuyXNDoiTra()" />
+            <Button label="Không" icon="pi pi-times" class="p-button-text" @click="huyDialogXNDoiTra = false" />
+            <Button label="Có" icon="pi pi-check" class="p-button-text" @click="btnXacNhanHuyXNDoiTra()" />
         </template>
     </Dialog>
     <!-- màn giao hàng -->
@@ -608,8 +608,8 @@ const btnXacNhanHuyGH = () => {
             <span>Bạn có chắc chắn muốn hoàn thành không ?</span>
         </div>
         <template #footer>
-            <Button label="No" icon="pi pi-times" class="p-button-text" @click="addProductDialogGH = false" />
-            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhanGH()" />
+            <Button label="Không" icon="pi pi-times" class="p-button-text" @click="addProductDialogGH = false" />
+            <Button label="Có" icon="pi pi-check" class="p-button-text" @click="btnXacNhanGH()" />
         </template>
     </Dialog>
     <!-- comfirm huỷ -->
@@ -619,8 +619,8 @@ const btnXacNhanHuyGH = () => {
             <span>Bạn có chắc chắn đơn hàng đã giao thất bại không ?</span>
         </div>
         <template #footer>
-            <Button label="No" icon="pi pi-times" class="p-button-text" @click="huyDialogGH = false" />
-            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhanHuyGH()" />
+            <Button label="Không" icon="pi pi-times" class="p-button-text" @click="huyDialogGH = false" />
+            <Button label="Có" icon="pi pi-check" class="p-button-text" @click="btnXacNhanHuyGH()" />
         </template>
     </Dialog>
 </template>
