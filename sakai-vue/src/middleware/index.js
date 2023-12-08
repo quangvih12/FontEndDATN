@@ -1,5 +1,6 @@
 import {verifyJwt} from "@/service/common/JwtUtils";
 
+
 export const authMiddleware = {
     isAuthSkippable: async (to, from, next) => {
         const token = localStorage.getItem('token');
@@ -30,4 +31,5 @@ export const authMiddleware = {
             } else next({name: 'login-admin'});
         } else next({name: 'login-admin'});
     }
+
 }
