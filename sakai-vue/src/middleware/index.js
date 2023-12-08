@@ -1,18 +1,35 @@
 import {verifyJwt} from "@/service/common/JwtUtils";
 
-const token = localStorage.getItem('token');
-const payloadData = token ? await verifyJwt(token) : null;
 
-export const requireAuth = async (to, from, next) => {
-    console.log(to);
-    if (payloadData) await next();
-    else await next({ name: 'login' });
-}
+export const authMiddleware = {
+    isAuthSkippable: async (to, from, next) => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            const payloadData = await verifyJwt(token);
+            if (payloadData) {
+                if (payloadData.role === 'USER') next({name: 'trang-chu'});
+                else next({name: 'admin'});
+            }
+            else next();
+        } else next();
+    },
+    requireAuth: async (to, from, next) => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            const payloadData = await verifyJwt(token);
+            if (payloadData) next();
+            else next({name: 'login'});
+        } else next({name: 'login'});
+    },
+    requireAdmin: async (to, from, next) => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            const payloadData = await verifyJwt(token);
+            if (payloadData) {
+                if (payloadData.role === "ADMIN") next();
+                else next({name: 'unauthorized'});
+            } else next({name: 'login-admin'});
+        } else next({name: 'login-admin'});
+    }
 
-export const requireAdmin = async (to, from, next) => {
-   // console.log(to);
-    if (payloadData) {
-        if (payloadData.role === "ADMIN") await next();
-        else await next({ name: 'unauthorized' });
-    } else await next({ name: 'login-admin' });
 }
