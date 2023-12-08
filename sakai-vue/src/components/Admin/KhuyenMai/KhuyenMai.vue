@@ -1,7 +1,8 @@
 <script setup>
+import { FilterMatchMode} from 'primevue/api';
 import { format } from 'date-fns';
 import { ref, onMounted,  onBeforeMount,computed } from 'vue';
-import { FilterMatchMode, FilterOperator } from 'primevue/api';
+
 import { khuyenMaiStore } from '@/service/Admin/KhuyenMai/KhuyenMaiService.js';
 import { useToast } from 'primevue/usetoast';
 import AddKhuyenMai from './AddKhuyenMai.vue';
@@ -22,21 +23,35 @@ const selectedStatus = ref(null);
 const expandedRows = ref([]);
 const khuyenmaiService = khuyenMaiStore();
 
+
+onBeforeMount(() => {
+    initFilters();
+});
+
+
 onMounted(() => {
     loadDataKhuyenmai();
 });
+
+
+const initFilters = () => {
+    filters.value = {
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS }
+    };
+};
+
 
 const loadDataKhuyenmai = async () => {
     await khuyenmaiService.getKhuyenMai();
     khuyenmais.value = khuyenmaiService.data;
 };
 
-const initFilters1 = () => {
-    filters.value = {
-        date: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }] },
-        trangThai: { operator: FilterOperator.OR, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] }
-    };
-};
+// const initFilters1 = () => {
+//     filters.value = {
+//         date: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }] },
+//         trangThai: { operator: FilterOperator.OR, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] }
+//     };
+// };
 
 const statuses = ref([
     { label: 'Còn hạn', value: 0 },
@@ -74,7 +89,6 @@ const deleteKhuyenMai = () => {
     deleteKhuyenMaiDialog.value = false;
 };
 
-initFilters1();
 
 // dùng để lọc khuyến mại theo trạng thái trên CBB
 const filteredVoucher = computed(() => {
@@ -115,11 +129,7 @@ const formatDate = (dateTime) => {
     }
 };
 
-const initFilters = () => {
-    filters.value = {
-        global: { value: null, matchMode: FilterMatchMode.CONTAINS }
-    };
-};
+
 
 const position = ref('center');
 const visible = ref(false);
@@ -266,14 +276,14 @@ const handImportExcel = async (event) => {
                     </template>
                 </Toolbar>
 
-                <DataTable v-model:filters="filters" v-model:selection="selectedKhuyenMai"
-                    v-model:expandedRows="expandedRows" :value="filteredVoucher" :columns="visibleColumns" :paginator="true"
+                <DataTable :value="filteredVoucher" v-model:selection="selectedKhuyenMai"
+                    v-model:expandedRows="expandedRows" :columns="visibleColumns" :paginator="true"
                     :rows="5" filterDisplay="menu"
                     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                     :rowsPerPageOptions="[5, 10, 25]"
                     :filters="filters"
                     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
-                    responsiveLayout="scroll" :globalFilterFields="['thoiGianBatDau', 'thoiGianKetThuc', 'trangThai']">
+                    responsiveLayout="scroll" >
                     <template #header>
                         <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                             <MultiSelect icon="pi pi-plus" placeholder="Select Columns" :modelValue="selectedColumns"
@@ -287,7 +297,7 @@ const handImportExcel = async (event) => {
                             </Dropdown>
                             <span class="block mt-2 md:mt-0 p-input-icon-left">
                                 <i class="pi pi-search" />
-                                <InputText placeholder="Search..." />
+                                <InputText v-model="filters['global'].value" placeholder="Search..." />
                             </span>
                         </div>
                     </template>

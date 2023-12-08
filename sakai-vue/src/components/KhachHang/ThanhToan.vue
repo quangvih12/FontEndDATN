@@ -13,6 +13,7 @@ import userKHService from '@/service/KhachHang/UserService.js';
 import AddDiaChi from '@/components/KhachHang/DiaChiKhachHang/Add.vue';
 import UpdateDiaChi from '@/components/KhachHang/DiaChiKhachHang/Update.vue';
 import { vnpayStore } from '@/service/KhachHang/PaymentService.js';
+import { useThongTin } from '@/service/KhachHang/ThongTinCaNhanService.js';
 import { useToast } from 'primevue/usetoast';
 import { format } from 'date-fns';
 import { Client } from '@stomp/stompjs';
@@ -24,6 +25,7 @@ const toast = useToast();
 const router = useRouter();
 const gioHangService = gioHangStore();
 const checkoutService = checkoutStore();
+const thongTinCaNhanService = useThongTin();
 const store = useCartStore();
 const voucherService = voucherStore();
 const userVoucherService = uservoucherStore();
@@ -41,6 +43,8 @@ const phiShip = ref();
 const dataVoucher = ref([]);
 const phuongThucThanhToan = ref(2);
 const productDialog = ref(false);
+const updateSDTDialog = ref(false);
+const sdt = ref(null);
 // const selectedProducts = ref([]);
 // const tongTien = ref(0);
 const cities = ref([
@@ -107,7 +111,7 @@ watch(diaChiMacDinh, async (newVal) => {
 const loadUser = async () => {
     const token = localStorage.getItem('token');
     await diaChiService.findDiaChiByIdUserAndTrangThai(token);
-    // diaChiMacDinh.value = diaChiService.diaChiMacDinh;
+    //diaChiMacDinh.value = diaChiService.diaChiMacDinh;
 
     if (diaChiMacDinh.value == '' || diaChiMacDinh.value == null) {
         phiShip.value = -1;
@@ -155,9 +159,12 @@ const thanhtoan = async () => {
 
     const user = await userKHService.getUserByUsername(userName);
 
-    // if( selectedVoucher.value.id != null && selectedVoucher.value.id !==''){
-    //     await userVoucherService.getUserVoucher(user.id, selectedVoucher.value.id);
-    // }
+    if(user.sdt == null) {
+    
+        updateSDTDialog.value = true;
+        return;
+    }
+
 
     const forms = dataGHCT.value.map((item) => {
         return {
@@ -291,8 +298,36 @@ const loadDiaChi = async () => {
 
     }
 };
+
+
+const updateSDT = async (id) => {
+   
+    await thongTinCaNhanService.updatesdt(id, sdt.value)
+    diaChiMacDinh.value.user.sdt = sdt.value;
+    toast.add({ severity: 'success', summary: '', detail: 'Cập nhật số điện thoại thành công', life: 3000 });
+    updateSDTDialog.value = false;
+
+}
+
+const touched = ref(false);
+
+const handleInput = () => {
+  touched.value = true;
+};
+
+const isValidPhoneNumber = computed(() => {
+  // Kiểm tra xem 'sdt' có phải là số điện thoại hợp lệ không
+  const phoneNumberRegex = /^0\d{9}$/;
+  return phoneNumberRegex.test(sdt.value);
+});
+
+const showError = computed(() => {
+  // Chỉ hiển thị lỗi khi 'sdt' không hợp lệ và đã được chạm vào ít nhất một lần
+  return touched.value && !isValidPhoneNumber.value;
+});
 </script>
 <template>
+    
     <div class="card">
         <div class="grid">
             <div class="flex">
@@ -566,6 +601,23 @@ const loadDiaChi = async () => {
                 <Divider />
             </div>
         </div>
+    </Dialog>
+
+
+    <Dialog v-model:visible="updateSDTDialog" :style="{ width: '450px' }" header="Tài khoản chưa có số điện thoại. Vui lòng cập nhật số điện thoại!" :modal="true">
+        <div class="flex align-items-center justify-content-center">
+          
+            <!-- <span class="p-float-label">
+                <InputText id="Số điện thoại" v-model="value" />
+                <label for="số điện thoại">Số điện thoại</label>
+            </span> -->
+            <InputText v-model="sdt" type="text" size="small" placeholder="Số điện thoại" @input="handleInput" />
+            <p v-if="showError" style="color: red;">Số điện thoại không hợp lệ!</p>
+        </div>
+        <template #footer>
+            <Button label="Huỷ" icon="pi pi-times" class="p-button-text" @click="deleteDialog = false" />
+            <Button label="Cập nhật" icon="pi pi-check" class="p-button-text" @click="updateSDT(diaChiMacDinh?.user?.id)" />
+        </template>
     </Dialog>
 </template>
 
