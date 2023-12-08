@@ -70,7 +70,7 @@ const loadDataHDCT = async (idHD) => {
 };
 
 const tinhTongTien = (tienShip, tongTien, tienSauGiam,idVoucher) => {
-    if (idVoucher === '' || idVoucher === null) {
+    if (idVoucher === '' || idVoucher === null  || idVoucher === undefined) {
         return parseInt(tongTien) + parseInt(tienShip);
     } else {
         return parseInt(tienSauGiam);

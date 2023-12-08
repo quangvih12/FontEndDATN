@@ -39,9 +39,10 @@ const props = defineProps({
 });
 
 const tongTienThanhToan = ref(props.myProp.idVoucher != null ? parseInt(props.myProp.tienSauKhiGiam) : parseInt(props.myProp.tongTien) + parseInt(props.myProp.tienShip == null ? 0:props.myProp.tienShip));
-
+const tienShip = ref(props.myProp.tienShip == null ? 0:props.myProp.tienShip);
 const editProduct = () => {
     code.value = 'Hoá đơn: ' + props.myProp.maHD;
+    ship.value = 'nguoiNhan';
     productDialog.value = true;
     loadDataHDCT(props.myProp.idHD);
     ngayDat.value = props.myProp.ngayTao;
@@ -58,9 +59,11 @@ const ngayNhan = ref('');
 
 watch(ship, (newVal) => {
     if (ship.value === 'nguoiGui') {
+        tienShip.value = 0; 
         tongTienThanhToan.value = props.myProp.idVoucher === null ? parseInt(props.myProp.tongTien) : parseInt(props.myProp.tienSauKhiGiam) - parseInt(props.myProp.tienShip);
     } else {
-        tongTienThanhToan.value = props.myProp.idVoucher === null ? parseInt(props.myProp.tongTien) + parseInt(props.myProp.tienShip) : props.myProp.tienSauKhiGiam;
+        tienShip.value = props.myProp.tienShip;
+        tongTienThanhToan.value = props.myProp.idVoucher === null ?parseInt(props.myProp.tongTien) + parseInt(props.myProp.tienShip == null ? 0:props.myProp.tienShip) : props.myProp.tienSauKhiGiam;
     }
 });
 
@@ -75,7 +78,7 @@ watch(productDialog, (newVal) => {
 });
 
 onMounted(() => {
-    ship.value = 'nguoiNhan';
+    
     openSocketConnection();
 });
 
@@ -135,7 +138,7 @@ const btnXacNhan = () => {
         toast.add({ severity: 'error', summary: 'error', detail: 'Các kích thước phải lớn hơn 0', life: 3000 });
         addProductDialog.value = false;
     } else {
-        const responeDCB = useHD.dangChuanBi(idHD.value, ngayDuKienGiao.value);
+        const responeDCB = useHD.dangChuanBi(idHD.value, ngayDuKienGiao.value,tongTienThanhToan.value,tienShip.value);
         sendMessage();
         // giaoHangNhanh(idHD.value, responeDCB, formGHN);
         toast.add({ severity: 'success', summary: 'Thông báo', detail: 'Xác nhận thành công', life: 3000 });
@@ -340,9 +343,9 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
                                 </div>
                             </div>
                             <p>Tổng tiền các sản phẩm: {{ formatCurrency(props.myProp.tongTien) }}</p>
-                            <p>Phí vận chuyển: {{ formatCurrency(props.myProp.tienShip == null ? 0:props.myProp.tienShip) }}</p>
+                            <p>Phí vận chuyển: {{ formatCurrency(tienShip) }}</p>
                             <p>
-                                Tiền giảm: <span v-if="props.myProp.idVoucher !== null" style="color: red">- {{ formatCurrency(parseInt(props.myProp.tongTien) + parseInt(props.myProp.tienShip == null ? 0:props.myProp.tienShip) - parseInt(props.myProp.tienSauKhiGiam)) }}</span>
+                                Tiền giảm: <span v-if="props.myProp.idVoucher != null" style="color: red">- {{ formatCurrency(parseInt(props.myProp.tongTien) + parseInt(props.myProp.tienShip == null ? 0:props.myProp.tienShip) - parseInt(props.myProp.tienSauKhiGiam)) }}</span>
                                 <span v-else style="color: red"> 0</span>
                             </p>
                             <p>
@@ -361,8 +364,8 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
                 <span>Bạn có chắc chắn muốn nhận không ?</span>
             </div>
             <template #footer>
-                <Button label="No" icon="pi pi-times" class="p-button-text" @click="addProductDialog = false" />
-                <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhan()" />
+                <Button label="Không" icon="pi pi-times" class="p-button-text" @click="addProductDialog = false" />
+                <Button label="Có" icon="pi pi-check" class="p-button-text" @click="btnXacNhan()" />
             </template>
         </Dialog>
         <Dialog v-model:visible="lyDoDialog" :style="{ width: '450px' }" header="Huỷ hoá đơn" :modal="true">
@@ -378,8 +381,8 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
                 </form>
             </div>
             <template #footer>
-                <Button label="No" icon="pi pi-times" class="p-button-text" @click="lyDoDialog = false" />
-                <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="confirmHuy" />
+                <Button label="Không" icon="pi pi-times" class="p-button-text" @click="lyDoDialog = false" />
+                <Button label="Có" icon="pi pi-check" class="p-button-text" @click="confirmHuy" />
             </template>
         </Dialog>
         <!-- comfirm huỷ -->
@@ -389,8 +392,8 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
                 <span>Bạn có chắc chắn muốn huỷ không ?</span>
             </div>
             <template #footer>
-                <Button label="No" icon="pi pi-times" class="p-button-text" @click="huyDialog = false" />
-                <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhanHuy()" />
+                <Button label="Không" icon="pi pi-times" class="p-button-text" @click="huyDialog = false" />
+                <Button label="Có" icon="pi pi-check" class="p-button-text" @click="btnXacNhanHuy()" />
             </template>
         </Dialog>
     </Dialog>

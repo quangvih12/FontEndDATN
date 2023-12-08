@@ -326,7 +326,7 @@ const checks = (trangThai, soLuong) => {
                                 <div class="price">
                                     <h6 style="color: red">{{ formatCurrency(hdct.donGia) }}</h6>
                                     <Button type="button" label="Mua lại" style="width: 100px; margin-right: 10px"
-                                        @click="addCart(hdct.idSPCT, hdct.soLuong, hdct.idSize, hdct.idMau)"
+                                        @click="addCart( hdct.soLuong,hdct.idSPCT, hdct.idSize, hdct.idMau)"
                                         :disabled="dataHD.trangThai == 7 || dataHD.trangThai == 2" />
                                     <Button v-if="checks(hdct.trangThai, hdct.soLuong)" severity="secondary"
                                         label="Trả Hàng" style="width: 100px"
