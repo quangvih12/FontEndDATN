@@ -163,9 +163,9 @@ const diaChi = async () => {
 };
 
 const dangXuat = async () => {
-  await router.push({ name: 'login' });
     localStorage.removeItem('token');
     localStorage.removeItem('currentUserInformation');
+  await router.push({ name: 'logout' });
 };
 
 const dangNhap = async () => {

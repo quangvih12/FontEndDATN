@@ -1,5 +1,5 @@
 import {createRouter, createWebHistory} from 'vue-router';
-import {requireAdmin, requireAuth} from "../middleware";
+import {authMiddleware} from "../middleware";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -26,13 +26,13 @@ const router = createRouter({
                 {
                     path: 'lich-su-san-pham',
                     name: 'lich-su-san-pham',
-                    beforeEnter: requireAuth,
+                    beforeEnter: authMiddleware.requireAuth,
                     component: () => import('@/components/KhachHang/LichSuSP/LichSuSP.vue'),
                 },
                 {
                     path: 'ho-so',
                     name: 'ho-so',
-                    beforeEnter: requireAuth,
+                    beforeEnter: authMiddleware.requireAuth,
                     component: () => import('@/components/KhachHang/ThongTinKhachHang.vue'),
                 },
                 {
@@ -55,29 +55,29 @@ const router = createRouter({
                     path: 'gio-hang/thanh-toan',
                     name: 'thanh-toan',
                     component: () => import('@/components/KhachHang/ThanhToan.vue'),
-                    beforeEnter: requireAuth
+                    beforeEnter: authMiddleware.requireAuth
                 },
                 {
                     path: 'gio-hang/thanh-toan/thanh-cong',
                     name: 'thanh-cong',
                     component: () => import('@/components/KhachHang/Success.vue'),
-                    beforeEnter: requireAuth
+                    beforeEnter: authMiddleware.requireAuth
                 },
                 {
                     path: 'gio-hang/thanh-toan/that-bai',
                     name: 'that-bai',
                     component: () => import('@/components/KhachHang/PaymentFailled.vue'),
-                    beforeEnter: requireAuth
+                    beforeEnter: authMiddleware.requireAuth
                 },
                 {
                     path: 'trang-thai-don-hang/:id',
                     name: 'trang-thai-don-hang',
-                    beforeEnter: requireAuth
+                    beforeEnter: authMiddleware.requireAuth
                 },
                 {
                     path: 'dia-chi',
                     name: 'dia-chi',
-                    beforeEnter: requireAuth,
+                    beforeEnter: authMiddleware.requireAuth,
                     component: () => import('@/components/KhachHang/DiaChiKhachHang/Index.vue')
                 }
             ]
@@ -95,22 +95,24 @@ const router = createRouter({
         {
             path: '/login',
             name: 'login',
+            beforeEnter: authMiddleware.isAuthSkippable,
             component: () => import('@/views/pages/auth/Login.vue')
         },
         {
             path: '/admin/login',
             name: 'login-admin',
+            beforeEnter: authMiddleware.isAuthSkippable,
             component: () => import('@/views/pages/auth/LoginAdmin.vue')
         },
         {
             path: '/admin',
             component: () => import('@/layout/AppLayout.vue'),
-            beforeEnter: requireAdmin,
+            beforeEnter: authMiddleware.requireAdmin,
             children: [
                 {
                     path: '',
                     name: 'admin',
-                    component: () => import('@/components/Admin/Product/ViewPlaceholder.vue')
+                    component: () => import('@/components/Admin/ViewPlaceholder/AdminViewPlaceholder.vue')
                 },
                 {
                     path: 'san-pham',
@@ -194,6 +196,16 @@ const router = createRouter({
                     component: () => import('@/components/Admin/Chat/ChatAdmin.vue')
                 }
             ]
+        },
+        {
+            path: '/logout',
+            name: 'logout',
+            redirect: {name: 'login'}
+        },
+        {
+            path: '/admin/logout',
+            name: 'logout-admin',
+            redirect: {name: 'login-admin'}
         },
         {
             path: '/error',
