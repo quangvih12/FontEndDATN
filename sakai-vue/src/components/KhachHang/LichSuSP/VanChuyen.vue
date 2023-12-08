@@ -196,7 +196,7 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
 };
 </script>
 <template>
-      <div v-if="!data || data.length===0" style="text-align: center; margin-top: 100px;"  > 
+      <div v-if="!useHD.dataDangChuanBi || useHD.dataDangChuanBi.length===0" style="text-align: center; margin-top: 100px;"  > 
                                   
                                   <svg  width="100px" height="100px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#000000" class="bi bi-file-earmark-x">
 <path d="M6.854 7.146a.5.5 0 1 0-.708.708L7.293 9l-1.147 1.146a.5.5 0 0 0 .708.708L8 9.707l1.146 1.147a.5.5 0 0 0 .708-.708L8.707 9l1.147-1.146a.5.5 0 0 0-.708-.708L8 8.293 6.854 7.146z"/>
