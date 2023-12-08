@@ -152,8 +152,8 @@ const onQuanHuyenChange = async () => {
                 <span v-if="product">Bạn có chắc chắn muốn thêm không ?</span>
             </div>
             <template #footer>
-                <Button label="No" icon="pi pi-times" class="p-button-text" @click="addProductDialog = false" />
-                <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="addProduct" />
+                <Button label="Huỷ" icon="pi pi-times" class="p-button-text" @click="addProductDialog = false" />
+                <Button label="Lưu" icon="pi pi-check" class="p-button-text" @click="addProduct" />
             </template>
         </Dialog>
         <template #footer>
