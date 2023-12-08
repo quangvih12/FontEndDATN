@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted,computed, watchEffect } from 'vue';
+import { ref, onMounted, computed, watchEffect,watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useCartStore } from '@/service/KhachHang/GioHang/useCartStore.js';
 import { useDiaChi } from '@/service/KhachHang/DiaChiService.js';
@@ -94,15 +94,24 @@ const formatCurrency = (value) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
 };
 
-const diaChiMacDinh = computed(() => diaChiService.diaChiMacDinh);
+const diaChiMacDinh = computed(() =>  diaChiService.diaChiMacDinh);
+
+watch(diaChiMacDinh, async (newVal) => {
+    if (diaChiMacDinh.value == '' || diaChiMacDinh.value == null) {
+        phiShip.value = -1;
+    } else {
+        await phiGiaoHangService.phiShip(diaChiMacDinh.value);
+        phiShip.value = phiGiaoHangService.money;
+    }
+});
 const loadUser = async () => {
     const token = localStorage.getItem('token');
     await diaChiService.findDiaChiByIdUserAndTrangThai(token);
-   // diaChiMacDinh.value = diaChiService.diaChiMacDinh;
-  
+    // diaChiMacDinh.value = diaChiService.diaChiMacDinh;
+
     if (diaChiMacDinh.value == '' || diaChiMacDinh.value == null) {
         phiShip.value = -1;
-    }else{
+    } else {
         await phiGiaoHangService.phiShip(diaChiMacDinh.value);
         phiShip.value = phiGiaoHangService.money;
     }
@@ -110,7 +119,7 @@ const loadUser = async () => {
     return diaChi.value;
 };
 
-const loadPhiShip = async () => {};
+const loadPhiShip = async () => { };
 
 const diaChiDialog = ref(false);
 
@@ -200,13 +209,15 @@ const thanhtoan = async () => {
     } else {
         await checkoutService.checkout(form);
         dataHoaDon.value = checkoutService.checkOut;
-      
+        demSLGH(token);
         sendMessage();
         toast.add({ severity: 'success', summary: '', detail: 'Thanh toán thành công', life: 3000 });
         router.push({ name: 'thanh-cong' });
-    }   
+    }
 };
-
+const demSLGH = async (token) => {
+    await gioHangService.countGHCT(token);
+};
 const selectedVoucherDialog = ref(false);
 
 const selectVoucher = () => {
@@ -291,18 +302,24 @@ const loadDiaChi = async () => {
                         <h5>THÔNG TIN THANH TOÁN</h5>
                         <div style="display: flex">
                             <div>
-                                <h4 v-if="phiShip==-1" style="color: red"><i class="pi pi-user" style="margin-right: 15px"></i>Bạn cần thêm địa chỉ trước khi thanh toán</h4>
-                                <h4 v-else style="color: red"><i class="pi pi-user" style="margin-right: 15px"></i> Địa chỉ nhận hàng</h4>
-               
-                                <p style="font-weight: bold">{{ diaChiMacDinh?.user?.ten }} - {{ diaChiMacDinh?.user?.sdt }}</p>
-                                <p style="">{{ diaChiMacDinh?.diaChi }}, {{ diaChiMacDinh?.tenphuongXa }}, {{ diaChiMacDinh?.tenQuanHuyen }}, {{ diaChiMacDinh?.tenTinhThanh }}</p>
+                                <h4 v-if="phiShip == -1" style="color: red"><i class="pi pi-user"
+                                        style="margin-right: 15px"></i>Bạn cần thêm địa chỉ trước khi thanh toán</h4>
+                                <h4 v-else style="color: red"><i class="pi pi-user" style="margin-right: 15px"></i> Địa chỉ
+                                    nhận hàng</h4>
+
+                                <p style="font-weight: bold">{{ diaChiMacDinh?.user?.ten }} - {{ diaChiMacDinh?.user?.sdt }}
+                                </p>
+                                <p style="">{{ diaChiMacDinh?.diaChi }}, {{ diaChiMacDinh?.tenphuongXa }}, {{
+                                    diaChiMacDinh?.tenQuanHuyen }}, {{ diaChiMacDinh?.tenTinhThanh }}</p>
                             </div>
                             <div>
-                                <Button style="margin-left: 30px; margin-top: 50px" label="" icon="pi pi-plus" class="p-button-outlined p-button-info mr-2 mb-2" @click="openNew" />
+                                <Button style="margin-left: 30px; margin-top: 50px" label="" icon="pi pi-plus"
+                                    class="p-button-outlined p-button-info mr-2 mb-2" @click="openNew" />
                             </div>
                         </div>
 
-                        <Textarea v-model="value" rows="4" cols="87" style="margin-top: 25px" placeholder="Ghi chú về đơn hàng, ví dụ: thời gian hay địa điểm giao hàng chi tiết hơn" />
+                        <Textarea v-model="value" rows="4" cols="87" style="margin-top: 25px"
+                            placeholder="Ghi chú về đơn hàng, ví dụ: thời gian hay địa điểm giao hàng chi tiết hơn" />
                     </div>
                 </div>
                 <!-- cột phải -->
@@ -310,13 +327,8 @@ const loadDiaChi = async () => {
                     <div class="phai">
                         <div class="card">
                             <h5>ĐƠN HÀNG CỦA BẠN</h5>
-                            <DataTable
-                                :value="dataGHCT"
-                                dataKey="id"
-                                :filters="filters"
-                                paginatorTemplate="FirstPageLink Pr
-                            evPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                            >
+                            <DataTable :value="dataGHCT" dataKey="id" :filters="filters" paginatorTemplate="FirstPageLink Pr
+                            evPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown">
                                 <Column field="code" header="Sản phẩm" headerStyle="width:38%; min-width:14rem;">
                                     <template #body="slotProps">
                                         <img :src="slotProps.data.anhMau" alt="Ảnh sản phẩm" class="shadow-2" width="50" />
@@ -328,7 +340,8 @@ const loadDiaChi = async () => {
                                     <template #body="slotProps">
                                         <div style="width: 100px">
                                             <!-- <p v-if="slotProps.data.soLuongTon != 0">Phân loại hàng:</p> -->
-                                            <p style="font-size: 13px; margin-top: -10px">{{ slotProps.data.tenMauSac }}, {{ slotProps.data.tenSize }}</p>
+                                            <p style="font-size: 13px; margin-top: -10px">{{ slotProps.data.tenMauSac }}, {{
+                                                slotProps.data.tenSize }}</p>
                                         </div>
                                     </template>
                                 </Column>
@@ -336,7 +349,9 @@ const loadDiaChi = async () => {
                                 <Column field="tenSP" header="Đơn giá" headerStyle="width:14%; min-width:5rem;">
                                     <template #body="slotProps">
                                         <div style="display: block">
-                                            <div>{{ formatCurrency(slotProps.data.giaSPSauGiam) == '' ? formatCurrency(slotProps.data.giaBan) : formatCurrency(slotProps.data.giaSPSauGiam) }}</div>
+                                            <div>{{ formatCurrency(slotProps.data.giaSPSauGiam) == '' ?
+                                                formatCurrency(slotProps.data.giaBan) :
+                                                formatCurrency(slotProps.data.giaSPSauGiam) }}</div>
                                         </div>
                                     </template>
                                 </Column>
@@ -351,7 +366,8 @@ const loadDiaChi = async () => {
                                     <template #body="slotProps">
                                         <span class="p-column-title">Code</span>
                                         <p style="font-size: 15px; color: red">
-                                            {{ formatCurrency(tinhTongTienChoTungSanPham(slotProps.data.soLuong, slotProps.data.giaSPSauGiam, slotProps.data.giaBan)) }}
+                                            {{ formatCurrency(tinhTongTienChoTungSanPham(slotProps.data.soLuong,
+                                                slotProps.data.giaSPSauGiam, slotProps.data.giaBan)) }}
                                         </p>
                                     </template>
                                 </Column>
@@ -373,7 +389,7 @@ const loadDiaChi = async () => {
                             <!-- <span style="font-weight: bold; margin-bottom: 15px;"><input type="radio" name="shipping" value="fast" /> Giao hàng miễn phí</span> -->
                             <label style="display: flex; justify-content: space-between;">
                                 <span>Phí giao nhanh:</span>
-                                <span style="margin-left: 400px; font-weight: bold"> {{ phiShip==-1?'bạn cần thêm địa chỉ':formatCurrency(phiShip) }}</span>
+                                <span style="margin-left: 400px; font-weight: bold"> {{ phiShip == -1 ? 'bạn cần thêm địa chỉ':formatCurrency(phiShip) }}</span>
                             </label>
                             <Divider />
 
@@ -388,40 +404,53 @@ const loadDiaChi = async () => {
                                 </div>
                             </div>
 
-                            <Dialog v-model:visible="selectedVoucherDialog" header="Flex Scroll" :style="{ width: '600px' }" maximizable modal :contentStyle="{ height: '370px' }" class="p-fluid">
+                            <Dialog v-model:visible="selectedVoucherDialog" header="Flex Scroll" :style="{ width: '600px' }"
+                                maximizable modal :contentStyle="{ height: '370px' }" class="p-fluid">
                                 <template #header>
-                                    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                                    <div
+                                        class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                                         <h5 class="m-0">Voucher</h5>
                                     </div>
                                 </template>
-                                <div v-if="!dataVoucher || dataVoucher.length===0" style="text-align: center; margin-top: 100px;"  > 
-                                  
-                                        <svg  width="100px" height="100px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#000000" class="bi bi-file-earmark-x">
-  <path d="M6.854 7.146a.5.5 0 1 0-.708.708L7.293 9l-1.147 1.146a.5.5 0 0 0 .708.708L8 9.707l1.146 1.147a.5.5 0 0 0 .708-.708L8.707 9l1.147-1.146a.5.5 0 0 0-.708-.708L8 8.293 6.854 7.146z"/>
-  <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
-</svg>
-                             
-                                  
-<h4  style="text-align: center;">Không có voucher</h4>
+                                <div v-if="!dataVoucher || dataVoucher.length === 0"
+                                    style="text-align: center; margin-top: 100px;">
+
+                                    <svg width="100px" height="100px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"
+                                        fill="#000000" class="bi bi-file-earmark-x">
+                                        <path
+                                            d="M6.854 7.146a.5.5 0 1 0-.708.708L7.293 9l-1.147 1.146a.5.5 0 0 0 .708.708L8 9.707l1.146 1.147a.5.5 0 0 0 .708-.708L8.707 9l1.147-1.146a.5.5 0 0 0-.708-.708L8 8.293 6.854 7.146z" />
+                                        <path
+                                            d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                                    </svg>
+
+
+                                    <h4 style="text-align: center;">Không có voucher</h4>
                                 </div>
-                              
-                                <div v-for="(vo, index) in dataVoucher" style="box-shadow: 0px 0px 15px 5px rgba(173, 172, 172, 0.75); border-radius: 20px 0px 0px 20px; margin-bottom: 20px; margin-top: 20px">
-                                    <div style="width: 100%; background: rgb(165, 27, 27); border-radius: 20px 0px 0px 20px; height: 100px; display: flex">
-                                        <div style="height: 100%; width: 30%; background: rgb(11, 117, 103); text-align: center; border-radius: 20px 0px 0px 20px">
+
+                                <div v-for="(vo, index) in dataVoucher"
+                                    style="box-shadow: 0px 0px 15px 5px rgba(173, 172, 172, 0.75); border-radius: 20px 0px 0px 20px; margin-bottom: 20px; margin-top: 20px">
+                                    <div
+                                        style="width: 100%; background: rgb(165, 27, 27); border-radius: 20px 0px 0px 20px; height: 100px; display: flex">
+                                        <div
+                                            style="height: 100%; width: 30%; background: rgb(11, 117, 103); text-align: center; border-radius: 20px 0px 0px 20px">
                                             <H5 style="margin-top: 30px; color: white">{{ vo.ten }}</H5>
                                         </div>
-                                        <div style="height: 100%; width: 70%; background: rgb(255, 255, 255); display: flex">
+                                        <div
+                                            style="height: 100%; width: 70%; background: rgb(255, 255, 255); display: flex">
                                             <div style="margin-left: 20px; width: 80%; background: rgb(255, 255, 255)">
                                                 <p>giảm tối đa: {{ vo.giamToiDa }}</p>
 
                                                 <p style="margin-top: -10px">giá trị giảm: {{ vo.giaTriGiam }} (%)</p>
 
-                                                <p style="margin-top: -10px">Thời gian kết thúc: {{ vo.thoiGianKetThuc }}</p>
+                                                <p style="margin-top: -10px">Thời gian kết thúc: {{ vo.thoiGianKetThuc }}
+                                                </p>
 
                                                 <p style="margin-top: -10px">Mô tả: {{ vo.moTa }}</p>
                                             </div>
-                                            <div style="width: 10%; display: flex; justify-content: center; padding-top: 40px">
-                                                <RadioButton v-model="selectedVoucher" inputId="ingredient1" name="pizza" :value="vo" />
+                                            <div
+                                                style="width: 10%; display: flex; justify-content: center; padding-top: 40px">
+                                                <RadioButton v-model="selectedVoucher" inputId="ingredient1" name="pizza"
+                                                    :value="vo" />
                                             </div>
                                         </div>
                                     </div>
@@ -451,31 +480,31 @@ const loadDiaChi = async () => {
                                     </div>
                                 </div>
                                 <div class="p-col-6" style="margin-left: 470px">
-                                    <h6 style="height: 20px; width: 80px">{{ formatCurrency(tongThanhToan) }} <span></span></h6>
+                                    <h6 style="height: 20px; width: 80px">{{ formatCurrency(tongThanhToan) }} <span></span>
+                                    </h6>
                                 </div>
                             </div>
                             <Divider style="margin-top: -10px" />
                             <span style="font-weight: bold">
                                 <input type="radio" id="chuyenkhoan" value="1" v-model="phuongThucThanhToan" />
 
-                                Payment Credit Card / Visa / Master Card / Amex</span
-                            >
+                                Payment Credit Card / Visa / Master Card / Amex</span>
                             <br />
 
                             <Divider style="margin-top: -10px" />
                             <span style="font-weight: bold">
                                 <input type="radio" id="tienmat" value="2" v-model="phuongThucThanhToan" />
-                                Trả tiền mặt khi nhận hàng</span
-                            >
+                                Trả tiền mặt khi nhận hàng</span>
                             <br />
                             <!-- <div class="p-inputgroup flex-1">
                                 <InputText placeholder="Mã ưu đãi" />
                                 <Button label="Áp dụng" severity="warning" />
                             </div> -->
                             <br />
-                            <span> <input type="checkbox" id="agreeCheckbox" /> Tôi đã đọc và đồng ý với điều khoản và điều kiện của website * </span>
+                            <span> <input type="checkbox" id="agreeCheckbox" /> Tôi đã đọc và đồng ý với điều khoản và điều
+                                kiện của website * </span>
                             <br />
-                            <Button label="Đặt hàng" severity="danger" :disabled="diaChiMacDinh ==''" @click="thanhtoan" />
+                            <Button label="Đặt hàng" severity="danger" :disabled="diaChiMacDinh == ''" @click="thanhtoan" />
                             <br />
                             <label for="">Bộ phận CSKH sẽ liên hệ bạn qua số điện thoại để xác nhận đơn hàng.</label>
                         </div>
@@ -489,48 +518,49 @@ const loadDiaChi = async () => {
         <div style="position: relative; width: 80px; margin-left: 500px; margin-bottom: 20px">
             <AddDiaChi style="position: absolute; right: 0; width: 80px; margin-bottom: 5px"></AddDiaChi>
         </div>
-        
-           
-       
+
+
+
         <div class="card">
-         
-            <div v-if="!userDiaChi || userDiaChi.length===0" style="text-align: center; margin-top: 50px;"  > 
-                                  
-                                  <svg  width="100px" height="100px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#000000" class="bi bi-file-earmark-x">
-<path d="M6.854 7.146a.5.5 0 1 0-.708.708L7.293 9l-1.147 1.146a.5.5 0 0 0 .708.708L8 9.707l1.146 1.147a.5.5 0 0 0 .708-.708L8.707 9l1.147-1.146a.5.5 0 0 0-.708-.708L8 8.293 6.854 7.146z"/>
-<path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
-</svg>
-                       
-                            
-<h4  style="text-align: center;">Chưa có địa chỉ</h4>
-                          </div>
+
+            <div v-if="!userDiaChi || userDiaChi.length === 0" style="text-align: center; margin-top: 50px;">
+
+                <svg width="100px" height="100px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#000000"
+                    class="bi bi-file-earmark-x">
+                    <path
+                        d="M6.854 7.146a.5.5 0 1 0-.708.708L7.293 9l-1.147 1.146a.5.5 0 0 0 .708.708L8 9.707l1.146 1.147a.5.5 0 0 0 .708-.708L8.707 9l1.147-1.146a.5.5 0 0 0-.708-.708L8 8.293 6.854 7.146z" />
+                    <path
+                        d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                </svg>
+
+
+                <h4 style="text-align: center;">Chưa có địa chỉ</h4>
+            </div>
             <div v-for="(hd, index) in userDiaChi">
                 <div style="width: 100%; height: 100px; display: flex">
                     <div style="width: 90%; height: 100px; background: rgb(255, 255, 255)">
                         <div class="flex">
                             <label for="" style="margin-right: 10px">
-                                <span>{{ hd?.user?.ten }} </span></label
-                            >
+                                <span>{{ hd?.user?.ten }} </span></label>
                             <span style="margin-right: 10px"> | </span>
                             <label for="" style="color: rgb(0, 0, 0)"> {{ hd?.user?.sdt }}</label>
                             <label for="" style="color: rgb(255, 0, 0); margin-left: 10px"> {{ hd.trangThai == 1 ? 'Mặc định' : '' }}</label>
                         </div>
                         <div style="margin-top: 10px">
                             <label for="" style="margin-right: 10px">
-                                <span>{{ hd.diaChi }} </span></label
-                            >
+                                <span>{{ hd.diaChi }} </span></label>
                         </div>
                         <div style="margin-top: 10px">
                             <label for="" style="margin-right: 10px">
-                                <span>{{ hd.tenphuongXa }}, {{ hd.tenQuanHuyen }}, {{ hd.tenTinhThanh }} </span></label
-                            >
+                                <span>{{ hd.tenphuongXa }}, {{ hd.tenQuanHuyen }}, {{ hd.tenTinhThanh }} </span></label>
                         </div>
                     </div>
 
                     <div style="width: 35%; height: 10px; background: rgb(255, 255, 255); display: flex; margin-top: 30px">
                         <UpdateDiaChi :my-prop="hd"></UpdateDiaChi>
 
-                        <Button style="width: 100px; height: 45px; margin-top: 0px" label="Thiết lập mặc định " class="p-button-outlined p-button-info mr-2 mb-2" @click="thietLapMacDinh(hd.id)" />
+                        <Button style="width: 100px; height: 45px; margin-top: 0px" label="Thiết lập mặc định "
+                            class="p-button-outlined p-button-info mr-2 mb-2" @click="thietLapMacDinh(hd.id)" />
                     </div>
                 </div>
                 <Divider />
@@ -580,5 +610,4 @@ const loadDiaChi = async () => {
 
 span {
     font-weight: bold;
-}
-</style>
+}</style>

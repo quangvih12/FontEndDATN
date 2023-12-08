@@ -48,6 +48,7 @@ const loadData = async () => {
 
 const loadDataHD = async () => {
     dataHD.value = await useHD.findHdByIdHd(idHD);
+ //   console.log(dataHD.value)
 };
 
 const ngayDat = ref('');
@@ -69,8 +70,8 @@ const events = ref([
     { status: 'Đánh giá', date: '17/10/2020', icon: 'pi pi-star', color: '#F55C3B' }
 ]);
 
-const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
-    if (tienSauGiam == '' || tienSauGiam == null) {
+const tinhTongTien = (tienShip, tongTien, tienSauGiam,idVoucher) => {
+    if (idVoucher === '' || idVoucher === null) {
         return parseInt(tongTien) + parseInt(tienShip);
     } else {
         return parseInt(tienSauGiam);
@@ -362,12 +363,12 @@ const checks = (trangThai, soLuong) => {
                     <div class="c2">
                         <p>{{ formatCurrency(dataHD.tongTien) }}</p>
                         <p>{{ formatCurrency(dataHD.tienShip) }}</p>
-                        <p style="color: red" v-if="dataHD.tienSauKhiGiam !== null">- {{
+                        <p style="color: red" v-if="dataHD.idVoucher !== null">- {{
                             formatCurrency(parseInt(dataHD.tongTien) + parseInt(dataHD.tienShip) -
                                 parseInt(dataHD.tienSauKhiGiam)) }}</p>
                         <p style="color: red" v-else>0</p>
                         <p style="font-weight: bold; color: red">{{ formatCurrency(tinhTongTien(dataHD.tongTien,
-                            dataHD.tienShip, dataHD.tienSauKhiGiam)) }}</p>
+                            dataHD.tienShip, dataHD.tienSauKhiGiam,dataHD.idVoucher)) }}</p>
                     </div>
                 </div>
             </div>

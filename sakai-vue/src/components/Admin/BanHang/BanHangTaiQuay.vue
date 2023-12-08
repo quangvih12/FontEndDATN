@@ -1,5 +1,5 @@
 <script setup>
-import {ref, computed, onBeforeMount, onMounted, defineAsyncComponent, markRaw} from 'vue';
+import {ref, computed, onBeforeMount, onMounted, defineAsyncComponent, markRaw,watch} from 'vue';
 import {formatDateAndTime} from '@/service/common/DateTimeUtils';
 import {formatCurrency} from '@/service/common/CurrencyUtils';
 import {useBanHangTaiQuayStore} from '@/service/Admin/BanHangTaiQuay/BanHangTaiQuayService';
@@ -258,7 +258,7 @@ const onHinhThucGiaoHangChange = async () => {
   if (hinhThucGiaoHang.value) {
     hinhThucGiaoHangs.value = hinhThucGiaoHang.value.id;
     if (hinhThucGiaoHangs.value === 2) {
-     await loadDiaChis();
+    await loadDiaChis();
        diaChiDialog.value = true;
 
 
@@ -392,22 +392,27 @@ const onError = (error) => {
 const checkedSwitch = ref(false);
 
 const diaChiDialog = ref(false)
-const userDiaChi = ref([]);
-const loadDiaChis = async () => {
-  await userService.fetchAllDiaChi(userID.value); // Gọi hàm fetchAll từ Store
-  userDiaChi.value = userService.diaChi;
+const userDiaChi = computed(() =>  userService.diaChi);
 
-  const diaChiMacDinh =  userDiaChi.value.find(x => x.id === idDiaChi.value);
+
+watch(userDiaChi, async (newVal) => {
+
+  const diaChiMacDinh =  userDiaChi.value.find(x => x.trangThai === 1);
+  
   if (diaChiMacDinh == '' || diaChiMacDinh == null) {
         phiShip.value = 0;
-    }else{
-        await phiGiaoHangService.phiShip(diaChiMacDinh);
-        phiShip.value = phiGiaoHangService.money;
+       idDiaChi.value = diaChiMacDinh.id;
+       idDiaChi.value =  userDiaChi.value[0].id;
+    } else{
+      idDiaChi.value = diaChiMacDinh.id;
+      await phiGiaoHangService.phiShip(diaChiMacDinh);
+      phiShip.value = phiGiaoHangService.money;
     }
-  if(userDiaChi.value.length != 0){
-    idDiaChi.value =  userDiaChi.value[0].id;
-  } 
- 
+
+}, { deep: true });
+
+const loadDiaChis = async () => {
+  await userService.fetchAllDiaChi(userID.value); // Gọi hàm fetchAll từ Store
 
 };
 const tinhPhiShip = async (idDiaChi) => {
@@ -877,9 +882,9 @@ const exportToPDF = async () => {
             }}</small></div>
         </div>
       </div>
-      <div class="card" v-if="diaChiDialog==true" style="overflow-y: scroll; width:95%; height: 200px;">
+      <div class="card" v-if="diaChiDialog==true" style="overflow-y: scroll; width:100%; height: 200px;">
 
-        <div style="margin-left: 300px; height: 40px; width: 80px;  border: 1px solid blue; border-radius: 20px; text-align: center;">
+        <div style="margin-left: 290px; height: 25px; width: 80px;  border: 1px solid blue; border-radius: 20px; text-align: center;">
           <ThemDiaChi  :idUser="userID"> </ThemDiaChi>
 
         </div>
