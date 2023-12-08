@@ -1,5 +1,6 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { FilterMatchMode } from 'primevue/api';
+import { ref, onMounted, computed, onBeforeMount } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { voucherStore } from '@/service/Admin/Voucher/VoucherService.js';
 import AddVoucher from './AddVoucher.vue';
@@ -37,6 +38,10 @@ const statuses = ref([
     { label: 'Chư bắt đầu', value: 3 }
 ]);
 
+onBeforeMount(() => {
+    initFilters();
+});
+
 onMounted(() => {
     loadDatavoucher();
 });
@@ -44,6 +49,12 @@ onMounted(() => {
 const loadDatavoucher = async () => {
     await VoucherService.getVoucher();
     vouchers.value = VoucherService.data;
+};
+
+const initFilters = () => {
+    filters.value = {
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS }
+    };
 };
 
 const confirmDeleteVoucher = (editProduct) => {
@@ -249,7 +260,7 @@ const handImportExcel = async (event) => {
                 </Toolbar>
 
                 <DataTable ref="dt" :value="filteredVoucher" v-model:selection="selectedVoucher" dataKey="id"
-                    :loading="loading" :paginator="true" :rows="5" v-model:filters="filters"
+                    :loading="loading" :paginator="true" :rows="5" :filters="filters"
                     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                     :rowsPerPageOptions="[5, 10, 25]"
                     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
@@ -268,7 +279,7 @@ const handImportExcel = async (event) => {
 
                             <span class="block mt-2 md:mt-0 p-input-icon-left">
                                 <i class="pi pi-search" />
-                                <InputText placeholder="Search..." />
+                                <InputText v-model="filters['global'].value" placeholder="Search..." />
                             </span>
                         </div>
                     </template>

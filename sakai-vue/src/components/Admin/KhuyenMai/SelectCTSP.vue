@@ -71,6 +71,7 @@ onMounted(() => {
 const loadDataProduct = async (idsp) => {
     await ctspService.fetchData(idsp);
     listSPCT.value = ctspService.data;
+
 };
 
 const applyKhuyenMai = () => {

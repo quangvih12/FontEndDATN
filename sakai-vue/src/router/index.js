@@ -124,7 +124,7 @@ const router = createRouter({
         {
             path: '/admin',
             component: () => import('@/layout/AppLayout.vue'),
-            beforeEnter: authMiddleware.requireAdmin,
+             beforeEnter: authMiddleware.requireAdmin,
             children: [
 
                 {
