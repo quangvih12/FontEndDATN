@@ -10,8 +10,8 @@ import { dangNhapStore } from '../../../service/KhachHang/DangNhapService';
 import { useToast } from 'primevue/usetoast';
 import { useRouter } from 'vue-router';
 import { gioHangStore } from '../../../service/KhachHang/Giohang/GiohangCTService.js';
-import {verifyJwt} from "../../../service/common/JwtUtils";
-import {useChatStore} from "../../../service/Admin/Chat/ChatService";
+import { verifyJwt } from "../../../service/common/JwtUtils";
+import { useChatStore } from "../../../service/Admin/Chat/ChatService";
 import * as chatService from "@/service/chatkitty";
 
 const router = useRouter();
@@ -29,11 +29,30 @@ const gotoTrangChu = () => {
 const callback = async (response) => {
     const userData = decodeCredential(response.credential);
     const user = await tokenService.checkGoogle(userData.email, userData.name, userData.picture);
-    const token = await tokenService.gentoken(user.userName);
-    localStorage.setItem('token', token);
+
+    if (user === null || user === '') {
+        const user1 = await tokenService.createAccountGoogle(userData.email, userData.name, userData.picture);
+        const token = await tokenService.gentoken(user1.userName);
+        await chatStore.createChatkittyUser(user1.email, user1.ten);
+        localStorage.setItem('token', token);
+        localStorage.setItem('currentUserInformation', JSON.stringify({
+            id: user1.id,
+            username: user1.userName,
+        }));
+       
+    } else {
+        const token = await tokenService.gentoken(user.userName);
+        localStorage.setItem('token', token);
+       
+        localStorage.setItem('currentUserInformation', JSON.stringify({
+            id: user.id,
+            username: user.userName,
+        }));
+        
+    }
     if (localStorage.getItem('cart')) {
         let array = JSON.parse(localStorage.getItem('cart'));
-        await gioHangService.addToCartWhenLogin(array, token);
+        await gioHangService.addToCartWhenLogin(array, localStorage.getItem('token'));
         localStorage.removeItem('cart');
     }
 
@@ -58,13 +77,13 @@ const dangNhapa = handleSubmit(async () => {
     };
     const data = await dnService.dangNhap(login);
 
-    if (data.accessToken == null || data.accessToken.length <= 0) {
+    if (data == null || data === undefined|| data.length <= 0) {
         toast.add({ severity: 'error', summary: 'Thông báo', detail: 'Sai tài khoản hoặc mật khẩu', life: 3000 });
     } else {
         localStorage.setItem('token', data.accessToken);
         localStorage.setItem('currentUserInformation', JSON.stringify({
-          id: data.userID,
-          username: data.usernameOrEmail,
+            id: data.userID,
+            username: data.usernameOrEmail,
         }));
         gotoTrangChu();
         // khi dang nhap thanh cong thi add sp gio hang vao db
@@ -175,4 +194,5 @@ const dangKy = () => {
 .pi-eye-slash {
     transform: scale(1.6);
     margin-right: 1rem;
-}</style>
+}
+</style>

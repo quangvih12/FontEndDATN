@@ -1,13 +1,17 @@
 <script setup>
 import ChatComponent from "../../Admin/Chat/ChatComponent.vue";
 import {ref} from "vue";
+import {onClickOutside} from "@vueuse/core";
 
+const messageBox = ref(null);
 const isChatPanelDisplayed = ref(false);
+
+onClickOutside(messageBox, evt => {isChatPanelDisplayed.value = false;});
 </script>
 
 <template>
-  <div class="chat-panel w-26rem">
-    <div class="message-box" v-show="isChatPanelDisplayed">
+  <div class="chat-panel" :class="isChatPanelDisplayed ? 'w-26rem' : null">
+    <div class="message-box" ref="messageBox">
             <ChatComponent height="100%" :single-room="true"/>
     </div>
     <Button label="CSKH" rounded severity="help" class="chat-button w-5rem h-5rem" iconPos="top"

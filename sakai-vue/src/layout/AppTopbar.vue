@@ -179,8 +179,9 @@ const toggle = (event) => {
 };
 
 const dangXuat = () => {
-  router.push({ name: 'login-admin' });
     localStorage.removeItem('token');
+    localStorage.removeItem('currentUserInformation');
+  router.push({ name: 'logout-admin' });
 };
 
 const dangNhap = () => {

@@ -1,7 +1,5 @@
 <script setup>
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
-import CustomerService from '@/service/CustomerService';
-import ProductService from '@/service/ProductService';
 import { ref, onBeforeMount, onMounted, watch } from 'vue';
 import { HDKHStore } from '../../../service/KhachHang/HoaDonKHService';
 import DetailHoaDon from './TrangThaiDonHang.vue';
@@ -17,16 +15,9 @@ const redirectToTrangThaiDonHang = (idHDA) => {
 };
 const gioHangService = gioHangStore();
 const useHD = HDKHStore();
-const customer1 = ref(null);
-const customer2 = ref(null);
-const customer3 = ref(null);
-const filters1 = ref(null);
-const loading1 = ref(null);
-const loading2 = ref(null);
-const products = ref(null);
 
-const customerService = new CustomerService();
-const productService = new ProductService();
+const filters1 = ref(null);
+
 const data = ref([]);
 
 const loadData = async () => {
@@ -34,6 +25,7 @@ const loadData = async () => {
     if (token.length > 0 || token != null) {
         await useHD.fetchData(token);
         data.value = useHD.dataAll;
+        console.log(data.value)
     }
 };
 
@@ -121,15 +113,6 @@ const onToggle = (val) => {
 };
 
 onBeforeMount(() => {
-    productService.getProductsWithOrdersSmall().then((data) => (products.value = data));
-    customerService.getCustomersLarge().then((data) => {
-        customer1.value = data;
-        loading1.value = false;
-        customer1.value.forEach((customer) => (customer.date = new Date(customer.date)));
-    });
-    customerService.getCustomersLarge().then((data) => (customer2.value = data));
-    customerService.getCustomersMedium().then((data) => (customer3.value = data));
-    loading2.value = false;
 
     initFilters1();
 });
@@ -189,13 +172,12 @@ const addCart = async (soLuong, idCTSP, idSize, idMau) => {
     router.push({ name: 'gio-hang' });
 
 };
-const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
-    if (tienSauGiam == '' || tienSauGiam == null) {
+const tinhTongTien = (tienShip, tongTien, tienSauGiam,idVoucher) => {
+    if (idVoucher === '' || idVoucher === null) {
         return parseInt(tongTien) + parseInt(tienShip);
     } else {
         return parseInt(tienSauGiam);
     }
-
 };
 
 </script>
@@ -277,7 +259,7 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
                 <div style="display: flex; width: 100%; background: rgb(255, 255, 255);">
                     <div style="background: rgb(255, 255, 255);width: 30%; height: 100px; margin-top: ;">
                         <h5 style="color: rgb(253, 1, 1);margin-top: 30px;margin-left: -50px; margin-bottom: 20px;">Thành
-                            tiền: <span>{{ formatCurrency(tinhTongTien(hd.tongTien, hd.tienShip, hd.tienSauKhiGiam))
+                            tiền: <span>{{ formatCurrency(tinhTongTien(hd.tongTien, hd.tienShip, hd.tienSauKhiGiam,hd.idVoucher))
                             }}</span>
                         </h5>
                     </div>

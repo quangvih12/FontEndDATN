@@ -1,6 +1,6 @@
 import {createRouter, createWebHistory} from 'vue-router';
-import {authMiddleware} from "@/middleware";
-import ChatAdmin from '@/components/Admin/Chat/ChatAdmin.vue';
+import {authMiddleware} from "../middleware";
+
 const router = createRouter({
     history: createWebHistory(),
     routes: [
@@ -70,16 +70,10 @@ const router = createRouter({
                     beforeEnter: authMiddleware.requireAuth
                 },
                 {
-                    path: 'trang-thai-don-hang',
+                    path: 'trang-thai-don-hang/:id',
                     name: 'trang-thai-don-hang',
                     beforeEnter: authMiddleware.requireAuth,
-                    children: [
-                        {
-                            path: ':id',
-                            props: true,
-                            component: () => import('@/components/KhachHang/LichSuSP/TrangThaiDonHang.vue')
-                        }
-                    ]
+                    component: () => import('@/components/KhachHang/LichSuSP/TrangThaiDonHang.vue'),
                 },
                 {
                     path: 'dia-chi',
@@ -89,19 +83,7 @@ const router = createRouter({
                 }
             ]
         },
-        // {
-        //     path: '/nhan-vien',
-        //     component: AppLayoutBH,
-        //     children: [
-        //         {
-        //             path: '/ban-hang-tai-quay',
-        //             name: 'ban-hang-tai-quay',
-        //             component: () => import('@/components/Admin/BanHang/BanHangTaiQuay.vue')
-        //         }
-        //     ]
-        // },
         {
-
             path: '/dang-ky',
             name: 'dang-ky',
             component: () => import('@/components/KhachHang/Register.vue'),
@@ -114,11 +96,13 @@ const router = createRouter({
         {
             path: '/login',
             name: 'login',
+            beforeEnter: authMiddleware.isAuthSkippable,
             component: () => import('@/views/pages/auth/Login.vue')
         },
         {
             path: '/admin/login',
             name: 'login-admin',
+            beforeEnter: authMiddleware.isAuthSkippable,
             component: () => import('@/views/pages/auth/LoginAdmin.vue')
         },
         {
@@ -126,11 +110,10 @@ const router = createRouter({
             component: () => import('@/layout/AppLayout.vue'),
              beforeEnter: authMiddleware.requireAdmin,
             children: [
-
                 {
                     path: '',
                     name: 'admin',
-                    component: () => import('@/components/Admin/Product/ViewPlaceholder.vue')
+                    component: () => import('@/components/Admin/ViewPlaceholder/AdminViewPlaceholder.vue')
                 },
                 {
                     path: 'san-pham',
@@ -211,9 +194,19 @@ const router = createRouter({
                 {
                     path: 'chat',
                     name: 'chat-admin',
-                    component: ChatAdmin
+                    component: () => import('@/components/Admin/Chat/ChatAdmin.vue')
                 }
             ]
+        },
+        {
+            path: '/logout',
+            name: 'logout',
+            redirect: {name: 'login'}
+        },
+        {
+            path: '/admin/logout',
+            name: 'logout-admin',
+            redirect: {name: 'login-admin'}
         },
         {
             path: '/error',

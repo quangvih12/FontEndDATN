@@ -150,25 +150,26 @@ const onSettingsClick = (event) => {
     }
 };
 
-const thongTinCaNhan = () => {
-  router.push({ name: 'ho-so' });
+const thongTinCaNhan = async () => {
+  await router.push({ name: 'ho-so' });
 };
 
-const lichSuMuaHang = () => {
-  router.push({ name: 'lich-su-san-pham' });
+const lichSuMuaHang = async () => {
+  await router.push({ name: 'lich-su-san-pham' });
 };
 
-const diaChi = () => {
-  router.push({ name: 'dia-chi' });
+const diaChi = async () => {
+  await router.push({ name: 'dia-chi' });
 };
 
-const dangXuat = () => {
-  router.push({ name: 'login' });
+const dangXuat = async () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('currentUserInformation');
+  await router.push({ name: 'logout' });
 };
 
-const dangNhap = () => {
-  router.push({ name: 'login' });
+const dangNhap = async () => {
+  await router.push({ name: 'login' });
 };
 
 const topbarMenuClasses = computed(() => {

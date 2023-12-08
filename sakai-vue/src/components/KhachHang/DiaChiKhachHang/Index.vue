@@ -141,7 +141,7 @@ const initFilters = () => {
                     <div class="flex align-items-center justify-content-center">
                         <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
                         <span v-if="product"
-                            >Bạn có chắc chắn muốn xoá màu <b>{{ product.ten }}</b> không ?</span
+                            >Bạn có chắc chắn muốn xoá địa chỉ <b>{{ product.ten }}</b> không ?</span
                         >
                     </div>
                     <template #footer>
