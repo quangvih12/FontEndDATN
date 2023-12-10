@@ -41,7 +41,7 @@ const selectedCity = ref();
 const diaChi = ref();
 const phiShip = ref();
 const dataVoucher = ref([]);
-const phuongThucThanhToan = ref(2);
+const phuongThucThanhToan = ref(1);
 const productDialog = ref(false);
 const updateSDTDialog = ref(false);
 const sdt = ref(null);
@@ -189,7 +189,7 @@ const thanhtoan = async () => {
 
     const formString = JSON.stringify(form);
 
-    if (parseInt(phuongThucThanhToan.value) == 1) {
+    if (parseInt(phuongThucThanhToan.value) == 2) {
         const data = {
             vnp_Ammount: tongThanhToan.value,
             vnp_OrderInfo: 'Thanh toan hoa don',
@@ -521,14 +521,14 @@ const showError = computed(() => {
                             </div>
                             <Divider style="margin-top: -10px" />
                             <span style="font-weight: bold">
-                                <input type="radio" id="chuyenkhoan" value="1" v-model="phuongThucThanhToan" />
+                                <input type="radio" id="chuyenkhoan" value="2" v-model="phuongThucThanhToan" />
 
                                 Payment Credit Card / Visa / Master Card / Amex</span>
                             <br />
 
                             <Divider style="margin-top: -10px" />
                             <span style="font-weight: bold">
-                                <input type="radio" id="tienmat" value="2" v-model="phuongThucThanhToan" />
+                                <input type="radio" id="tienmat" value="1" v-model="phuongThucThanhToan" />
                                 Trả tiền mặt khi nhận hàng</span>
                             <br />
                             <!-- <div class="p-inputgroup flex-1">
