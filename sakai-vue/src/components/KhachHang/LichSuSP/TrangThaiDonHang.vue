@@ -25,7 +25,7 @@ const dataHD = ref({});
 
 const schema = yup.object().shape({
     lyDo: yup.string().required('Vui lòng chọn lý do'),
-    moTa: yup.string().required('Vui lòng điền mô tả ').min(10, 'Mô tả sản phẩm phải có ít nhất 10 ký tự'),
+ //   moTa: yup.string().required('Vui lòng điền mô tả ').min(10, 'Mô tả sản phẩm phải có ít nhất 10 ký tự'),
     soLuong: yup.number().required('số lượng không được để trống').typeError('Số lượng phải là một số').min(1, 'Số lượng phải lớn hơn hoặc bằng 1').nullable()
 });
 const { handleSubmit, resetForm } = useForm({

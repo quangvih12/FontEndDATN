@@ -194,6 +194,7 @@ const handImportExcel = async (event) => {
     try {
         await khuyenmaiService.uploadFile(formData);
         excel.value = khuyenmaiService.excels;
+     //   console.log(excel.value)
         let hasError = false;
         for (const o of excel.value) {
             for (const data of o.responseList) {
