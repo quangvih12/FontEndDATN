@@ -42,8 +42,8 @@ export const HDStore = defineStore('hoaDon', {
             });
         },
         //từ chờ đang chuẩn bị -> đang giao
-        dangChuanBi(id, ngayShip,tongTien,tienShip) {
-            axios.put(apiHD + '/XacNhanGiaoHang/' + id + '?ngayShip=' + ngayShip  +`&tongTien=`+tongTien+`&tienShip=`+tienShip).then((response) => {
+        async dangChuanBi(id, ngayShip, tongTien, tienShip) {
+            const respone = await axios.put(apiHD + '/XacNhanGiaoHang/' + id + '?ngayShip=' + ngayShip + `&tongTien=` + tongTien + `&tienShip=` + tienShip).then((response) => {
                 if (this.check == 1) {
                     if (this.dataChoXacNhan[0].trangThai == '2') {
                         let index = -1;
@@ -59,7 +59,7 @@ export const HDStore = defineStore('hoaDon', {
                     }
                 }
             });
-            return this.dataDangGiao[0];
+            return respone;
         },
 
         //từ đang giao -> hoàn thành
@@ -229,10 +229,16 @@ export const HDStore = defineStore('hoaDon', {
             //api thật
             const form1 = {
                 payment_type_id: 2,
-                note: 'Giao lúc 5h chiều hằng ngày',
+                note: 'Tintest 123',
                 required_note: 'KHONGCHOXEMHANG',
-                return_phone: '0339927992',
-                return_address: 'Số 29 ngõ 143',
+                from_name: 'Nguyễn Đức Dụng',
+                from_phone: '0339927992',
+                from_address: 'Số 29 ngõ 143',
+                from_ward_name: 'Xuân Phương',
+                from_district_name: 'Nam Từ Liêm',
+                from_province_name: 'HN',
+                return_phone: '0332190444',
+                return_address: '39 NTT',
                 return_district_id: 3440,
                 return_ward_code: '13010',
                 client_order_code: '',
@@ -241,20 +247,21 @@ export const HDStore = defineStore('hoaDon', {
                 to_address: hoaDon.diaChiCuThe,
                 to_ward_code: hoaDon.idPhuongXa,
                 to_district_id: parseInt(hoaDon.idQuanHuyen),
-                cod_amount: parseInt(formGHN.tongTien),
+                cod_amount: 200000,
                 content: hoaDon.maHD,
                 weight: parseInt(formGHN.trongLuong),
                 length: parseInt(formGHN.cao),
                 width: parseInt(formGHN.dai),
                 height: parseInt(formGHN.rong),
-                service_id: 100039,
-                service_type_id: 5,
+                pick_station_id: 1444,
+                deliver_station_id: null,
+                insurance_value: 500000,
+                service_id: 0,
+                service_type_id: 2,
                 coupon: null,
                 pick_shift: [2],
                 items: danhSachItem
             };
-            // console.log(form1);
-            // console.log(form1.tenNguoiNhan);
             // api xem trước
             const form2 = {
                 payment_type_id: 2,
@@ -277,25 +284,26 @@ export const HDStore = defineStore('hoaDon', {
                 width: parseInt(formGHN.dai),
                 height: parseInt(formGHN.rong),
                 pick_station_id: 0,
-                insurance_value: parseInt(formGHN.tongTien),
+                insurance_value: 500000,
                 service_id: 0,
                 service_type_id: 2,
                 coupon: null,
                 pick_shift: [2],
                 items: danhSachItem
             };
+            // console.log(form1);
             try {
-                const response = await axios.post('https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/preview', form2, {
+                const response = await axios.post('https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/create', form1, {
                     headers: {
                         // Thêm headers vào yêu cầu POST ở đây
-                        token: '8929865c-844a-11ee-b394-8ac29577e80e',
-                        ShopId: '4701529'
+                        token: 'fc6bed6e-7bd8-11ee-af43-6ead57e9219a',
+                        ShopId: '4677532'
                     }
                 });
-                // console.log(response);
+                console.log(response);
                 return response;
             } catch (error) {
-                console.error('Error fetching users:', error);
+                console.log('Error fetching users:', error);
             }
         },
         //lấy sp theo id hoá đơn
