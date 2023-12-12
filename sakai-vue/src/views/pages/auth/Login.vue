@@ -140,7 +140,7 @@ const dangKy = () => {
                                 <label for="rememberme1">Ghi nhớ đăng nhập</label>
                             </div>
 
-                            <a class="font-medium no-underline ml-2 text-right cursor-pointer"
+                            <a @click="router.push({name: 'forgot-password'})" class="font-medium no-underline ml-2 text-right cursor-pointer"
                                 style="color: var(--primary-color)">Quên mật khẩu?</a>
                         </div>
                         <div class="w-full p-3 ">
