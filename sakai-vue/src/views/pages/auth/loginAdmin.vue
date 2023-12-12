@@ -130,7 +130,7 @@ const logoUrl = computed(() => {
                     <input type="checkbox">
                     <label>Ghi nhớ đăng nhập</label>
                 </div>
-                <span class="span">Quên mật khẩu?</span>
+              <router-link :to="{name: 'forgot-password'}">Quên mật khẩu?</router-link>
             </div>
             <button class="button-submit"  @click="dangNhapa">Đăng Nhập</button>
 

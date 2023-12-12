@@ -137,7 +137,7 @@ const addEmptyRowToTableKH = (event) => {
   });
 }
 
-const updateKHForHD = () => {
+const updateKHForHD = async () => {
   if (tableKHEditingRows.value.length > 0) toast.add({
     severity: 'error',
     summary: 'Không thể thực hiện',
@@ -151,9 +151,10 @@ const updateKHForHD = () => {
     life: 3000
   });
   else {
-    store.updateKHForHD(localStorage.getItem("selectedHDId"), selectedKhachHang.value.id);
+    await store.updateKHForHD(localStorage.getItem("selectedHDId"), selectedKhachHang.value.id);
     dialogRef.value.close({
-      idUser: selectedKhachHang.value.id
+      idUser: selectedKhachHang.value.id,
+      user: selectedKhachHang.value
     });
     selectedKhachHang.value = null;
     toast.add({severity: 'success', summary: 'Thành công', detail: 'HĐ đã được cập nhật khách hàng', life: 3000});
