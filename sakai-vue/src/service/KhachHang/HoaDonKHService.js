@@ -222,7 +222,7 @@ export const HDKHStore = defineStore('hoaDonKH', {
         async doiTra(token, newHoaDon) {
             try {
                 const response = await axios.post(apiHD + `/doi-tra?token=${token}`, newHoaDon);
-                console.log(response.data)
+             //   console.log(response.data)
                 this.dataDaHoanTra.unshift(response.data);
             } catch (error) {
                 console.error('Error fetching users:', error);
