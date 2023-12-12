@@ -199,6 +199,16 @@ const router = createRouter({
             ]
         },
         {
+            path: '/forgot-password',
+            name: 'forgot-password',
+            component: () => import('@/views/pages/auth/ForgotPassword.vue')
+        },
+        {
+            path: '/reset-password',
+            name: 'reset-password',
+            component: () => import('@/views/pages/auth/ResetPassword.vue')
+        },
+        {
             path: '/logout',
             name: 'logout',
             redirect: {name: 'login'}
@@ -209,14 +219,14 @@ const router = createRouter({
             redirect: {name: 'login-admin'}
         },
         {
-            path: '/error',
-            name: 'error',
-            component: () => import('@/views/pages/auth/Error.vue')
-        },
-        {
             path: '/unauthorized',
             name: 'unauthorized',
-            component: () => import('@/views/pages/auth/Error.vue')
+            component: () => import('@/views/pages/auth/Unauthorized.vue')
+        },
+        {
+            path: '/invalid-access',
+            name: 'invalid-access',
+            component: () => import('@/views/pages/auth/InvalidAccess.vue')
         },
         {
             path: '/:pathMatch(.*)*',
