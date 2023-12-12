@@ -49,7 +49,6 @@
                         <Button type="button" label="Năm/tháng" @click="toggle" style="width: 105px; height: 40px; background: none; color: black" />
 
                         <Button type="button" label="khác" @click="toggle1" style="width: 70px; height: 40px; background: none; color: black" />
-                        <Button type="button" label=" file báo cáo" style="width: 120px; height: 40px; background: none; color: black" @click="generateExcel" />
                         <Button type="button" label="Tháng" @click="load()" style="width: 50px; height: 40px; background: none; color: black"> <i class="pi pi-replay" style="font-size: 1.8rem; margin-right: 00px; margin-left: -5px"></i></Button>
                         <OverlayPanel ref="op">
                             <H6>Hãy chọn năm</H6>
@@ -888,54 +887,5 @@ const setChartOptionsSpThap = () => {
     };
 };
 
-const dataXuatBaoCao = ref([]);
-const xuatBaoCao = async () => {
-    dataXuatBaoCao.value = await thongKeStore.xuatBaoCao();
-};
-const column = ['Tháng', 'Tổng tiền'];
-const generateExcel = () => {
-    const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('Sheet 1');
-    const columnWidths = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10];
-    worksheet.columns = column.map((col, index) => ({
-        header: col,
-        key: col,
-        width: columnWidths[index]
-    }));
 
-    dataXuatBaoCao.value.forEach((km, index) => {
-        const rowData = [];
-        dataXuatBaoCao.value.forEach((col) => {
-            if (col.thang == 1) {
-                rowData.push(km.tongTien);
-            } else {
-                // rowData.push(km[col]);
-            }
-        });
-        worksheet.addRow([index + 1, ...rowData]);
-    });
-
-    const headerRow = worksheet.getRow(1);
-    headerRow.eachCell((cell) => {
-        cell.fill = {
-            type: 'pattern',
-            pattern: 'solid',
-            fgColor: { argb: 'FFFF00' }
-        };
-        cell.font = {
-            bold: true
-        };
-    });
-
-    // Tạo và tải file Excel
-    workbook.xlsx.writeBuffer().then((buffer) => {
-        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'BaoCao.xlsx'; // Tên file Excel khi tải về
-        a.click();
-        window.URL.revokeObjectURL(url);
-    });
-};
 </script>
