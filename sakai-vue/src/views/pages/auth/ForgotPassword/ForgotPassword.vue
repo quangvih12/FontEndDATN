@@ -5,24 +5,36 @@ import {usePasswordStore} from "@/service/KhachHang/PasswordService";
 import {useToast} from "primevue/usetoast";
 import Loading from "vue-loading-overlay";
 import 'vue-loading-overlay/dist/css/index.css';
-
+import { useForm, useField, defineRule } from 'vee-validate';
+import * as yup from 'yup';
 const store = usePasswordStore();
 const router = useRouter();
 const toast = useToast();
-const email = ref();
+// const email = ref();
 const uiBlock = ref(false);
 
-const submit = async () => {
+
+const schema = yup.object().shape({
+  email: yup.string().required('Vui lòng điền email'),
+
+});
+const { handleSubmit, resetForm } = useForm({
+    validationSchema: schema
+});
+
+const { value: email, errorMessage: emailError } = useField('email');
+
+const onSubmit = handleSubmit(async (values) => {
   try {
     uiBlock.value = !uiBlock.value;
-    await store.handleForgotPassword(email.value);
+    await store.handleForgotPassword(values.email);
     uiBlock.value = !uiBlock.value;
     await router.push({name: 'mail-sent'});
   } catch (e) {
     uiBlock.value = !uiBlock.value;
     toast.add({severity: 'error', summary: 'Không thể thực hiện', detail: e.response.data, life: 3500});
   }
-}
+});
 </script>
 
 <template>
@@ -46,17 +58,21 @@ const submit = async () => {
           <router-link :to="{name: 'dang-ky'}">Tạo ngay!</router-link>
         </a>
       </div>
-      <div>
+      <form  @submit="onSubmit">
+        <div>
         <label for="email" class="block text-900 font-medium mb-2">Email</label>
-        <InputText v-model="email" id="email" type="text" placeholder="Nhập email của bạn" class="w-full mb-3"/>
-
+        <InputText v-model="email" id="email" type="text" placeholder="Nhập email của bạn" class="w-full mb-3" :class="{ 'p-invalid': emailError }"/>
+        <small class="p-error">{{ emailError }}</small>
         <div class="flex align-items-center justify-content-between mb-4">
           <router-link class="font-medium ml-2 text-right" :to="{name: 'trang-chu'}">Đi đến trang chủ</router-link>
           <router-link class="font-medium ml-2 text-right" :to="{name: 'login'}">Quay lại đăng nhập</router-link>
         </div>
 
-        <Button @click="submit" label="Xác nhận" icon="pi pi-user" class="w-full"></Button>
+        <Button  type="submit" label="Xác nhận" icon="pi pi-user" class="w-full"></Button>
       </div>
+
+      </form>
+    
     </div>
   </div>
 </template>
