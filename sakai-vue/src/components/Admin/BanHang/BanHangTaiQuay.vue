@@ -248,7 +248,7 @@ const onSubmit = handleSubmit(async (values) => {
     return;
   }
   const hdModel = new BHTQHoaDonModel(values.hinhThucGiaoHangs, values.PhuongThucThanhToan, values.moTa, values.tienKhachDua, values.idDiaChi, values.tienShip);
-  // await store.thanhToanHD(selectedHoaDon.value.id, hdModel);
+  await store.thanhToanHD(selectedHoaDon.value.id, hdModel);
   toast.add({severity: 'success', summary: 'Thành công', detail: 'Hoá đơn đã được thanh toán', life: 3000});
   confirm.require({
     group: 'xuatFileHD',
@@ -276,15 +276,21 @@ const resetForms = () => {
   thanhTien.value = 0;
   phiShip.value = 0;
 }
-
+const check = ref(false);
 const onHinhThucGiaoHangChange = async () => {
   if (hinhThucGiaoHang.value) {
     hinhThucGiaoHangs.value = hinhThucGiaoHang.value.id;
     if (hinhThucGiaoHangs.value === 2) {
+      if(userID.value === 1){
+        toast.add({severity: 'error', summary: '', detail: 'Không thể áp dụng giao hàng cho KH lẻ', life: 3000});
+        check.value = true;
+        return;
+      }
       await loadDiaChis();
       diaChiDialog.value = true;
     } else {
       phiShip.value = 0;
+      check.value = false;
       tinhTien(dsHDCT.value);
       diaChiDialog.value = false;
     }
@@ -421,8 +427,8 @@ watch(userDiaChi, async (newVal) => {
 
   if (diaChiMacDinh == '' || diaChiMacDinh == null) {
     phiShip.value = 0;
-    idDiaChi.value = diaChiMacDinh.id;
-    idDiaChi.value = userDiaChi.value[0].id;
+    // idDiaChi.value = diaChiMacDinh.id;
+    // idDiaChi.value = userDiaChi.value[0].id;
   } else {
     idDiaChi.value = diaChiMacDinh.id;
     await phiGiaoHangService.phiShip(diaChiMacDinh);
@@ -979,7 +985,7 @@ const exportFileHD = async () => {
       </div>
       <div class="card" v-if="diaChiDialog==true" style="overflow-y: scroll; width:95%; height: 200px;">
         <div
-            style="margin-left: 300px; height: 40px; width: 80px;  border: 1px solid blue; border-radius: 20px; text-align: center;">
+            style="margin-left: 300px; height: 25px; width: 80px;  border: 1px solid blue; border-radius: 20px; text-align: center;">
           <ThemDiaChi :idUser="userID"></ThemDiaChi>
         </div>
         <div v-if="!userDiaChi || userDiaChi.length === 0" style="text-align: center; margin-top: 50px;">
@@ -1023,7 +1029,7 @@ const exportFileHD = async () => {
       </div>
       <h6>Ghi chú</h6>
       <Textarea v-model="moTa" rows="4" cols="63"/>
-      <Button :disabled="tienKhachDua < thanhTien" label="Thanh toán" severity="warning" raised type="submit"
+      <Button :disabled="tienKhachDua < thanhTien || check" label="Thanh toán" severity="warning" raised type="submit"
               style="margin-top: 20px; margin-left: 150px;"/>
     </form>
   </Dialog>

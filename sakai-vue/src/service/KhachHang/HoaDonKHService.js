@@ -15,8 +15,10 @@ export const HDKHStore = defineStore('hoaDonKH', {
         dataHoanThanh: [], //3
         dataHoanTraHoanTien: [], //7
         //nếu đang ở load tất cả thì là 0
-        check: 0
-        //theo doi xem đang ở màn nào
+        check: 0,
+
+       dataSP:[],
+       dataHD:[], 
     }),
     actions: {
         //load tất cả data
@@ -129,6 +131,8 @@ export const HDKHStore = defineStore('hoaDonKH', {
         async findHdByIdHd(idHD) {
             try {
                 const response = await axios.get(apiHD + '/find-by-id/' + idHD);
+                this.dataHD = response.data;
+      //          console.log('HD: ',this.dataHD )
                 return response.data;
             } catch (error) {
                 console.error('Error fetching users:', error);
@@ -137,8 +141,11 @@ export const HDKHStore = defineStore('hoaDonKH', {
 
         //lấy sp theo id hoá đơn
         async findHdctByIdHd(idHD) {
+          
             try {
                 const response = await axios.get(apiHDCT + '/find-by-id-hd/' + idHD);
+                this.dataSP = response.data;
+              //  console.log('SP: ',this.dataSP  )
                 return response.data;
             } catch (error) {
                 console.error('Error fetching users:', error);

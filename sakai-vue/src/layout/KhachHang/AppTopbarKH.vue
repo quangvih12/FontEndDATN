@@ -57,6 +57,8 @@ const openSocketConnection = () => {
                     loadDataByTrangThai(0);
                     loadDataByTrangThai(2);
                     loadDataTra();
+                    // loadDataSpChiTiet();
+                    // loadDataHD();
                 });
             }
         }
@@ -65,6 +67,16 @@ const openSocketConnection = () => {
     stompClient.value.activate();
 };
 
+
+const loadDataHD = async () => {
+    await useHD.findHdByIdHd();
+ //   console.log(dataHD.value)
+};
+
+const loadDataSpChiTiet = async () => {
+   await useHD.findHdctByIdHd();
+
+};
 const loadData = async () => {
     const token = localStorage.getItem('token');
     if (token.length > 0 || token != null) {

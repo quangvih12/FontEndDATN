@@ -1,6 +1,6 @@
 <script setup>
-import { format } from 'date-fns';
-import { ref, onMounted, watch } from 'vue';
+import { format, parse } from 'date-fns';
+import { ref, onMounted,computed, watch } from 'vue';
 import Timeline from 'primevue/timeline';
 import { useRoute } from 'vue-router';
 import { HDKHStore } from '../../../service/KhachHang/HoaDonKHService';
@@ -20,8 +20,8 @@ const router = useRoute();
 const routers = useRouter();
 const useHD = HDKHStore();
 const idHD = router.params.id;
-const dataSP = ref([]);
-const dataHD = ref({});
+const dataSP = computed(() => useHD.dataSP);
+const dataHD = computed(() => useHD.dataHD);
 
 const schema = yup.object().shape({
     lyDo: yup.string().required('Vui lòng chọn lý do'),
@@ -43,11 +43,12 @@ onMounted(() => {
 const tongTienHang = ref();
 const bien = ref(2);
 const loadData = async () => {
-    dataSP.value = await useHD.findHdctByIdHd(idHD);
+    await useHD.findHdctByIdHd(idHD);
 };
 
+
 const loadDataHD = async () => {
-    dataHD.value = await useHD.findHdByIdHd(idHD);
+    await useHD.findHdByIdHd(idHD);
  //   console.log(dataHD.value)
 };
 
@@ -127,11 +128,18 @@ const sendMessage = () => {
     });
 };
 
-const doiTra = (idhdct, userId, diaChiId, soluong,maSP) => {
+const doiTra = (idhdct, userId, diaChiId, soluong,idSPCT) => {
    
+    const t = dataSP.value.find(x=> x.idSPCT == idSPCT && (x.trangThaiHDCT == 7))
+//    console.log(t)
+   if(t != null){
+    soLuongHang.value = parseInt(soluong) - parseInt(t.soLuong);
+   }else{
+    soLuongHang.value = soluong;
+   }
     for (const key of dataSP.value) {
         if (key.trangThaiHDCT == 7 || key.trangThaiHDCT == 8) {
-            if (key.maSP == maSP &&   soluong <=0) {
+            if (key.idSPCT == idSPCT &&   soluong <=0) {
                 toast.add({ severity: 'warn', summary: 'lỗi', detail: 'lỗi', life: 3000 });
                 return;
             }  
@@ -141,13 +149,6 @@ const doiTra = (idhdct, userId, diaChiId, soluong,maSP) => {
     idUser.value = userId;
     idDiaChi.value = diaChiId;
     doiTraDialog.value = true;
-    // let sum = 0;
-    // for (const key of dataSP.value) {
-    //     if (key.trangThaiHDCT == 7) {
-    //         sum += parseInt(key.soLuong);
-    //     }
-    // }
-    soLuongHang.value = soluong;
 };
 const tatDoiTra = () => {
     doiTraDialog.value = false;
@@ -330,7 +331,7 @@ const checks = (trangThai, soLuong) => {
                                         :disabled="dataHD.trangThai == 7 || dataHD.trangThai == 2" />
                                     <Button v-if="checks(hdct.trangThai, hdct.soLuong)" severity="secondary"
                                         label="Trả Hàng" style="width: 100px"
-                                        @click="doiTra(hdct.idHDCT, hdct.idUser, hdct.idDiaChi, hdct.soLuong,hdct.maSP)" />
+                                        @click="doiTra(hdct.idHDCT, hdct.idUser, hdct.idDiaChi, hdct.soLuong,hdct.idSPCT)" />
 
                                     <p v-if="hdct.trangThaiHDCT == 9" style="margin-top: 10px">yêu cầu Trả sản phẩm thất bại
                                     </p>
@@ -385,7 +386,7 @@ const checks = (trangThai, soLuong) => {
                         </span>
 
 
-                        <p style="margin-left: 10px;margin-top: 10px;">số lượng: {{ soLuongHang }}</p>
+                        <p style="margin-left: 10px;margin-top: 10px;">số lượng sản phẩm: {{ soLuongHang }}</p>
 
                     </div>
                     <small class="p-error">{{ soLuongError }}</small>
@@ -413,8 +414,8 @@ const checks = (trangThai, soLuong) => {
                 </div>
                 <div style="width: 400px; text-align: center">
                     <Button class="p-button-outlined" outlined severity="secondary"
-                        style="width: 100px; height: auto; margin: 10px" @click="reset()" label="Hủy"></Button>
-                    <Button type="submit" class="p-button-outlined" style="width: 100px; height: auto; margin: 10px"
+                        style="width: 100px; height: auto; margin: 10px" @click="doiTraDialog = false" label="Hủy"></Button>
+                    <Button type="submit" :disabled="soluong> soLuongHang" class="p-button-outlined" style="width: 100px; height: auto; margin: 10px"
                         label="Xác nhận"></Button>
                 </div>
             </form>

@@ -553,7 +553,7 @@ onMounted(async () => {
     loadDataThuongHieu();
     loadProducts();
     loadDataDay();
-    xuatBaoCao();
+   // xuatBaoCao();
     loadNam.value = nam;
     loadThang.value = thang;
 });
