@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import { useThongTin } from '../../../service/KhachHang/ThongTinCaNhanService';
+import { useThongTin } from '@/service/KhachHang/ThongTinCaNhanService';
 import * as yup from 'yup';
 import { useForm, useField } from 'vee-validate';
 import { useToast } from 'primevue/usetoast';

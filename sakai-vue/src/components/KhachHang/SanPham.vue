@@ -1,7 +1,7 @@
 <script setup>
 import Carousel from 'primevue/carousel';
 import { computed, onMounted, ref } from 'vue';
-import { SanPhamStore } from '../../service/KhachHang/SanPhamService';
+import { SanPhamStore } from '@/service/KhachHang/SanPhamService';
 import { useRouter } from 'vue-router';
 const SanPhamService = SanPhamStore();
 const home = ref({

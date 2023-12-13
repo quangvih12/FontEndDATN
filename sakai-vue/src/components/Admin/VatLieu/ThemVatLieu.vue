@@ -3,7 +3,7 @@ import { useToast } from 'primevue/usetoast';
 import { useForm, useField } from 'vee-validate';
 import { ref } from 'vue';
 import * as yup from 'yup';
-import { VatLieuStore } from '../../../service/Admin/VatLieu/VatLieu.api';
+import { VatLieuStore } from '@/service/Admin/VatLieu/VatLieu.api';
 
 const vatLieuService = VatLieuStore();
 const product = ref({});

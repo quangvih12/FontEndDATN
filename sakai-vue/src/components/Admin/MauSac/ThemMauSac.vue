@@ -3,7 +3,7 @@ import { useToast } from 'primevue/usetoast';
 import { useForm, useField } from 'vee-validate';
 import { ref } from 'vue';
 import * as yup from 'yup';
-import { useMauSacService } from '../../../service/Admin/MauSac/MauSacService';
+import { useMauSacService } from '@/service/Admin/MauSac/MauSacService';
 
 const mauSacService = useMauSacService();
 const product = ref({});

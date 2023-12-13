@@ -1,8 +1,8 @@
 <script setup>
-import { TrangChuStore } from '../../service/KhachHang/TrangChuService';
+import { TrangChuStore } from '@/service/KhachHang/TrangChuService';
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { SPDaXemStore } from '../../service/KhachHang/SanPhamDaXem.js';
+import { SPDaXemStore } from '@/service/KhachHang/SanPhamDaXem.js';
 import ChatButton from "./Chat/ChatButton.vue";
 const spDaXemService = SPDaXemStore();
 const router = useRouter();
@@ -67,7 +67,7 @@ onMounted(() => {
     loadDataTreEm();
 });
 
-const banner1 = '../../images/banner.jpg';
+const banner1 = '/src/assets/images/banner.jpg';
 const thumbnails = [
     {
         imageUrl: 'https://nontrum.vn/wp-content/uploads/2019/10/non-balder-vang-1-e1583121638578.jpg',
@@ -248,7 +248,7 @@ const themSPDaXem = async (idSP) => {
     <div class="grid">
         <div class="image-container">
             <div class="nav-button left-button" @click="previousImage">&lt;</div>
-            <img src="../../assets/images/banner.jpg" class="centered-image" />
+            <img src="/src/assets/images/banner.jpg" class="centered-image" />
             <div class="nav-button right-button" @click="nextImage">&gt;</div>
         </div>
         <div class="main-sp">
@@ -261,8 +261,8 @@ const themSPDaXem = async (idSP) => {
                 </div>
             </div>
             <!-- SP hot -->
-            <div><img src="../../assets/images/bannerSPBC.jpg" alt="Thumbnail" class="banner2" /></div>
-            <div><img src="../../assets/images/tenSP_BanChay.png" alt="Thumbnail" class="banner3" /></div>
+            <div><img src="/src/assets/images/bannerSPBC.jpg" alt="Thumbnail" class="banner2" /></div>
+            <div><img src="/src/assets/images/tenSP_BanChay.png" alt="Thumbnail" class="banner3" /></div>
             <div class="flex-container">
                 <div class="flex-item" v-for="(spct, index) in dataSPBanChay" :key="index">
                     <div class="product-top">
@@ -283,8 +283,8 @@ const themSPDaXem = async (idSP) => {
                 </div>
             </div>
             <!-- SP mới -->
-            <div><img src="../../assets/images/HANG-MOI.jpg" alt="Thumbnail" class="banner2" /></div>
-            <div><img src="../../assets/images/hangMoi.png" alt="Thumbnail" class="banner3" /></div>
+            <div><img src="/src/assets/images/HANG-MOI.jpg" alt="Thumbnail" class="banner2" /></div>
+            <div><img src="/src/assets/images/hangMoi.png" alt="Thumbnail" class="banner3" /></div>
             <div class="flex-container">
                 <div class="flex-item" v-for="(spct, index) in dataHangMoi" :key="index">
                     <div class="product-top">
@@ -305,8 +305,8 @@ const themSPDaXem = async (idSP) => {
                 </div>
             </div>
             <!-- Nón full -->
-            <div><img src="../../assets/images/fullFace.jpg" alt="Thumbnail" class="banner2" /></div>
-            <div><img src="../../assets/images/full.png" alt="Thumbnail" class="banner3" /></div>
+            <div><img src="/src/assets/images/fullFace.jpg" alt="Thumbnail" class="banner2" /></div>
+            <div><img src="/src/assets/images/full.png" alt="Thumbnail" class="banner3" /></div>
             <div class="flex-container">
                 <div class="flex-item" v-for="(spct, index) in dataFullrace" :key="index">
                     <div class="product-top">
@@ -328,8 +328,8 @@ const themSPDaXem = async (idSP) => {
             </div>
 
             <!-- Nón trẻ em -->
-            <div><img src="../../assets/images/non-tre-em-scaled.jpg" alt="Thumbnail" class="banner2" /></div>
-            <div><img src="../../assets/images/Banner-non-tre-em.png" alt="Thumbnail" class="banner3" /></div>
+            <div><img src="/src/assets/images/non-tre-em-scaled.jpg" alt="Thumbnail" class="banner2" /></div>
+            <div><img src="/src/assets/images/Banner-non-tre-em.png" alt="Thumbnail" class="banner3" /></div>
             <div class="flex-container">
                 <div class="flex-item" v-for="(spct, index) in dataTreEm" :key="index">
                     <div class="product-top">

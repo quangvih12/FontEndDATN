@@ -1,26 +1,43 @@
 <script setup>
 import {ref} from "vue";
+import {useRouter} from "vue-router";
 import {usePasswordStore} from "@/service/KhachHang/PasswordService";
 import {useToast} from "primevue/usetoast";
+import Loading from "vue-loading-overlay";
+import 'vue-loading-overlay/dist/css/index.css';
 
 const store = usePasswordStore();
+const router = useRouter();
 const toast = useToast();
 const email = ref();
+const uiBlock = ref(false);
 
 const submit = async () => {
   try {
+    uiBlock.value = !uiBlock.value;
     await store.handleForgotPassword(email.value);
-    toast.add({ severity: 'success', summary: 'Success Message', detail: 'Message Content', life: 3000 });
+    uiBlock.value = !uiBlock.value;
+    await router.push({name: 'mail-sent'});
   } catch (e) {
-    toast.add({ severity: 'error', summary: 'Error Message', detail: 'Message Content', life: 3000 });
+    uiBlock.value = !uiBlock.value;
+    toast.add({severity: 'error', summary: 'Không thể thực hiện', detail: e.response.data, life: 3500});
   }
 }
 </script>
 
 <template>
   <Toast/>
+  <Loading v-model:active="uiBlock"
+           :can-cancel="false"
+           :is-full-page="true"
+           color="#007bff"
+           bgColor="#ffffff"
+           height="80"
+           width="80"
+           loader="spinner"
+           :lock-scroll="true"/>
   <div class="h-screen flex justify-content-center align-items-center">
-    <div class="surface-card p-4 shadow-2 border-round w-3">
+    <div class="surface-card p-5 shadow-2 border-round w-3">
       <div class="text-center mb-5">
         <img src="/src/assets/images/logo.png" alt="Image" height="80"/>
         <div class="text-900 text-3xl font-medium mb-3">Quên mật khẩu</div>

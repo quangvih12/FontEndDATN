@@ -3,7 +3,7 @@ import { FilterMatchMode } from 'primevue/api';
 import { ref, onMounted, onBeforeMount, watch } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import DetailUser from './DetailUser.vue';
-import { userStore } from '../../../service/Admin/User/UserService';
+import { userStore } from '@/service/Admin/User/UserService';
 const toast = new useToast();
 const deleteProductDialog = ref(false);
 const deleteProductsDialog = ref(false);

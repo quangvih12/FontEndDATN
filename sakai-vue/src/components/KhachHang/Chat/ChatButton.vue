@@ -1,5 +1,5 @@
 <script setup>
-import ChatComponent from "../../Admin/Chat/ChatComponent.vue";
+import ChatComponent from "@/components/Admin/Chat/ChatComponent.vue";
 import {ref} from "vue";
 import {onClickOutside} from "@vueuse/core";
 

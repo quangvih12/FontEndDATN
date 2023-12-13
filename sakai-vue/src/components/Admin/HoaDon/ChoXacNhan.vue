@@ -7,7 +7,7 @@ import { FilterMatchMode, FilterOperator } from 'primevue/api';
 import { ref, onBeforeMount, onMounted, watch } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import DetailHoaDonChoXacNhan from './DetailHoaDonChoXacNhan.vue';
-import { HDStore } from '../../../service/Admin/HoaDon/HoaDonService';
+import { HDStore } from '@/service/Admin/HoaDon/HoaDonService';
 import { Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 

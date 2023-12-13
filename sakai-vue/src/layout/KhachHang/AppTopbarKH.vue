@@ -6,9 +6,9 @@ import { userStore } from '@/service/Admin/User/UserService.js';
 import { gioHangStore } from '@/service/KhachHang/Giohang/GiohangCTService.js';
 import tokenService from '@/service/Authentication/TokenService.js';
 import userKHService from '@/service/KhachHang/UserService.js';
-import { HDKHStore } from '../../service/KhachHang/HoaDonKHService';
-// import tokenService from '../../service/Authentication/TokenService.js';
-import { KHThongBaoStore } from '../../service/KhachHang/ThongBaoService';
+import { HDKHStore } from '@/service/KhachHang/HoaDonKHService';
+// import tokenService from '@/service/Authentication/TokenService.js';
+import { KHThongBaoStore } from '@/service/KhachHang/ThongBaoService';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 
@@ -279,7 +279,7 @@ const toggle2 = (event) => {
 <template>
     <div class="layout-topbar">
         <router-link :to="{ name: 'trang-chu' }" class="layout-topbar-logo" style="height: 60px; width: 120px">
-            <img src="../../assets/images/logo.png" alt="logo" style="height: 70px" />
+            <img src="/src/assets/images/logo.png" alt="logo" style="height: 70px" />
         </router-link>
 
         <button class="p-link layout-topbar-menu-button layout-topbar-button" @click="onTopBarMenuButton()">

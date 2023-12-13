@@ -125,11 +125,11 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useLoaiService } from '../../../service/Admin/Loai/LoaiService';
-import { ProductStore } from '../../../service/Admin/product/product.api';
+import { useLoaiService } from '@/service/Admin/Loai/LoaiService';
+import { ProductStore } from '@/service/Admin/product/product.api';
 import SelectCTSP from './SelectCTSP.vue';
 
-import { ctspStore } from '@/service/Admin/SanPhamChiTiet/SanPhamCTService.js';
+import { ctspStore } from '@/service/Admin/SanPhamChiTiet/sanPhamCTService';
 import { useToast } from 'primevue/usetoast';
 import { khuyenMaiStore } from '@/service/Admin/KhuyenMai/KhuyenMaiService.js';
 

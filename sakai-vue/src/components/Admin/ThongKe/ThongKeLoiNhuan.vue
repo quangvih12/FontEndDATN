@@ -1,13 +1,13 @@
 <script setup>
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
 
-import { ThongKeStore } from "../../../service/Admin/ThongKe/ThongKe.api";
+import { ThongKeStore } from "@/service/Admin/ThongKe/ThongKe.api";
 import { ref, onMounted, watch,onBeforeMount } from 'vue';
 import OverlayPanel from 'primevue/overlaypanel';
 import { th } from 'date-fns/locale';
 import { useForm, useField, defineRule } from 'vee-validate';
 import * as yup from 'yup';
-import DetailHoaDon from '../HoaDon/DetailHoaDon.vue';
+import DetailHoaDon from '@/components/Admin/HoaDon/DetailHoaDon.vue';
 
 const thongKeStore = ThongKeStore();
 // biểu đồ

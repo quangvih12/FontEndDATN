@@ -6,12 +6,12 @@ import { useField, useForm } from 'vee-validate';
 import AppConfig from '@/layout/AppConfig.vue';
 import { decodeCredential } from 'vue3-google-login';
 import tokenService from '@/service/Authentication/TokenService.js';
-import { dangNhapStore } from '../../../service/KhachHang/DangNhapService';
+import { dangNhapStore } from '@/service/KhachHang/DangNhapService';
 import { useToast } from 'primevue/usetoast';
 import { useRouter } from 'vue-router';
-import { gioHangStore } from '../../../service/KhachHang/Giohang/GiohangCTService.js';
-import {verifyJwt} from "../../../service/common/JwtUtils";
-import {useChatStore} from "../../../service/Admin/Chat/ChatService";
+import { gioHangStore } from '@/service/KhachHang/Giohang/GiohangCTService.js';
+import {verifyJwt} from "@/service/common/JwtUtils";
+import {useChatStore} from "@/service/Admin/Chat/ChatService";
 import * as chatService from "@/service/chatkitty";
 
 const router = useRouter();
@@ -87,7 +87,7 @@ const logoUrl = computed(() => {
     <div class="surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden">
         <Toast />
         <div class="flex flex-column align-items-center justify-content-center">
-            <img src="../../../assets/images/logo.png" alt="Sakai logo" class="mb-5 w-6rem flex-shrink-0" />
+            <img src="/src/assets/images/logo.png" alt="Sakai logo" class="mb-5 w-6rem flex-shrink-0" />
         <form class="form">
             <div class="flex-column">
                 <label>Email </label>

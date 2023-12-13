@@ -2,11 +2,11 @@
 
 import { ref, defineProps, onMounted } from 'vue';
 import { useToast } from 'primevue/usetoast';
-import View from '../QuanLySize/ViewSize.vue';
-import ThemThuongHieu from '../QuanLyThuongHieu/ThemThuongHieu.vue';
-import DetailThuongHieu from '../QuanLyThuongHieu/DetailThuongHieu.vue';
-import UpdateThuongHieu from '../QuanLyThuongHieu/UpdateThuongHieu.vue';
-import { useCounterStore } from '../../../service/Admin/ThuongHieu/ThuongHieuService.js';
+import View from '@/components/Admin/QuanLySize/ViewSize.vue';
+import ThemThuongHieu from '@/components/Admin/QuanLyThuongHieu/ThemThuongHieu.vue';
+import DetailThuongHieu from '@/components/Admin/QuanLyThuongHieu/DetailThuongHieu.vue';
+import UpdateThuongHieu from '@/components/Admin/QuanLyThuongHieu/UpdateThuongHieu.vue';
+import { useCounterStore } from '@/service/Admin/ThuongHieu/ThuongHieuService';
 
 const useThuongHieuService = useCounterStore();
 const toast = useToast();

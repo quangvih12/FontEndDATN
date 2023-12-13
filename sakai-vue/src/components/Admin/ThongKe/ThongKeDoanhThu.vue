@@ -195,10 +195,10 @@
 
 <script setup>
 import { ref, onMounted, watch } from 'vue';
-import { ThongKeStore } from '../../../service/Admin/ThongKe/ThongKe.api';
-import { useLoaiService } from '../../../service/Admin/Loai/LoaiService';
-import { useCounterStore } from '../../../service/Admin/ThuongHieu/ThuongHieuService.js';
-import { ProductStore } from '../../../service/Admin/product/product.api';
+import { ThongKeStore } from '@/service/Admin/ThongKe/ThongKe.api';
+import { useLoaiService } from '@/service/Admin/Loai/LoaiService';
+import { useCounterStore } from '@/service/Admin/ThuongHieu/ThuongHieuService.js';
+import { ProductStore } from '@/service/Admin/product/product.api';
 import { useForm, useField, defineRule } from 'vee-validate';
 import * as yup from 'yup';
 import OverlayPanel from 'primevue/overlaypanel';
