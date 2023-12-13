@@ -1,10 +1,10 @@
 <script setup>
 import { FilterMatchMode } from 'primevue/api';
 import { ref, onMounted, onBeforeMount, watch } from 'vue';
-import Them from '../../../components/Admin/TrongLuong/ThemTrongLuong.vue';
-import Detail from '../../../components/Admin/TrongLuong/DetailTrongLuong.vue';
-import Update from '../../../components/Admin/TrongLuong/UpdateTrongLuong.vue';
-import { TrongLuongStore } from '../../../service/Admin/TrongLuong/TrongLuong.api';
+import Them from '@/components/Admin/TrongLuong/ThemTrongLuong.vue';
+import Detail from '@/components/Admin/TrongLuong/DetailTrongLuong.vue';
+import Update from '@/components/Admin/TrongLuong/UpdateTrongLuong.vue';
+import { TrongLuongStore } from '@/service/Admin/TrongLuong/TrongLuong.api';
 import { useToast } from 'primevue/usetoast';
 
 const TrongLuongService = TrongLuongStore();

@@ -3,14 +3,14 @@ import { format, parse } from 'date-fns';
 import { ref, onMounted,computed, watch } from 'vue';
 import Timeline from 'primevue/timeline';
 import { useRoute } from 'vue-router';
-import { HDKHStore } from '../../../service/KhachHang/HoaDonKHService';
+import { HDKHStore } from '@/service/KhachHang/HoaDonKHService';
 import { useForm, useField, defineRule } from 'vee-validate';
 import * as yup from 'yup';
-import { gioHangStore } from '../../../service/KhachHang/Giohang/GiohangCTService';
+import { gioHangStore } from '@/service/KhachHang/Giohang/GiohangCTService';
 import { useRouter } from 'vue-router';
 import { Client } from '@stomp/stompjs';
 import { useToast } from 'primevue/usetoast';
-import { useDetailProductStore } from '../../../service/KhachHang/DetailService';
+import { useDetailProductStore } from '@/service/KhachHang/DetailService';
 
 const productStore = useDetailProductStore();
 const toast = useToast();

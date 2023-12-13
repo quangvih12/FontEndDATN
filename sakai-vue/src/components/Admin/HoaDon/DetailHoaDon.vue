@@ -4,7 +4,7 @@ import { ref, onMounted, watch } from 'vue';
 import { useForm, useField } from 'vee-validate';
 import Divider from 'primevue/divider';
 import { da } from 'date-fns/locale';
-import { HDStore } from '../../../service/Admin/HoaDon/HoaDonService';
+import { HDStore } from '@/service/Admin/HoaDon/HoaDonService';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { useToast } from 'primevue/usetoast';

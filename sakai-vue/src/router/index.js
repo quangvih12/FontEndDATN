@@ -1,5 +1,5 @@
 import {createRouter, createWebHistory} from 'vue-router';
-import {authMiddleware} from "../middleware";
+import {authMiddleware} from "@/middleware";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -103,7 +103,7 @@ const router = createRouter({
             path: '/admin/login',
             name: 'login-admin',
             beforeEnter: authMiddleware.isAuthSkippable,
-            component: () => import('@/views/pages/auth/LoginAdmin.vue')
+            component: () => import('@/views/pages/auth/loginAdmin.vue')
         },
         {
             path: '/admin',
@@ -127,12 +127,12 @@ const router = createRouter({
                         {
                             path: 'mau-sac',
                             name: 'mau-sac',
-                            component: () => import('@/components/Admin/MauSac/index.vue')
+                            component: () => import('@/components/Admin/MauSac/Index.vue')
                         },
                         {
                             path: 'loai',
                             name: 'loai',
-                            component: () => import('@/components/Admin/Loai/index.vue')
+                            component: () => import('@/components/Admin/Loai/Index.vue')
                         },
                         {
                             path: 'trong-luong',
@@ -159,7 +159,7 @@ const router = createRouter({
                 {
                     path: 'khuyen-mai',
                     name: 'khuyen-mai',
-                    component: () => import('@/components/Admin/khuyenMai/KhuyenMai.vue')
+                    component: () => import('@/components/Admin/KhuyenMai/KhuyenMai.vue')
                 },
                 {
                     path: 'hoa-don',
@@ -201,12 +201,22 @@ const router = createRouter({
         {
             path: '/forgot-password',
             name: 'forgot-password',
-            component: () => import('@/views/pages/auth/ForgotPassword.vue')
+            component: () => import('@/views/pages/auth/ForgotPassword/ForgotPassword.vue')
+        },
+        {
+            path: '/forgot-password/mail-sent',
+            name: 'mail-sent',
+            component: () => import('@/views/pages/auth/ForgotPassword/MailSent.vue')
         },
         {
             path: '/reset-password',
             name: 'reset-password',
-            component: () => import('@/views/pages/auth/ResetPassword.vue')
+            component: () => import('@/views/pages/auth/ForgotPassword/ResetPassword.vue')
+        },
+        {
+            path: '/reset-password/password-changed',
+            name: 'password-changed',
+            component: () => import('@/views/pages/auth/ForgotPassword/PasswordChanged.vue')
         },
         {
             path: '/logout',

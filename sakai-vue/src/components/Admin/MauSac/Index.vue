@@ -4,7 +4,7 @@ import { ref, onMounted, onBeforeMount, watch } from 'vue';
 import Them from './ThemMauSac.vue';
 import Detail from './DetailMauSac.vue';
 import Update from './UpdateMauSac.vue';
-import { useMauSacService } from '../../../service/Admin/MauSac/MauSacService';
+import { useMauSacService } from '@/service/Admin/MauSac/MauSacService';
 import { useToast } from 'primevue/usetoast';
 
 const mauSacService = useMauSacService();

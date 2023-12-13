@@ -8,14 +8,14 @@ import TableLoai from './DataTableLoai.vue';
 import TableThuongHieu from './DataTableThuongHieu.vue';
 
 import TablevatLieu from './DataTableVatLieu.vue';
-import { ProductStore } from '../../../service/Admin/product/product.api';
+import { ProductStore } from '@/service/Admin/product/product.api';
 import { useToast } from 'primevue/usetoast';
-import { useCounterStore } from '../../../service/Admin/ThuongHieu/ThuongHieuService.js';
-import { SizeStore } from '../../../service/Admin/Size/SizeService';
-import { useLoaiService } from '../../../service/Admin/Loai/LoaiService';
-import { useMauSacService } from '../../../service/Admin/MauSac/MauSacService';
-import { TrongLuongStore } from '../../../service/Admin/TrongLuong/TrongLuong.api';
-import { VatLieuStore } from '../../../service/Admin/VatLieu/VatLieu.api';
+import { useCounterStore } from '@/service/Admin/ThuongHieu/ThuongHieuService.js';
+import { SizeStore } from '@/service/Admin/Size/SizeService';
+import { useLoaiService } from '@/service/Admin/Loai/LoaiService';
+import { useMauSacService } from '@/service/Admin/MauSac/MauSacService';
+import { TrongLuongStore } from '@/service/Admin/TrongLuong/TrongLuong.api';
+import { VatLieuStore } from '@/service/Admin/VatLieu/VatLieu.api';
 
 const confirm = useConfirm();
 const toast = useToast();

@@ -3,7 +3,7 @@ import * as yup from 'yup';
 import { useForm, useField } from 'vee-validate';
 import { ref, onMounted, onBeforeMount } from 'vue';
 import { useToast } from 'primevue/usetoast';
-import { SizeStore } from '../../../service/Admin/Size/SizeService';
+import { SizeStore } from '@/service/Admin/Size/SizeService';
 
 const useSizeService = SizeStore();
 const toast = useToast();

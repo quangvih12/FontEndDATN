@@ -2,7 +2,7 @@
 <script setup>
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
 import { ref, onBeforeMount, onMounted } from 'vue';
-import { HDKHStore } from '../../../service/KhachHang/HoaDonKHService';
+import { HDKHStore } from '@/service/KhachHang/HoaDonKHService';
 import DetailHoaDon from './TrangThaiDonHang.vue';
 import { useRouter } from 'vue-router';
 

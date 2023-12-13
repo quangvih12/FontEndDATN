@@ -1,7 +1,7 @@
 <script setup>
 import { FilterMatchMode } from 'primevue/api';
 import { ref, onMounted, onBeforeMount, computed, reactive, watch } from 'vue';
-import { ProductStore } from '../../../service/Admin/product/product.api';
+import { ProductStore } from '@/service/Admin/product/product.api';
 import AddProduct from './addProduct.vue';
 import { useToast } from 'primevue/usetoast';
 import UpdateProduct from './updateProduct.vue';

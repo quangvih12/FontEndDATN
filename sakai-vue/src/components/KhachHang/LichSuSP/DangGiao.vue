@@ -3,11 +3,11 @@
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
 import { ref, onBeforeMount, onMounted, watch } from 'vue';
 import { useToast } from 'primevue/usetoast';
-import { HDKHStore } from '../../../service/KhachHang/HoaDonKHService';
+import { HDKHStore } from '@/service/KhachHang/HoaDonKHService';
 import DetailHoaDon from './TrangThaiDonHang.vue';
 import { useRouter } from 'vue-router';
-import { gioHangStore } from '../../../service/KhachHang/Giohang/GiohangCTService';
-import { useDetailProductStore } from '../../../service/KhachHang/DetailService';
+import { gioHangStore } from '@/service/KhachHang/Giohang/GiohangCTService';
+import { useDetailProductStore } from '@/service/KhachHang/DetailService';
 
 const productStore = useDetailProductStore();
 const router = useRouter();

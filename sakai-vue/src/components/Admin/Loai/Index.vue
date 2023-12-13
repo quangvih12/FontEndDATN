@@ -1,10 +1,10 @@
 <script setup>
 import { FilterMatchMode } from 'primevue/api';
 import { ref, onMounted, onBeforeMount, watch } from 'vue';
-import Them from '../../../components/Admin/Loai/ThemLoai.vue';
-import Detail from '../../../components/Admin/Loai/DetailLoai.vue';
-import Update from '../../../components/Admin/Loai/UpdateLoai.vue';
-import { useLoaiService } from '../../../service/Admin/Loai/LoaiService';
+import Them from '@/components/Admin/Loai/ThemLoai.vue';
+import Detail from '@/components/Admin/Loai/DetailLoai.vue';
+import Update from '@/components/Admin/Loai/UpdateLoai.vue';
+import { useLoaiService } from '@/service/Admin/Loai/LoaiService';
 import { useToast } from 'primevue/usetoast';
 
 const LoaiService = useLoaiService();

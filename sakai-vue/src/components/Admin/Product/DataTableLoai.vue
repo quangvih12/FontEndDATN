@@ -1,8 +1,7 @@
 <script setup>
 import { ref, defineProps, onMounted } from 'vue';
-import { useLoaiService } from '../../../service/Admin/Loai/LoaiService';
-
-import Index from '../../../components/Admin/Loai/Index.vue';
+import { useLoaiService } from '@/service/Admin/Loai/LoaiService';
+import Index from '@/components/Admin/Loai/Index.vue';
 
 const LoaiService = useLoaiService();
 const props = defineProps({

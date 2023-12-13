@@ -2,7 +2,7 @@
 import { ref, watch } from 'vue';
 import { useForm, useField } from 'vee-validate';
 import * as yup from 'yup';
-import { TrongLuongStore } from '../../../service/Admin/TrongLuong/TrongLuong.api';
+import { TrongLuongStore } from '@/service/Admin/TrongLuong/TrongLuong.api';
 import { useToast } from 'primevue/usetoast';
 
 const toast = useToast();

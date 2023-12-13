@@ -57,7 +57,7 @@ const isOutsideClicked = (event) => {
 <template>
     <div class="layout-topbar">
         <router-link :to="{ name: 'trang-chu' }" class="layout-topbar-logo" style="height: 60px; width: 120px">
-            <img src="../../assets/images/logo.png" alt="logo" style="height: 70px" />
+            <img src="/src/assets/images/logo.png" alt="logo" style="height: 70px" />
         </router-link>
         <!-- <span class="p-input-icon-left">
             <i class="pi pi-search" />

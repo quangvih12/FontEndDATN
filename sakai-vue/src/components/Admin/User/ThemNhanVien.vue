@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { useForm, useField } from 'vee-validate';
-import { userStore } from '../../../service/Admin/User/UserService';
+import { userStore } from '@/service/Admin/User/UserService';
 import { useToast } from 'primevue/usetoast';
 import * as yup from 'yup';
 import { QrcodeStream } from 'vue3-qrcode-reader';

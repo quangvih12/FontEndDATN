@@ -6,8 +6,8 @@ import AppSidebar from './AppSidebar.vue';
 import AppConfig from './AppConfig.vue';
 import { useLayout } from '@/layout/composables/layout';
 import * as chatService from "@/service/chatkitty";
-import {verifyJwt} from "../service/common/JwtUtils";
-import {useChatStore} from "../service/Admin/Chat/ChatService";
+import {verifyJwt} from "@/service/common/JwtUtils";
+import {useChatStore} from "@/service/Admin/Chat/ChatService";
 
 const chatStore = useChatStore();
 const { layoutConfig, layoutState, isSidebarActive } = useLayout();

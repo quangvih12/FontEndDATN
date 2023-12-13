@@ -5,7 +5,7 @@ import { useForm, useField } from 'vee-validate';
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
 import { ref, onBeforeMount, onMounted, watch } from 'vue';
 import { useToast } from 'primevue/usetoast';
-import { HDKHStore } from '../../../service/KhachHang/HoaDonKHService';
+import { HDKHStore } from '@/service/KhachHang/HoaDonKHService';
 import DetailHoaDon from './TrangThaiDonHang.vue';
 import { useRouter } from 'vue-router';
 

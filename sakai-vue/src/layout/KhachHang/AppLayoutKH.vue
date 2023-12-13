@@ -1,13 +1,13 @@
 <script setup>
 import {computed, watch, ref, onBeforeUnmount, onBeforeMount} from 'vue';
-import AppTopbar from '../KhachHang/AppTopbarKH.vue';
-import AppFooter from '../KhachHang/AppFooterKH.vue';
-import AppSidebar from '../AppSidebar.vue';
-import AppConfig from '../AppConfig.vue';
+import AppTopbar from '@/layout/KhachHang/AppTopbarKH.vue';
+import AppFooter from '@/layout/KhachHang/AppFooterKH.vue';
+import AppSidebar from '@/layout/AppSidebar.vue';
+import AppConfig from '@/layout/AppConfig.vue';
 import { useLayout } from '@/layout/composables/layout';
-import ChatButton from "../../components/KhachHang/Chat/ChatButton.vue";
-import {useChatStore} from "../../service/Admin/Chat/ChatService";
-import {verifyJwt} from "../../service/common/JwtUtils";
+import ChatButton from "@/components/KhachHang/Chat/ChatButton.vue";
+import {useChatStore} from "@/service/Admin/Chat/ChatService";
+import {verifyJwt} from "@/service/common/JwtUtils";
 import * as chatService from "@/service/chatkitty";
 
 const chatStore = useChatStore();
