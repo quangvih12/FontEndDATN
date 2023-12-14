@@ -1,6 +1,6 @@
 <script setup>
 import { format, parse } from 'date-fns';
-import { ref, onMounted,computed, watch } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import Timeline from 'primevue/timeline';
 import { useRoute } from 'vue-router';
 import { HDKHStore } from '@/service/KhachHang/HoaDonKHService';
@@ -11,10 +11,11 @@ import { useRouter } from 'vue-router';
 import { Client } from '@stomp/stompjs';
 import { useToast } from 'primevue/usetoast';
 import { useDetailProductStore } from '@/service/KhachHang/DetailService';
+import { useConfirm } from "primevue/useconfirm";
 
 const productStore = useDetailProductStore();
 const toast = useToast();
-
+const confirm = useConfirm();
 const gioHangService = gioHangStore();
 const router = useRoute();
 const routers = useRouter();
@@ -25,7 +26,7 @@ const dataHD = computed(() => useHD.dataHD);
 
 const schema = yup.object().shape({
     lyDo: yup.string().required('Vui lòng chọn lý do'),
- //   moTa: yup.string().required('Vui lòng điền mô tả ').min(10, 'Mô tả sản phẩm phải có ít nhất 10 ký tự'),
+    //   moTa: yup.string().required('Vui lòng điền mô tả ').min(10, 'Mô tả sản phẩm phải có ít nhất 10 ký tự'),
     soLuong: yup.number().required('số lượng không được để trống').typeError('Số lượng phải là một số').min(1, 'Số lượng phải lớn hơn hoặc bằng 1').nullable()
 });
 const { handleSubmit, resetForm } = useForm({
@@ -49,7 +50,7 @@ const loadData = async () => {
 
 const loadDataHD = async () => {
     await useHD.findHdByIdHd(idHD);
- //   console.log(dataHD.value)
+    //   console.log(dataHD.value)
 };
 
 const ngayDat = ref('');
@@ -71,7 +72,7 @@ const events = ref([
     { status: 'Đánh giá', date: '17/10/2020', icon: 'pi pi-star', color: '#F55C3B' }
 ]);
 
-const tinhTongTien = (tienShip, tongTien, tienSauGiam,idVoucher) => {
+const tinhTongTien = (tienShip, tongTien, tienSauGiam, idVoucher) => {
     if (idVoucher === '' || idVoucher === null) {
         return parseInt(tongTien) + parseInt(tienShip);
     } else {
@@ -128,21 +129,21 @@ const sendMessage = () => {
     });
 };
 
-const doiTra = (idhdct, userId, diaChiId, soluong,idSPCT) => {
-   
-    const t = dataSP.value.find(x=> x.idSPCT == idSPCT && (x.trangThaiHDCT == 7))
-//    console.log(t)
-   if(t != null){
-    soLuongHang.value = parseInt(soluong) - parseInt(t.soLuong);
-   }else{
-    soLuongHang.value = soluong;
-   }
+const doiTra = (idhdct, userId, diaChiId, soluong, idSPCT) => {
+
+    const t = dataSP.value.find(x => x.idSPCT == idSPCT && (x.trangThaiHDCT == 7))
+    //    console.log(t)
+    if (t != null) {
+        soLuongHang.value = parseInt(soluong) - parseInt(t.soLuong);
+    } else {
+        soLuongHang.value = soluong;
+    }
     for (const key of dataSP.value) {
         if (key.trangThaiHDCT == 7 || key.trangThaiHDCT == 8) {
-            if (key.idSPCT == idSPCT &&   soluong <=0) {
+            if (key.idSPCT == idSPCT && soluong <= 0) {
                 toast.add({ severity: 'warn', summary: 'lỗi', detail: 'lỗi', life: 3000 });
                 return;
-            }  
+            }
         }
     }
     idHDCT.value = idhdct;
@@ -177,6 +178,27 @@ const onSubmit = handleSubmit(async (values) => {
     doiTraDialog.value = false;
 });
 
+const huyTraHang = async (id) => {
+    await useHD.huydoiTra(id);
+    loadData();
+    loadDataHD();
+}
+
+const requireConfirmation = (id) => {
+    confirm.require({
+        group: 'headless',
+        header: 'bạn có chắc muốn hủy trả hàng không ?',
+        message: 'Vui lòng xác nhận để tiếp tục.',
+        accept: () => {
+            huyTraHang(id);
+            toast.add({ severity: 'info', summary: 'Confirmed', detail: 'You have accepted', life: 3000 });
+        },
+        reject: () => {
+            toast.add({ severity: 'error', summary: 'Rejected', detail: 'You have rejected', life: 3000 });
+        }
+    });
+};
+
 const dataLyDo = ref([{ value: 'Không đúng màu sắc' }, { value: 'Không đúng size' }, { value: 'Mũ bị hỏng ' }, { value: 'Mũ không giống như mô tả' }, { value: 'Khác' }]);
 const selectLyDo = ref();
 const onTrongLuongChange = () => {
@@ -208,10 +230,10 @@ const addCart = async (soLuong, idCTSP, idSize, idMau) => {
     soLuongGH.value = parseInt(soLuong) + parseInt(dataGHCT.value.soLuong)
 
 
-        if (soLuongGH.value > dataListSPCT.value.soLuongTon) {
-            toast.add({ severity: 'warn', summary: '', detail: 'Số lượng bạn chọn đã đạt mức tối đa của sản phẩm', life: 5000 });
-            return;
-        }
+    if (soLuongGH.value > dataListSPCT.value.soLuongTon) {
+        toast.add({ severity: 'warn', summary: '', detail: 'Số lượng bạn chọn đã đạt mức tối đa của sản phẩm', life: 5000 });
+        return;
+    }
     await gioHangService.addToCart(cartItem, token);
     routers.push({ name: 'gio-hang' });
 
@@ -234,10 +256,7 @@ const formatDate = (dateTime) => {
 };
 
 const checks = (trangThai, soLuong) => {
-
-
-    if (parseInt(trangThai) == 3 ) {
-
+    if (parseInt(trangThai) == 3) {
         return true;
     } else if (parseInt(bien.value) >= parseInt(soLuong) && parseInt(trangThai) == 3) {
         return false;
@@ -325,14 +344,34 @@ const checks = (trangThai, soLuong) => {
                                         hdct.lyDo }}
                                 </p>
                                 <div class="price">
+                                    <ConfirmDialog group="headless">
+                                        <template #container="{ message, acceptCallback, rejectCallback }">
+                                            <div
+                                                class="flex flex-column align-items-center p-5 surface-overlay border-round">
+                                                <div
+                                                    class="border-circle bg-primary inline-flex justify-content-center align-items-center h-6rem w-6rem -mt-8">
+                                                    <i class="pi pi-question text-5xl"></i>
+                                                </div>
+                                                <span class="font-bold text-2xl block mb-2 mt-4">{{ message.header }}</span>
+                                                <p class="mb-0">{{ message.message }}</p>
+                                                <div class="flex align-items-center gap-2 mt-4">
+                                                  
+                                                    <Button label="Không" outlined @click="rejectCallback"></Button>
+                                                    <Button label="Có" @click="acceptCallback"></Button>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </ConfirmDialog>
                                     <h6 style="color: red">{{ formatCurrency(hdct.donGia) }}</h6>
                                     <Button type="button" label="Mua lại" style="width: 100px; margin-right: 10px"
-                                        @click="addCart( hdct.soLuong,hdct.idSPCT, hdct.idSize, hdct.idMau)"
+                                        @click="addCart(hdct.soLuong, hdct.idSPCT, hdct.idSize, hdct.idMau)"
                                         :disabled="dataHD.trangThai == 7 || dataHD.trangThai == 2" />
                                     <Button v-if="checks(hdct.trangThai, hdct.soLuong)" severity="secondary"
                                         label="Trả Hàng" style="width: 100px"
-                                        @click="doiTra(hdct.idHDCT, hdct.idUser, hdct.idDiaChi, hdct.soLuong,hdct.idSPCT)" />
-
+                                        @click="doiTra(hdct.idHDCT, hdct.idUser, hdct.idDiaChi, hdct.soLuong, hdct.idSPCT)" />
+                                    <Button v-if="hdct.trangThai == 7" severity="danger" label="Hủy trả"
+                                        style="width: 100px" @click="requireConfirmation(hdct.idHDCT)" />
+                                    
                                     <p v-if="hdct.trangThaiHDCT == 9" style="margin-top: 10px">yêu cầu Trả sản phẩm thất bại
                                     </p>
                                     <p v-if="hdct.trangThaiHDCT == 8" style="margin-top: 10px">yêu cầu Trả sản phẩm thành
@@ -369,7 +408,7 @@ const checks = (trangThai, soLuong) => {
                                 parseInt(dataHD.tienSauKhiGiam)) }}</p>
                         <p style="color: red" v-else>0</p>
                         <p style="font-weight: bold; color: red">{{ formatCurrency(tinhTongTien(dataHD.tongTien,
-                            dataHD.tienShip, dataHD.tienSauKhiGiam,dataHD.idVoucher)) }}</p>
+                            dataHD.tienShip, dataHD.tienSauKhiGiam, dataHD.idVoucher)) }}</p>
                     </div>
                 </div>
             </div>
@@ -415,8 +454,8 @@ const checks = (trangThai, soLuong) => {
                 <div style="width: 400px; text-align: center">
                     <Button class="p-button-outlined" outlined severity="secondary"
                         style="width: 100px; height: auto; margin: 10px" @click="doiTraDialog = false" label="Hủy"></Button>
-                    <Button type="submit" :disabled="soluong> soLuongHang" class="p-button-outlined" style="width: 100px; height: auto; margin: 10px"
-                        label="Xác nhận"></Button>
+                    <Button type="submit" :disabled="soluong > soLuongHang" class="p-button-outlined"
+                        style="width: 100px; height: auto; margin: 10px" label="Xác nhận"></Button>
                 </div>
             </form>
         </Dialog>

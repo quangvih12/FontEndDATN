@@ -382,7 +382,6 @@ function onFileInputImageMauSac(event) {
         const basePath = "D:\\imgDATN\\"; // Đường dẫn cố định
         const fileName = basePath + file.name;
         arrayImgMauSac.value.push(fileName);
-
     }
     imgMauSac.value = arrayImgMauSac.value.join(',').replace(/^,/, '').split(',');
 }

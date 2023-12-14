@@ -235,5 +235,15 @@ export const HDKHStore = defineStore('hoaDonKH', {
                 console.error('Error fetching users:', error);
             }
         },
+
+        async huydoiTra(id) {
+            try {
+                const response = await axios.delete(apiHD + `/huy-doi-tra/${id}`);
+             //   console.log(response.data)
+                this.dataDaHoanTra.slice(response.data);
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        },
     }
 });
