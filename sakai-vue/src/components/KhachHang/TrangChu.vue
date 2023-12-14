@@ -3,7 +3,7 @@ import { TrangChuStore } from '@/service/KhachHang/TrangChuService';
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { SPDaXemStore } from '@/service/KhachHang/SanPhamDaXem.js';
-import ChatButton from "./Chat/ChatButton.vue";
+import ChatButton from './Chat/ChatButton.vue';
 const spDaXemService = SPDaXemStore();
 const router = useRouter();
 const useTrangChuService = TrangChuStore();
@@ -194,16 +194,18 @@ const themSPDaXem = async (idSP) => {
             array.unshift(form);
             localStorage.setItem('spDaXem', JSON.stringify(array));
         } else {
-            let check = ref(0);
-            for (let i = 0; i < array.length; i++) {
-                if (array[i].idSP == idSP) {
-                    check.value = 1;
-                }
-            }
-            if (check.value == 0) {
-                array.unshift(form);
-                localStorage.setItem('spDaXem', JSON.stringify(array));
-            }
+            // let check = ref(0);
+            // for (let i = 0; i < array.length; i++) {
+            //     if (array[i].idSP == idSP) {
+            //         check.value = 1;
+            //     }
+            // }
+            // if (check.value == 0) {
+            //     array.unshift(form);
+            //     localStorage.setItem('spDaXem', JSON.stringify(array));
+            // }
+            array.unshift(form);
+            localStorage.setItem('spDaXem', JSON.stringify(array));
         }
     } else {
         const responeKH = await spDaXemService.findByToken(token);

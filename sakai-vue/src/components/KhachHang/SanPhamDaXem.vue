@@ -35,7 +35,7 @@ const loadData = async () => {
             }
         }
     }
-    console.log(dataSP.value);
+    // console.log(dataSP.value);
 };
 
 const uniqueTenLoai = computed(() => {
