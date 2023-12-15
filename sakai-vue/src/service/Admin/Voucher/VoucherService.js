@@ -4,7 +4,7 @@ import axios from '@/service/Authentication/http.js';
 const apiVoucher = `${import.meta.env.VITE_BASE_API_ENDPOINT}/admin/voucher`;
 const apiUserVoucher = `${import.meta.env.VITE_BASE_API_ENDPOINT}/admin/user-voucher`;
 const apiUser = `${import.meta.env.VITE_BASE_API_ENDPOINT}/admin/user`;
-
+const apiGiohang = `${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/giohang`;
 export const voucherStore = defineStore('voucher', {
     state: () => ({
         data: [],
@@ -74,5 +74,8 @@ export const voucherStore = defineStore('voucher', {
                 }
             });
         }
-    }
+       
+    },
+
+    
 });

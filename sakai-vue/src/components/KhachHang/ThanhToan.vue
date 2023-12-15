@@ -325,6 +325,8 @@ const showError = computed(() => {
   // Chỉ hiển thị lỗi khi 'sdt' không hợp lệ và đã được chạm vào ít nhất một lần
   return touched.value && !isValidPhoneNumber.value;
 });
+
+
 </script>
 <template>
     
@@ -485,7 +487,7 @@ const showError = computed(() => {
                                             <div
                                                 style="width: 10%; display: flex; justify-content: center; padding-top: 40px">
                                                 <RadioButton v-model="selectedVoucher" inputId="ingredient1" name="pizza"
-                                                    :value="vo" />
+                                                    :value="vo"  />
                                             </div>
                                         </div>
                                     </div>
