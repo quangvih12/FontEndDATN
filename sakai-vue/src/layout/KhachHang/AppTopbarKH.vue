@@ -6,13 +6,17 @@ import { userStore } from '@/service/Admin/User/UserService.js';
 import { gioHangStore } from '@/service/KhachHang/Giohang/GiohangCTService.js';
 import tokenService from '@/service/Authentication/TokenService.js';
 import userKHService from '@/service/KhachHang/UserService.js';
-import { HDKHStore } from '@/service/KhachHang/HoaDonKHService';
-// import tokenService from '@/service/Authentication/TokenService.js';
-import { KHThongBaoStore } from '@/service/KhachHang/ThongBaoService';
+
+import { HDKHStore } from '../../service/KhachHang/HoaDonKHService';
+// import tokenService from '../../service/Authentication/TokenService.js';
+import { KHThongBaoStore } from '../../service/KhachHang/ThongBaoService';
+// import { HDStore } from from '../../../service/KhachHang/HoaDonKHService';
+
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 
 const useHD = HDKHStore();
+
 const thongBaoStore = KHThongBaoStore();
 const userService = userStore();
 const { layoutConfig, onMenuToggle } = useLayout();
@@ -21,8 +25,9 @@ const topbarMenuActive = ref(false);
 const router = useRouter();
 const selectedCustomer = ref(null);
 const gioHangService = gioHangStore();
-
+const maHD = ref(null);
 const slGH = ref(localStorage.getItem('soLuongGH') || 0);
+const dataHDCT = ref([]);
 
 onMounted(() => {
     bindOutsideClickListener();
@@ -57,8 +62,12 @@ const openSocketConnection = () => {
                     loadDataByTrangThai(0);
                     loadDataByTrangThai(2);
                     loadDataTra();
+
+                    loadDataHDCT(maHD.value);
+
                     // loadDataSpChiTiet();
                     // loadDataHD();
+
                 });
             }
         }
@@ -176,6 +185,7 @@ const dangXuat = async () => {
     localStorage.removeItem('token');
     localStorage.removeItem('currentUserInformation');
 
+
     const arraySPDaXem = JSON.parse(localStorage.getItem('spDaXem'));
     const arraySauKhiDangXuat = [];
     if (Array.isArray(arraySPDaXem)) {
@@ -186,6 +196,7 @@ const dangXuat = async () => {
         }
         localStorage.setItem('spDaXem', JSON.stringify(arraySauKhiDangXuat));
     }
+
     await router.push({ name: 'logout' });
 };
 
@@ -295,6 +306,15 @@ const op = ref();
 const toggle2 = (event) => {
     op.value.toggle(event);
 };
+
+
+const loadDataHDCT = async (idHD) => {
+    const respone = await useHD.findHdByIdHd(idHD);
+    dataHDCT.value = respone;
+};
+
+
+
 </script>
 
 <template>
@@ -321,10 +341,7 @@ const toggle2 = (event) => {
             <router-link :to="{ name: 'san-pham-da-xem' }" class="layout-topbar-logo" style="width: 150%; margin-right: 10px">
                 <p style="font-size: 16px">Sản phẩm đã xem</p>
             </router-link>
-            <!-- <router-link to="/thong-ke" class="layout-topbar-logo"
-                style="width: 90%; margin-left: 10px; margin-right: 15px">
-                <p style="font-size: 16px">Liên hệ</p>
-            </router-link> -->
+
             <router-link :to="{ name: 'gio-hang' }" class="layout-topbar-logo" style="width: 5%; margin-right: 3px">
                 <i class="pi pi-shopping-cart p-text-secondary p-overlay-badge" style="font-size: 1.5rem" v-badge="gioHangService.soLuong"></i>
             </router-link>

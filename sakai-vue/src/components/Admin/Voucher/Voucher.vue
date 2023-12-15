@@ -34,7 +34,7 @@ const statuses = ref([
     { label: 'Còn hạn', value: 0 },
     { label: 'Hết hạn', value: 1 },
     { label: 'Hết voucher', value: 2 },
-    { label: 'Chư bắt đầu', value: 3 }
+    { label: 'Chưa bắt đầu', value: 3 }
 ]);
 
 onBeforeMount(() => {
@@ -364,14 +364,13 @@ const handImportExcel = async (event) => {
                 <Dialog v-model:visible="deleteVoucherDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
                     <div class="flex align-items-center justify-content-center">
                         <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-                        <span v-if="voucher"
-                            >Are you sure you want to delete <b>{{ voucher.ten }}</b
-                            >?</span
-                        >
+
+                        <span v-if="voucher">Bạn có chắc chắn muốn xoá voucher <b>{{ voucher.ten }}</b>?</span>
+
                     </div>
                     <template #footer>
-                        <Button label="No" icon="pi pi-times" class="p-button-text" @click="deleteVoucherDialog = false" />
-                        <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="deleteVoucher" />
+                        <Button label="Huỷ" icon="pi pi-times" class="p-button-text" @click="deleteVoucherDialog = false" />
+                        <Button label="Xoá" icon="pi pi-check" class="p-button-text" @click="deleteVoucher" />
                     </template>
                 </Dialog>
             </div>

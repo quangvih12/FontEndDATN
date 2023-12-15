@@ -6,6 +6,7 @@ const apiHDCT = `${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/hoa-don-ch
 
 export const HDKHStore = defineStore('hoaDonKH', {
     state: () => ({
+        data: [],
         dataAll: [],
         dataChoThanhToan: [], //1
         dataDaHoanTra: [], //8
@@ -139,6 +140,25 @@ export const HDKHStore = defineStore('hoaDonKH', {
             }
         },
 
+        async findHdByMaHd(maHD) {
+            try {
+                const response = await axios.get(apiHD + '/find-by-ma/' + maHD);
+                return response.data;
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        },
+
+         //lấy sp theo id hoá đơn
+         async findHdById(idHD) {
+            try {
+                const response = await axios.get(apiHD + '/find-by-id/' + idHD);
+                this.data = response.data;
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        },
+
         //lấy sp theo id hoá đơn
         async findHdctByIdHd(idHD) {
           
@@ -146,6 +166,15 @@ export const HDKHStore = defineStore('hoaDonKH', {
                 const response = await axios.get(apiHDCT + '/find-by-id-hd/' + idHD);
                 this.dataSP = response.data;
               //  console.log('SP: ',this.dataSP  )
+                return response.data;
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        },
+
+        async findHdctByMaHd(maHD) {
+            try {
+                const response = await axios.get(apiHDCT + '/find-by-ma-hd/' + maHD);
                 return response.data;
             } catch (error) {
                 console.error('Error fetching users:', error);

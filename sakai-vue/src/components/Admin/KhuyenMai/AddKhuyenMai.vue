@@ -10,15 +10,21 @@
 
         <div class="card p-fluid">
             <div class="formgrid grid">
-                <div class="field col">
+                <!-- <div class="field col">
                     <label for="name2">Mã</label>
                     <InputText id="ma" v-model="ma" required="true" autofocus :class="{ 'p-invalid': maError }" />
                     <small class="p-error">{{ maError }}</small>
-                </div>
+                </div> -->
                 <div class="field col">
                     <label for="email2">Tên</label>
                     <InputText id="ten" v-model="ten" required="true" autofocus :class="{ 'p-invalid': tenError }" />
                     <small class="p-error">{{ tenError }}</small>
+                </div>
+
+                <div class="field col">
+                    <label for="email2">Giá Trị Giảm</label>
+                    <InputNumber id="giatri" v-model="giaTriGiam" :class="{ 'p-invalid': giaTriGiamError }" />
+                    <small class="p-error">{{ giaTriGiamError }}</small>
                 </div>
             </div>
             <div class="formgrid grid">
@@ -39,11 +45,11 @@
                     <Textarea v-model="moTa" required="true" :autoResize="true" rows="3" cols="30" :class="{ 'p-invalid': moTaError }" />
                     <small class="p-error">{{ moTaError }}</small>
                 </div>
-                <div class="field col">
+                <!-- <div class="field col">
                     <label for="email2">Giá Trị Giảm</label>
                     <InputNumber id="giatri" v-model="giaTriGiam" :class="{ 'p-invalid': giaTriGiamError }" />
                     <small class="p-error">{{ giaTriGiamError }}</small>
-                </div>
+                </div> -->
             </div>
             <!-- <div class="formgrid grid">
                 <div class="field col">
@@ -86,7 +92,7 @@ const hideDialog = () => {
 };
 
 const schema = Yup.object().shape({
-    ma: Yup.string().required('Mã khuyến mại không được để trống').min(4, 'Tên khuyến mại phải có ít nhất 4 ký tự'),
+    // ma: Yup.string().required('Mã khuyến mại không được để trống').min(4, 'Tên khuyến mại phải có ít nhất 4 ký tự'),
     ten: Yup.string().required('Tên khuyến mại không được để trống').min(4, 'Tên khuyến mại phải có ít nhất 4 ký tự').max(100, 'Tên giới hạn 100 ký tự'),
     moTa: Yup.string().required('Vui lòng điền mô tả khuyến mại').min(10, 'Mô tả khuyến mại phải có ít nhất 10 ký tự'),
     thoiGianBatDau: Yup.date().nullable().required('Thời gian bắt đầu là bắt buộc').typeError('Vui lòng chọn ngày hợp lệ'),
@@ -97,7 +103,7 @@ const schema = Yup.object().shape({
 const { handleSubmit, resetForm } = useForm({
     validationSchema: schema
 });
-const { value: ma, errorMessage: maError } = useField('ma');
+// const { value: ma, errorMessage: maError } = useField('ma');
 const { value: ten, errorMessage: tenError } = useField('ten');
 const { value: moTa, errorMessage: moTaError } = useField('moTa');
 const { value: thoiGianBatDau, errorMessage: thoiGianBatDauError } = useField('thoiGianBatDau');
@@ -107,7 +113,7 @@ const { value: giaTriGiam, errorMessage: giaTriGiamError } = useField('giaTriGia
 const save = handleSubmit(async () => {
     submitted.value = true;
     const form = {
-        ma: ma.value,
+        // ma: ma.value,
         ten: ten.value,
         thoiGianBatDau: thoiGianBatDau.value,
         thoiGianKetThuc: thoiGianKetThuc.value,

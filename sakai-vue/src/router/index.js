@@ -24,6 +24,11 @@ const router = createRouter({
                     component: () => import('@/components/KhachHang/SanPhamDaXem.vue'),
                 },
                 {
+                    path: 'tra-cuu',
+                    name: 'tra-cuu',
+                    component: () => import('@/components/KhachHang/TraCuuDonHang.vue'),
+                },
+                {
                     path: 'lich-su-san-pham',
                     name: 'lich-su-san-pham',
                     beforeEnter: authMiddleware.requireAuth,
