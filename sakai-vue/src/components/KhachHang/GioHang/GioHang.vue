@@ -722,7 +722,7 @@ const tinhTongTienChoTungSanPham = (soLuong, giaSauGiam, giaBan) => {
 
                             <template #footer>
                                 <Button label="Trở lại" icon="pi pi-times" class="p-button-text" @click="hideDialog" />
-                                <Button type="Xác nhận" label="Save" icon="pi pi-check" class="p-button-text" @click="updateMauSacSize(ghct.idGHCT)" :disabled="datagh == '' || idMau == '' || idMau == null" />
+                                <Button type="submit" label="Xác nhận" icon="pi pi-check" class="p-button-text" @click="updateMauSacSize(ghct.idGHCT)" :disabled="datagh == '' || idMau == '' || idMau == null" />
                             </template>
                         </Dialog>
                     </div>
