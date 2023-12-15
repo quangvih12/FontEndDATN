@@ -1,7 +1,7 @@
 <script setup>
-import { FilterMatchMode} from 'primevue/api';
+import { FilterMatchMode } from 'primevue/api';
 import { format } from 'date-fns';
-import { ref, onMounted,  onBeforeMount,computed } from 'vue';
+import { ref, onMounted, onBeforeMount, computed } from 'vue';
 
 import { khuyenMaiStore } from '@/service/Admin/KhuyenMai/KhuyenMaiService.js';
 import { useToast } from 'primevue/usetoast';
@@ -11,7 +11,6 @@ import DeleteKhuyenMai from './DeleteKhuyenMai.vue';
 import ApplyKM from './ApplyKM.vue';
 import ProgressSpinner from 'primevue/progressspinner';
 import ExcelJS from 'exceljs';
-
 
 const toast = useToast();
 const filters = ref({});
@@ -23,23 +22,19 @@ const selectedStatus = ref(null);
 const expandedRows = ref([]);
 const khuyenmaiService = khuyenMaiStore();
 
-
 onBeforeMount(() => {
     initFilters();
 });
 
-
 onMounted(() => {
     loadDataKhuyenmai();
 });
-
 
 const initFilters = () => {
     filters.value = {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS }
     };
 };
-
 
 const loadDataKhuyenmai = async () => {
     await khuyenmaiService.getKhuyenMai();
@@ -67,6 +62,7 @@ const columns = ref([
     { field: 'thoiGianKetThuc', header: 'Ngày Kết Thúc' },
     { field: 'moTa', header: 'Mô Tả' },
     { field: 'giaTriGiam', header: 'Giá Trị (%)' },
+    { field: 'giamToiDa', header: 'Giảm tối đa' },
     { field: 'ngaySua', header: 'Ngày Sửa' },
     { field: 'ngayTao', header: 'Ngày Tạo' }
 ]);
@@ -88,7 +84,6 @@ const deleteKhuyenMai = () => {
     toast.add({ severity: 'warn', summary: '', detail: 'Khuyến mại đã được xoá', life: 3000 });
     deleteKhuyenMaiDialog.value = false;
 };
-
 
 // dùng để lọc khuyến mại theo trạng thái trên CBB
 const filteredVoucher = computed(() => {
@@ -129,8 +124,6 @@ const formatDate = (dateTime) => {
     }
 };
 
-
-
 const position = ref('center');
 const visible = ref(false);
 const showProgressSpinner = ref(false);
@@ -150,32 +143,37 @@ const handRemovefile = () => {
     setNameFile.value = '';
 };
 
-const column = ['STT', 'Sản phẩm', 'Vật liệu', 'Trọng lượng', 'Giá bán', 'Giá nhập', 'Số lượng', 'Tên màu sắc', 'Tên size', 'Số lượng', 'Ảnh màu sắc ', 'Ảnh chính', 'Ảnh phụ', 'Quai đeo', 'Đệm lót', 'Mô tả sản phẩm', 'Loại sản phẩm', 'Thương hiệu'];
+const column = ['STT', 'Tên', 'Thời gian bắt đầu', 'Thời gian kết thúc', 'Giảm tối đa', 'Giá trị giảm', 'Mô tả'];
 
 const generateExcel = () => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Sheet 1');
 
-    // Đặt hàng đầu tiên (header) với màu nền và chữ in đậm
-    const headerRow = worksheet.addRow(column);
+    const columnWidths = [5, 20, 20, 20, 15, 15, 30];
+    worksheet.columns = column.map((col, index) => ({
+        header: col,
+        key: col,
+        width: columnWidths[index]
+    }));
+
+    const headerRow = worksheet.getRow(1);
     headerRow.eachCell((cell) => {
         cell.fill = {
             type: 'pattern',
             pattern: 'solid',
-            fgColor: { argb: 'FFFF00' } // Màu nền của header
+            fgColor: { argb: 'FFFF00' }
         };
         cell.font = {
-            bold: true // Chữ in đậm
+            bold: true
         };
     });
 
-    // Tạo và tải file Excel
     workbook.xlsx.writeBuffer().then((buffer) => {
         const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'sanPham.xlsx'; // Tên file Excel khi tải về
+        a.download = 'Khuyến mại.xlsx';
         a.click();
         window.URL.revokeObjectURL(url);
     });
@@ -187,13 +185,14 @@ const handImportExcel = async (event) => {
     dis.value = false;
     const selectedFile = event.target.files[0];
     setNameFile.value = event.target.files[0].name;
-  //  console.log(selectedFile)
+    //  console.log(selectedFile)
     const formData = new FormData();
     formData.append('file', selectedFile);
-    
+
     try {
         await khuyenmaiService.uploadFile(formData);
         excel.value = khuyenmaiService.excels;
+     //   console.log(excel.value)
         let hasError = false;
         for (const o of excel.value) {
             for (const data of o.responseList) {
@@ -271,28 +270,30 @@ const handImportExcel = async (event) => {
                     </template>
 
                     <template v-slot:end>
-                        <Button label="Import excel" icon="pi pi-download" @click="openPosition('top')"
-                            style="min-width: 10rem" severity="secondary" rounded />
+                        <Button label="Import excel" icon="pi pi-download" @click="openPosition('top')" style="min-width: 10rem" severity="secondary" rounded />
                     </template>
                 </Toolbar>
 
-                <DataTable :value="filteredVoucher" v-model:selection="selectedKhuyenMai"
-                    v-model:expandedRows="expandedRows" :columns="visibleColumns" :paginator="true"
-                    :rows="5" filterDisplay="menu"
+                <DataTable
+                    :value="filteredVoucher"
+                    v-model:selection="selectedKhuyenMai"
+                    v-model:expandedRows="expandedRows"
+                    :columns="visibleColumns"
+                    :paginator="true"
+                    :rows="5"
+                    filterDisplay="menu"
                     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                     :rowsPerPageOptions="[5, 10, 25]"
                     :filters="filters"
                     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
-                    responsiveLayout="scroll" >
+                    responsiveLayout="scroll"
+                >
                     <template #header>
                         <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-                            <MultiSelect icon="pi pi-plus" placeholder="Select Columns" :modelValue="selectedColumns"
-                                :options="columns" optionLabel="header" @update:modelValue="onToggle" display="tag" />
-                            <Dropdown v-model="selectedStatus" :options="statuses" :optionLabel="(option) => option.label"
-                                placeholder="Trạng thái" class="p-column-filter" style="min-width: 12rem" :showClear="true">
+                            <MultiSelect icon="pi pi-plus" placeholder="Select Columns" :modelValue="selectedColumns" :options="columns" optionLabel="header" @update:modelValue="onToggle" display="tag" />
+                            <Dropdown v-model="selectedStatus" :options="statuses" :optionLabel="(option) => option.label" placeholder="Trạng thái" class="p-column-filter" style="min-width: 12rem" :showClear="true">
                                 <template #option="slotProps">
-                                    <Tag :value="getStatusLabel(slotProps.option.value).text"
-                                        :severity="getStatusLabel(slotProps.option.value).severity" />
+                                    <Tag :value="getStatusLabel(slotProps.option.value).text" :severity="getStatusLabel(slotProps.option.value).severity" />
                                 </template>
                             </Dropdown>
                             <span class="block mt-2 md:mt-0 p-input-icon-left">
@@ -304,20 +305,17 @@ const handImportExcel = async (event) => {
 
                     <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
 
-                    <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header"
-                        :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column>
+                    <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column>
 
                     <Column field="trangThai" header="Trạng Thái" sortable style="min-width: 12rem">
                         <template #body="slotProps">
-                            <Tag :value="getStatusLabel(slotProps.data.trangThai).text"
-                                :severity="getStatusLabel(slotProps.data.trangThai).severity" />
+                            <Tag :value="getStatusLabel(slotProps.data.trangThai).text" :severity="getStatusLabel(slotProps.data.trangThai).severity" />
                         </template>
                     </Column>
                     <Column headerStyle="min-width:15rem;">
                         <template #body="slotProps">
                             <UpdateKhuyenMai :my-prop="slotProps.data" />
-                            <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2"
-                                @click="confirmDeleteKhuyenMai(slotProps.data)" />
+                            <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2" @click="confirmDeleteKhuyenMai(slotProps.data)" />
                             <ApplyKM :my-prop="slotProps.data" />
                         </template>
                     </Column>
@@ -325,37 +323,34 @@ const handImportExcel = async (event) => {
                 <Dialog v-model:visible="deleteKhuyenMaiDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
                     <div class="flex align-items-center justify-content-center">
                         <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-                        <span v-if="khuyenmai">Bạn có chắc chắn muốn xoá khuyến mại <b>{{ khuyenmai.ten }}</b>?</span>
+                        <span v-if="khuyenmai"
+                            >Bạn có chắc chắn muốn xoá khuyến mại <b>{{ khuyenmai.ten }}</b
+                            >?</span
+                        >
                     </div>
                     <template #footer>
-                        <Button label="No" icon="pi pi-times" class="p-button-text"
-                            @click="deleteKhuyenMaiDialog = false" />
+                        <Button label="No" icon="pi pi-times" class="p-button-text" @click="deleteKhuyenMaiDialog = false" />
                         <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="deleteKhuyenMai" />
                     </template>
                 </Dialog>
             </div>
         </div>
     </div>
-    <Dialog v-model:visible="visible" header="Import excel" :style="{ width: '400px' }" :position="position" :modal="true"
-        :draggable="false">
+    <Dialog v-model:visible="visible" header="Import excel" :style="{ width: '400px' }" :position="position" :modal="true" :draggable="false">
         <div class="flex align-items-center justify-content-center">
             <div v-if="dis">
                 <div class="custom-file-upload">
-                    <label class="upload-button" >{{ setNameFile == '' ? 'Tải lên tệp Excel' : setNameFile }}<input
-                            type="file" name="excelFile" accept=".xls, .xlsx" @change="handImportExcel($event)" /></label>
+                    <label class="upload-button">{{ setNameFile == '' ? 'Tải lên tệp Excel' : setNameFile }}<input type="file" name="excelFile" accept=".xls, .xlsx" @change="handImportExcel($event)" /></label>
                 </div>
-                <Button icon="pi pi-trash" class="p-button-warning mr-2" @click="handRemovefile()"
-                    style="width: 35px; height: 35px; margin: 0px 10px 10px 10px" />
+                <Button icon="pi pi-trash" class="p-button-warning mr-2" @click="handRemovefile()" style="width: 35px; height: 35px; margin: 0px 10px 10px 10px" />
             </div>
 
             <ProgressSpinner v-if="showProgressSpinner" />
         </div>
 
         <template #footer>
-            <Button label="Export" icon="pi pi-upload" class="p-button" @click="generateExcel($event)" rounded
-                style="height: 40px; margin-right: 150px" severity="secondary" />
-            <Button label="Đóng" icon="pi pi-check" class="p-button" @click="closePosition()" severity="secondary" rounded
-                style="height: 40px" />
+            <Button label="Export" icon="pi pi-upload" class="p-button" @click="generateExcel($event)" rounded style="height: 40px; margin-right: 150px" severity="secondary" />
+            <Button label="Đóng" icon="pi pi-check" class="p-button" @click="closePosition()" severity="secondary" rounded style="height: 40px" />
         </template>
     </Dialog>
 </template>

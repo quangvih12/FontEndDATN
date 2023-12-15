@@ -1,8 +1,8 @@
 <script setup>
 import {computed, onBeforeMount, onMounted,ref} from "vue";
 import {register, VueAdvancedChat} from "vue-advanced-chat";
-import {useChatStore} from "../../../service/Admin/Chat/ChatService";
-import {verifyJwt} from "../../../service/common/JwtUtils";
+import {useChatStore} from "@/service/Admin/Chat/ChatService";
+import {verifyJwt} from "@/service/common/JwtUtils";
 
 
 const store = useChatStore();

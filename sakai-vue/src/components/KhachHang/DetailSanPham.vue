@@ -4,12 +4,12 @@ import { ref, onMounted, computed, watch } from 'vue';
 import TabView from 'primevue/tabview';
 import { useToast } from 'primevue/usetoast';
 import TabPanel from 'primevue/tabpanel';
-import { useDetailProductStore } from '../../service/KhachHang/DetailService'; // Đường dẫn đến store của bạn
+import { useDetailProductStore } from '@/service/KhachHang/DetailService'; // Đường dẫn đến store của bạn
 import { useRoute } from 'vue-router';
 import { gioHangStore } from '@/service/KhachHang/Giohang/GiohangCTService.js';
 import { commentStore } from '@/service/KhachHang/CommentService.js';
 import { useRouter } from 'vue-router';
-import { soLuongGh } from '@/service/KhachHang/GioHang/cart.js';
+import { soLuongGh } from '@/service/KhachHang/Giohang/cart.js';
 
 const router = useRouter();
 const gioHangService = gioHangStore();

@@ -14,7 +14,7 @@ export const khuyenMaiStore = defineStore('khuyenmai', {
         async uploadFile(formData) {
             const response = await axios.post(apiKhuyenMai+"/view-data", formData);
             const newProductData = response.data;
-            this.excels.unshift(newProductData); 
+            this.excels = newProductData; 
         },
 
         async getKhuyenMai() {

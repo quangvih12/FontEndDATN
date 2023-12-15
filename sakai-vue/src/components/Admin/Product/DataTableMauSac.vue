@@ -2,9 +2,9 @@
 
 import { ref, defineProps, onMounted } from 'vue';
 
-import Index from '../MauSac/Index.vue';
+import Index from '@/components/Admin/MauSac/Index.vue';
 
-import { useMauSacService } from '../../../service/Admin/MauSac/MauSacService';
+import { useMauSacService } from '@/service/Admin/MauSac/MauSacService';
 import { useToast } from 'primevue/usetoast';
 
 const toast = useToast();

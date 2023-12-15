@@ -4,7 +4,7 @@ import { ref, onMounted, onBeforeMount, watch } from 'vue';
 import Them from './ThemVatLieu.vue';
 import Detail from './DetailVatLieu.vue';
 import Update from './UpdateVatLieu.vue';
-import { VatLieuStore } from '../../../service/Admin/VatLieu/VatLieu.api';
+import { VatLieuStore } from '@/service/Admin/VatLieu/VatLieu.api';
 import { useToast } from 'primevue/usetoast';
 
 const vatLieuService = VatLieuStore();

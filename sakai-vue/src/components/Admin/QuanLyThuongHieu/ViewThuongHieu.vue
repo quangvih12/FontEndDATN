@@ -5,7 +5,7 @@ import { useToast } from 'primevue/usetoast';
 import ThemThuongHieu from './ThemThuongHieu.vue';
 import DetailThuongHieu from './DetailThuongHieu.vue';
 import UpdateThuongHieu from './UpdateThuongHieu.vue';
-import { useCounterStore } from '../../../service/Admin/ThuongHieu/ThuongHieuService.js';
+import { useCounterStore } from '@/service/Admin/ThuongHieu/ThuongHieuService';
 
 const useThuongHieuService = useCounterStore();
 const toast = useToast();

@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { useForm, useField } from 'vee-validate';
 import * as yup from 'yup';
-import { useLoaiService } from '../../../service/Admin/Loai/LoaiService';
+import { useLoaiService } from '@/service/Admin/Loai/LoaiService';
 import { useToast } from 'primevue/usetoast';
 
 const toast = useToast();

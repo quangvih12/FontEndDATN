@@ -8,14 +8,14 @@ import TableThuongHieu from './DataTableThuongHieu.vue';
 import TableMauSac from './DataTableMauSac.vue';
 import TablevatLieu from './DataTableVatLieu.vue';
 import TableTrongLuong from './DataTableTrongLuong.vue';
-import { ProductStore } from '../../../service/Admin/product/product.api';
+import { ProductStore } from '@/service/Admin/product/product.api';
 import { useToast } from 'primevue/usetoast';
-import { useCounterStore } from '../../../service/Admin/ThuongHieu/ThuongHieuService.js';
-import { SizeStore } from '../../../service/Admin/Size/SizeService';
-import { useLoaiService } from '../../../service/Admin/Loai/LoaiService';
-import { useMauSacService } from '../../../service/Admin/MauSac/MauSacService';
-import { TrongLuongStore } from '../../../service/Admin/TrongLuong/TrongLuong.api';
-import { VatLieuStore } from '../../../service/Admin/VatLieu/VatLieu.api';
+import { useCounterStore } from '@/service/Admin/ThuongHieu/ThuongHieuService.js';
+import { SizeStore } from '@/service/Admin/Size/SizeService';
+import { useLoaiService } from '@/service/Admin/Loai/LoaiService';
+import { useMauSacService } from '@/service/Admin/MauSac/MauSacService';
+import { TrongLuongStore } from '@/service/Admin/TrongLuong/TrongLuong.api';
+import { VatLieuStore } from '@/service/Admin/VatLieu/VatLieu.api';
 
 const toast = useToast();
 const productStore = ProductStore();
@@ -382,7 +382,6 @@ function onFileInputImageMauSac(event) {
         const basePath = "D:\\imgDATN\\"; // Đường dẫn cố định
         const fileName = basePath + file.name;
         arrayImgMauSac.value.push(fileName);
-
     }
     imgMauSac.value = arrayImgMauSac.value.join(',').replace(/^,/, '').split(',');
 }

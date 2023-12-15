@@ -3,11 +3,11 @@
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
 import { ref, onBeforeMount, onMounted, watch } from 'vue';
 import { useToast } from 'primevue/usetoast';
-import { HDKHStore } from '../../../service/KhachHang/HoaDonKHService';
+import { HDKHStore } from '@/service/KhachHang/HoaDonKHService';
 import DetailHoaDon from './TrangThaiDonHang.vue';
 import { useRouter } from 'vue-router';
-import { gioHangStore } from '../../../service/KhachHang/Giohang/GiohangCTService';
-import { useDetailProductStore } from '../../../service/KhachHang/DetailService';
+import { gioHangStore } from '@/service/KhachHang/Giohang/GiohangCTService';
+import { useDetailProductStore } from '@/service/KhachHang/DetailService';
 
 const productStore = useDetailProductStore();
 const router = useRouter();
@@ -158,13 +158,12 @@ const addCart = async (soLuong, idCTSP, idSize, idMau) => {
     router.push({ name: 'gio-hang' });
 
 };
-const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
-    if (tienSauGiam == '' || tienSauGiam == null) {
+const tinhTongTien = (tienShip, tongTien, tienSauGiam,idVoucher) => {
+    if (idVoucher === '' || idVoucher === null) {
         return parseInt(tongTien) + parseInt(tienShip);
     } else {
         return parseInt(tienSauGiam);
     }
-
 };
 
 </script>
@@ -242,7 +241,7 @@ const tinhTongTien = (tienShip, tongTien, tienSauGiam) => {
                 <div style="display: flex; width: 100%; background: rgb(255, 255, 255);">
                     <div style="background: rgb(255, 255, 255);width: 30%; height: 100px; margin-top: ;">
                         <h5 style="color: rgb(253, 1, 1);margin-top: 30px;margin-left: -50px; margin-bottom: 20px;">Thành
-                            tiền: <span>{{ formatCurrency(tinhTongTien(hd.tongTien, hd.tienShip, hd.tienSauKhiGiam)) }}</span>
+                            tiền: <span>{{ formatCurrency(tinhTongTien(hd.tongTien, hd.tienShip, hd.tienSauKhiGiam,hd.idVoucher)) }}</span>
                         </h5>
                     </div>
 

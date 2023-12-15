@@ -1,7 +1,7 @@
 <script setup>
 import { computed, watch, ref } from 'vue';
-import AppTopbar from '../BanHang/AppTopbarBH.vue';
-import AppFooter from '../BanHang/AppFooterBH.vue';
+import AppTopbar from '@/layout/BanHang/AppTopbarBH.vue';
+import AppFooter from '@/layout/BanHang/AppFooterBH.vue';
 import { useLayout } from '@/layout/composables/layout';
 
 

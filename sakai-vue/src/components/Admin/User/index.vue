@@ -7,7 +7,7 @@ import TatCaVue from './TatCa.vue';
 import NhanVien from './NhanVien.vue';
 import KhachHang from './KhachHang.vue';
 import Admin from './Admin.vue';
-import { userStore } from '../../../service/Admin/User/UserService';
+import { userStore } from '@/service/Admin/User/UserService';
 const toast = new useToast();
 const deleteProductDialog = ref(false);
 const filters = ref({});

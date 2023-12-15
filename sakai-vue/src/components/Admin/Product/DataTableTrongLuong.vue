@@ -1,7 +1,7 @@
 <script setup>
 
 import { ref, defineProps, onMounted } from 'vue';
-import View from '../TrongLuong/Index.vue';
+import View from '@/components/Admin/TrongLuong/Index.vue';
 
 const props = defineProps({
     tableId: String,

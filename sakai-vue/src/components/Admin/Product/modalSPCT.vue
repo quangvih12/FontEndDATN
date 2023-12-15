@@ -4,11 +4,11 @@ import { useConfirm } from "primevue/useconfirm";
 import { useToast } from 'primevue/usetoast';
 import AddSanPhamChiTiet from './addChiTietSanPham.vue';
 import UpdateSanPhamChiTiet from './UpdateChiTietSanPham.vue';
-import { ProductStore } from '../../../service/Admin/product/product.api';
+import { ProductStore } from '@/service/Admin/product/product.api';
 import { reactive, ref, computed, onMounted, onBeforeMount } from 'vue';
 import { FilterMatchMode } from 'primevue/api';
-import AddImage from './../Image/AddImage.vue';
-import UpdateImage from './../Image/UpdateImage.vue';
+import AddImage from '@/components/Admin/Image/AddImage.vue';
+import UpdateImage from '@/components/Admin/Image/UpdateImage.vue';
 import { format } from 'date-fns';
 const props = defineProps({
     myProp: {}

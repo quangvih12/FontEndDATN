@@ -1,11 +1,11 @@
 <script setup>
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
 import { ref, onBeforeMount, onMounted, watch } from 'vue';
-import { HDKHStore } from '../../../service/KhachHang/HoaDonKHService';
+import { HDKHStore } from '@/service/KhachHang/HoaDonKHService';
 import DetailHoaDon from './TrangThaiDonHang.vue';
 import { useRouter } from 'vue-router';
-import { gioHangStore } from '../../../service/KhachHang/Giohang/GiohangCTService';
-import { useDetailProductStore } from '../../../service/KhachHang/DetailService';
+import { gioHangStore } from '@/service/KhachHang/Giohang/GiohangCTService';
+import { useDetailProductStore } from '@/service/KhachHang/DetailService';
 
 const router = useRouter();
 const productStore = useDetailProductStore();
@@ -25,7 +25,7 @@ const loadData = async () => {
     if (token.length > 0 || token != null) {
         await useHD.fetchData(token);
         data.value = useHD.dataAll;
-        console.log(data.value)
+      //  console.log(data.value)
     }
 };
 

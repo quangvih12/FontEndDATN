@@ -20,7 +20,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
 import { userRegisterStore} from '@/service/KhachHang/RegisterService.js';
-import {useChatStore} from "../../service/Admin/Chat/ChatService";
+import {useChatStore} from "@/service/Admin/Chat/ChatService";
 const registerService =  userRegisterStore();
 const chatStore = useChatStore();
 const router = useRouter();

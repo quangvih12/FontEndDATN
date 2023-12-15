@@ -4,7 +4,7 @@ import { useForm, useField } from 'vee-validate';
 import { ref, onMounted, onBeforeMount } from 'vue';
 import axios from 'axios';
 import { useToast } from 'primevue/usetoast';
-import { useCounterStore } from '../../../service/Admin/ThuongHieu/ThuongHieuService.js';
+import { useCounterStore } from '@/service/Admin/ThuongHieu/ThuongHieuService';
 
 const useThuongHieuService = useCounterStore();
 const toast = useToast();
