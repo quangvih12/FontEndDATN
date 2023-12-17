@@ -119,7 +119,6 @@ onMounted(() => {
 
 
 const showProducts = () => {
-    localStorage.setItem("idkm",props.myProp.id )
     selectedProductDialog.value = true;
 };
 
