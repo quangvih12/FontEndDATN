@@ -21,12 +21,19 @@
             <div class="formgrid grid">
                 <div class="field col">
                     <label for="name2">Ngày Bắt Đầu</label>
-                    <Calendar id="thoiGianBatDau" v-model="thoiGianBatDau" :class="{ 'p-invalid': thoiGianBatDauError }" dateFormat="yy/mm/dd" showIcon />
+                    <!-- <div>
+                        <input id="thoiGianBatDau" type="datetime-local" v-model="thoiGianBatDau" style="height: 40px; width: 100%" />
+                    </div> -->
+
+                    <Calendar id="thoiGianBatDau" v-model="thoiGianBatDau" :class="{ 'p-invalid': thoiGianBatDauError }"  dateFormat="yyyy/mm/dd " showIcon />
                     <small class="p-error">{{ thoiGianBatDauError }}</small>
                 </div>
                 <div class="field col">
                     <label for="email2">Ngày Kết Thúc</label>
-                    <Calendar id="thoiGianKetThuc" v-model="thoiGianKetThuc" :class="{ 'p-invalid': thoiGianKetThucError }" dateFormat="yy/mm/dd" showIcon />
+                    <!-- <div>
+                        <input id="thoiGianKetThuc" type="datetime-local" v-model="thoiGianKetThuc" style="height: 40px; width: 100%" />
+                    </div> -->
+                    <Calendar id="thoiGianKetThuc" v-model="thoiGianKetThuc" :class="{ 'p-invalid': thoiGianKetThucError }"  dateFormat="yyyy/mm/dd " showIcon />
                     <small class="p-error">{{ thoiGianKetThucError }}</small>
                 </div>
             </div>
@@ -59,7 +66,7 @@
 </template>
 
 <script setup>
-import { ref, defineProps } from 'vue';
+import { ref } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import * as Yup from 'yup';
 import { useField, useForm } from 'vee-validate';
@@ -67,6 +74,7 @@ import { khuyenMaiStore } from '@/service/Admin/KhuyenMai/KhuyenMaiService.js';
 
 const khuyenmaiService = khuyenMaiStore();
 const toast = useToast();
+const khuyenmais = ref([]);
 const updateKhuyenMaiDialog = ref(false);
 const props = defineProps({
     myProp: {}
@@ -103,7 +111,12 @@ const editKhuyenMai = () => {
 
 const hideDialog = () => {
     updateKhuyenMaiDialog.value = false;
-    resetForm()
+    resetForm();
+};
+
+const loadDataKhuyenmai = async () => {
+    await khuyenmaiService.getKhuyenMai();
+    khuyenmais.value = khuyenmaiService.data;
 };
 
 const update = handleSubmit(async () => {
@@ -116,8 +129,8 @@ const update = handleSubmit(async () => {
     };
 
     khuyenmaiService.updateKhuyenMai(form, props.myProp.id);
+    loadDataKhuyenmai();
     toast.add({ severity: 'success', summary: 'Successful', detail: 'Cập nhật thành công', life: 3000 });
     updateKhuyenMaiDialog.value = false;
 });
-
 </script>
