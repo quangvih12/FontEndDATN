@@ -38,6 +38,7 @@ export const khuyenMaiStore = defineStore('khuyenmai', {
                         this.data[i].thoiGianKetThuc = form.thoiGianKetThuc;
                         this.data[i].moTa = form.moTa;
                         this.data[i].giaTriGiam = form.giaTriGiam;
+                        this.data[i].trangThai = response.data.data.trangThai;
                     }
                 }
             });
