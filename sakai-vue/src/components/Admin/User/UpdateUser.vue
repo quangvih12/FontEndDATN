@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import { userStore } from '../../../service/Admin/User/UserService';
+import { userStore } from '@/service/Admin/User/UserService';
 import * as yup from 'yup';
 import { useForm, useField } from 'vee-validate';
 import { useToast } from 'primevue/usetoast';

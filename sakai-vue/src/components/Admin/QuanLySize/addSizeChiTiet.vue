@@ -3,9 +3,9 @@ import * as yup from 'yup';
 import { useForm, useField } from 'vee-validate';
 import { ref, onMounted, onBeforeMount } from 'vue';
 import { useToast } from 'primevue/usetoast';
-import { SizeStore } from '../../../service/Admin/Size/SizeService';
-import { ProductStore } from '../../../service/Admin/product/product.api';
-import TableSize from '../Product/DataTableSize.vue';
+import { SizeStore } from '@/service/Admin/Size/SizeService';
+import { ProductStore } from '@/service/Admin/product/product.api';
+import TableSize from '@/components/Admin/Product/DataTableSize.vue';
 
 const productStore = ProductStore();
 const useSizeService = SizeStore();

@@ -6,10 +6,12 @@ import { userStore } from '@/service/Admin/User/UserService.js';
 import { gioHangStore } from '@/service/KhachHang/Giohang/GiohangCTService.js';
 import tokenService from '@/service/Authentication/TokenService.js';
 import userKHService from '@/service/KhachHang/UserService.js';
+
 import { HDKHStore } from '../../service/KhachHang/HoaDonKHService';
 // import tokenService from '../../service/Authentication/TokenService.js';
 import { KHThongBaoStore } from '../../service/KhachHang/ThongBaoService';
 // import { HDStore } from from '../../../service/KhachHang/HoaDonKHService';
+
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 
@@ -60,7 +62,12 @@ const openSocketConnection = () => {
                     loadDataByTrangThai(0);
                     loadDataByTrangThai(2);
                     loadDataTra();
+
                     loadDataHDCT(maHD.value);
+
+                    // loadDataSpChiTiet();
+                    // loadDataHD();
+
                 });
             }
         }
@@ -69,6 +76,14 @@ const openSocketConnection = () => {
     stompClient.value.activate();
 };
 
+const loadDataHD = async () => {
+    await useHD.findHdByIdHd();
+    //   console.log(dataHD.value)
+};
+
+const loadDataSpChiTiet = async () => {
+    await useHD.findHdctByIdHd();
+};
 const loadData = async () => {
     const token = localStorage.getItem('token');
     if (token.length > 0 || token != null) {
@@ -169,6 +184,19 @@ const diaChi = async () => {
 const dangXuat = async () => {
     localStorage.removeItem('token');
     localStorage.removeItem('currentUserInformation');
+
+
+    const arraySPDaXem = JSON.parse(localStorage.getItem('spDaXem'));
+    const arraySauKhiDangXuat = [];
+    if (Array.isArray(arraySPDaXem)) {
+        for (let i = 0; i < arraySPDaXem.length; i++) {
+            if (arraySPDaXem[i].idUser != -1) {
+                arraySauKhiDangXuat.push(arraySPDaXem[i]);
+            }
+        }
+        localStorage.setItem('spDaXem', JSON.stringify(arraySauKhiDangXuat));
+    }
+
     await router.push({ name: 'logout' });
 };
 
@@ -292,7 +320,7 @@ const loadDataHDCT = async (idHD) => {
 <template>
     <div class="layout-topbar">
         <router-link :to="{ name: 'trang-chu' }" class="layout-topbar-logo" style="height: 60px; width: 120px">
-            <img src="../../assets/images/logo.png" alt="logo" style="height: 70px" />
+            <img src="/src/assets/images/logo.png" alt="logo" style="height: 70px" />
         </router-link>
 
         <button class="p-link layout-topbar-menu-button layout-topbar-button" @click="onTopBarMenuButton()">

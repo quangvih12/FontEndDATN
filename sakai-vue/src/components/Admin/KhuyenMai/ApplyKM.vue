@@ -91,9 +91,9 @@
 
 <script setup>
 import { ref, onMounted, watch } from 'vue';
-import { useLoaiService } from '../../../service/Admin/Loai/LoaiService';
-import { useCounterStore } from '../../../service/Admin/ThuongHieu/ThuongHieuService.js';
-import { ProductStore } from '../../../service/Admin/product/product.api';
+import { useLoaiService } from '@/service/Admin/Loai/LoaiService';
+import { useCounterStore } from '@/service/Admin/ThuongHieu/ThuongHieuService.js';
+import { ProductStore } from '@/service/Admin/product/product.api';
 import SelectCTSP from './SelectCTSP.vue';
 
 const productStore = ProductStore();

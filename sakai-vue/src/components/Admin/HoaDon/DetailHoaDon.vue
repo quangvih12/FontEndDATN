@@ -4,7 +4,7 @@ import { ref, onMounted, watch } from 'vue';
 import { useForm, useField } from 'vee-validate';
 import Divider from 'primevue/divider';
 import { da } from 'date-fns/locale';
-import { HDStore } from '../../../service/Admin/HoaDon/HoaDonService';
+import { HDStore } from '@/service/Admin/HoaDon/HoaDonService';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { useToast } from 'primevue/usetoast';
@@ -473,15 +473,15 @@ const btnXacNhanHuyGH = () => {
                                     <p>Phí vận chuyển: {{ formatCurrency(props.myProp.tienShip == null ? 0:props.myProp.tienShip) }}</p>
 
                                     <p>Tiền giảm:
-                                          <span v-if="props.myProp.idVoucher != null" style="color: red;">- {{
-                                        formatCurrency(parseInt(props.myProp.tongTien)+parseInt(props.myProp.tienShip == null ? 0:props.myProp.tienShip) -
+                                          <span v-if="props.myProp.idVoucher !== null" style="color: red;">- {{
+                                        formatCurrency(parseInt(props.myProp.tongTien)+parseInt(props.myProp.tienShip ) -
                                             parseInt(tienGiam)) }}</span>
                                         <span v-else style="color: red;">0</span>
 
                                     </p>
                                     <p>
                                         Tổng tiền: <span style="color: #ff3333; font-size: 20px; font-weight: bold">{{
-                                            formatCurrency(tinhTongTien(props.myProp.tienShip == null ? 0:props.myProp.tienShip,
+                                            formatCurrency(tinhTongTien(props.myProp.tienShip,
                                                 props.myProp.tongTien, tienGiam ,props.myProp.idVoucher )) }}</span>        
                                     </p>
                                 </div>
@@ -529,8 +529,8 @@ const btnXacNhanHuyGH = () => {
             <span>Bạn có chắc chắn muốn xác nhận không ?</span>
         </div>
         <template #footer>
-            <Button label="No" icon="pi pi-times" class="p-button-text" @click="addProductDialogDoiTra = false" />
-            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhanDoiTra()" />
+            <Button label="Không" icon="pi pi-times" class="p-button-text" @click="addProductDialogDoiTra = false" />
+            <Button label="Có" icon="pi pi-check" class="p-button-text" @click="btnXacNhanDoiTra()" />
         </template>
     </Dialog>
     <Dialog v-model:visible="lyDoDialogDoiTra" :style="{ width: '450px' }" header="Huỷ hoá đơn" :modal="true">
@@ -546,8 +546,8 @@ const btnXacNhanHuyGH = () => {
             </form>
         </div>
         <template #footer>
-            <Button label="No" icon="pi pi-times" class="p-button-text" @click="lyDoDialogDoiTra = false" />
-            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="confirmHuyDoiTra" />
+            <Button label="Không" icon="pi pi-times" class="p-button-text" @click="lyDoDialogDoiTra = false" />
+            <Button label="Có" icon="pi pi-check" class="p-button-text" @click="confirmHuyDoiTra" />
         </template>
     </Dialog>
     <!-- comfirm huỷ -->
@@ -557,8 +557,8 @@ const btnXacNhanHuyGH = () => {
             <span>Bạn có chắc chắn muốn huỷ không ?</span>
         </div>
         <template #footer>
-            <Button label="No" icon="pi pi-times" class="p-button-text" @click="huyDialogDoiTra = false" />
-            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhanHuyDoiTra()" />
+            <Button label="Không" icon="pi pi-times" class="p-button-text" @click="huyDialogDoiTra = false" />
+            <Button label="Có" icon="pi pi-check" class="p-button-text" @click="btnXacNhanHuyDoiTra()" />
         </template>
     </Dialog>
 
@@ -569,8 +569,8 @@ const btnXacNhanHuyGH = () => {
             <span>Bạn có muốn cộng lại số lượng cho sản phẩm không ?</span>
         </div>
         <template #footer>
-            <Button label="No" icon="pi pi-times" class="p-button-text" @click="btnHoanThanhDoiTraKhongCongSoLuong()" />
-            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhanXNDoiTra()" />
+            <Button label="Không" icon="pi pi-times" class="p-button-text" @click="btnHoanThanhDoiTraKhongCongSoLuong()" />
+            <Button label="Có" icon="pi pi-check" class="p-button-text" @click="btnXacNhanXNDoiTra()" />
         </template>
     </Dialog>
     <Dialog v-model:visible="lyDoDialogXNDoiTra" :style="{ width: '450px' }" header="Huỷ hoá đơn" :modal="true">
@@ -586,8 +586,8 @@ const btnXacNhanHuyGH = () => {
             </form>
         </div>
         <template #footer>
-            <Button label="No" icon="pi pi-times" class="p-button-text" @click="lyDoDialogXNDoiTra = false" />
-            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="confirmHuyXNDoiTra" />
+            <Button label="Không" icon="pi pi-times" class="p-button-text" @click="lyDoDialogXNDoiTra = false" />
+            <Button label="Có" icon="pi pi-check" class="p-button-text" @click="confirmHuyXNDoiTra" />
         </template>
     </Dialog>
     <!-- comfirm huỷ -->
@@ -597,8 +597,8 @@ const btnXacNhanHuyGH = () => {
             <span>Bạn có chắc chắn muốn huỷ không ?</span>
         </div>
         <template #footer>
-            <Button label="No" icon="pi pi-times" class="p-button-text" @click="huyDialogXNDoiTra = false" />
-            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhanHuyXNDoiTra()" />
+            <Button label="Không" icon="pi pi-times" class="p-button-text" @click="huyDialogXNDoiTra = false" />
+            <Button label="Có" icon="pi pi-check" class="p-button-text" @click="btnXacNhanHuyXNDoiTra()" />
         </template>
     </Dialog>
     <!-- màn giao hàng -->
@@ -608,8 +608,8 @@ const btnXacNhanHuyGH = () => {
             <span>Bạn có chắc chắn muốn hoàn thành không ?</span>
         </div>
         <template #footer>
-            <Button label="No" icon="pi pi-times" class="p-button-text" @click="addProductDialogGH = false" />
-            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhanGH()" />
+            <Button label="Không" icon="pi pi-times" class="p-button-text" @click="addProductDialogGH = false" />
+            <Button label="Có" icon="pi pi-check" class="p-button-text" @click="btnXacNhanGH()" />
         </template>
     </Dialog>
     <!-- comfirm huỷ -->
@@ -619,8 +619,8 @@ const btnXacNhanHuyGH = () => {
             <span>Bạn có chắc chắn đơn hàng đã giao thất bại không ?</span>
         </div>
         <template #footer>
-            <Button label="No" icon="pi pi-times" class="p-button-text" @click="huyDialogGH = false" />
-            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="btnXacNhanHuyGH()" />
+            <Button label="Không" icon="pi pi-times" class="p-button-text" @click="huyDialogGH = false" />
+            <Button label="Có" icon="pi pi-check" class="p-button-text" @click="btnXacNhanHuyGH()" />
         </template>
     </Dialog>
 </template>

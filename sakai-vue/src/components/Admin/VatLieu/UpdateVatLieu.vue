@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { useForm, useField } from 'vee-validate';
 import * as yup from 'yup';
-import { VatLieuStore } from '../../../service/Admin/VatLieu/VatLieu.api';
+import { VatLieuStore } from '@/service/Admin/VatLieu/VatLieu.api';
 import { useToast } from 'primevue/usetoast';
 
 const vatLieuService = VatLieuStore();

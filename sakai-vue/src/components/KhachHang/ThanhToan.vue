@@ -3,7 +3,7 @@ import { ref, onMounted, computed, watchEffect,watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useCartStore } from '@/service/KhachHang/GioHang/useCartStore.js';
 import { useDiaChi } from '@/service/KhachHang/DiaChiService.js';
-import { phiShipStore } from '../../service/KhachHang/PhiGiaoHangService';
+import { phiShipStore } from '@/service/KhachHang/PhiGiaoHangService';
 import { checkoutStore } from '@/service/KhachHang/HoaDonService.js';
 import { voucherStore } from '@/service/KhachHang/KHVoucherService.js';
 import { uservoucherStore } from '@/service/KhachHang/UserVoucherService.js';

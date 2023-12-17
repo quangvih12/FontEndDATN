@@ -45,7 +45,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 // import { productStore } from '@/service/Admin/Product/ProductService.js';
-import { ctspStore } from '@/service/Admin/SanPhamChiTiet/SanPhamCTService.js';
+import { ctspStore } from '@/service/Admin/SanPhamChiTiet/sanPhamCTService';
 import { useToast } from 'primevue/usetoast';
 import { khuyenMaiStore } from '@/service/Admin/KhuyenMai/KhuyenMaiService.js';
 

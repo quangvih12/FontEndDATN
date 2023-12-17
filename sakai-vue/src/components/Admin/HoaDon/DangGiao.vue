@@ -5,7 +5,7 @@ import { FilterMatchMode, FilterOperator } from 'primevue/api';
 import { ref, onBeforeMount, onMounted, watch } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import DetailHoaDon from './DetailHoaDon.vue';
-import { HDStore } from '../../../service/Admin/HoaDon/HoaDonService';
+import { HDStore } from '@/service/Admin/HoaDon/HoaDonService';
 
 const toast = useToast();
 const useHD = HDStore();
@@ -303,8 +303,7 @@ watch(phuongThucThanhToan, (newVal) => {
             <template #body="slotProps">
                 <span class="p-column-title">tongTien</span>
 
-                {{ formatCurrency(slotProps.data.tienSauKhiGiam == null ? parseInt(slotProps.data.tongTien) + parseInt(slotProps.data.tienShip == null ? 0 : slotProps.data.tienShip) : slotProps.data.tienSauKhiGiam) }}
-            </template>
+                {{ formatCurrency(slotProps.data.idVoucher === null ? parseInt(slotProps.data.tongTien) + parseInt(slotProps.data.tienShip) : slotProps.data.tienSauKhiGiam) }}   </template>
         </Column>
         <Column field="tienShip" header="Tiền ship" :sortable="true" headerStyle="width:10%; min-width:9rem;">
             <template #body="slotProps">

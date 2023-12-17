@@ -1,7 +1,12 @@
-<script setup></script>
+<script setup>
+</script>
 
 <template>
-    <router-view />
+  <transition name="transitionName"
+              :appear="true"
+              enterActiveClass="fadeinleft">
+    <router-view/>
+  </transition>
 </template>
 
 <style scoped></style>

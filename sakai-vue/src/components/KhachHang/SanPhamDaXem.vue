@@ -1,10 +1,10 @@
 <script setup>
 import Carousel from 'primevue/carousel';
 import { computed, onMounted, ref } from 'vue';
-import { SanPhamStore } from '../../service/KhachHang/SanPhamService';
+import { SanPhamStore } from '@/service/KhachHang/SanPhamService';
 import { useRouter } from 'vue-router';
 import { array } from 'yup';
-import { SPDaXemStore } from '../../service/KhachHang/SanPhamDaXem.js';
+import { SPDaXemStore } from '@/service/KhachHang/SanPhamDaXem.js';
 const spDaXemService = SPDaXemStore();
 const home = ref({
     icon: 'pi pi-home',
@@ -35,7 +35,7 @@ const loadData = async () => {
             }
         }
     }
-    console.log(dataSP.value);
+    // console.log(dataSP.value);
 };
 
 const uniqueTenLoai = computed(() => {

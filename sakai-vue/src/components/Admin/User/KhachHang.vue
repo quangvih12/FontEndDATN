@@ -5,7 +5,7 @@ import { useToast } from 'primevue/usetoast';
 import ThemUser from './ThemAdmin.vue';
 import UpdateUser from './UpdateUser.vue';
 import DetailUser from './DetailUser.vue';
-import { userStore } from '../../../service/Admin/User/UserService';
+import { userStore } from '@/service/Admin/User/UserService';
 const toast = new useToast();
 const deleteProductDialog = ref(false);
 const deleteProductsDialog = ref(false);

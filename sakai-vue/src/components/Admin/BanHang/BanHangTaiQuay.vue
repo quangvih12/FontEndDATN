@@ -1,5 +1,5 @@
 <script setup>
-import {ref, computed, onBeforeMount, onMounted, defineAsyncComponent, markRaw,watch} from 'vue';
+import {ref, computed, onBeforeMount, onMounted, defineAsyncComponent, markRaw, watch} from 'vue';
 import {formatDateAndTime} from '@/service/common/DateTimeUtils';
 import {formatCurrency} from '@/service/common/CurrencyUtils';
 import {useBanHangTaiQuayStore} from '@/service/Admin/BanHangTaiQuay/BanHangTaiQuayService';
@@ -16,10 +16,13 @@ import {useDialog} from "primevue/usedialog";
 import * as yup from 'yup';
 import {useForm, useField} from 'vee-validate';
 import {QrcodeStream} from 'vue3-qrcode-reader';
-import {userStore} from '../../../service/Admin/User/UserService';
-import ThemDiaChi from '../../Admin/DiaChi/ThemDiaChi.vue';
-import {phiShipStore} from '../../../service/KhachHang/PhiGiaoHangService';
-import html2pdf from "html2pdf.js";
+import {userStore} from '@/service/Admin/User/UserService';
+import ThemDiaChi from '@/components/Admin/DiaChi/ThemDiaChi.vue';
+import {phiShipStore} from '@/service/KhachHang/PhiGiaoHangService';
+import {useConfirm} from "primevue/useconfirm";
+import htmlToPdfmake from "html-to-pdfmake";
+import pdfMake from "pdfmake/build/pdfmake";
+import pdfFonts from "pdfmake/build/vfs_fonts";
 
 const phiGiaoHangService = phiShipStore();
 const userService = userStore();
@@ -27,9 +30,11 @@ const store = useBanHangTaiQuayStore();
 const BHTQKhachHangComponent = defineAsyncComponent(() => import('@/components/Admin/BanHang/BHTQKhachHangComponent.vue'));
 const toast = useToast();
 const dialog = useDialog();
+const confirm = useConfirm();
 const cm = ref();
 const sanPhamFilter = ref();
 const thanhTien = ref();
+const isKHLe = ref();
 // const tienKhachDua = ref();
 const loading = ref(false);
 const uiBlock = ref(true);
@@ -57,18 +62,17 @@ const dsThuongHieu = computed(() => {
   return arr.filter((item, index) => arr.indexOf(item) === index);
 });
 const tableHoaDonContextMenuModel = ref([
-  {label: 'Ghim hoá đơn', icon: 'pi pi-fw pi-star', disabled: true, command: () => console.log(selectedHoaDon.value)},
   {
-    label: 'Bỏ ghim hoá đơn',
-    icon: 'pi pi-fw pi-star',
-    visible: false,
-    command: () => console.log(selectedHoaDon.value)
-  },
-  {label: 'Tách hoá đơn', icon: 'pi pi-fw pi-file-export', command: () => console.log(selectedHoaDon.value)},
-  {label: 'Tạo HĐ mới với cùng KH', icon: 'pi pi-fw pi-history', command: () => console.log(selectedHoaDon.value)}
+    label: 'Tạo HĐ mới với cùng KH', icon: 'pi pi-fw pi-history', disabled: isKHLe.value,
+    command: () => {
+      localStorage.setItem("selectedHDId", selectedHoaDon.value.id);
+    }
+  }
 ]);
 const bgColor = ref('#ffa854');
 let idNV = null;
+const khExportPdf = ref();
+const logoImageSrc = ref(`${import.meta.env.VITE_BASE_FRONTEND_ENDPOINT}/src/assets/images/logo.png`);
 
 onBeforeMount(() => {
   store.loadHDCho();
@@ -109,12 +113,12 @@ const themSPVaoHDCT = async () => {
     });
     return;
   }
-  if ( soLuong.value == null ||  soLuong.value == '') {
+  if (soLuong.value == null || soLuong.value == '') {
     soLuongError.value = 'Không được để trống';
     return;
   }
   soLuongError.value = '';
-  await store.themSPVaoHDCT(selectedHoaDon.value.id, dataOverlay.value.id,  soLuong.value);
+  await store.themSPVaoHDCT(selectedHoaDon.value.id, dataOverlay.value.id, soLuong.value);
   op.value.hide();
   soLuong.value = null;
 };
@@ -155,7 +159,6 @@ const clearSanPhamFilter = () => {
 };
 
 const showKhachHangDialog = () => {
-  console.log("log");
   dialog.open(BHTQKhachHangComponent, {
     props: {
       header: 'Khách hàng',
@@ -167,7 +170,10 @@ const showKhachHangDialog = () => {
       closable: true
     },
     onClose: (opt) => {
-      if (opt.data != undefined) userID.value = opt.data.idUser;
+      if (opt.data != undefined) {
+        userID.value = opt.data.idUser;
+        khExportPdf.value = opt.data.user;
+      }
     }
   });
 }
@@ -177,8 +183,9 @@ const dataOverlay = ref();
 const addChonHoaDonDialog = ref(false);
 const tableHoaDonRowSelected = async (event) => {
   localStorage.setItem("selectedHDId", event.data.id);
-  store.loadHDCT(event.data.id);
+  khExportPdf.value = {ten: event.data.user.ten, sdt: event.data.user.sdt}
   userID.value = event.data.user.id;
+  store.loadHDCT(event.data.id);
   if (idSPCT.value != null) {
     addChonHoaDonDialog.value = true;
   }
@@ -191,6 +198,11 @@ const themSpQR = async () => {
 }
 
 const tableHoaDonRowContextMenu = (event) => {
+  if (event.data.user.trangThai == -1) {
+    console.log("log");
+    isKHLe.value = true;
+  } else isKHLe.value = false;
+  store.loadHDCT(event.data.id);
   cm.value.show(event.originalEvent);
 };
 
@@ -225,7 +237,6 @@ const {value: moTa, errorMessage: moTaError} = useField('moTa');
 const {value: idDiaChi, errorMessage: idDiaChiError} = useField('idDiaChi');
 const {value: phiShip, errorMessage: phiShipError} = useField('tienShip');
 const onSubmit = handleSubmit(async (values) => {
-
   if (selectedHoaDon.value == null || selectedHoaDon.value == '') {
     soLuongError.value = '';
     toast.add({
@@ -239,9 +250,22 @@ const onSubmit = handleSubmit(async (values) => {
   const hdModel = new BHTQHoaDonModel(values.hinhThucGiaoHangs, values.PhuongThucThanhToan, values.moTa, values.tienKhachDua, values.idDiaChi, values.tienShip);
   await store.thanhToanHD(selectedHoaDon.value.id, hdModel);
   toast.add({severity: 'success', summary: 'Thành công', detail: 'Hoá đơn đã được thanh toán', life: 3000});
-  store.dsHDCT = [];
-  selectedHoaDon.value = null;
-  resetForms();
+  confirm.require({
+    group: 'xuatFileHD',
+    header: 'Xuất file hoá đơn?',
+    message: 'Thanh toán thành công!',
+    accept: async () => {
+      await exportFileHD();
+      selectedHoaDon.value = null;
+      store.dsHDCT = [];
+      resetForms();
+    },
+    reject: () => {
+      selectedHoaDon.value = null;
+      store.dsHDCT = [];
+      resetForms();
+    }
+  });
   addDialog.value = false;
 });
 
@@ -251,20 +275,22 @@ const resetForms = () => {
   tinhTien(dsHDCT.value).tongChietKhau = 0;
   thanhTien.value = 0;
   phiShip.value = 0;
- // dsHDCT.value = [];
 }
-
+const check = ref(false);
 const onHinhThucGiaoHangChange = async () => {
   if (hinhThucGiaoHang.value) {
     hinhThucGiaoHangs.value = hinhThucGiaoHang.value.id;
     if (hinhThucGiaoHangs.value === 2) {
-    await loadDiaChis();
-       diaChiDialog.value = true;
-
-
+      if(userID.value === 1){
+        toast.add({severity: 'error', summary: '', detail: 'Không thể áp dụng giao hàng cho KH lẻ', life: 3000});
+        check.value = true;
+        return;
+      }
+      await loadDiaChis();
+      diaChiDialog.value = true;
     } else {
-
       phiShip.value = 0;
+      check.value = false;
       tinhTien(dsHDCT.value);
       diaChiDialog.value = false;
     }
@@ -358,7 +384,7 @@ const onInputSLSPCuaHDCT = (event, data) => {
       //   clearTimeout(timer);
       // }
       // timer = setTimeout(() => {
-        store.updateSLSPCuaHDCT(data.id, event.value);
+      store.updateSLSPCuaHDCT(data.id, event.value);
       // }, 300);
     } else {
       toast.add({
@@ -392,29 +418,31 @@ const onError = (error) => {
 const checkedSwitch = ref(false);
 
 const diaChiDialog = ref(false)
-const userDiaChi = computed(() =>  userService.diaChi);
+const userDiaChi = computed(() => userService.diaChi);
 
 
 watch(userDiaChi, async (newVal) => {
 
-  const diaChiMacDinh =  userDiaChi.value.find(x => x.trangThai === 1);
-  
-  if (diaChiMacDinh == '' || diaChiMacDinh == null) {
-        phiShip.value = 0;
-       idDiaChi.value = diaChiMacDinh.id;
-       idDiaChi.value =  userDiaChi.value[0].id;
-    } else{
-      idDiaChi.value = diaChiMacDinh.id;
-      await phiGiaoHangService.phiShip(diaChiMacDinh);
-      phiShip.value = phiGiaoHangService.money;
-    }
+  const diaChiMacDinh = userDiaChi.value.find(x => x.trangThai === 1);
 
-}, { deep: true });
+  if (diaChiMacDinh == '' || diaChiMacDinh == null) {
+    phiShip.value = 0;
+    // idDiaChi.value = diaChiMacDinh.id;
+    // idDiaChi.value = userDiaChi.value[0].id;
+  } else {
+    idDiaChi.value = diaChiMacDinh.id;
+    await phiGiaoHangService.phiShip(diaChiMacDinh);
+    phiShip.value = phiGiaoHangService.money;
+  }
+  if (userDiaChi.value.length != 0) {
+    idDiaChi.value = userDiaChi.value[0].id;
+  }
+}, {deep: true});
 
 const loadDiaChis = async () => {
   await userService.fetchAllDiaChi(userID.value); // Gọi hàm fetchAll từ Store
-
 };
+
 const tinhPhiShip = async (idDiaChi) => {
   const diaChiMacDinh = userDiaChi.value.find(x => x.id === idDiaChi);
   if (diaChiMacDinh == '' || diaChiMacDinh == null) {
@@ -425,16 +453,11 @@ const tinhPhiShip = async (idDiaChi) => {
   }
 }
 
-const exportToPDF = async () => {
-  const content = document.getElementById('export-pdf');
-  const opt = {
-    margin: 1,
-    filename: 'myfile.pdf',
-    image: {type: 'png'},
-    html2canvas: {scale: 2},
-    jsPDF: {unit: 'in', format: 'a4', orientation: 'landscape'}
-  };
-  html2pdf().set(opt).from(content).save();
+const exportFileHD = async () => {
+  pdfMake.vfs = pdfFonts.pdfMake.vfs;
+  const content = document.getElementById('sales-invoice').innerHTML;
+  const val = htmlToPdfmake(content, {tableAutoSize: true, imagesByReference: true});
+  await pdfMake.createPdf({content: val.content, images: val.images}).download(`${selectedHoaDon.value.ma}.pdf`);
 };
 </script>
 
@@ -446,15 +469,106 @@ const exportToPDF = async () => {
     </template>
   </Loading>
   <Toast/>
-  <div class="card" id="export-pdf">
-    <Button label="x" @click="exportToPDF"/>
+  <ConfirmDialog group="xuatFileHD">
+    <template #container="{ message, acceptCallback, rejectCallback }">
+      <div class="flex flex-column align-items-center p-5 surface-overlay border-round w-16rem">
+        <div class="border-circle bg-primary inline-flex justify-content-center align-items-center h-6rem w-6rem -mt-8">
+          <i class="pi pi-question text-5xl"></i>
+        </div>
+        <p class="mb-2 mt-4">{{ message.message }}</p>
+        <span class="font-bold text-xl block mb-0">{{ message.header }}</span>
+        <div class="flex align-items-center gap-2 mt-4">
+          <Button label="Huỷ" outlined @click="rejectCallback"></Button>
+          <Button label="OK" @click="acceptCallback"></Button>
+        </div>
+      </div>
+    </template>
+  </ConfirmDialog>
+  <div id="sales-invoice" hidden>
+    <table style="width: 100%; font-size: 0.8rem">
+      <tr style="border: 1px solid white">
+        <td rowspan="3"><img :src="logoImageSrc" alt="" style="width: 8em;"></td>
+        <td><strong style="text-align: right; margin: 0; font-size: 0.9rem;">Cửa hàng Mũ bảo hiểm VNK</strong></td>
+      </tr>
+      <tr style="border: 1px solid white">
+        <td><span style="text-align: right; margin: 0;">A: 241 Xuân Thuỷ - Cầu Giấy - HN</span></td>
+      </tr>
+      <tr style="border: 1px solid white">
+        <td><span style="text-align: right; margin: 0;">P: 0234.456.789 - 0912.345.678</span></td>
+      </tr>
+    </table>
+
+    <span style="text-align: center; font-weight: bold; font-size: 1.3rem">HOÁ ĐƠN BÁN HÀNG</span>
+    <span style="text-align: center; font-size: 0.9rem;">Mã: {{ selectedHoaDon ? selectedHoaDon.ma : null }}</span>
+    <b style="margin-top: 1rem;">Tên khách hàng: {{ khExportPdf ? khExportPdf.ten : null }}</b>
+    <b style="margin-top: 0.5rem;">Số điện thoại: {{ khExportPdf ? khExportPdf.sdt : null }}</b>
+    <table style="margin-top: 1rem; border-collapse: collapse; width: 100%;">
+      <thead>
+      <tr>
+        <th style="width: 4%;">TT</th>
+        <th style="width: 17rem;">Tên sản phẩm</th>
+        <th style="width: 5%;">SL</th>
+        <th>Đơn giá</th>
+        <th>Chiết khấu</th>
+        <th>Thành tiền</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr v-for="(hdct, itemObjKey) in dsHDCT">
+        <td>{{ itemObjKey + 1 }}</td>
+        <td>{{ hdct.sanPhamChiTiet.sanPham.ten }} - {{ hdct.sanPhamChiTiet.mauSac.ten }} - size
+          {{ hdct.sanPhamChiTiet.size.ten }}
+        </td>
+        <td>{{ hdct.soLuong }}</td>
+        <td>{{ formatCurrency(hdct.donGia) }}</td>
+        <td>{{ formatCurrency(hdct.chietKhau) }}</td>
+        <td>{{ formatCurrency(hdct.donGia * hdct.soLuong - hdct.chietKhau * hdct.soLuong) }}</td>
+      </tr>
+      </tbody>
+      <tfoot>
+      <tr>
+        <td colspan="2" style="text-align: right;">Tổng tiền hàng:</td>
+        <td colspan="4" style="text-align: center;">{{ formatCurrency(tinhTien(dsHDCT).tongTienHang) }}</td>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align: right; border-top: 1px solid white">Tổng chiết khấu:</td>
+        <td colspan="4" style="text-align: center; border-top: 1px solid white">
+          {{ formatCurrency(tinhTien(dsHDCT).tongChietKhau) }}
+        </td>
+      </tr>
+      </tfoot>
+    </table>
+    <table>
+      <tr style="border: 1px solid white;">
+        <td>Thành tiền:</td>
+        <td><b>{{ formatCurrency(thanhTien) }}</b></td>
+      </tr>
+      <tr style="border: 1px solid white;">
+        <td>Tiền khách đưa:</td>
+        <td>{{ formatCurrency(tienKhachDua) }}</td>
+      </tr>
+      <tr style="border: 1px solid white;">
+        <td>Tiền thừa trả lại:</td>
+        <td>{{ formatCurrency(tienKhachDua - thanhTien) }}</td>
+      </tr>
+    </table>
+    <div>
+      <i style="margin-left: 23.5rem; margin-top: 1.3rem">{{ new Date().getHours() }} giờ {{ new Date().getMinutes() }}
+        phút, ngày {{ new Date().getDate() }} tháng {{ new Date().getMonth() + 1 }} năm
+        {{ new Date().getFullYear() }}</i>
+      <p style="margin-left: 29.5rem">Nhân viên bán hàng</p>
+      <strong
+          style="margin-left: 30.5rem; margin-top: 3rem;">{{ selectedHoaDon ? selectedHoaDon.nguoiTao.ten : null }}</strong>
+    </div>
+    <i style="text-align: center; margin-top: 2rem;">Cảm ơn quý khách đã mua hàng tại VNK, hẹn gặp lại quý khách!</i>
+  </div>
+  <div class="card">
     <div class="row">
       <div class="col-9" style="margin-top: -20px; height: 340px;">
         <div class="card gap-3" style="height: 100%;">
           <ContextMenu ref="cm" class="w-16rem"
                        :pt="{menu: {class: 'm-0 p-0'}}"
-                       :model="tableHoaDonContextMenuModel"
-                       @hide="selectedHoaDon = null"/>
+                       :model="tableHoaDonContextMenuModel"/>
           <DataTable :value="dsHDCho" dataKey="id" v-model:selection="selectedHoaDon" tableStyle="height: 200px"
                      v-model:contextMenuSelection="selectedHoaDon" selectionMode="single"
                      @rowSelect="tableHoaDonRowSelected"
@@ -571,7 +685,6 @@ const exportToPDF = async () => {
                       parseInt(slotProps.data.soLuong))
                 }}
               </template>
-              <!--              todo-->
             </Column>
             <Column style="width: 8%" class="text-center">
               <template #body="slotProps">
@@ -781,12 +894,8 @@ const exportToPDF = async () => {
       </div>
     </div>
   </div>
-  <div>
-
-  </div>
 
   <Dialog v-model:visible="addDialog" :style="{ width: '500px' }" header="Thanh toán" :modal="true">
-
     <div style="display: flex; margin-bottom: 10px; margin-top: 10px;">
       <div>
         <h6>Mã hóa đơn: </h6>
@@ -836,24 +945,17 @@ const exportToPDF = async () => {
 
     <form @submit="onSubmit">
       <div class="flex align-items-center" style="margin-top: 20px;">
-
-
         <div>
           <h6>Tiền khách đưa:</h6>
         </div>
-
         <div style="margin-left: 60px;">
           <InputNumber v-model="tienKhachDua" inputId="integeronly" @input="tienKhachDuaInputEvent"
                        :class="{ 'p-invalid': tienKhachDuaError }"/>
-                      
           <br/>
           <small class="p-error">{{ tienKhachDuaError }}</small>
           <small v-if="tienKhachDua === null || tienKhachDua === ''"></small>
-          <small class="p-error" v-else-if="tienKhachDua < thanhTien">Tiền khách đưa không đủ</small>
-      
+          <small class="p-error" v-else-if="tienKhachDua < thanhTien">Chưa đủ để thanh toán hoá đơn</small>
         </div>
-
-
       </div>
       <div class="row" style="margin-top: 10px;">
         <div class="col-4">
@@ -863,7 +965,6 @@ const exportToPDF = async () => {
           <h6 v-if="selectedHoaDon">{{ isNaN(tienKhachDua) ? null : formatCurrency(tienKhachDua - thanhTien) }}</h6>
         </div>
       </div>
-
       <div class="flex">
         <div>
           <Dropdown v-model="phuongThucThanhToan" :options="dsPTTT" optionLabel="ten"
@@ -882,11 +983,10 @@ const exportToPDF = async () => {
             }}</small></div>
         </div>
       </div>
-      <div class="card" v-if="diaChiDialog==true" style="overflow-y: scroll; width:100%; height: 200px;">
-
-        <div style="margin-left: 290px; height: 25px; width: 80px;  border: 1px solid blue; border-radius: 20px; text-align: center;">
-          <ThemDiaChi  :idUser="userID"> </ThemDiaChi>
-
+      <div class="card" v-if="diaChiDialog==true" style="overflow-y: scroll; width:95%; height: 200px;">
+        <div
+            style="margin-left: 300px; height: 25px; width: 80px;  border: 1px solid blue; border-radius: 20px; text-align: center;">
+          <ThemDiaChi :idUser="userID"></ThemDiaChi>
         </div>
         <div v-if="!userDiaChi || userDiaChi.length === 0" style="text-align: center; margin-top: 50px;">
           <svg width="100px" height="100px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#000000"
@@ -919,24 +1019,20 @@ const exportToPDF = async () => {
                   <span>{{ hd.tenphuongXa }}, {{ hd.tenQuanHuyen }}, {{ hd.tenTinhThanh }} </span></label>
               </div>
             </div>
-
             <div style="width: 10%; height: 10px; background: rgb(255, 255, 255); display: flex; margin-top: 30px">
               <RadioButton v-model="idDiaChi" inputId="ingredient1" name="pizza" :value="hd.id"
                            @click="tinhPhiShip(hd.id)"/>
             </div>
-
           </div>
           <Divider/>
         </div>
       </div>
       <h6>Ghi chú</h6>
       <Textarea v-model="moTa" rows="4" cols="63"/>
-      <Button :disabled="tienKhachDua < thanhTien" label="Thanh toán" severity="warning" raised type="submit" style="margin-top: 20px; margin-left: 150px;"/>
-
-
+      <Button :disabled="tienKhachDua < thanhTien || check" label="Thanh toán" severity="warning" raised type="submit"
+              style="margin-top: 20px; margin-left: 150px;"/>
     </form>
   </Dialog>
-
   <Dialog v-model:visible="addChonHoaDonDialog" :style="{ width: '500px' }" header="Confirm" :modal="true">
     <h6>Bạn có muốn thêm sản phẩm vừa QR vào giỏ hàng không ?</h6>
     <Button label="Không" severity="secondary" @click="addChonHoaDonDialog = false" raised

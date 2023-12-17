@@ -7,7 +7,7 @@ import { FilterMatchMode, FilterOperator } from 'primevue/api';
 import { ref, onBeforeMount, onMounted, watch } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import DetailHoaDonChoXacNhan from './DetailHoaDonChoXacNhan.vue';
-import { HDStore } from '../../../service/Admin/HoaDon/HoaDonService';
+import { HDStore } from '@/service/Admin/HoaDon/HoaDonService';
 import { Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 
@@ -57,6 +57,7 @@ const loadData = async () => {
     await useHD.fetchDataByStatus(2);
     data.value = useHD.dataChoXacNhan;
     useHD.dataChoXacNhan = useHD.dataChoXacNhan;
+
 };
 //chạy cái hiện data luôn
 onMounted(() => {
@@ -332,8 +333,7 @@ watch(phuongThucThanhToan, (newVal) => {
             <template #body="slotProps">
                 <span class="p-column-title">tongTien</span>
 
-                {{ formatCurrency(slotProps.data.tienSauKhiGiam == null ? parseInt(slotProps.data.tongTien) + parseInt(slotProps.data.tienShip == null ? 0 : slotProps.data.tienShip) : slotProps.data.tienSauKhiGiam) }}
-            </template>
+                {{ formatCurrency(slotProps.data.idVoucher === null ? parseInt(slotProps.data.tongTien) + parseInt(slotProps.data.tienShip) : slotProps.data.tienSauKhiGiam) }}   </template>
         </Column>
         <Column field="tienShip" header="Tiền ship" :sortable="true" headerStyle="width:10%; min-width:9rem;">
             <template #body="slotProps">

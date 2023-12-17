@@ -5,7 +5,7 @@ import { useDetailProductStore } from '@/service/KhachHang/DetailService.js';
 import { da } from 'date-fns/locale';
 import { useToast } from 'primevue/usetoast';
 import { useRouter } from 'vue-router';
-import { useCartStore } from '@/service/KhachHang/GioHang/useCartStore.js';
+import { useCartStore } from '@/service/KhachHang/Giohang/useCartStore.js';
 
 const router = useRouter();
 const store = useCartStore();

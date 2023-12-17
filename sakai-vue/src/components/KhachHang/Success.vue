@@ -24,7 +24,7 @@ import { Client } from '@stomp/stompjs';
 import { ref, onMounted } from 'vue';
 import { checkoutStore } from '@/service/KhachHang/HoaDonService.js';
 import { useRouter } from 'vue-router';
-import { gioHangStore } from '../../service/KhachHang/Giohang/GiohangCTService';
+import { gioHangStore } from '@/service/KhachHang/Giohang/GiohangCTService';
 
 const router = useRouter();
 const checkoutService = checkoutStore();

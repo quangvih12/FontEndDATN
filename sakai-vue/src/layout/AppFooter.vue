@@ -11,7 +11,7 @@ const logoUrl = computed(() => {
 
 <template>
     <div class="layout-footer">
-        <img src="../assets/images/logo.png" alt="Logo" height="20" class="mr-2" />
+        <img src="/src/assets/images/logo.png" alt="Logo" height="20" class="mr-2" />
         
         <span class="font-medium ml-2">VNK:  Dự án tốt nghiệp</span>
     </div>

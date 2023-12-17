@@ -4,11 +4,11 @@ import { useLayout } from '@/layout/composables/layout';
 import { useRouter } from 'vue-router';
 import { userStore } from '@/service/Admin/User/UserService.js';
 import tokenService from '@/service/Authentication/TokenService.js';
-import { ThongBaoStore } from '../service/Admin/thongBao/thongBao.api';
+import { ThongBaoStore } from '@/service/Admin/thongBao/thongBao.api';
 import { Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
-import { HDStore } from '../service/Admin/HoaDon/HoaDonService';
+import { HDStore } from '@/service/Admin/HoaDon/HoaDonService';
 import { useBanHangTaiQuayStore } from '@/service/Admin/BanHangTaiQuay/BanHangTaiQuayService';
 
 const store = useBanHangTaiQuayStore();
@@ -199,7 +199,7 @@ const thongTinCaNhan = () => {
                 <span>SAKAI</span>
             </router-link> -->
         <router-link :to="{ name: 'trang-chu' }" class="layout-topbar-logo" style="height: 60px; width: 120px">
-            <img src="../assets/images/logo.png" alt="logo" style="height: 70px" />
+            <img src="/src/assets/images/logo.png" alt="logo" style="height: 70px" />
         </router-link>
 
         <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">

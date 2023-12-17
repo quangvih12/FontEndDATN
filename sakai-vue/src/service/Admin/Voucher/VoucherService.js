@@ -60,7 +60,7 @@ export const voucherStore = defineStore('voucher', {
         async uploadFile(formData) {
             const response = await axios.post(apiVoucher+"/view-data", formData);
             const newProductData = response.data;
-            this.excels.unshift(newProductData); 
+            this.excels=newProductData; 
         },
         deleteVoucher(form, id) {
             axios.put(apiVoucher + '/delete/' + id, form).then((response) => {

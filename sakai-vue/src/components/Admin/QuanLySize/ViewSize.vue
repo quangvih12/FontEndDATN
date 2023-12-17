@@ -6,7 +6,7 @@ import ThemSize from './ThemSize.vue';
 import DetailSize from './DetailSize.vue';
 import UpdateSize from './UpdateSize.vue';
 import axios from 'axios';
-import { SizeStore } from '../../../service/Admin/Size/SizeService.js';
+import { SizeStore } from '@/service/Admin/Size/SizeService';
 
 const useSizeService = SizeStore();
 const toast = useToast();
