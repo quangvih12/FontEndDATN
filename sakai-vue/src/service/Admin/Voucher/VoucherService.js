@@ -51,6 +51,7 @@ export const voucherStore = defineStore('voucher', {
                         this.data[i].soLuong = form.soLuong;
                         this.data[i].moTa = form.moTa;
                         this.data[i].giamToiDa = form.giamToiDa;
+                        this.data[i].giaTriGiam = form.giaTriGiam;
                         this.data[i].trangThai = response.data.data.trangThai;
                     }
                 }

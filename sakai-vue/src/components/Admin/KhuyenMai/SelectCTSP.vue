@@ -70,12 +70,14 @@ const hide = () => {
 
 const idsp = props.newProp.id;
 onMounted(() => {
+    console.log(idsp)
     loadDataProduct(idsp);
 });
 
 const loadDataProduct = async (idsp) => {
     await ctspService.fetchData(idsp);
     listSPCT.value = ctspService.data;
+   
 };
 
 const applyKhuyenMai = () => {

@@ -39,6 +39,7 @@ const initFilters = () => {
 const loadDataKhuyenmai = async () => {
     await khuyenmaiService.getKhuyenMai();
     khuyenmais.value = khuyenmaiService.data;
+  
 };
 
 // const initFilters1 = () => {
@@ -63,8 +64,8 @@ const columns = ref([
     { field: 'moTa', header: 'Mô Tả' },
     { field: 'giaTriGiam', header: 'Giá Trị (%)' },
     { field: 'giamToiDa', header: 'Giảm tối đa' },
-    { field: 'ngaySua', header: 'Ngày Sửa' },
-    { field: 'ngayTao', header: 'Ngày Tạo' }
+    // { field: 'ngaySua', header: 'Ngày Sửa' },
+    // { field: 'ngayTao', header: 'Ngày Tạo' }
 ]);
 
 // hàm để tắt/mở cột
@@ -120,7 +121,7 @@ const formatDate = (dateTime) => {
     if (dateTime == null || dateTime.length <= 0) {
         return null;
     } else {
-        return format(new Date(dateTime), 'yyyy/MM/dd HH:mm:ss');
+        return format(new Date(dateTime), 'yyyy/MM/dd');
     }
 };
 
@@ -306,6 +307,20 @@ const handImportExcel = async (event) => {
                     <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
 
                     <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column>
+
+                        <!-- <Column header="Ngày Bắt Đầu" filterField="date" dataType="date" style="min-width: 9rem">
+                        <template #body="{ data }">
+                            {{ formatDate(data.thoiGianBatDau) }}
+                        </template>
+                       
+                    </Column>
+
+                    <Column header="Ngày Kết Thúc" filterField="date" dataType="date" style="min-width: 9rem">
+                        <template #body="{ data }">
+                            {{ formatDate(data.thoiGianKetThuc) }}
+                        </template>
+                       
+                    </Column> -->
 
                     <Column field="trangThai" header="Trạng Thái" sortable style="min-width: 12rem">
                         <template #body="slotProps">

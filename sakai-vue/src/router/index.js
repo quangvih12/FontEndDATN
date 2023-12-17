@@ -24,7 +24,7 @@ const router = createRouter({
                     component: () => import('@/components/KhachHang/SanPhamDaXem.vue'),
                 },
                 {
-                    path: 'tra-cuu',
+                    path: 'tra-cuu/:id',
                     name: 'tra-cuu',
                     component: () => import('@/components/KhachHang/TraCuuDonHang.vue'),
                 },

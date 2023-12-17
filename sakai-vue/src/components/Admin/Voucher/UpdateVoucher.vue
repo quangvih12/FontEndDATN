@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineProps, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { voucherStore } from '@/service/Admin/Voucher/VoucherService.js';
 import { useToast } from 'primevue/usetoast';
 import * as Yup from 'yup';
@@ -58,6 +58,8 @@ const hideDialogVoucher = () => {
 };
 
 const update = handleSubmit(async () => {
+
+   
     const form = {
         ten: ten.value,
         thoiGianBatDau: thoiGianBatDau.value,
@@ -67,7 +69,8 @@ const update = handleSubmit(async () => {
         soLuong: soLuong.value,
         giamToiDa: giamToiDa.value
     };
-
+    
+    
     VoucherService.updateVoucher(form, props.myProp.id);
     toast.add({ severity: 'success', summary: 'Successful', detail: 'Cập nhật thành công', life: 3000 });
     updatevoucherDialog.value = false;
