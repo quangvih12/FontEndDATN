@@ -70,6 +70,7 @@ const hide = () => {
 
 const idsp = props.newProp.id;
 onMounted(() => {
+    console.log(idsp)
     loadDataProduct(idsp);
 });
 

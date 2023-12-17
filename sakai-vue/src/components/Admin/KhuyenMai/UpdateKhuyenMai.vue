@@ -1,6 +1,6 @@
 <template>
     <Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" @click="editKhuyenMai()" />
-    <Dialog v-model:visible="updateKhuyenMaiDialog" header="Flex Scroll" :style="{ width: '75vw' }" maximizable modal :contentStyle="{ height: '300px' }" class="p-fluid">
+    <Dialog v-model:visible="updateKhuyenMaiDialog" header="Flex Scroll" :style="{ width: '50vw' }" maximizable modal :contentStyle="{ height: '400px' }" class="p-fluid">
         <template #header>
             <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                 <h5 class="m-0">Cập nhật Khuyến Mại</h5>

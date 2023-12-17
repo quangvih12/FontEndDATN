@@ -63,8 +63,8 @@ const columns = ref([
     { field: 'moTa', header: 'Mô Tả' },
     { field: 'giaTriGiam', header: 'Giá Trị (%)' },
     { field: 'giamToiDa', header: 'Giảm tối đa' },
-    { field: 'ngaySua', header: 'Ngày Sửa' },
-    { field: 'ngayTao', header: 'Ngày Tạo' }
+    // { field: 'ngaySua', header: 'Ngày Sửa' },
+    // { field: 'ngayTao', header: 'Ngày Tạo' }
 ]);
 
 // hàm để tắt/mở cột
