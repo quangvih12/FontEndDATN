@@ -35,7 +35,7 @@ const hienThiTrangThai = (trangThai) => {
     } else if (trangThai == 4) {
         return { text: 'Đang chuẩn bị hàng', severity: 'success' };
     } else if (trangThai == 5) {
-        return { text: 'Giao cho đơn vị vận chuyển', severity: 'help' };
+        return { text: 'Đang giao', severity: 'help' };
     } else if (trangThai == 7) {
         return { text: 'Yêu cầu trả hàng', severity: 'warning' };
     } else if (trangThai == 8) {
