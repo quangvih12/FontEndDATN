@@ -22,7 +22,7 @@ import {phiShipStore} from '@/service/KhachHang/PhiGiaoHangService';
 import {useConfirm} from "primevue/useconfirm";
 import htmlToPdfmake from "html-to-pdfmake";
 import pdfMake from "pdfmake/build/pdfmake";
-import pdfFonts from "pdfmake/build/vfs_fonts";
+import roboto from "@/assets/font/roboto.js";
 
 const phiGiaoHangService = phiShipStore();
 const userService = userStore();
@@ -61,14 +61,6 @@ const dsThuongHieu = computed(() => {
   const arr = dsSP.value.map((sp) => sp.sanPham.thuongHieu.ten);
   return arr.filter((item, index) => arr.indexOf(item) === index);
 });
-const tableHoaDonContextMenuModel = ref([
-  {
-    label: 'Tạo HĐ mới với cùng KH', icon: 'pi pi-fw pi-history', disabled: isKHLe.value,
-    command: () => {
-      localStorage.setItem("selectedHDId", selectedHoaDon.value.id);
-    }
-  }
-]);
 const bgColor = ref('#ffa854');
 let idNV = null;
 const khExportPdf = ref();
@@ -197,15 +189,6 @@ const themSpQR = async () => {
   addChonHoaDonDialog.value = false;
 }
 
-const tableHoaDonRowContextMenu = (event) => {
-  if (event.data.user.trangThai == -1) {
-    console.log("log");
-    isKHLe.value = true;
-  } else isKHLe.value = false;
-  store.loadHDCT(event.data.id);
-  cm.value.show(event.originalEvent);
-};
-
 const op = ref();
 const toggle = (toggle) => {
   if (selectedHoaDon.value) {
@@ -282,7 +265,7 @@ const onHinhThucGiaoHangChange = async () => {
     hinhThucGiaoHangs.value = hinhThucGiaoHang.value.id;
     if (hinhThucGiaoHangs.value === 2) {
       if(userID.value === 1){
-        toast.add({severity: 'error', summary: '', detail: 'Không thể áp dụng giao hàng cho KH lẻ', life: 3000});
+        toast.add({severity: 'error', summary: 'Không thể thực hiện', detail: 'Không thể giao hàng cho KH lẻ', life: 3000});
         check.value = true;
         return;
       }
@@ -454,7 +437,7 @@ const tinhPhiShip = async (idDiaChi) => {
 }
 
 const exportFileHD = async () => {
-  pdfMake.vfs = pdfFonts.pdfMake.vfs;
+  pdfMake.vfs = roboto;
   const content = document.getElementById('sales-invoice').innerHTML;
   const val = htmlToPdfmake(content, {tableAutoSize: true, imagesByReference: true});
   await pdfMake.createPdf({content: val.content, images: val.images}).download(`${selectedHoaDon.value.ma}.pdf`);
@@ -539,6 +522,11 @@ const exportFileHD = async () => {
       </tfoot>
     </table>
     <table>
+<!--      todo-->
+      <tr style="border: 1px solid white;">
+        <td>Phí vận chuyển:</td>
+        <td>{{ formatCurrency(phiShip) }}</td>
+      </tr>
       <tr style="border: 1px solid white;">
         <td>Thành tiền:</td>
         <td><b>{{ formatCurrency(thanhTien) }}</b></td>
@@ -566,13 +554,9 @@ const exportFileHD = async () => {
     <div class="row">
       <div class="col-9" style="margin-top: -20px; height: 340px;">
         <div class="card gap-3" style="height: 100%;">
-          <ContextMenu ref="cm" class="w-16rem"
-                       :pt="{menu: {class: 'm-0 p-0'}}"
-                       :model="tableHoaDonContextMenuModel"/>
-          <DataTable :value="dsHDCho" dataKey="id" v-model:selection="selectedHoaDon" tableStyle="height: 200px"
-                     v-model:contextMenuSelection="selectedHoaDon" selectionMode="single"
+          <DataTable :value="dsHDCho" dataKey="id" v-model:selection="selectedHoaDon" tableStyle="height: 200px" selectionMode="single"
                      @rowSelect="tableHoaDonRowSelected"
-                     contextMenu @rowContextmenu="tableHoaDonRowContextMenu" scrollable scrollHeight="205px"
+                     scrollable scrollHeight="205px"
                      showGridlines>
             <template #header>
               <div class="flex justify-content-between align-items-center">

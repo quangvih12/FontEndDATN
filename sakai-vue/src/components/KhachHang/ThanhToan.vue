@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, computed, watchEffect,watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { useCartStore } from '@/service/KhachHang/GioHang/useCartStore.js';
+import { useCartStore } from '@/service/KhachHang/Giohang/useCartStore.js';
 import { useDiaChi } from '@/service/KhachHang/DiaChiService.js';
 import { phiShipStore } from '@/service/KhachHang/PhiGiaoHangService';
 import { checkoutStore } from '@/service/KhachHang/HoaDonService.js';
