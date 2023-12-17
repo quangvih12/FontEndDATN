@@ -1,9 +1,10 @@
-import { defineStore } from 'pinia';
+import {defineStore} from 'pinia';
 import axios from 'axios';
+import httpAxios from '@/service/Authentication/http.js';
 
 const api = `${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/thong-tin-ca-nhan`;
 
-export const useThongTin = defineStore('thongTin',{
+export const useThongTin = defineStore('thongTin', {
     id: 'user',
     state: () => ({
         user: [],
@@ -52,14 +53,16 @@ export const useThongTin = defineStore('thongTin',{
                 }
             });
         },
-
-        async updatesdt(id,sdt) {
+        async updatesdt(id, sdt) {
             try {
-            const response = await axios.patch(`${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/user/updateSDT/`+id+`?sdt=${sdt}`);
-            this.data =  response.data;
-        } catch (error) {
-            console.error('Lỗi khi lấy danh sách địa chỉ:', error);
-        }
+                const response = await axios.patch(`${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/user/updateSDT/` + id + `?sdt=${sdt}`);
+                this.data = response.data;
+            } catch (error) {
+                console.error('Lỗi khi lấy danh sách địa chỉ:', error);
+            }
+        },
+        async doiMatKhau(userId, oldPassword, newPassword) {
+            await httpAxios.put(`${import.meta.env.VITE_BASE_API_ENDPOINT}/khach-hang/user/${userId}/doi-mat-khau`, {oldPassword, newPassword});
         }
     }
 });
