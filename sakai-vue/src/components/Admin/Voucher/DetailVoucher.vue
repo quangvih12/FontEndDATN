@@ -15,7 +15,7 @@ const props = defineProps({
 });
 
 const editProduct = () => {
-    loadDataUser();
+    //loadDataUser();
     product.value = { ...editProduct };
     productDialog.value = true;
 };
@@ -94,7 +94,7 @@ const formatDate = (dateTime) => {
                 </div>
             </div>
         </div>
-        <DataTable
+        <!-- <DataTable
             :value="dataUser"
             v-model:selection="selectedProduct"
             paginator
@@ -115,7 +115,7 @@ const formatDate = (dateTime) => {
                     <Dropdown v-model="cbbValue" :options="dataSearch" optionLabel="label" placeholder="Dưới 1 triệu" class="p-column-filter" style="margin-bottom: 10px; width: 200px" :showClear="true"> </Dropdown>
                 </div>
             </div>
-            <!-- <Column selectionMode="multiple" headerStyle="width: 3rem"></Column> -->
+            
             <Column field="ma" header="Mã" :sortable="true"></Column>
             <Column field="ten" header="Tên" :sortable="true"></Column>
             <Column field="sdt" header="Sđt" :sortable="true"></Column>
@@ -126,7 +126,7 @@ const formatDate = (dateTime) => {
                     {{ formatCurrency(slotProps.data.tongTien) }}
                 </template>
             </Column>
-        </DataTable>
+        </DataTable> -->
     </Dialog>
     <!-- </div>
         </div>
