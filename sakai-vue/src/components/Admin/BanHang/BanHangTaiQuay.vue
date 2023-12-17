@@ -199,7 +199,7 @@ const themSpQR = async () => {
 
 const tableHoaDonRowContextMenu = (event) => {
   if (event.data.user.trangThai == -1) {
-    console.log("log");
+ //   console.log("log");
     isKHLe.value = true;
   } else isKHLe.value = false;
   store.loadHDCT(event.data.id);
@@ -247,6 +247,8 @@ const onSubmit = handleSubmit(async (values) => {
     });
     return;
   }
+ 
+
   const hdModel = new BHTQHoaDonModel(values.hinhThucGiaoHangs, values.PhuongThucThanhToan, values.moTa, values.tienKhachDua, values.idDiaChi, values.tienShip);
   await store.thanhToanHD(selectedHoaDon.value.id, hdModel);
   toast.add({severity: 'success', summary: 'Thành công', detail: 'Hoá đơn đã được thanh toán', life: 3000});
@@ -274,7 +276,11 @@ const resetForms = () => {
   tinhTien(dsHDCT.value).tongTienHang = 0;
   tinhTien(dsHDCT.value).tongChietKhau = 0;
   thanhTien.value = 0;
+  hinhThucGiaoHang.value = null;
+  phuongThucThanhToan.value = null;
+  diaChiDialog.value = false;
   phiShip.value = 0;
+  userID.value = 1;
 }
 const check = ref(false);
 const onHinhThucGiaoHangChange = async () => {
@@ -796,7 +802,7 @@ const exportFileHD = async () => {
                     :filterMenuStyle="{ width: '14rem' }">
               <template #body="{ data }">
                 <div class="flex align-items-center gap-2">
-                  <span>{{ data.size.ten }}</span>
+                  <span>{{ data.size ==null?"Không có":data.size.ten}}</span>
                 </div>
               </template>
               <template #filter="{ filterModel }">
