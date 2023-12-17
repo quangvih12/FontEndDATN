@@ -41,15 +41,16 @@ onMounted(() => {
     // loadData();
     // loadDataHD();
     openSocketConnection();
+    editProduct();
 });
 const tongTienHang = ref();
 const bien = ref(2);
 const loadData = async (idHD) => {
-    dataSP.value = await useHD.findHdctByMaHd(idHD);
+    dataSP.value = await useHD.findHdctByIdHd(idHD);
 };
 
 const loadDataHD = async (idHD) => {
-    dataHD.value = await useHD.findHdByMaHd(idHD);
+    dataHD.value = await useHD.findHdByIdHd(idHD);
 };
 
 const ngayDat = ref('');
@@ -111,7 +112,6 @@ const idHDCT = ref(null);
 const idUser = ref(null);
 const idDiaChi = ref(null);
 const soLuongHang = ref(null);
-
 const stompClient = ref(null);
 const openSocketConnection = () => {
     stompClient.value = new Client({
@@ -194,8 +194,8 @@ const checks = (trangThai, soLuong) => {
     }
 };
 
-const loadDataHDCT = async (maHD) => {
-    const respone = await useHD.findHdByMaHd(maHD);
+const loadDataHDCT = async (idHD) => {
+    const respone = await useHD.findHdByIdHd(idHD);
     dataHDCT.value = respone;
 };
 
@@ -219,16 +219,16 @@ const editProduct = async () => {
     //console.log(props.myProp);
     // code.value = 'Hoá đơn: ' + maHD.value;
 
-    if (maHD.value.trim() === '') {
-        toast.add({ severity: 'warn', summary: 'lỗi', detail: 'Vui lòng nhập đúng dữ liệu', life: 3000 });
-    return;
-  }
+//     if (maHD.value.trim() === '') {
+//         toast.add({ severity: 'warn', summary: 'lỗi', detail: 'Vui lòng nhập đúng dữ liệu', life: 3000 });
+//     return;
+//   }
 
-    loadDataHDCT(maHD.value);
+    loadDataHDCT(idHD);
 
-    const maHDValue = maHD.value ? maHD.value.trim() : '';
+    // const maHDValue = maHD.value ? maHD.value.trim() : '';
 
-    const respone = await useHD.findHdByMaHd(maHDValue);
+    const respone = await useHD.findHdByIdHd(idHD);
     dataHDCT.value = respone;
     isEditClicked.value = true;
 
@@ -243,8 +243,8 @@ const editProduct = async () => {
     //     tienGiam.value = dataHDCT.value.tienSauKhiGiam;
     // }
 
-    loadData(maHD.value);
-    loadDataHD(maHD.value);
+    loadData(idHD);
+    loadDataHD(idHD);
     // loadDataTraCuu(maHD.value);
 };
 
@@ -260,7 +260,7 @@ const editProduct = async () => {
 
         </div> -->
 
-        <div class="field grid mt-3">
+        <!-- <div class="field grid mt-3">
             <label for="name3" class="col-12 mb-2 md:col-2 md:mb-0" style="font-weight: bold;">Tra cứu đơn hàng</label>
             <div class="col-12 md:col-10">
                 <InputGroup>
@@ -268,11 +268,11 @@ const editProduct = async () => {
                     <Button icon="pi pi-search" severity="warning" @click="editProduct()" />
                 </InputGroup>
             </div>
-        </div>
+        </div> -->
         <div class="card">
            
 
-            <div v-if="isEditClicked && maHD && dataHDCT">
+            <div >
                 <div class="flex" >
                     <div>
                         <h3>Trạng thái đơn hàng</h3>
@@ -308,7 +308,7 @@ const editProduct = async () => {
 
                 <Divider />
                 <div v-for="(hdct, index) in dataSP" :key="index" >
-                    <div class="flex" v-if="maHD && dataHDCT">
+                    <div class="flex" >
                         <div>
                             <Image :src="hdct.anh" alt="Image" width="150" preview />
                         </div>
@@ -329,7 +329,7 @@ const editProduct = async () => {
                             </div>
                         </div>
 
-                        <div class="flex" v-if="maHD && dataHDCT">
+                        <div class="flex" >
                             <div class="c2" style="margin-left: 500px">
                                 <p>Tổng tiền hàng:</p>
                                 <p>Phí vận chuyển:</p>
@@ -350,7 +350,7 @@ const editProduct = async () => {
             </div>
 
 
-            <div v-else ="showInitialMessage || useHD.data.length == 0 " style="text-align: center; margin-top: 100px">
+            <div v-if =" dataHDCT.length == 0 " style="text-align: center; margin-top: 100px">
                 <svg width="100px" height="100px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#000000" class="bi bi-file-earmark-x">
                     <path d="M6.854 7.146a.5.5 0 1 0-.708.708L7.293 9l-1.147 1.146a.5.5 0 0 0 .708.708L8 9.707l1.146 1.147a.5.5 0 0 0 .708-.708L8.707 9l1.147-1.146a.5.5 0 0 0-.708-.708L8 8.293 6.854 7.146z" />
                     <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />

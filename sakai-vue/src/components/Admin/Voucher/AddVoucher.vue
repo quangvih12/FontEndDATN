@@ -66,7 +66,6 @@ const save = handleSubmit(async () => {
         giamToiDa: giamToiDa.value,
         giaTriGiam: giaTriGiam.value
     };
-
     const response = VoucherService.createVoucher(form);
     toast.add({ severity: 'success', summary: 'Successful', detail: 'Thêm mới thành công', life: 3000 });
     resetForm();
