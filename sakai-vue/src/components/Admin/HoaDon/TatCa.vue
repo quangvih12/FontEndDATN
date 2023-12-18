@@ -15,7 +15,7 @@ const loadData = async () => {
     await useHD.fetchData();
     data.value = useHD.dataAll;
     useHD.dataAll = useHD.dataAll;
-    console.log(data.value);
+    // console.log(data.value);
 };
 
 //chạy cái hiện data luôn

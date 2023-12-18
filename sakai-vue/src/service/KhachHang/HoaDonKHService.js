@@ -195,7 +195,7 @@ export const HDKHStore = defineStore('hoaDonKH', {
                 
                     for (let i = 0; i <  this.dataAll.length; i++){
                      if(this.dataAll[i].idHD == id){
-                        console.log(this.dataAll[i].id);
+                        // console.log(this.dataAll[i].id);
                         this.dataAll[i].trangThai = 0;
                      }
                     }
@@ -209,7 +209,7 @@ export const HDKHStore = defineStore('hoaDonKH', {
 
         //search date
         async searchDate(startDate, endDate, cbbValue) {
-            console.log(cbbValue);
+            // console.log(cbbValue);
             try {
                 const response = await axios.get(apiHD + '/search-date?startDate=' + startDate + '&endDate=' + endDate + '&comboBoxValue=' + cbbValue);
                 this.dataAll = response.data;
