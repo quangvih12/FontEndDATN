@@ -197,7 +197,7 @@ const applyKhuyenMai = () => {
         ctspService.updateCTSP(productId, idkm);
     });
 
-    localStorage.removeItem('idkm');
+   // localStorage.removeItem('idkm');
     selectedProduct.value = [];
     selectedDialog.value = false;
     loadDataProduct(idSP.value);

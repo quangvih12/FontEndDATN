@@ -187,12 +187,12 @@ const handImportExcel = async (event) => {
     setNameFile.value = event.target.files[0].name;
     const formData = new FormData();
     formData.append('file', selectedFile);
-    try {
+   try {
         await productStore.uploadFile(formData);
         excel.value = productStore.excels;
         let hasError = false;
-        for (const o of excel.value) {
-            for (const data of o.responseList) {
+      //   console.log(excel.value.responseList)
+            for (const data of excel.value.responseList) {
                 if (data.importMessageGiaBan !== null && data.importMessageGiaBan !== 'SUCCESS') {
                     toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageGiaBan, life: 30000 });
                     hasError = true;
@@ -272,14 +272,15 @@ const handImportExcel = async (event) => {
                     dis.value = true;
                     break;
                 }
-            }
-            if (hasError) {
+                 if (hasError) {
                 break;
+                 }
             }
-        }
+           
         if (!hasError) {
             showProgressSpinner.value = false;
             dis.value = true;
+            toast.add({ severity: 'success', summary: 'Success Message', detail: 'Import thành công', life: 3000 });
             loadProducts();
         }
     } catch (error) {

@@ -179,8 +179,8 @@ const handImportExcel = async (event) => {
         excel.value = VoucherService.excels;
         console.log(excel.value);
         let hasError = false;
-        for (const o of excel.value) {
-            for (const data of o.responseList) {
+      //  for (const o of excel.value) {
+            for (const data of excel.value.responseList) {
                 if (data.importMessageTen !== null && data.importMessageTen !== 'SUCCESS') {
                     toast.add({ severity: 'error', summary: 'Error', detail: data.importMessageTen, life: 30000 });
                     hasError = true;
@@ -224,14 +224,16 @@ const handImportExcel = async (event) => {
                     dis.value = true;
                     break;
                 }
-            }
-            if (hasError) {
+                if (hasError) {
                 break;
             }
-        }
+            }
+          
+      //  }
         if (!hasError) {
             showProgressSpinner.value = false;
             dis.value = true;
+            toast.add({ severity: 'success', summary: 'Success Message', detail: 'Import thành công', life: 3000 });
             loadDatavoucher();
         }
     } catch (error) {
