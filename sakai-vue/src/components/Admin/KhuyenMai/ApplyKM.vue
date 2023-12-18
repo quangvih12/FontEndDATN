@@ -155,6 +155,7 @@ const selectedDialog = ref(false);
 const selectedProduct = ref([]);
 const listSPCT = ref(null);
 const showProduct = (id) => {
+   localStorage.setItem('idkm',props.myProp.id );
     loadDataProduct(id);
     selectedDialog.value = true;
 };
@@ -170,7 +171,8 @@ const props = defineProps({
 onMounted(() => {
     loadProducts();
     loadDataLoai();
-    loadDataThuongHieu()
+    loadDataThuongHieu();
+    
 });
 
 const idSP = ref(null);
@@ -182,6 +184,7 @@ const loadDataProduct = async (idsp) => {
 };
 
 const applyKhuyenMai = () => {
+    console.log("applyKhuyenMai")
     // đây là số lượng SPCT được chọn để áp dụng khuyến mại
     const sl = selectedProduct.value.length;
     // đây là IdKM dùng để áp dụng được truyền từ component cha
