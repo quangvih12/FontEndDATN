@@ -5,8 +5,11 @@ import {useThongTin} from '@/service/KhachHang/ThongTinCaNhanService';
 import * as yup from 'yup';
 import {useForm, useField} from 'vee-validate';
 import {useToast} from 'primevue/usetoast';
+import {useDialog} from "primevue/usedialog";
+import DoiMatKhau from "@/components/KhachHang/DoiMatKhau.vue";
 
 const toast = useToast();
+const dialog = useDialog();
 const product = ref({});
 const submitted = ref(false);
 const productDialog = ref(false);
@@ -146,15 +149,29 @@ function onFileInputImage(event) {
   }
 }
 
+const showDoiMatKhau = () => {
+  const dialogRef = dialog.open(DoiMatKhau, {
+    props: {
+      header: 'Đổi mật khẩu',
+      style: {
+        width: '20vw',
+      },
+      modal: true
+    },
+    onClose: (options) => {
+    }
+  });
+}
 </script>
 
 <template>
+  <DynamicDialog/>
   <div class="container">
     <div class="card" style="width: 1100px; margin-left: 100px">
       <h1 style="color: #e8db72">Hồ sơ của tôi</h1>
       <div class="flex justify-content-between">
         <label for="">Quản lý thông tin hồ sơ để bảo mật tài khoản</label>
-        <Button icon="pi pi-key" severity="warning" label="Đổi mật khẩu" class="p-1 text-sm"/>
+        <Button @click="showDoiMatKhau" icon="pi pi-key" severity="warning" label="Đổi mật khẩu" class="p-1 text-sm"/>
       </div>
       <Divider/>
       <div class="ctn">

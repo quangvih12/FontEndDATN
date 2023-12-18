@@ -77,6 +77,7 @@ const router = createRouter({
                 {
                     path: 'trang-thai-don-hang/:id',
                     name: 'trang-thai-don-hang',
+                    props: true,
                     beforeEnter: authMiddleware.requireAuth,
                     component: () => import('@/components/KhachHang/LichSuSP/TrangThaiDonHang.vue'),
                 },
@@ -248,7 +249,10 @@ const router = createRouter({
             name: 'not-found',
             component: () => import('@/views/pages/NotFound.vue')
         }
-    ]
+    ],
+    scrollBehavior (to, from, savedPosition) {
+        return { top: 0 }
+    }
 });
 
 export default router;
