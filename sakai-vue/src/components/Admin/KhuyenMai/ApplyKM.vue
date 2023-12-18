@@ -184,7 +184,7 @@ const loadDataProduct = async (idsp) => {
 };
 
 const applyKhuyenMai = () => {
-    console.log("applyKhuyenMai")
+    // console.log("applyKhuyenMai");
     // đây là số lượng SPCT được chọn để áp dụng khuyến mại
     const sl = selectedProduct.value.length;
     // đây là IdKM dùng để áp dụng được truyền từ component cha

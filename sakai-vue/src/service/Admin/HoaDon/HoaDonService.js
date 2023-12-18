@@ -300,7 +300,7 @@ export const HDStore = defineStore('hoaDon', {
                         ShopId: '4677532'
                     }
                 });
-                console.log(response);
+                // console.log(response);
                 return response;
             } catch (error) {
                 console.log('Error fetching users:', error);

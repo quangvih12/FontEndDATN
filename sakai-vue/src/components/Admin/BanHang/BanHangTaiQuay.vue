@@ -64,7 +64,7 @@ const dsThuongHieu = computed(() => {
 const bgColor = ref('#ffa854');
 let idNV = null;
 const khExportPdf = ref();
-const logoImageSrc = ref(`${import.meta.env.VITE_BASE_FRONTEND_ENDPOINT}/src/assets/images/logo.png`);
+const logoImageSrc = ref(`${import.meta.env.VITE_BASE_FRONTEND_ENDPOINT}/img/logo.png`);
 
 onBeforeMount(() => {
   store.loadHDCho();
@@ -231,7 +231,6 @@ const onSubmit = handleSubmit(async (values) => {
     return;
   }
  
-
   const hdModel = new BHTQHoaDonModel(values.hinhThucGiaoHangs, values.PhuongThucThanhToan, values.moTa, values.tienKhachDua, values.idDiaChi, values.tienShip);
   await store.thanhToanHD(selectedHoaDon.value.id, hdModel);
   toast.add({severity: 'success', summary: 'Thành công', detail: 'Hoá đơn đã được thanh toán', life: 3000});
@@ -448,6 +447,21 @@ const exportFileHD = async () => {
   const val = htmlToPdfmake(content, {tableAutoSize: true, imagesByReference: true});
   await pdfMake.createPdf({content: val.content, images: val.images}).download(`${selectedHoaDon.value.ma}.pdf`);
 };
+
+const confirmHuyHD = (event, data) => {
+  confirm.require({
+    target: event.currentTarget,
+    message: 'Xác nhận huỷ hoá đơn này?',
+    icon: 'pi pi-info-circle',
+    acceptLabel: 'Có',
+    acceptClass: 'p-button-danger p-button-sm',
+    rejectLabel: 'Không',
+    accept: async () => {
+      await huyHDCho(data);
+    },
+    reject: () => {}
+  });
+};
 </script>
 
 <template>
@@ -458,6 +472,7 @@ const exportFileHD = async () => {
     </template>
   </Loading>
   <Toast/>
+  <ConfirmPopup/>
   <ConfirmDialog group="xuatFileHD">
     <template #container="{ message, acceptCallback, rejectCallback }">
       <div class="flex flex-column align-items-center p-5 surface-overlay border-round w-16rem">
@@ -528,8 +543,7 @@ const exportFileHD = async () => {
       </tfoot>
     </table>
     <table>
-<!--      todo-->
-      <tr style="border: 1px solid white;">
+      <tr style="border: 1px solid white;" v-if="phiShip && phiShip > 0">
         <td>Phí vận chuyển:</td>
         <td>{{ formatCurrency(phiShip) }}</td>
       </tr>
@@ -597,7 +611,7 @@ const exportFileHD = async () => {
             </Column>
             <Column class="text-center">
               <template #body="slotProps">
-                <Button @click="huyHDCho(slotProps.data)" icon="pi pi-trash" severity="danger" outlined
+                <Button @click="confirmHuyHD($event, slotProps.data)" icon="pi pi-trash" severity="danger" outlined
                         rounded></Button>
               </template>
             </Column>
@@ -915,9 +929,9 @@ const exportFileHD = async () => {
     </div>
     <div class="flex" style=" margin-bottom: 10px;">
       <div>
-        <h6>Phí ship:</h6>
+        <h6>Phí vận chuyển:</h6>
       </div>
-      <div style="margin-left: 110px;">
+      <div style="margin-left: 62px;">
         <h6 class="text-primary">{{ formatCurrency(phiShip) }}</h6>
       </div>
 

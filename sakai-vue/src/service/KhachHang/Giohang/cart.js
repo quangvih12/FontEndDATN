@@ -18,7 +18,7 @@ export const soLuongGh = defineStore({
   actions: {
     updateCartItems(count) {
       this.cartItems = count;
-      console.log("testssssss", this.cartItems)
+      // console.log("testssssss", this.cartItems);
     },
   },
 });
