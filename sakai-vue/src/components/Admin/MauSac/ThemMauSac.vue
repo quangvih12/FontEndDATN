@@ -28,7 +28,7 @@ const { value: ten, errorMessage: tenError } = useField('ten');
 const { value: moTa, errorMessage: MoTaSacError } = useField('moTa');
 const onSubmit = handleSubmit(async (values) => {
     try {
-        console.log('Dữ liệu đã gửi:', values);
+        // console.log('Dữ liệu đã gửi:', values);
 
         // Sau khi xử lý, đặt lại biểu mẫu
 

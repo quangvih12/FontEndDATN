@@ -43,11 +43,11 @@ export const useCounterStore = defineStore('thuongHieu', {
                     if (this.data[0].trangThai == response.data.data.trangThai) this.data.unshift(response.data.data);
                     if (response.data.data.trangThai == 1) this.dataByStatus1.unshift(response.data.data);
                 }
-                console.log(this.dataByStatus1);
+                // console.log(this.dataByStatus1);
             });
         },
         updateSize(id, form) {
-            console.log(form);
+            // console.log(form);
             axios.put(apiThuongHieu + '/update/' + id, form).then((response) => {
                 for (let i = 0; i < this.data.length; i++) {
                     if (id == this.data[i].id) {

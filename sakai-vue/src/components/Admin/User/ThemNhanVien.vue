@@ -51,7 +51,7 @@ const { value: diaChi, errorMessage: diaChiError } = useField('diaChi');
 const { value: image, errorMessage: imageError } = useField('image');
 const onSubmit = handleSubmit(async (values) => {
     try {
-        console.log('Dữ liệu đã gửi:', values);
+        // console.log('Dữ liệu đã gửi:', values);
         // Sau khi xử lý, đặt lại biểu mẫu
         reset();
     } catch (error) {
@@ -147,7 +147,7 @@ const onDecode = (decodeString) => {
         const gioiTinhValue = data[4] === 'Nam' ? 1 : 0; // Chuyển đổi giới tính thành 1 nếu là 'Nam', ngược lại là 0
         gioiTinh.value = gioiTinhValue.toString(); // Gán giá trị cho gioiTinh, giá trị này sẽ là '1' hoặc '0'
         diaChi.value = data[5]; // Gán địa chỉ từ chuỗi mã QR code vào biến diaChi
-        console.log('Giới tính:', gioiTinh.value);
+        // console.log('Giới tính:', gioiTinh.value);
     } else {
         error.value = 'Dữ liệu không đủ hoặc không hợp lệ từ mã QR code.';
     }

@@ -49,7 +49,7 @@ const { value: image, errorMessage: imageError } = useField('image');
 const { value: diaChi, errorMessage: diaChiError } = useField('diaChi');
 const onSubmit = handleSubmit(async (values) => {
     try {
-        console.log('Dữ liệu đã gửi:', values);
+        // console.log('Dữ liệu đã gửi:', values);
         // Sau khi xử lý, đặt lại biểu mẫu
         reset();
     } catch (error) {

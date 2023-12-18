@@ -188,7 +188,7 @@ const loadDataLoai = async () => {
     dataLoai.value = loaiStore.dataByStatus1;
 };
 
-console.log("idsp", idsp.value)
+// console.log("idsp", idsp.value);
 
 const loadDataProduct = async () => {
     await ctspService.fetchData(products.value.id);
