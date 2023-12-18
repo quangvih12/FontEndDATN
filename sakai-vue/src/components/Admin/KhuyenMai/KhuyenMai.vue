@@ -59,11 +59,11 @@ const statuses = ref([
 const columns = ref([
     { field: 'ma', header: 'Mã' },
     { field: 'ten', header: 'Tên' },
-    { field: 'thoiGianBatDau', header: 'Ngày Bắt Đầu' },
-    { field: 'thoiGianKetThuc', header: 'Ngày Kết Thúc' },
+   // { field: 'thoiGianBatDau', header: 'Ngày Bắt Đầu' },
+    //{ field: 'thoiGianKetThuc', header: 'Ngày Kết Thúc' },
     { field: 'moTa', header: 'Mô Tả' },
     { field: 'giaTriGiam', header: 'Giá Trị (%)' },
-    { field: 'giamToiDa', header: 'Giảm tối đa' },
+    // { field: 'giamToiDa', header: 'Giảm tối đa' },
     // { field: 'ngaySua', header: 'Ngày Sửa' },
     // { field: 'ngayTao', header: 'Ngày Tạo' }
 ]);
@@ -308,7 +308,7 @@ const handImportExcel = async (event) => {
 
                     <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header" :key="col.field + '_' + index" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column>
 
-                        <!-- <Column header="Ngày Bắt Đầu" filterField="date" dataType="date" style="min-width: 9rem">
+                    <Column header="Ngày Bắt Đầu" filterField="date" dataType="date" style="min-width: 9rem">
                         <template #body="{ data }">
                             {{ formatDate(data.thoiGianBatDau) }}
                         </template>
@@ -320,7 +320,7 @@ const handImportExcel = async (event) => {
                             {{ formatDate(data.thoiGianKetThuc) }}
                         </template>
                        
-                    </Column> -->
+                    </Column>
 
                     <Column field="trangThai" header="Trạng Thái" sortable style="min-width: 12rem">
                         <template #body="slotProps">
