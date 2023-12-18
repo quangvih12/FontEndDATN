@@ -25,7 +25,7 @@
                         <input id="thoiGianBatDau" type="datetime-local" v-model="thoiGianBatDau" style="height: 40px; width: 100%" />
                     </div> -->
 
-                    <Calendar id="thoiGianBatDau" v-model="thoiGianBatDau" :class="{ 'p-invalid': thoiGianBatDauError }"  dateFormat="yyyy/mm/dd " showIcon />
+                    <Calendar id="thoiGianBatDau" v-model="thoiGianBatDau" :class="{ 'p-invalid': thoiGianBatDauError }"  dateFormat="yyyy/MM/dd " showIcon />
                     <small class="p-error">{{ thoiGianBatDauError }}</small>
                 </div>
                 <div class="field col">
@@ -33,7 +33,7 @@
                     <!-- <div>
                         <input id="thoiGianKetThuc" type="datetime-local" v-model="thoiGianKetThuc" style="height: 40px; width: 100%" />
                     </div> -->
-                    <Calendar id="thoiGianKetThuc" v-model="thoiGianKetThuc" :class="{ 'p-invalid': thoiGianKetThucError }"  dateFormat="yyyy/mm/dd " showIcon />
+                    <Calendar id="thoiGianKetThuc" v-model="thoiGianKetThuc" :class="{ 'p-invalid': thoiGianKetThucError }"  dateFormat="yyyy/MM/dd " showIcon />
                     <small class="p-error">{{ thoiGianKetThucError }}</small>
                 </div>
             </div>
@@ -129,7 +129,7 @@ const update = handleSubmit(async () => {
     };
 
     khuyenmaiService.updateKhuyenMai(form, props.myProp.id);
-    loadDataKhuyenmai();
+    // loadDataKhuyenmai();
     toast.add({ severity: 'success', summary: 'Successful', detail: 'Cập nhật thành công', life: 3000 });
     updateKhuyenMaiDialog.value = false;
 });

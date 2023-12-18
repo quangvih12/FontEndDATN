@@ -295,8 +295,13 @@ const muaNgay = async () => {
     }
 };
 
+const anh = ref(false);
 const selectMauSac = async (mauSacs) => {
     // Loại bỏ viền đỏ của màu sắc đã chọn trước đó (nếu có)
+
+    anh.value = true;
+
+    checkAnh.value = false;
     if (selectedMauSac.value) {
         selectedMauSac.value.selected = false;
     }
@@ -474,6 +479,12 @@ const phanHoiComment = async () => {
     resetPhanHoi();
 };
 
+const checkAnh = ref(true)
+const isAnh = () => {
+    checkAnh.value = true;
+    anh.value = false;
+}
+
 const menu = ref();
 </script>
 
@@ -487,11 +498,19 @@ const menu = ref();
                     <div class="flex">
                         <div class="col-5">
                             <Galleria :value="loadImage" :responsiveOptions="responsiveOptions" :numVisible="5" containerStyle="max-width: 450px">
-                                <template #item="slotProps">
-                                    <img :src="dataSanPham.anh" :alt="slotProps.item" style="width: 100%" />
-                                </template>
+                                <!-- <template #item="anh" v-if ="anh" >
+                                   
+                                    <img  :src="selectedMauSac.anh" :alt="slotProps.item" style="width: 100%" />
+                                   
+                                </template> -->
+
+                                <template #item="slotProps">   
+                                    <img  v-if ="checkAnh" :src="slotProps.item.anh" :alt="slotProps.item" style="width: 100%" />
+                                    <img v-if ="anh" :src="selectedMauSac.anh" :alt="slotProps.item" style="width: 100%" />                           
+                                  
+                               </template>
                                 <template #thumbnail="slotProps">
-                                    <img :src="slotProps.item.anh" :alt="slotProps.item" style="width: 100%" />
+                                    <img :src="slotProps.item.anh" :alt="slotProps.item" @click="isAnh()" style="width: 100%" />
                                 </template>
                             </Galleria>
                         </div>
