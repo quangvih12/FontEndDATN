@@ -35,7 +35,7 @@ const schema = yup.object().shape({
         .string()
         .required('Tên sản phẩm không được để trống')
         .min(4, 'Tên sản phẩm phải có ít nhất 4 ký tự')
-        .matches(/^[a-zA-Z0-9đĐáÁàÀảẢãÃạẠăĂắẮằẰẳẲẵẴặẶâÂấẤầẦẩẨẫẪậẬêÊếẾềỀểỂễỄệỆôÔốỐồỒổỔỗỖộỘơƠớỚờỜởỞỡỠợỢùÙúÚụỤủỦũŨưỨỨửỬữỮựỰýÝỳỲỷỶỹỸỵỴ\s]*$/, 'Tên không được chứa kí tự đặc biệt!'),
+        .matches(/^[a-zA-Z0-9đĐáÁàÀảẢãÃạẠăĂắẮằẰẳẲẵẴặẶâÂấẤầẦẩẨẫẪậẬêÊếẾềỀểỂễỄệỆôÔốỐồỒổỔỗỖộỘơƠớỚờỜởỞỡỠợỢùÙúÚụỤủỦũŨưỨỨửỬữỮựỰýÝỳỲỷỶỹỸỵỴ\s\-]*$/, 'Tên không được chứa kí tự đặc biệt!'),
     quaiDeo: yup.string().required('Bạn cần chọn quai đeo cho sản phẩm'),
     loai: yup.number().required('loại sản phẩm không được để trống'),
     thuongHieu: yup.number().required('vui lòng chọn Thương hiệu sản phẩm '),
@@ -261,6 +261,14 @@ const loadDataThuongHieu = async () => {
     await thuongHieuService.fetchData();
     dataThuongHieu.value = thuongHieuService.dataByStatus1;
     // ThuongHieu.value =  dataThuongHieu.value.ten;
+
+    const selectedThuongHieu = dataThuongHieu.value.find((item) => item.ten === props.myProp.thuongHieu);
+    selectedCity.value = selectedThuongHieu;
+    if (selectedCity.value) {
+        ThuongHieu.value = selectedCity.value.id;
+    } else {
+        ThuongHieu.value = null;
+    }
 };
 
 const dataSize = ref([]);
@@ -281,6 +289,15 @@ const dataLoai = ref([]);
 const loadDataLoai = async () => {
     await loaiStore.fetchData();
     dataLoai.value = loaiStore.dataByStatus1;
+
+    const selectedLoais = dataLoai.value.find((item) => item.ten === props.myProp.loai);
+    selectedLoai.value = selectedLoais;
+
+    if (selectedLoai.value) {
+        Loai.value = selectedLoai.value.id;
+    } else {
+        Loai.value = null;
+    }
 };
 
 const dataTrongLuong = ref([]);
@@ -293,14 +310,18 @@ const dataVatLieu = ref([]);
 const loadDataVatLieu = async () => {
     await vatLieuStore.fetchAll();
     dataVatLieu.value = vatLieuStore.dataByStatus1;
+    const selectedVatLieus = dataVatLieu.value.find((item) => item.ten.localeCompare(props.myProp.vatLieu));
+    selectedvatLieu.value = selectedVatLieus;
+    if (selectedvatLieu.value) {
+        vatLieu.value = selectedvatLieu.value.id;
+    } else {
+        vatLieu.value = null;
+    }
 };
 
-onMounted(() => {
+onBeforeMount(() => {
     loadDataThuongHieu();
-    loadDataSize();
-    loadDataMauSac();
     loadDataLoai();
-    loadDataTrongLuong();
     loadDataVatLieu();
 });
 
@@ -310,7 +331,9 @@ onMounted(() => {
 
 const lstChiTietSP = ref([]);
 const idProduct = ref(null);
-const editProduct = () => {
+const editProduct = async () => {
+
+
     id.value = props.myProp.id;
     idProduct.value = props.myProp.id;
     name.value = props.myProp.ten;
@@ -319,33 +342,8 @@ const editProduct = () => {
     TrangThai.value = props.myProp.trangThai.toString();
     MoTa.value = props.myProp.moTa;
     imagesChinh.value = props.myProp.anh;
-    selectedLoai.value = props.myProp.loai;
+    // selectedLoai.value = props.myProp.loai;
 
-    const selectedThuongHieu = dataThuongHieu.value.find((item) => item.ten === props.myProp.thuongHieu);
-    selectedCity.value = selectedThuongHieu;
-    if (selectedCity.value) {
-        ThuongHieu.value = selectedCity.value.id;
-    } else {
-        ThuongHieu.value = null;
-    }
-
-
-    const selectedLoais = dataLoai.value.find((item) => item.ten === props.myProp.loai);
-    selectedLoai.value = selectedLoais;
-    // console.log( selectedLoais)
-    if (selectedLoai.value) {
-        Loai.value = selectedLoai.value.id;
-    } else {
-        Loai.value = null;
-    }
-
-    const selectedVatLieus = dataVatLieu.value.find((item) => item.ten === props.myProp.vatLieu);
-    selectedvatLieu.value = selectedVatLieus;
-    if (selectedvatLieu.value) {
-        vatLieu.value = selectedvatLieu.value.id;
-    } else {
-        vatLieu.value = null;
-    }
 
 
     product.value = { ...editProduct };
@@ -407,20 +405,25 @@ const formatCurrency = (value) => {
                         <label for="address">Quai Đeo</label>
                         <div class="flex flex-wrap gap-3">
                             <div class="flex align-items-center">
-                                <RadioButton v-model="QuaiDeo" type="radio" inputId="ingredient1" name="QuaiDeo"
-                                    value="Quai đeo cố định" :class="{ 'p-invalid': quaiDeoError }" />
-                                <label for="ingredient1" class="ml-2">Quai đeo cố định</label>
+                                <RadioButton v-model="QuaiDeo" type="radio" inputId="ingredient1" name="QuaiDeo" value="Vải"
+                                    :class="{ 'p-invalid': quaiDeoError }" />
+                                <label for="ingredient1" class="ml-2">Vải</label>
                             </div>
                             <div class="flex align-items-center">
                                 <RadioButton v-model="QuaiDeo" type="radio" inputId="ingredient2" name="QuaiDeo"
-                                    value="Quai đeo dạng Y" :class="{ 'p-invalid': quaiDeoError }" />
-                                <label for="ingredient2" class="ml-2">Quai đeo dạng Y</label>
+                                    value="Quai đeo đặc biệt" :class="{ 'p-invalid': quaiDeoError }" />
+                                <label for="ingredient2" class="ml-2">Quai đeo đặc biệt</label>
+                            </div>
+                            <div class="flex align-items-center">
+                                <RadioButton v-model="QuaiDeo" type="radio" inputId="ingredient3" name="QuaiDeo" value="Da"
+                                    :class="{ 'p-invalid': quaiDeoError }" />
+                                <label for="ingredient3" class="ml-2" :class="{ 'p-invalid': equaiDeoError }">Da</label>
                             </div>
                             <div class="flex align-items-center">
                                 <RadioButton v-model="QuaiDeo" type="radio" inputId="ingredient3" name="QuaiDeo"
-                                    value="Quai đeo đặc biệt" :class="{ 'p-invalid': quaiDeoError }" />
-                                <label for="ingredient3" class="ml-2" :class="{ 'p-invalid': equaiDeoError }">Quai đeo đặc
-                                    biệt</label>
+                                    value="Polycarbonate" :class="{ 'p-invalid': quaiDeoError }" />
+                                <label for="ingredient3" class="ml-2"
+                                    :class="{ 'p-invalid': equaiDeoError }">Polycarbonate</label>
                             </div>
                         </div>
                         <small class="p-error">{{ quaiDeoError }}</small>
@@ -429,19 +432,19 @@ const formatCurrency = (value) => {
                         <label for="address">Đệm lót</label>
                         <div class="flex flex-wrap gap-3">
                             <div class="flex align-items-center">
-                                <RadioButton v-model="demLot" inputId="ingredient1" name="pizza" value="Bọt biển "
+                                <RadioButton v-model="demLot" inputId="ingredient1" name="pizza" value="Polycarbonate"
                                     :class="{ 'p-invalid': demLotError }" />
-                                <label for="ingredient1" class="ml-2">Bọt biển </label>
+                                <label for="ingredient1" class="ml-2">Polycarbonate</label>
                             </div>
                             <div class="flex align-items-center">
-                                <RadioButton v-model="demLot" inputId="ingredient2" name="pizza" value="Vật liệu mềm"
+                                <RadioButton v-model="demLot" inputId="ingredient2" name="pizza" value="Vải"
                                     :class="{ 'p-invalid': demLotError }" />
-                                <label for="ingredient2" class="ml-2">Vật liệu mềm</label>
+                                <label for="ingredient2" class="ml-2">Vải</label>
                             </div>
                             <div class="flex align-items-center">
-                                <RadioButton v-model="demLot" inputId="ingredient4" name="pizza"
-                                    value="Đệm lót chống xốp nhiễu" :class="{ 'p-invalid': demLotError }" />
-                                <label for="ingredient4" class="ml-2">Đệm lót chống xốp nhiễu</label>
+                                <RadioButton v-model="demLot" inputId="ingredient4" name="pizza" value="Da"
+                                    :class="{ 'p-invalid': demLotError }" />
+                                <label for="ingredient4" class="ml-2">Da</label>
                             </div>
                         </div>
                         <small class="p-error">{{ demLotError }}</small>
@@ -504,7 +507,7 @@ const formatCurrency = (value) => {
 
                             <small class="p-error">{{ thuongHieuError }}</small>
                         </div>
-                     
+
                     </div>
                 </div>
                 <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
@@ -535,12 +538,12 @@ const formatCurrency = (value) => {
 
 
                 </div>
-               
+
                 <div style="width: 1000px; text-align: center">
-                  
+
                     <Button class="p-button-outlined" outlined severity="secondary"
                         style="width: 200px; height: auto; margin: 10px" @click="reset()" label="clear"></Button>
-                        <Button type="submit" class="p-button-outlined" style="width: 200px; height: auto; margin: 10px"
+                    <Button type="submit" class="p-button-outlined" style="width: 200px; height: auto; margin: 10px"
                         label="Lưu"></Button>
                 </div>
             </div>

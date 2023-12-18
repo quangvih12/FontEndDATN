@@ -241,7 +241,7 @@ const formatDate = (dateTime) => {
         class="p-fluid">
         <div class="Field col-12 md:col-6" style="margin-bottom: 30px">
             <DataTable ref="dt" :value="arrayImage" v-model:selection="selectedProducts" dataKey="id" :paginator="true"
-                :rows="2" :filters="filters"
+                :rows="2" 
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 :rowsPerPageOptions="[2, 5, 10]" currentPageReportTemplate=" {first} to {last} of {totalRecords}"
                 responsiveLayout="scroll" showGridlines>
@@ -256,7 +256,18 @@ const formatDate = (dateTime) => {
                         </div>
                     </div>
                 </template>
-
+                <template #empty>
+                    <div class="flex flex-column justify-content-center align-items-center" style="height: 300px">
+                        <svg width="100px" height="100px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"
+                            fill="#000000" class="bi bi-file-earmark-x">
+                            <path
+                                d="M6.854 7.146a.5.5 0 1 0-.708.708L7.293 9l-1.147 1.146a.5.5 0 0 0 .708.708L8 9.707l1.146 1.147a.5.5 0 0 0 .708-.708L8.707 9l1.147-1.146a.5.5 0 0 0-.708-.708L8 8.293 6.854 7.146z" />
+                            <path
+                                d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                        </svg>
+                        <h6>Không có dữ liệu.</h6>
+                    </div>
+                </template>
                 <Column field="code" header="STT" :sortable="true" style="width: 1px; padding: 5px;">
                     <template #body="slotProps">
                         <span class="p-column-title">STT</span>
@@ -317,7 +328,18 @@ const formatDate = (dateTime) => {
                     </div>
                 </template>
 
-
+                <template #empty>
+                    <div class="flex flex-column justify-content-center align-items-center" style="height: 300px">
+                        <svg width="100px" height="100px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"
+                            fill="#000000" class="bi bi-file-earmark-x">
+                            <path
+                                d="M6.854 7.146a.5.5 0 1 0-.708.708L7.293 9l-1.147 1.146a.5.5 0 0 0 .708.708L8 9.707l1.146 1.147a.5.5 0 0 0 .708-.708L8.707 9l1.147-1.146a.5.5 0 0 0-.708-.708L8 8.293 6.854 7.146z" />
+                            <path
+                                d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                        </svg>
+                        <h6>Không có dữ liệu.</h6>
+                    </div>
+                </template>
                 <Column field="code" header="STT" :sortable="true" style="width: 1px; padding: 5px;">
                     <template #body="slotProps">
                         <span class="p-column-title">STT</span>
@@ -363,15 +385,15 @@ const formatDate = (dateTime) => {
                 <Column v-for="(col, index) of selectedColumns" :field="col.field" :header="col.header"
                     :key="col.field + '_' + index" :sortable="true" headerStyle="width:8%; min-width:5rem;">
                     <template #body="slotProps">
-                <span class="p-column-title">{{ col.field }}</span>
-                {{
-                   col.field === 'giaSauGiam'
-                        ? formatCurrency(slotProps.data[col.field])
-                        : ['thoiGianBatDau', 'thoiGianKetThuc'].includes(col.field)
-                        ? formatDate(slotProps.data[col.field])
-                        : slotProps.data[col.field]
-                }}
-            </template>
+                        <span class="p-column-title">{{ col.field }}</span>
+                        {{
+                            col.field === 'giaSauGiam'
+                            ? formatCurrency(slotProps.data[col.field])
+                            : ['thoiGianBatDau', 'thoiGianKetThuc'].includes(col.field)
+                                ? formatDate(slotProps.data[col.field])
+                                : slotProps.data[col.field]
+                        }}
+                    </template>
                 </Column>
                 <Column field="trongLuong" header="Trọng Lượng" :sortable="true" headerStyle="width:14%; min-width:8rem;">
                     <template #body="slotProps">

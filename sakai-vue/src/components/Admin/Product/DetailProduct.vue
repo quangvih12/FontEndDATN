@@ -86,6 +86,15 @@ const loadDataThuongHieu = async () => {
     await thuongHieuService.fetchData();
     dataThuongHieu.value = thuongHieuService.data;
     // ThuongHieu.value =  dataThuongHieu.value.ten;
+
+    const selectedThuongHieu = dataThuongHieu.value.find((item) => item.ten === props.myProp.thuongHieu);
+    selectedCity.value = selectedThuongHieu;
+    if (selectedCity.value) {
+        //   console.log(selectedCity.value)
+        ThuongHieu.value = selectedCity.value.id;
+    } else {
+        ThuongHieu.value = null;
+    }
 };
 
 const dataSize = ref([]);
@@ -108,21 +117,46 @@ const loadDataLoai = async () => {
     await loaiStore.fetchData();
     dataLoai.value = loaiStore.data;
 
+    const selectedLoais = dataLoai.value.find((item) => item.ten === props.myProp.loai);
+    selectedLoai.value = selectedLoais;
+    if (selectedLoai.value) {
+        //    console.log(selectedLoai.value)
+        Loai.value = selectedLoai.value.id;
+    } else {
+        Loai.value = null;
+    }
+
 };
 
 const dataTrongLuong = ref([]);
 const loadDataTrongLuong = async () => {
     await trongLuongStore.fetchAll();
     dataTrongLuong.value = trongLuongStore.data;
+
+    const selectedTrongLuongs = dataTrongLuong.value.find((item) => item.value === parseInt(props.myProp.trongLuong, 10));
+    selectedTrongLuong.value = selectedTrongLuongs;
+    if (selectedTrongLuong.value) {
+        TrongLuong.value = selectedTrongLuong.value.id;
+    } else {
+        TrongLuong.value = null;
+    }
 };
 
 const dataVatLieu = ref([]);
 const loadDataVatLieu = async () => {
     await vatLieuStore.fetchAll();
     dataVatLieu.value = vatLieuStore.data;
+
+    const selectedVatLieus = dataVatLieu.value.find((item) => item.ten === props.myProp.vatLieu);
+    selectedvatLieu.value = selectedVatLieus;
+    if (selectedvatLieu.value) {
+        vatLieu.value = selectedvatLieu.value.id;
+    } else {
+        vatLieu.value = null;
+    }
 };
 
-onMounted(() => {
+onBeforeMount(() => {
     loadDataThuongHieu();
     loadDataSize();
     loadDataMauSac();
@@ -147,41 +181,15 @@ const editProduct = () => {
     TrangThai.value = props.myProp.trangThai.toString();
     MoTa.value = props.myProp.moTa;
     imagesChinh.value = props.myProp.anh;
-    selectedLoai.value = props.myProp.loai;
+    //  selectedLoai.value = props.myProp.loai;
 
-    const selectedThuongHieu = dataThuongHieu.value.find((item) => item.ten === props.myProp.thuongHieu);
-    selectedCity.value = selectedThuongHieu;
-    if (selectedCity.value) {
-        //   console.log(selectedCity.value)
-        ThuongHieu.value = selectedCity.value.id;
-    } else {
-        ThuongHieu.value = null;
-    }
 
-    const selectedLoais = dataLoai.value.find((item) => item.ten === props.myProp.loai);
-    selectedLoai.value = selectedLoais;
-    if (selectedLoai.value) {
-        //    console.log(selectedLoai.value)
-        Loai.value = selectedLoai.value.id;
-    } else {
-        Loai.value = null;
-    }
 
-    const selectedVatLieus = dataVatLieu.value.find((item) => item.ten === props.myProp.vatLieu);
-    selectedvatLieu.value = selectedVatLieus;
-    if (selectedvatLieu.value) {
-        vatLieu.value = selectedvatLieu.value.id;
-    } else {
-        vatLieu.value = null;
-    }
+
+
+
     //   console.log(dataTrongLuong.value)
-    const selectedTrongLuongs = dataTrongLuong.value.find((item) => item.value === parseInt(props.myProp.trongLuong, 10));
-    selectedTrongLuong.value = selectedTrongLuongs;
-    if (selectedTrongLuong.value) {
-        TrongLuong.value = selectedTrongLuong.value.id;
-    } else {
-        TrongLuong.value = null;
-    }
+
     arrayImage.value = props.myProp.img;
     for (const img of arrayImage.value) {
         ImagesProduct.value.push(img.anh);
@@ -300,22 +308,26 @@ const loadDataTrangThai = () => {
                         <label for="address">Quai Đeo</label>
                         <div class="flex flex-wrap gap-3">
                             <div class="flex align-items-center">
-                                <RadioButton v-model="QuaiDeo" type="radio" inputId="ingredient1" name="QuaiDeo"
-                                    value="Quai đeo cố định" :class="{ 'p-invalid': quaiDeoError }" disabled />
-                                <label for="ingredient1" class="ml-2">Quai đeo cố định</label>
+                                <RadioButton v-model="QuaiDeo" type="radio" inputId="ingredient1" name="QuaiDeo" value="Vải"
+                                    :class="{ 'p-invalid': quaiDeoError }" />
+                                <label for="ingredient1" class="ml-2">Vải</label>
                             </div>
                             <div class="flex align-items-center">
                                 <RadioButton v-model="QuaiDeo" type="radio" inputId="ingredient2" name="QuaiDeo"
-                                    value="Quai đeo dạng Y" :class="{ 'p-invalid': quaiDeoError }" disabled />
-                                <label for="ingredient2" class="ml-2">Quai đeo dạng Y</label>
+                                    value="Quai đeo đặc biệt" :class="{ 'p-invalid': quaiDeoError }" />
+                                <label for="ingredient2" class="ml-2">Quai đeo đặc biệt</label>
+                            </div>
+                            <div class="flex align-items-center">
+                                <RadioButton v-model="QuaiDeo" type="radio" inputId="ingredient3" name="QuaiDeo" value="Da"
+                                    :class="{ 'p-invalid': quaiDeoError }" />
+                                <label for="ingredient3" class="ml-2" :class="{ 'p-invalid': equaiDeoError }">Da</label>
                             </div>
                             <div class="flex align-items-center">
                                 <RadioButton v-model="QuaiDeo" type="radio" inputId="ingredient3" name="QuaiDeo"
-                                    value="Quai đeo đặc biệt" :class="{ 'p-invalid': quaiDeoError }" disabled />
-                                <label for="ingredient3" class="ml-2" :class="{ 'p-invalid': equaiDeoError }">Quai đeo
-                                    đặc biệt</label>
+                                    value="Polycarbonate" :class="{ 'p-invalid': quaiDeoError }" />
+                                <label for="ingredient3" class="ml-2"
+                                    :class="{ 'p-invalid': equaiDeoError }">Polycarbonate</label>
                             </div>
-
                         </div>
                         <small class="p-error">{{ quaiDeoError }}</small>
                     </div>
@@ -323,19 +335,19 @@ const loadDataTrangThai = () => {
                         <label for="address">Đệm lót</label>
                         <div class="flex flex-wrap gap-3">
                             <div class="flex align-items-center">
-                                <RadioButton v-model="DemLot" inputId="ingredient1" name="pizza" value="Bọt biển "
-                                    :class="{ 'p-invalid': demLotError }" disabled />
-                                <label for="ingredient1" class="ml-2">Bọt biển </label>
+                                <RadioButton v-model="DemLot" inputId="ingredient1" name="pizza" value="Polycarbonate"
+                                    :class="{ 'p-invalid': demLotError }" />
+                                <label for="ingredient1" class="ml-2">Polycarbonate</label>
                             </div>
                             <div class="flex align-items-center">
-                                <RadioButton v-model="DemLot" inputId="ingredient2" name="pizza" value="Vật liệu mềm"
-                                    :class="{ 'p-invalid': demLotError }" disabled />
-                                <label for="ingredient2" class="ml-2">Vật liệu mềm</label>
+                                <RadioButton v-model="DemLot" inputId="ingredient2" name="pizza" value="Vải"
+                                    :class="{ 'p-invalid': demLotError }" />
+                                <label for="ingredient2" class="ml-2">Vải</label>
                             </div>
                             <div class="flex align-items-center">
-                                <RadioButton v-model="DemLot" inputId="ingredient4" name="pizza"
-                                    value="Đệm lót chống xốp nhiễu" :class="{ 'p-invalid': demLotError }" disabled />
-                                <label for="ingredient4" class="ml-2">Đệm lót chống xốp nhiễu</label>
+                                <RadioButton v-model="DemLot" inputId="ingredient4" name="pizza" value="Da"
+                                    :class="{ 'p-invalid': demLotError }" />
+                                <label for="ingredient4" class="ml-2">Da</label>
                             </div>
                         </div>
                         <small class="p-error">{{ demLotError }}</small>
@@ -465,7 +477,18 @@ const loadDataTrangThai = () => {
 
                         </template>
 
-
+                        <template #empty>
+                            <div class="flex flex-column justify-content-center align-items-center" style="height: 300px">
+                                <svg width="100px" height="100px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"
+                                    fill="#000000" class="bi bi-file-earmark-x">
+                                    <path
+                                        d="M6.854 7.146a.5.5 0 1 0-.708.708L7.293 9l-1.147 1.146a.5.5 0 0 0 .708.708L8 9.707l1.146 1.147a.5.5 0 0 0 .708-.708L8.707 9l1.147-1.146a.5.5 0 0 0-.708-.708L8 8.293 6.854 7.146z" />
+                                    <path
+                                        d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                                </svg>
+                                <h6>Không có dữ liệu.</h6>
+                            </div>
+                        </template>
                         <Column field="stt" header="STT" :sortable="true" style="width: 1px; padding: 5px;">
                             <template #body="slotProps">
                                 <span class="p-column-title">STT</span>

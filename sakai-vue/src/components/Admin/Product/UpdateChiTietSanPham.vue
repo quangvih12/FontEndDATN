@@ -123,37 +123,7 @@ const openNew = () => {
     GiaBan.value = props.myProp.giaBan;
   //  GiaNhap.value = props.myProp.giaNhap;
     TrangThai.value = props.myProp.trangThai.toString();
-    const selectedMau = dataMauSac.value.find((item) => item.ten === props.myProp.tenMauSac);
-    selectedMauSac.value = selectedMau;
-    if (selectedMauSac.value) {
-        MauSac.value = selectedMauSac.value.id;
-    } else {
-        MauSac.value = null;
-    }
-
-    const selectedTrongLuongs = dataTrongLuong.value.find((item) => item.value === Number(props.myProp.trongLuong));
-    selectedTrongLuong.value = selectedTrongLuongs;
-    if (selectedTrongLuong.value) {
-        TrongLuong.value = selectedTrongLuong.value.id;
-    } else {
-        TrongLuong.value = null;
-    }
-
-    const selectedSizes = dataSize.value.find((item) => item.ten === props.myProp.tenSize);
-    selectedSize.value = selectedSizes;
-    if (selectedSize.value) {
-        size.value = selectedSize.value.id;
-    } else {
-        size.value = null;
-    }
-
-    const selectedKhuyenMais = khuyenmais.value.find((item) => item.ten === props.myProp.tenKM);
-    selectedKhuyenMai.value = selectedKhuyenMais;
-    if (selectedKhuyenMai.value) {
-        idKhuyenMai.value = selectedKhuyenMai.value.id;
-    } else {
-        idKhuyenMai.value = null;
-    }
+   
 };
 
 const anhs = ref(null);
@@ -185,6 +155,14 @@ const dataSize = ref([]);
 const loadDataSize = async () => {
     await useSizeService.fetchData();
     dataSize.value = useSizeService.dataByStatus1;
+
+    const selectedSizes = dataSize.value.find((item) => item.ten === props.myProp.tenSize);
+    selectedSize.value = selectedSizes;
+    if (selectedSize.value) {
+        size.value = selectedSize.value.id;
+    } else {
+        size.value = null;
+    }
 };
 const dataMauSac = ref([]);
 const loadDataMauSac = async () => {
@@ -192,6 +170,15 @@ const loadDataMauSac = async () => {
     dataMauSac.value = mauSacStore.dataByStatus1;
     const lstMau = dataMauSac.value;
     dataMauSac.value = lstMau;
+
+
+    const selectedMau = dataMauSac.value.find((item) => item.ten === props.myProp.tenMauSac);
+    selectedMauSac.value = selectedMau;
+    if (selectedMauSac.value) {
+        MauSac.value = selectedMauSac.value.id;
+    } else {
+        MauSac.value = null;
+    }
 };
 
 const onMauSacChange = () => {
@@ -210,8 +197,8 @@ const onSizeChange = () => {
     }
 };
 
-onMounted(() => {
-    loadDataSize();
+onBeforeMount(() => {
+     loadDataSize();
     loadDataTrongLuong();
     loadDataMauSac();
     loadDataKhuyenmai();
@@ -224,6 +211,14 @@ const loadDataKhuyenmai = async () => {
     khuyenmai.value = khuyenmaiService.data;
     khuyenmais.value = khuyenmai.value.filter((data) => data.trangThai == 0 || data.trangThai == 2);
     khuyenmais.value.unshift({ ten: 'Không có', id: null, trangThai: '' });
+
+    const selectedKhuyenMais = khuyenmais.value.find((item) => item.ten === props.myProp.tenKM);
+    selectedKhuyenMai.value = selectedKhuyenMais;
+    if (selectedKhuyenMai.value) {
+        idKhuyenMai.value = selectedKhuyenMai.value.id;
+    } else {
+        idKhuyenMai.value = null;
+    }
 };
 
 const selectedTrongLuong = ref(null);
@@ -231,6 +226,14 @@ const dataTrongLuong = ref([]);
 const loadDataTrongLuong = async () => {
     await trongLuongStore.fetchDataByStatus(1);
     dataTrongLuong.value = trongLuongStore.dataByStatus1;
+
+    const selectedTrongLuongs = dataTrongLuong.value.find((item) => item.value === Number(props.myProp.trongLuong));
+    selectedTrongLuong.value = selectedTrongLuongs;
+    if (selectedTrongLuong.value) {
+        TrongLuong.value = selectedTrongLuong.value.id;
+    } else {
+        TrongLuong.value = null;
+    }
 };
 
 const onTrongLuongChange = () => {
