@@ -31,7 +31,8 @@ const schema = yup.object().shape({
         .string()
         .required('Tên sản phẩm không được để trống')
         .min(4, 'Tên sản phẩm phải có ít nhất 4 ký tự')
-        .matches(/^[a-zA-Z0-9đĐáÁàÀảẢãÃạẠăĂắẮằẰẳẲẵẴặẶâÂấẤầẦẩẨẫẪậẬêÊếẾềỀểỂễỄệỆôÔốỐồỒổỔỗỖộỘơƠớỚờỜởỞỡỠợỢùÙúÚụỤủỦũŨưỨỨửỬữỮựỰýÝỳỲỷỶỹỸỵỴ\s\-]*$/, 'Tên không được chứa kí tự đặc biệt!'),
+        .matches(/^[a-zA-Z0-9đĐáÁàÀảẢãÃạẠăĂắẮằẰẳẲẵẴặẶâÂấẤầẦẩẨẫẪậẬêÊếẾềỀểỂễỄệỆôÔốỐồỒổỔỗỖộỘơƠớỚờỜởỞỡỠợỢùÙúÚụỤủỦũŨưỨỨửỬữỮựỰýÝỳỲỷỶỹỸỵỴ\s\-]*$/, 'Tên không được chứa kí tự đặc biệt!')
+        .test('no-spaces', 'Tên không được chứa khoảng trắng', value => value && !/\s/.test(value)),
     //  soLuongTon: yup.number().required('số lượng không được để trống').typeError('Số lượng tồn phải là một số').min(1, 'Số lượng phải lớn hơn hoặc bằng 1').max(1000, 'số lượng quá lớn').nullable(),
     giaBan: yup
         .number()
@@ -60,7 +61,8 @@ const schema = yup.object().shape({
     soLuongSize: yup.number().required(' vui lòng nhập số lượng').typeError('Số lượng size phải là một số').min(1, 'Số lượng phải lớn hơn hoặc bằng 1').nullable(),
     trongLuong: yup.string().required('vui lòng chọn trọng lượng sản phẩm'),
     imgMauSac: yup.array().required('vui lòng chọn ảnh màu sắc sản phẩm'),
-    moTa: yup.string().required('Vui lòng điền mô tả sản phẩm').min(10, 'Mô tả sản phẩm phải có ít nhất 10 ký tự'),
+    moTa: yup.string().required('Vui lòng điền mô tả sản phẩm').min(10, 'Mô tả sản phẩm phải có ít nhất 10 ký tự')
+    .test('no-spaces', 'Tên không được chứa khoảng trắng', value => value && !/\s/.test(value)),
     anh: yup.string().required('vui lòng chọn ảnh chính cho sản phẩm')
 });
 
@@ -377,6 +379,7 @@ const arrayImgMauSac = ref([]);
 function onFileInputImageMauSac(event) {
     const files = event.target.files;
     for (let i = 0; i < files.length; i++) {
+    
         const file = files[i];
         const objectURL = URL.createObjectURL(file);
         const basePath = "D:\\imgDATN\\"; // Đường dẫn cố định
@@ -407,8 +410,6 @@ const ImagesProduct = ref([]);
 const imageUrls = ref([]);
 function onFileInputImageProduct(event) {
     const files = event.target.files;
-
-
     for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const objectURL = URL.createObjectURL(file);
