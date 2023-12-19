@@ -64,7 +64,7 @@ const dsThuongHieu = computed(() => {
 const bgColor = ref('#ffa854');
 let idNV = null;
 const khExportPdf = ref();
-const logoImageSrc = ref(`${import.meta.env.VITE_BASE_FRONTEND_ENDPOINT}/img/logo.png`);
+const logoImageSrc = ref(`${import.meta.env.VITE_BASE_FRONTEND_ENDPOINT}/src/assets/images/logo.png`);
 
 onBeforeMount(() => {
   store.loadHDCho();
